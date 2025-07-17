@@ -1,8 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// prisma/schema.prisma
+// Schéma Prisma pour l'application de gestion de projet agile "Jira Killer"
+// Compatible avec Better Auth et Next.js 15+
 
 generator client {
   provider = "prisma-client-js"
@@ -14,58 +12,825 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// =====================================
+// ÉNUMÉRATIONS
+// =====================================
+
+enum UserRole {
+  ADMIN
+  PRODUCT_OWNER
+  SCRUM_MASTER
+  DEVELOPER
+  STAKEHOLDER
+  VIEWER
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  CODE_REVIEW
+  TESTING
+  DONE
+  BLOCKED
+  CANCELLED
+}
+
+enum SprintStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum Priority {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum FileType {
+  DOCUMENT
+  IMAGE
+  VIDEO
+  ARCHIVE
+  CODE
+  SPECIFICATION
+  DESIGN
+  TEST
+  FOLDER
+  OTHER
+}
+
+enum EventType {
+  TASK_CREATED
+  TASK_UPDATED
+  TASK_ASSIGNED
+  SPRINT_STARTED
+  SPRINT_COMPLETED
+  COMMENT_ADDED
+  FILE_UPLOADED
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_COMPLETED
+  SPRINT_STARTED
+  MENTION
+  COMMENT_REPLY
+  DEADLINE_REMINDER
+  FILE_SHARED
+}
+
+// =====================================
+// AUTHENTIFICATION (Better Auth)
+// =====================================
+
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
+  id               String    @id @default(cuid())
+  name             String?
+  email            String    @unique
+  emailVerified    Boolean   @default(false)
+  image            String?
+  username         String?   @unique
+  firstName        String?
+  lastName         String?
+  bio              String?
+  timezone         String?   @default("UTC")
+  preferences      Json?     @default("{}")
+  isActive         Boolean   @default(true)
+  lastLoginAt      DateTime?
+  twoFactorEnabled Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relations Better Auth
+  accounts Account[]
+  sessions Session[]
+
+  // Relations métier
+  organizationMemberships TeamMember[]
+  projectMemberships      ProjectMember[]
+  assignedTasks           Task[]          @relation("TaskAssignees")
+  createdTasks            Task[]          @relation("TaskCreator")
+  assignedUserStories     UserStory[]     @relation("UserStoryAssignees")
+  createdUserStories      UserStory[]     @relation("UserStoryCreator")
+  comments                Comment[]
+  notifications           Notification[]
+  auditLogs               AuditLog[]
+  timeEntries             TimeEntry[]
+  fileUploads             File[]
+  FileVersion             FileVersion[]
+  ChannelMember           ChannelMember[]
+  Message                 Message[]
+  Item                    Item[]          @relation("ItemAssignees")
+
+  @@map("user")
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
-  @@unique([provider, providerAccountId])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@map("account")
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
   userId    String
-  user      User    @relation(fields: [userId], references: [id])
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@unique([identifier, value])
+  @@map("verification")
+}
+
+// =====================================
+// ORGANISATIONS ET ÉQUIPES
+// =====================================
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  slug        String   @unique
+  logoUrl     String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Hiérarchie d'équipe
+  parentTeam   Team?   @relation("TeamHierarchy", fields: [parentTeamId], references: [id])
+  parentTeamId String?
+  children     Team[]  @relation("TeamHierarchy")
+
+  // Relations
+  members   TeamMember[]
+  projects  Project[] // Projets de l'équipe
+  templates Template[] // Templates de l'équipe
+  Item      Item[]
+
+  @@map("team")
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  role     UserRole @default(DEVELOPER)
+  joinedAt DateTime @default(now())
+  isActive Boolean  @default(true)
+
+  // Relations
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@unique([teamId, userId])
+  @@map("team_member")
+}
+
+// =====================================
+// PROJETS
+// =====================================
+
+model Project {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  slug        String
+  key         String // Clé courte du projet (ex: "SHOP", "ECOM")
+  order       Int       @default(1000)
+  startDate   DateTime?
+  endDate     DateTime?
+  status      String    @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED, ON_HOLD
+  visibility  String    @default("PRIVATE") // PRIVATE, PUBLIC, INTERNAL
+  settings    Json?     @default("{}")
+  metadata    Json?     @default("{}")
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations (modifiées pour Team)
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId String
+
+  // Relations existantes conservées
+  members     ProjectMember[]
+  initiatives Initiative[]
+  sprints     Sprint[]
+  files       File[]
+  channels    Channel[]
+  templates   Template[]
+
+  // Contraintes d'unicité adaptées
+  @@unique([teamId, slug])
+  @@unique([teamId, key])
+  @@map("project")
+}
+
+model ProjectMember {
+  id       String   @id @default(cuid())
+  role     UserRole @default(DEVELOPER)
+  joinedAt DateTime @default(now())
+  isActive Boolean  @default(true)
+
+  // Relations
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  @@unique([projectId, userId])
+  @@map("project_member")
+}
+
+// =====================================
+// HIÉRARCHIE DU TRAVAIL
+// =====================================
+
+model Initiative {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  objective   String? // Objectif business
+  priority    Priority  @default(MEDIUM)
+  status      String    @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED, ON_HOLD
+  startDate   DateTime?
+  endDate     DateTime?
+  progress    Float     @default(0) // Pourcentage de completion
+  budget      Float?
+  roi         Float? // Return on Investment
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  epics Epic[]
+
+  @@map("initiative")
+}
+
+model Epic {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  priority    Priority  @default(MEDIUM)
+  status      String    @default("ACTIVE")
+  startDate   DateTime?
+  endDate     DateTime?
+  progress    Float     @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  initiative   Initiative @relation(fields: [initiativeId], references: [id], onDelete: Cascade)
+  initiativeId String
+
+  features Feature[]
+
+  @@map("epic")
+}
+
+// =====================================
+// FEATURES AVEC PARENTID
+// =====================================
+
+model Feature {
+  id                 String    @id @default(cuid())
+  name               String
+  description        String?
+  acceptanceCriteria String?
+  priority           Priority  @default(MEDIUM)
+  status             String    @default("ACTIVE")
+  storyPoints        Int?
+  businessValue      Int? // Valeur métier (1-10)
+  technicalRisk      Int? // Risque technique (1-10)
+  effort             Int? // Effort estimé (1-10)
+  startDate          DateTime?
+  endDate            DateTime?
+  progress           Float     @default(0)
+  position           Int       @default(0) // Pour l'ordre dans le backlog
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // Relations
+  epic   Epic   @relation(fields: [epicId], references: [id], onDelete: Cascade)
+  epicId String
+
+  // ✅ NOUVELLE RELATION PARENT-ENFANT
+  parent   Feature?  @relation("FeatureHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId String?
+  children Feature[] @relation("FeatureHierarchy")
+
+  userStories  UserStory[]
+  dependencies FeatureDependency[] @relation("DependentFeature")
+  dependents   FeatureDependency[] @relation("DependsOnFeature")
+  files        File[]
+
+  @@map("feature")
+}
+
+model FeatureDependency {
+  id          String   @id @default(cuid())
+  type        String   @default("DEPENDS_ON") // DEPENDS_ON, BLOCKS, RELATED
+  description String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  dependentFeature   Feature @relation("DependentFeature", fields: [dependentFeatureId], references: [id], onDelete: Cascade)
+  dependentFeatureId String
+  dependsOnFeature   Feature @relation("DependsOnFeature", fields: [dependsOnFeatureId], references: [id], onDelete: Cascade)
+  dependsOnFeatureId String
+
+  @@unique([dependentFeatureId, dependsOnFeatureId])
+  @@map("feature_dependency")
+}
+
+// =====================================
+// USER STORIES
+// =====================================
+
+model UserStory {
+  id                 String     @id @default(cuid())
+  title              String
+  description        String?
+  acceptanceCriteria String?
+  priority           Priority   @default(MEDIUM)
+  status             TaskStatus @default(TODO)
+  storyPoints        Int?
+  businessValue      Int? // Valeur métier (1-10)
+  technicalRisk      Int? // Risque technique (1-10)
+  effort             Int? // Effort estimé (1-10)
+  position           Int        @default(0) // Pour l'ordre dans le backlog
+  labels             String[]   @default([])
+  tags               String[]   @default([])
+  estimatedHours     Float?
+  actualHours        Float?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  // Relations
+  feature   Feature @relation(fields: [featureId], references: [id], onDelete: Cascade)
+  featureId String
+
+  creator   User   @relation("UserStoryCreator", fields: [creatorId], references: [id])
+  creatorId String
+  assignees User[] @relation("UserStoryAssignees")
+
+  tasks        Task[]
+  sprints      Sprint[]              @relation("SprintUserStories")
+  dependencies UserStoryDependency[] @relation("DependentUserStory")
+  dependents   UserStoryDependency[] @relation("DependsOnUserStory")
+  comments     Comment[]
+  timeEntries  TimeEntry[]
+  files        File[]
+
+  @@map("user_story")
+}
+
+model UserStoryDependency {
+  id          String   @id @default(cuid())
+  type        String   @default("DEPENDS_ON") // DEPENDS_ON, BLOCKS, RELATED
+  description String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  dependentUserStory   UserStory @relation("DependentUserStory", fields: [dependentUserStoryId], references: [id], onDelete: Cascade)
+  dependentUserStoryId String
+  dependsOnUserStory   UserStory @relation("DependsOnUserStory", fields: [dependsOnUserStoryId], references: [id], onDelete: Cascade)
+  dependsOnUserStoryId String
+
+  @@unique([dependentUserStoryId, dependsOnUserStoryId])
+  @@map("user_story_dependency")
+}
+
+// =====================================
+// TASKS
+// =====================================
+
+model Task {
+  id             String     @id @default(cuid())
+  title          String
+  description    String?
+  priority       Priority   @default(MEDIUM)
+  status         TaskStatus @default(TODO)
+  type           String     @default("TASK") // TASK, BUG, IMPROVEMENT, STORY
+  position       Int        @default(0)
+  labels         String[]   @default([])
+  tags           String[]   @default([])
+  estimatedHours Float?
+  actualHours    Float?
+  dueDate        DateTime?
+  startDate      DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  // Relations
+  userStory   UserStory @relation(fields: [userStoryId], references: [id], onDelete: Cascade)
+  userStoryId String
+
+  creator   User   @relation("TaskCreator", fields: [creatorId], references: [id])
+  creatorId String
+  assignees User[] @relation("TaskAssignees")
+
+  dependencies TaskDependency[] @relation("DependentTask")
+  dependents   TaskDependency[] @relation("DependsOnTask")
+  comments     Comment[]
+  timeEntries  TimeEntry[]
+  files        File[]
+
+  @@map("task")
+}
+
+model TaskDependency {
+  id          String   @id @default(cuid())
+  type        String   @default("DEPENDS_ON") // DEPENDS_ON, BLOCKS, RELATED
+  description String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  dependentTask   Task   @relation("DependentTask", fields: [dependentTaskId], references: [id], onDelete: Cascade)
+  dependentTaskId String
+  dependsOnTask   Task   @relation("DependsOnTask", fields: [dependsOnTaskId], references: [id], onDelete: Cascade)
+  dependsOnTaskId String
+
+  @@unique([dependentTaskId, dependsOnTaskId])
+  @@map("task_dependency")
+}
+
+// =====================================
+// SPRINTS
+// =====================================
+
+model Sprint {
+  id            String       @id @default(cuid())
+  name          String
+  goal          String?
+  description   String?
+  startDate     DateTime
+  endDate       DateTime
+  status        SprintStatus @default(PLANNED)
+  capacity      Int? // Capacité en story points
+  velocity      Float? // Vélocité réelle
+  burndownData  Json?        @default("{}") // Données pour le burndown chart
+  retrospective Json?        @default("{}") // Données de rétrospective
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // Relations
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  userStories UserStory[] @relation("SprintUserStories")
+  timeEntries TimeEntry[]
+  files       File[]
+  Item        Item[]
+
+  @@map("sprint")
+}
+
+// =====================================
+// FILES AVEC PARENTID
+// =====================================
+
+model File {
+  id           String   @id @default(cuid())
+  name         String
+  originalName String
+  type         FileType
+  mimeType     String
+  size         Int // Taille en bytes
+  url          String // URL de stockage
+  path         String? // Chemin dans le système de fichiers
+  version      Int      @default(1)
+  isPublic     Boolean  @default(false)
+  isFolder     Boolean  @default(false) // Nouveau champ pour distinguer dossiers/fichiers
+  metadata     Json?    @default("{}")
+  tags         String[] @default([])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  uploader    User       @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+  uploaderId  String
+  parent      File?      @relation("FileHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId    String?
+  children    File[]     @relation("FileHierarchy")
+  project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String?
+  feature     Feature?   @relation(fields: [featureId], references: [id], onDelete: Cascade)
+  featureId   String?
+  userStory   UserStory? @relation(fields: [userStoryId], references: [id], onDelete: Cascade)
+  userStoryId String?
+  task        Task?      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId      String?
+  sprint      Sprint?    @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  sprintId    String?
+
+  versions FileVersion[]
+  comments Comment[]
+  Item     Item[]
+
+  @@map("file")
+}
+
+model FileVersion {
+  id        String   @id @default(cuid())
+  version   Int
+  url       String
+  size      Int
+  checksum  String? // Pour détecter les modifications
+  changelog String? // Description des modifications
+  createdAt DateTime @default(now())
+
+  // Relations
+  file     File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  fileId   String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+
+  @@unique([fileId, version])
+  @@map("file_version")
+}
+
+// =====================================
+// COLLABORATION
+// =====================================
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  mentions  String[] @default([]) // Liste des IDs utilisateurs mentionnés
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+
+  // Commentaires peuvent être sur différents objets
+  task        Task?      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId      String?
+  userStory   UserStory? @relation(fields: [userStoryId], references: [id], onDelete: Cascade)
+  userStoryId String?
+  file        File?      @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  fileId      String?
+
+  // Commentaires en thread
+  parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  parentCommentId String?
+  replies         Comment[] @relation("CommentReplies")
+  Item            Item[]
+
+  @@map("comment")
+}
+
+model Channel {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  type        String   @default("TEXT") // TEXT, VOICE, VIDEO
+  isPrivate   Boolean  @default(false)
+  isArchived  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  messages Message[]
+  members  ChannelMember[]
+
+  @@map("channel")
+}
+
+model ChannelMember {
+  id       String   @id @default(cuid())
+  role     String   @default("MEMBER") // ADMIN, MEMBER
+  joinedAt DateTime @default(now())
+
+  // Relations
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channelId String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  @@unique([channelId, userId])
+  @@map("channel_member")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  type      String   @default("TEXT") // TEXT, FILE, SYSTEM
+  metadata  Json?    @default("{}")
+  mentions  String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channelId String
+  author    User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+
+  @@map("message")
+}
+
+// =====================================
+// TEMPLATES
+// =====================================
+
+model Template {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  type        String // PROJECT, SPRINT, TASK, FEATURE, etc.
+  category    String? // E-commerce, Mobile, Web, etc.
+  content     Json // Structure du template
+  isPublic    Boolean  @default(false)
+  isSystem    Boolean  @default(false)
+  version     String   @default("1.0.0")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId    String
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String?
+
+  @@map("template")
+}
+
+// =====================================
+// TRACKING ET ANALYTICS
+// =====================================
+
+model TimeEntry {
+  id          String    @id @default(cuid())
+  description String?
+  hours       Float
+  date        DateTime
+  startTime   DateTime?
+  endTime     DateTime?
+  isManual    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  task        Task?      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId      String?
+  userStory   UserStory? @relation(fields: [userStoryId], references: [id], onDelete: Cascade)
+  userStoryId String?
+  sprint      Sprint?    @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  sprintId    String?
+  Item        Item[]
+
+  @@map("time_entry")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?            @default("{}")
+  read      Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@map("notification")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  entityId  String
+  oldValues Json?
+  newValues Json?
+  metadata  Json?    @default("{}")
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@map("audit_log")
+}
+
+// =====================================
+// TEST TABLES
+// =====================================
+model Item {
+  id                 String     @id @default(cuid())
+  type               String // "INITIATIVE", "EPIC", "FEATURE", "USER_STORY", "TASK", "FILE"
+  name               String
+  description        String?
+  objective          String?
+  slug               String
+  key                String? // Clé courte (ex: "SHOP-123")
+  priority           Priority?  @default(MEDIUM)
+  acceptanceCriteria String?
+  storyPoints        Int?
+  businessValue      Int? // Valeur métier (1-10)
+  technicalRisk      Int? // Risque technique (1-10)
+  effort             Int? // Effort estimé (1-10)
+  progress           Int? // Pourcentage de complétion (0-100)
+  status             ItemStatus @default(ACTIVE)
+  visibility         Visibility @default(PRIVATE)
+  startDate          DateTime?
+  endDate            DateTime?
+  completedAt        DateTime?
+  settings           Json?      @default("{}")
+  metadata           Json?      @default("{}")
+  text               Json?      @default("{}")
+  backlogPosition    Int?
+  DoD                String? // Definition of Done
+  isActive           Boolean    @default(true)
+  estimatedHours     Int? // Estimation en heures
+  actualHours        Int? // Heures réelles
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  // === Relations modifiées pour Team ===
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId String
+
+  // Hiérarchie
+  parent   Item?   @relation("ItemHierarchy", fields: [parentId], references: [id])
+  parentId String?
+  children Item[]  @relation("ItemHierarchy")
+
+  // Assignation et travail
+  assignees   User[]      @relation("ItemAssignees")
+  sprint      Sprint?     @relation(fields: [sprintId], references: [id])
+  sprintId    String?
+  timeEntries TimeEntry[]
+
+  // Collaboration
+  comments Comment[]
+  files    File[]
+
+  // Contraintes
+  @@unique([teamId, slug])
+  @@unique([teamId, key])
+  @@map("items")
+}
+
+enum ItemStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  ON_HOLD
+}
+
+enum Visibility {
+  PRIVATE
+  PUBLIC
+  INTERNAL
 }
