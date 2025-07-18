@@ -1,4 +1,63 @@
 /*
+model Item {
+  id                 String     @id @default(cuid())
+  type               String // "INITIATIVE", "EPIC", "FEATURE", "USER_STORY", "TASK", 
+  name               String
+  description        String?
+  objective          String?
+  slug               String
+  key                String? // Clé courte (ex: "SHOP-123")
+  priority           Priority?  @default(MEDIUM)
+  acceptanceCriteria String?
+  storyPoints        Int?
+  businessValue      Int? // Valeur métier (1-10)
+  technicalRisk      Int? // Risque technique (1-10)
+  effort             Int? // Effort estimé (1-10)
+  progress           Int? // Pourcentage de complétion (0-100)
+  status             ItemStatus @default(ACTIVE)
+  visibility         Visibility @default(PRIVATE)
+  startDate          DateTime?
+  endDate            DateTime?
+  completedAt        DateTime?
+  settings           Json?      @default("{}")
+  metadata           Json?      @default("{}")
+  text               Json?      @default("{}")
+  backlogPosition    Int?
+  DoD                String? // Definition of Done
+  isActive           Boolean    @default(true)
+  estimatedHours     Int? // Estimation en heures
+  actualHours        Int? // Heures réelles
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  // === Relations modifiées pour Team ===
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId String
+
+  // Hiérarchie
+  parent   Item?   @relation("ItemHierarchy", fields: [parentId], references: [id])
+  parentId String?
+  children Item[]  @relation("ItemHierarchy")
+
+  // Assignation et travail
+  assignees   User[]      @relation("ItemAssignees")
+  sprint      Sprint?     @relation(fields: [sprintId], references: [id])
+  sprintId    String?
+  timeEntries TimeEntry[]
+
+  // Collaboration
+  comments Comment[]
+  files    File[]
+
+  // Contraintes
+  @@unique([teamId, slug])
+  @@unique([teamId, key])
+  @@map("items")
+}
+*/
+
+/*
+cree cette page pour afficher les items de la table Item utilise un design modern et épuré avec tailwindcss schadcn 
 cette page utilisera les  composant avec les props appropriés: 
 -DisplayWiew qui permer de chaoisir le made d'affichage liste, card, tree, kanban
 -Itemfilter qui permet de filtrer les items par nom 
@@ -10,6 +69,7 @@ le bouton ajouter ouvrira un modal avec le formullaire specifique pour ajouter u
  
 */
 
+import Link from "next/link";
 import React from "react";
 
 function page() {
@@ -100,7 +160,7 @@ function page() {
               </div>
 
               {/* Connecting lines */}
-              <div className="absolute left-2 top-6 bottom-6 w-0.5 bg-gradient-to-b from-purple-400 via-blue-400 via-emerald-400 via-orange-400 to-pink-400"></div>
+              <div className="absolute left-2 top-6 bottom-6 w-0.5 bg-gradient-to-b from-purple-400 via-emerald-400 to-pink-400"></div>
             </div>
           </div>
         </div>

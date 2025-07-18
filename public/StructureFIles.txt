@@ -1,0 +1,31 @@
+Structure des fichiers
+text
+src/
+├── app/
+│   └── items/
+│       └── page.tsx
+├── components/
+│   ├── ui/
+│   │   ├── button.tsx
+│   │   ├── input.tsx
+│   │   ├── modal.tsx
+│   │   └── index.ts
+│   └── items/
+│       ├── display-view.tsx
+│       ├── item-filter.tsx
+│       ├── item-list.tsx
+│       ├── item-form-modal.tsx
+│       ├── views/
+│       │   ├── item-list-view.tsx
+│       │   ├── item-card-view.tsx
+│       │   ├── item-tree-view.tsx
+│       │   └── item-kanban-view.tsx
+│       └── index.ts
+├── hooks/
+│   └── use-items.ts
+├── utils/
+│   ├── reorder-items.ts
+│   ├── delete-item.ts
+│   └── index.ts
+└── types/
+    └── item.ts
