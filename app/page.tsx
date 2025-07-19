@@ -247,7 +247,7 @@ export default function HomePage() {
               </div>
 
               {/* Connecting lines */}
-              <div className="absolute left-2 top-6 bottom-6 w-0.5 bg-gradient-to-b from-purple-400 via-blue-400 via-emerald-400 via-orange-400 to-pink-400"></div>
+              <div className="absolute left-2 top-6 bottom-6 w-0.5 bg-gradient-to-b from-purple-400 via-blue-400  to-pink-400"></div>
             </div>
           </div>
         </div>

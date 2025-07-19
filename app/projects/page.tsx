@@ -1,175 +1,431 @@
-/*
-model Item {
-  id                 String     @id @default(cuid())
-  type               String // "INITIATIVE", "EPIC", "FEATURE", "USER_STORY", "TASK", 
-  name               String
-  description        String?
-  objective          String?
-  slug               String
-  key                String? // Clé courte (ex: "SHOP-123")
-  priority           Priority?  @default(MEDIUM)
-  acceptanceCriteria String?
-  storyPoints        Int?
-  businessValue      Int? // Valeur métier (1-10)
-  technicalRisk      Int? // Risque technique (1-10)
-  effort             Int? // Effort estimé (1-10)
-  progress           Int? // Pourcentage de complétion (0-100)
-  status             ItemStatus @default(ACTIVE)
-  visibility         Visibility @default(PRIVATE)
-  startDate          DateTime?
-  endDate            DateTime?
-  completedAt        DateTime?
-  settings           Json?      @default("{}")
-  metadata           Json?      @default("{}")
-  text               Json?      @default("{}")
-  backlogPosition    Int?
-  DoD                String? // Definition of Done
-  isActive           Boolean    @default(true)
-  estimatedHours     Int? // Estimation en heures
-  actualHours        Int? // Heures réelles
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+// app/projects/page.tsx
+"use client";
 
-  // === Relations modifiées pour Team ===
-  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  teamId String
+import React, { useState, useEffect } from "react";
+import { useSession } from "@/lib/auth/auth-client";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Plus, Building, AlertCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ProjectsDisplayView } from "@/components/projects/ProjectsDisplayView";
+import { ProjectsFilter } from "@/components/projects/ProjectsFilter";
+import { ProjectsList } from "@/components/projects/ProjectsList";
+import { ProjectsForm } from "@/components/projects/ProjectsForm";
+import { toast } from "sonner";
+import { ProjectWithRelations } from "@/types/project";
 
-  // Hiérarchie
-  parent   Item?   @relation("ItemHierarchy", fields: [parentId], references: [id])
-  parentId String?
-  children Item[]  @relation("ItemHierarchy")
+type ViewMode = "list" | "card";
 
-  // Assignation et travail
-  assignees   User[]      @relation("ItemAssignees")
-  sprint      Sprint?     @relation(fields: [sprintId], references: [id])
-  sprintId    String?
-  timeEntries TimeEntry[]
+export default function ProjectsPage() {
+  const { data: session, isPending } = useSession();
+  const [projects, setProjects] = useState<ProjectWithRelations[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<
+    ProjectWithRelations[]
+  >([]);
+  const [viewMode, setViewMode] = useState<ViewMode>("card");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingProject, setEditingProject] =
+    useState<ProjectWithRelations | null>(null);
+  const [filterValue, setFilterValue] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  // Collaboration
-  comments Comment[]
-  files    File[]
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
-  // Contraintes
-  @@unique([teamId, slug])
-  @@unique([teamId, key])
-  @@map("items")
-}
-*/
+  useEffect(() => {
+    if (filterValue && Array.isArray(projects)) {
+      const filtered = projects.filter((project) => {
+        const searchTerm = filterValue.toLowerCase();
 
-/*
-cree cette page pour afficher les items de la table Item utilise un design modern et épuré avec tailwindcss schadcn 
-cette page utilisera les  composant avec les props appropriés: 
--DisplayWiew qui permer de chaoisir le made d'affichage liste, card, tree, kanban
--Itemfilter qui permet de filtrer les items par nom 
--ItemList qui permet d'afficher la liste des items selon le mode d'affichage (ve composant utilisera une composant par type de view) et propose un bouton ajouter 
-et pour chaque item fleche up et down pour changer l'ordre des items (appel a une fonction utils séparé 
-et réutilisable), edit (modifié utilise le Form specifique relatif a la table) et delete (fonction utils qui recois le nom de la table et l'id de l'item concerné).
-le bouton ajouter ouvrira un modal avec le formullaire specifique pour ajouter un nouvel item 
-(ce forme sera aussi utiliser pour édité un item).
- 
-*/
+        const matchesBasicFields =
+          project.name.toLowerCase().includes(searchTerm) ||
+          project.description?.toLowerCase().includes(searchTerm) ||
+          project.key.toLowerCase().includes(searchTerm);
 
-import Link from "next/link";
-import React from "react";
+        const matchesOwners = project.user.some(
+          (owner) =>
+            owner.name?.toLowerCase().includes(searchTerm) ||
+            owner.email.toLowerCase().includes(searchTerm) ||
+            owner.firstName?.toLowerCase().includes(searchTerm) ||
+            owner.lastName?.toLowerCase().includes(searchTerm) ||
+            owner.username?.toLowerCase().includes(searchTerm)
+        );
 
-function page() {
-  return (
-    <div className="m-10">
-      {" "}
-      {/* Work Hierarchy */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-slate-100">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Hiérarchie du Travail
-            </h2>
-            <p className="text-xl text-gray-600">
-              Organisation claire et structurée de vos projets
-            </p>
+        const matchesMembers = project.members.some(
+          (member) =>
+            member.user.name?.toLowerCase().includes(searchTerm) ||
+            member.user.email.toLowerCase().includes(searchTerm) ||
+            member.user.firstName?.toLowerCase().includes(searchTerm) ||
+            member.user.lastName?.toLowerCase().includes(searchTerm)
+        );
+
+        return matchesBasicFields || matchesOwners || matchesMembers;
+      });
+      setFilteredProjects(filtered);
+    } else {
+      setFilteredProjects(projects);
+    }
+  }, [projects, filterValue]);
+
+  const fetchProjects = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await fetch("/api/projects");
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data && typeof data === "object") {
+        let projectsData: any[] = [];
+
+        if (data.projects && Array.isArray(data.projects)) {
+          projectsData = data.projects;
+        } else if (Array.isArray(data)) {
+          projectsData = data;
+        } else {
+          console.error("Structure de données inattendue:", data);
+          throw new Error("Format de données inattendu reçu du serveur");
+        }
+
+        const normalizedProjects: ProjectWithRelations[] = projectsData.map(
+          (project) => ({
+            ...project,
+            user: (project.user || []).map((owner: any) => ({
+              id: owner.id || "",
+              name: owner.name || null,
+              email: owner.email || "",
+              emailVerified: owner.emailVerified ?? false,
+              image: owner.image || null,
+              username: owner.username || null,
+              firstName: owner.firstName || null,
+              lastName: owner.lastName || null,
+              bio: owner.bio || null,
+              timezone: owner.timezone || "UTC",
+              preferences: owner.preferences || {},
+              isActive: owner.isActive ?? true,
+              lastLoginAt: owner.lastLoginAt
+                ? new Date(owner.lastLoginAt)
+                : null,
+              twoFactorEnabled: owner.twoFactorEnabled ?? false,
+            })),
+
+            members: (project.members || []).map((member: any) => ({
+              id: member.id || "",
+              role: member.role || "DEVELOPER",
+              joinedAt: member.joinedAt
+                ? new Date(member.joinedAt)
+                : new Date(),
+              isActive: member.isActive ?? true,
+              user: {
+                id: member.user?.id || "",
+                name: member.user?.name || null,
+                email: member.user?.email || "",
+                emailVerified: member.user?.emailVerified ?? false,
+                image: member.user?.image || null,
+                username: member.user?.username || null,
+                firstName: member.user?.firstName || null,
+                lastName: member.user?.lastName || null,
+                bio: member.user?.bio || null,
+                timezone: member.user?.timezone || "UTC",
+                preferences: member.user?.preferences || {},
+                isActive: member.user?.isActive ?? true,
+              },
+            })),
+
+            _count: {
+              user: project._count?.user || project.user?.length || 0,
+              members: project._count?.members || project.members?.length || 0,
+              initiatives: project._count?.initiatives || 0,
+              features: project._count?.features || 0,
+              sprints: project._count?.sprints || 0,
+              files: project._count?.files || 0,
+              channels: project._count?.channels || 0,
+              templates: project._count?.templates || 0,
+            },
+
+            startDate: project.startDate ? new Date(project.startDate) : null,
+            endDate: project.endDate ? new Date(project.endDate) : null,
+            createdAt: new Date(project.createdAt),
+            updatedAt: new Date(project.updatedAt),
+          })
+        );
+
+        setProjects(normalizedProjects);
+        setFilteredProjects(normalizedProjects);
+      } else {
+        throw new Error("Données invalides reçues du serveur");
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement des projets:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Erreur inconnue";
+      setError(errorMessage);
+      setProjects([]);
+      setFilteredProjects([]);
+      toast.error("Impossible de charger les projets");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFormSuccess = () => {
+    setIsAddModalOpen(false);
+    setEditingProject(null);
+    fetchProjects();
+    toast.success(
+      editingProject ? "Projet modifié avec succès" : "Projet créé avec succès"
+    );
+  };
+
+  const handleEdit = (project: ProjectWithRelations) => {
+    setEditingProject(project);
+    setIsAddModalOpen(true);
+  };
+
+  const getUserDisplayName = (user: {
+    name: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    email: string;
+  }) => {
+    if (user.firstName && user.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    return user.name || user.email;
+  };
+
+  const getProjectStats = () => {
+    if (!Array.isArray(filteredProjects))
+      return { total: 0, active: 0, completed: 0 };
+
+    return {
+      total: filteredProjects.length,
+      active: filteredProjects.filter(
+        (p) => p.status === "ACTIVE" && p.isActive
+      ).length,
+      completed: filteredProjects.filter((p) => p.status === "COMPLETED")
+        .length,
+      onHold: filteredProjects.filter((p) => p.status === "ON_HOLD").length,
+      cancelled: filteredProjects.filter((p) => p.status === "CANCELLED")
+        .length,
+    };
+  };
+
+  const stats = getProjectStats();
+
+  if (isPending || isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Chargement des projets...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="text-red-600 mb-4">
+            <AlertCircle className="h-16 w-16 mx-auto" />
           </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Erreur de chargement
+          </h1>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <div className="space-x-4">
+            <Button
+              onClick={fetchProjects}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Réessayer
+            </Button>
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Actualiser la page
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-          <div className="max-w-4xl mx-auto">
-            <div className="relative">
-              {/* Hierarchy Visual */}
-              <div className="flex flex-col space-y-6">
-                {/* Initiative */}
-                <div className="flex items-center">
-                  <div className="w-4 h-4 bg-purple-500 rounded-full mr-4"></div>
-                  <div className="flex-1 bg-gradient-to-r from-purple-100 to-purple-200 p-6 rounded-xl border border-purple-300">
-                    <h3 className="text-xl font-semibold text-purple-800 mb-2">
-                      Initiative
-                    </h3>
-                    <p className="text-purple-700">
-                      Objectif business stratégique avec ROI et budget
-                    </p>
-                  </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="bg-white shadow-sm border-b border-slate-200/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-6">
+            <div className="flex items-center space-x-4 mb-4 sm:mb-0">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                  <Building className="h-5 w-5 text-white" />
                 </div>
-
-                {/* Epic */}
-                <div className="flex items-center ml-8">
-                  <div className="w-4 h-4 bg-blue-500 rounded-full mr-4"></div>
-                  <div className="flex-1 bg-gradient-to-r from-blue-100 to-blue-200 p-6 rounded-xl border border-blue-300">
-                    <h3 className="text-xl font-semibold text-blue-800 mb-2">
-                      Epic
-                    </h3>
-                    <p className="text-blue-700">
-                      Ensemble de fonctionnalités liées à un domaine métier
-                    </p>
-                  </div>
-                </div>
-
-                {/* Feature */}
-                <div className="flex items-center ml-16">
-                  <div className="w-4 h-4 bg-emerald-500 rounded-full mr-4"></div>
-                  <div className="flex-1 bg-gradient-to-r from-emerald-100 to-emerald-200 p-6 rounded-xl border border-emerald-300">
-                    <h3 className="text-xl font-semibold text-emerald-800 mb-2">
-                      Feature
-                    </h3>
-                    <p className="text-emerald-700">
-                      Fonctionnalité avec critères d'acceptation et valeur
-                      business
-                    </p>
-                  </div>
-                </div>
-
-                {/* User Story */}
-                <div className="flex items-center ml-24">
-                  <div className="w-4 h-4 bg-orange-500 rounded-full mr-4"></div>
-                  <div className="flex-1 bg-gradient-to-r from-orange-100 to-orange-200 p-6 rounded-xl border border-orange-300">
-                    <h3 className="text-xl font-semibold text-orange-800 mb-2">
-                      User Story
-                    </h3>
-                    <p className="text-orange-700">
-                      Besoin utilisateur avec estimation en story points
-                    </p>
-                  </div>
-                </div>
-
-                {/* Task */}
-                <div className="flex items-center ml-32">
-                  <div className="w-4 h-4 bg-pink-500 rounded-full mr-4"></div>
-                  <div className="flex-1 bg-gradient-to-r from-pink-100 to-pink-200 p-6 rounded-xl border border-pink-300">
-                    <h3 className="text-xl font-semibold text-pink-800 mb-2">
-                      Task
-                    </h3>
-                    <p className="text-pink-700">
-                      Tâche technique avec estimation en heures
-                    </p>
-                  </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Projets</h1>
+                  <p className="text-sm text-gray-600">
+                    Gérez vos projets et suivez leur progression
+                  </p>
                 </div>
               </div>
 
-              {/* Connecting lines */}
-              <div className="absolute left-2 top-6 bottom-6 w-0.5 bg-gradient-to-b from-purple-400 via-emerald-400 to-pink-400"></div>
+              <div className="flex flex-wrap gap-2">
+                <Badge
+                  variant="secondary"
+                  className="px-3 py-1 bg-blue-50 text-blue-700 border-blue-200"
+                >
+                  {stats.total} projet{stats.total !== 1 ? "s" : ""}
+                </Badge>
+                {stats.active > 0 && (
+                  <Badge
+                    variant="secondary"
+                    className="px-2 py-1 bg-green-50 text-green-700 border-green-200 text-xs"
+                  >
+                    {stats.active} actif{stats.active !== 1 ? "s" : ""}
+                  </Badge>
+                )}
+                {stats.completed > 0 && (
+                  <Badge
+                    variant="secondary"
+                    className="px-2 py-1 bg-blue-50 text-blue-700 border-blue-200 text-xs"
+                  >
+                    {stats.completed} terminé{stats.completed !== 1 ? "s" : ""}
+                  </Badge>
+                )}
+              </div>
             </div>
+
+            {session?.user && (
+              <div className="flex items-center space-x-4">
+                <div className="hidden sm:flex items-center space-x-2 text-sm text-gray-600">
+                  <span>Connecté en tant que</span>
+                </div>
+                <div className="flex items-center space-x-3 bg-gray-50 rounded-lg px-3 py-2">
+                  <Avatar className="h-8 w-8 ring-2 ring-white">
+                    <AvatarImage src={session.user.image || undefined} />
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm">
+                      {session.user.name?.charAt(0) ||
+                        session.user.email?.charAt(0) ||
+                        "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-900">
+                      {getUserDisplayName({
+                        name: session.user.name,
+
+                        email: session.user.email,
+                      })}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {session.user.email}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      </section>
-      <section>
-        <div></div>
-      </section>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/60 p-6 mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 flex-1">
+              <div className="flex-1 max-w-md">
+                <ProjectsFilter
+                  value={filterValue}
+                  onChange={setFilterValue}
+                  placeholder="Rechercher par nom, description, clé, propriétaire ou membre..."
+                />
+              </div>
+              <ProjectsDisplayView
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+              />
+            </div>
+
+            <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 h-10 px-6"
+                  onClick={() => setEditingProject(null)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nouveau projet
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[95vw] w-full max-h-[95vh] overflow-y-auto p-0">
+                <DialogHeader className="p-8 pb-0">
+                  <DialogTitle className="text-3xl font-bold">
+                    {editingProject
+                      ? "Modifier le projet"
+                      : "Créer un nouveau projet"}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="p-8">
+                  <ProjectsForm
+                    project={editingProject}
+                    onSuccess={handleFormSuccess}
+                    onCancel={() => {
+                      setIsAddModalOpen(false);
+                      setEditingProject(null);
+                    }}
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden">
+          {filteredProjects.length === 0 && !isLoading ? (
+            <div className="text-center py-12">
+              <div className="text-gray-400 mb-4">
+                <Building className="h-16 w-16 mx-auto" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Aucun projet trouvé
+              </h3>
+              <p className="text-gray-600 mb-6">
+                {filterValue
+                  ? "Aucun projet ne correspond à votre recherche."
+                  : "Commencez par créer votre premier projet."}
+              </p>
+              {!filterValue && (
+                <Button
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Créer un projet
+                </Button>
+              )}
+            </div>
+          ) : (
+            <ProjectsList
+              projects={filteredProjects}
+              viewMode={viewMode}
+              onEdit={handleEdit}
+              onRefresh={fetchProjects}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
-
-export default page;

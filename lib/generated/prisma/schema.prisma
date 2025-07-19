@@ -121,6 +121,7 @@ model User {
   // Relations métier
   organizationMemberships TeamMember[]
   projectMemberships      ProjectMember[]
+  projects                Project[]       @relation("ProjectOwner")
   assignedTasks           Task[]          @relation("TaskAssignees")
   createdTasks            Task[]          @relation("TaskCreator")
   assignedUserStories     UserStory[]     @relation("UserStoryAssignees")
@@ -210,7 +211,6 @@ model Team {
 
   // Relations
   members   TeamMember[]
-  projects  Project[]
   templates Template[]
   // ✅ Suppression de la relation items (maintenant liée à User)
 
@@ -255,18 +255,16 @@ model Project {
   updatedAt   DateTime  @updatedAt
 
   // Relations
-  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  teamId String
 
+  user        User[]          @relation("ProjectOwner")
   members     ProjectMember[]
   initiatives Initiative[]
+  features    Feature[]
   sprints     Sprint[]
   files       File[]
   channels    Channel[]
   templates   Template[]
 
-  @@unique([teamId, slug])
-  @@unique([teamId, key])
   @@map("projects")
 }
 
@@ -365,6 +363,8 @@ model Feature {
   dependencies FeatureDependency[] @relation("DependentFeature")
   dependents   FeatureDependency[] @relation("DependsOnFeature")
   files        File[]
+  Project      Project?            @relation(fields: [projectId], references: [id])
+  projectId    String?
 
   @@map("features")
 }

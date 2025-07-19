@@ -1,321 +1,223 @@
-// /app/api/projects/items/route.ts
+// app/api/projects/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import prisma from "@/lib/prisma";
 
-// ✅ Schéma conforme au modèle Item de votre nouveau Prisma
-const ItemSchema = z.object({
-  id: z.string().cuid(),
-  type: z.string(),
-  name: z.string().min(1).max(200), // ✅ name au lieu de title
+// Schéma de validation pour la création
+const createProjectSchema = z.object({
+  name: z.string().min(2).max(100),
   description: z.string().optional(),
-  objective: z.string().optional(),
-  slug: z.string(),
-  key: z.string().optional(),
-  priority: z
-    .enum(["CRITICAL", "HIGH", "MEDIUM", "LOW"]) // ✅ Bonnes valeurs
-    .optional()
-    .default("MEDIUM"),
-  acceptanceCriteria: z.string().optional(),
-  storyPoints: z.number().int().optional(),
-  businessValue: z.number().int().min(1).max(10).optional(),
-  technicalRisk: z.number().int().min(1).max(10).optional(),
-  effort: z.number().int().min(1).max(10).optional(),
-  progress: z.number().int().min(0).max(100).optional(),
-  status: z
-    .enum(["ACTIVE", "COMPLETED", "CANCELLED", "ON_HOLD"]) // ✅ Bonnes valeurs
-    .default("ACTIVE"),
-  visibility: z.enum(["PRIVATE", "PUBLIC", "INTERNAL"]).default("PRIVATE"),
+  key: z
+    .string()
+    .min(2)
+    .max(10)
+    .regex(/^[A-Z0-9]+$/),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
-  completedAt: z.string().datetime().optional(),
+  status: z
+    .enum(["ACTIVE", "COMPLETED", "CANCELLED", "ON_HOLD"])
+    .default("ACTIVE"),
+  visibility: z.enum(["PRIVATE", "PUBLIC", "INTERNAL"]).default("PRIVATE"),
+  isActive: z.boolean().default(true),
   settings: z.record(z.any()).optional(),
   metadata: z.record(z.any()).optional(),
-  text: z.record(z.any()).optional(),
-  backlogPosition: z.number().int().optional(),
-  DoD: z.string().optional(),
-  isActive: z.boolean().default(true),
-  estimatedHours: z.number().int().optional(),
-  actualHours: z.number().int().optional(),
-  ownerId: z.string().cuid(), // ✅ ownerId au lieu de teamId/projectId
-  parentId: z.string().cuid().optional(),
-  sprintId: z.string().cuid().optional(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  slug: z.string().optional(),
 });
 
-const CreateItemSchema = ItemSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-}).extend({
-  ownerId: z.string().cuid().optional(), // ✅ Optionnel car déterminé par le contexte
-  slug: z.string().optional(), // Généré automatiquement
-});
-
-type Item = z.infer<typeof ItemSchema>;
-type CreateItem = z.infer<typeof CreateItemSchema>;
-
-// ✅ Données de démonstration conformes au nouveau schéma
-let items: Item[] = [
-  {
-    id: "cm2abc123def456ghi789",
-    type: "TASK",
-    name: "Analyser les besoins utilisateurs", // ✅ name au lieu de title
-    description:
-      "Effectuer une analyse complète des besoins des utilisateurs finaux",
-    objective:
-      "Comprendre les attentes utilisateurs pour orienter le développement",
-    slug: "analyser-besoins-utilisateurs",
-    key: "USR-001",
-    priority: "HIGH",
-    acceptanceCriteria: "Rapport complet avec interviews et personas",
-    storyPoints: 8,
-    businessValue: 9,
-    technicalRisk: 3,
-    effort: 6,
-    progress: 25,
-    status: "ACTIVE", // ✅ Bonne valeur
-    visibility: "INTERNAL",
-    startDate: new Date("2024-01-01").toISOString(),
-    endDate: new Date("2024-01-15").toISOString(),
-    settings: {},
-    metadata: {},
-    text: {},
-    backlogPosition: 1,
-    DoD: "Rapport validé par le PO et les stakeholders",
-    isActive: true,
-    estimatedHours: 40,
-    actualHours: 10,
-    ownerId: "ttPPg6AvLXcz4y0Kr6H1Ex7y1fbNxpQN", // ✅ ownerId au lieu de teamId
-    createdAt: new Date("2024-01-01").toISOString(),
-    updatedAt: new Date("2024-01-15").toISOString(),
-  },
-  {
-    id: "cm2abc456def789ghi012",
-    type: "USER_STORY",
-    name: "Créer les maquettes UI", // ✅ name au lieu de title
-    description: "Concevoir les interfaces utilisateur principales",
-    slug: "creer-maquettes-ui",
-    key: "USR-002",
-    priority: "MEDIUM",
-    storyPoints: 5,
-    businessValue: 7,
-    technicalRisk: 2,
-    effort: 4,
-    progress: 0,
-    status: "ACTIVE", // ✅ Bonne valeur
-    visibility: "PRIVATE",
-    settings: {},
-    metadata: {},
-    text: {},
-    backlogPosition: 2,
-    isActive: true,
-    estimatedHours: 24,
-    actualHours: 0,
-    ownerId: "ttPPg6AvLXcz4y0Kr6H1Ex7y1fbNxpQN", // ✅ ownerId
-    createdAt: new Date("2024-01-02").toISOString(),
-    updatedAt: new Date("2024-01-02").toISOString(),
-  },
-];
-
-// Fonction utilitaire pour générer un slug
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/[\s_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
-// ✅ Fonction utilitaire pour générer une clé unique par utilisateur
-function generateKey(ownerId: string, name: string): string {
-  const prefix = ownerId.substring(0, 3).toUpperCase();
-  const existingKeys = items
-    .filter((item) => item.ownerId === ownerId)
-    .map((item) => item.key)
-    .filter((key) => key?.startsWith(prefix));
-
-  const nextNumber = existingKeys.length + 1;
-  return `${prefix}-${nextNumber.toString().padStart(3, "0")}`;
-}
-
-export async function GET(request: NextRequest): Promise<NextResponse> {
+// GET /api/projects - Récupérer tous les projets
+export async function GET(request: NextRequest) {
   try {
-    console.log("GET /api/projects/items called");
-
     const { searchParams } = new URL(request.url);
-    const ownerId = searchParams.get("ownerId"); // ✅ ownerId au lieu de teamId
-    const type = searchParams.get("type");
-    const priority = searchParams.get("priority");
     const status = searchParams.get("status");
-    const limit = parseInt(searchParams.get("limit") || "50");
-    const search = searchParams.get("search");
+    const visibility = searchParams.get("visibility");
+    const isActive = searchParams.get("isActive");
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "100");
+    const orderBy = searchParams.get("orderBy") || "order";
+    const orderDirection = searchParams.get("orderDirection") || "asc";
 
-    let filteredItems = items;
+    // Construction des filtres (sans teamId)
+    const where: any = {};
+    if (status) where.status = status;
+    if (visibility) where.visibility = visibility;
+    if (isActive !== null) where.isActive = isActive === "true";
 
-    // ✅ Filtrage par ownerId
-    if (ownerId) {
-      filteredItems = filteredItems.filter((item) => item.ownerId === ownerId);
-    }
+    // Pagination
+    const skip = (page - 1) * limit;
 
-    // Filtrage par type
-    if (type) {
-      filteredItems = filteredItems.filter((item) => item.type === type);
-    }
+    const [projects, totalCount] = await Promise.all([
+      prisma.project.findMany({
+        where,
+        orderBy: {
+          [orderBy]: orderDirection as "asc" | "desc",
+        },
+        skip,
+        take: limit,
+        include: {
+          // ✅ Suppression de la relation team
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+            },
+          },
+          members: {
+            where: { isActive: true },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  image: true,
+                },
+              },
+            },
+            orderBy: {
+              joinedAt: "asc",
+            },
+          },
+          _count: {
+            select: {
+              initiatives: true,
+              features: true,
+              sprints: true,
+              files: true,
+              channels: true,
+              templates: true,
+            },
+          },
+        },
+      }),
+      prisma.project.count({ where }),
+    ]);
 
-    // Filtrage par priorité
-    if (priority) {
-      filteredItems = filteredItems.filter(
-        (item) => item.priority === priority
-      );
-    }
+    const totalPages = Math.ceil(totalCount / limit);
 
-    // Filtrage par statut
-    if (status) {
-      filteredItems = filteredItems.filter((item) => item.status === status);
-    }
-
-    // Recherche textuelle
-    if (search) {
-      filteredItems = filteredItems.filter(
-        (item) =>
-          item.name.toLowerCase().includes(search.toLowerCase()) || // ✅ name au lieu de title
-          item.description?.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
-    // Tri par position dans le backlog
-    filteredItems.sort(
-      (a, b) => (a.backlogPosition || 0) - (b.backlogPosition || 0)
-    );
-
-    // Limitation du nombre d'items
-    const limitedItems = filteredItems.slice(0, limit);
-
-    return NextResponse.json({
-      success: true,
-      data: limitedItems,
-      pagination: {
-        page: 1,
-        limit,
-        total: filteredItems.length,
-        totalPages: Math.ceil(filteredItems.length / limit),
+    return NextResponse.json(projects, {
+      headers: {
+        "X-Total-Count": totalCount.toString(),
+        "X-Total-Pages": totalPages.toString(),
+        "X-Current-Page": page.toString(),
       },
     });
   } catch (error) {
-    console.error("Error in GET /api/projects/items:", error);
+    console.error("Error fetching projects:", error);
     return NextResponse.json(
-      {
-        success: false,
-        error: "Internal server error",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
+      { error: "Erreur lors de la récupération des projets", details: error },
       { status: 500 }
     );
   }
 }
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+// POST /api/projects - Créer un nouveau projet
+export async function POST(request: NextRequest) {
   try {
-    console.log("POST /api/projects/items called");
-
     const body = await request.json();
-    console.log("Request body:", body);
-
-    // ✅ Utiliser l'ownerId par défaut
-    const defaultOwnerId = "ttPPg6AvLXcz4y0Kr6H1Ex7y1fbNxpQN"; // Utilisateur par défaut
-    const itemData = {
-      type: "TASK", // Valeur par défaut
-      ownerId: defaultOwnerId,
-      ...body,
-    };
+    const validatedData = createProjectSchema.parse(body);
 
     // Générer le slug si non fourni
-    if (!itemData.slug && itemData.name) {
-      itemData.slug = generateSlug(itemData.name);
-    }
+    const slug =
+      validatedData.slug ||
+      validatedData.name
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
 
-    // ✅ Générer la clé basée sur ownerId
-    if (!itemData.key && itemData.name) {
-      itemData.key = generateKey(itemData.ownerId, itemData.name);
-    }
-
-    // Définir la position dans le backlog par utilisateur
-    if (!itemData.backlogPosition) {
-      const userItems = items.filter(
-        (item) => item.ownerId === itemData.ownerId
-      );
-      const maxPosition = Math.max(
-        ...userItems.map((item) => item.backlogPosition || 0),
-        0
-      );
-      itemData.backlogPosition = maxPosition + 1;
-    }
-
-    const validatedData = CreateItemSchema.parse(itemData);
-
-    const newItem: Item = {
-      ...validatedData,
-      id: crypto.randomUUID().replace(/-/g, "").substring(0, 25),
-      ownerId: validatedData.ownerId || defaultOwnerId, // ✅ ownerId
-      slug: validatedData.slug || generateSlug(validatedData.name),
-      key:
-        validatedData.key ||
-        generateKey(
-          validatedData.ownerId || defaultOwnerId,
-          validatedData.name
-        ),
-      settings: validatedData.settings || {},
-      metadata: validatedData.metadata || {},
-      text: validatedData.text || {},
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    items.push(newItem);
-
-    return NextResponse.json(
-      {
-        success: true,
-        data: newItem,
+    // ✅ Vérifier l'unicité du slug et de la clé (globalement, plus par équipe)
+    const existingProject = await prisma.project.findFirst({
+      where: {
+        OR: [{ slug }, { key: validatedData.key }],
       },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error("Error in POST /api/projects/items:", error);
+    });
 
+    if (existingProject) {
+      return NextResponse.json(
+        {
+          error: "Un projet avec cette clé ou ce nom existe déjà",
+          field: existingProject.key === validatedData.key ? "key" : "slug",
+        },
+        { status: 409 }
+      );
+    }
+
+    // ✅ Obtenir l'ordre maximal global
+    const maxOrder = await prisma.project.findFirst({
+      orderBy: { order: "desc" },
+      select: { order: true },
+    });
+
+    const newOrder = (maxOrder?.order || 0) + 1000;
+
+    const project = await prisma.project.create({
+      data: {
+        ...validatedData,
+        slug,
+        order: newOrder,
+        startDate: validatedData.startDate
+          ? new Date(validatedData.startDate)
+          : null,
+        endDate: validatedData.endDate ? new Date(validatedData.endDate) : null,
+        settings: validatedData.settings || {},
+        metadata: validatedData.metadata || {},
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            initiatives: true,
+            features: true,
+            sprints: true,
+            files: true,
+            channels: true,
+            templates: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(project, { status: 201 });
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
-          success: false,
-          error: "Validation error",
-          details: error.errors,
-          message: "Données invalides. Vérifiez les champs requis.",
+          error: "Données invalides",
+          details: error.errors.map((err) => ({
+            field: err.path.join("."),
+            message: err.message,
+          })),
         },
         { status: 400 }
       );
     }
 
+    console.error("Error creating project:", error);
     return NextResponse.json(
-      {
-        success: false,
-        error: "Internal server error",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
+      { error: "Erreur lors de la création du projet" },
       { status: 500 }
     );
   }
-}
-
-export async function OPTIONS(request: NextRequest): Promise<NextResponse> {
-  return new NextResponse(null, {
-    status: 200,
-    headers: {
-      Allow: "GET, POST, OPTIONS",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    },
-  });
 }

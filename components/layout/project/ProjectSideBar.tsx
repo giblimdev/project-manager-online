@@ -29,10 +29,49 @@ export default function ProjectSideBar() {
 
   const navigationItems: NavItem[] = [
     {
-      name: "Dashboard",
+      name: "Dashboard Projects",
       href: "/projects",
       icon: HomeIcon,
       description: "Vue d'ensemble des projets",
+    },
+    {
+      name: "Initiatives",
+      href: "/projects/initiatives",
+      icon: FolderIcon,
+      badge: "",
+      description:
+        "Initiative objectif business stratégique avec ROI et budget",
+    },
+    {
+      name: "Epic",
+      href: "/projects/epics",
+      icon: FolderIcon,
+      badge: "",
+      description:
+        "Initiative objectif business stratégique avec ROI et budget",
+    },
+    {
+      name: "Features",
+      href: "/projects/features",
+      icon: FolderIcon,
+      badge: "",
+      description:
+        "Feature Fonctionnalité avec critères d'acceptation et valeur businesst",
+    },
+    {
+      name: "User Stories",
+      href: "/projects/userStories",
+      icon: FolderIcon,
+      badge: "",
+      description:
+        "User Story Besoin utilisateur avec estimation en story points",
+    },
+    {
+      name: "Tasks",
+      href: "/projects/tasks",
+      icon: FolderIcon,
+      badge: "",
+      description: "Task Tâche technique avec estimation en heures",
     },
     {
       name: "Items",
@@ -41,10 +80,9 @@ export default function ProjectSideBar() {
       badge: "",
       description: "Tâches et éléments",
     },
-
     {
       name: "Équipe",
-      href: "/projects/team",
+      href: "/team",
       icon: UsersIcon,
       badge: "",
       description: "Membres de l'équipe",
@@ -54,18 +92,6 @@ export default function ProjectSideBar() {
       href: "/projects/reports",
       icon: FileTextIcon,
       description: "Rapports et documents",
-    },
-    {
-      name: "Statistiques",
-      href: "/projects/analytics",
-      icon: BarChart3Icon,
-      description: "Analyses et métriques",
-    },
-    {
-      name: "Paramètres",
-      href: "/projects/settings",
-      icon: SettingsIcon,
-      description: "Configuration",
     },
   ];
 

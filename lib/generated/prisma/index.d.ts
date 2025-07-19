@@ -3567,6 +3567,7 @@ export namespace Prisma {
     sessions: number
     organizationMemberships: number
     projectMemberships: number
+    projects: number
     assignedTasks: number
     createdTasks: number
     assignedUserStories: number
@@ -3588,6 +3589,7 @@ export namespace Prisma {
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     organizationMemberships?: boolean | UserCountOutputTypeCountOrganizationMembershipsArgs
     projectMemberships?: boolean | UserCountOutputTypeCountProjectMembershipsArgs
+    projects?: boolean | UserCountOutputTypeCountProjectsArgs
     assignedTasks?: boolean | UserCountOutputTypeCountAssignedTasksArgs
     createdTasks?: boolean | UserCountOutputTypeCountCreatedTasksArgs
     assignedUserStories?: boolean | UserCountOutputTypeCountAssignedUserStoriesArgs
@@ -3641,6 +3643,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountProjectMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectMemberWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectWhereInput
   }
 
   /**
@@ -3749,14 +3758,12 @@ export namespace Prisma {
   export type TeamCountOutputType = {
     children: number
     members: number
-    projects: number
     templates: number
   }
 
   export type TeamCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     children?: boolean | TeamCountOutputTypeCountChildrenArgs
     members?: boolean | TeamCountOutputTypeCountMembersArgs
-    projects?: boolean | TeamCountOutputTypeCountProjectsArgs
     templates?: boolean | TeamCountOutputTypeCountTemplatesArgs
   }
 
@@ -3788,13 +3795,6 @@ export namespace Prisma {
   /**
    * TeamCountOutputType without action
    */
-  export type TeamCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ProjectWhereInput
-  }
-
-  /**
-   * TeamCountOutputType without action
-   */
   export type TeamCountOutputTypeCountTemplatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TemplateWhereInput
   }
@@ -3805,8 +3805,10 @@ export namespace Prisma {
    */
 
   export type ProjectCountOutputType = {
+    user: number
     members: number
     initiatives: number
+    features: number
     sprints: number
     files: number
     channels: number
@@ -3814,8 +3816,10 @@ export namespace Prisma {
   }
 
   export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | ProjectCountOutputTypeCountUserArgs
     members?: boolean | ProjectCountOutputTypeCountMembersArgs
     initiatives?: boolean | ProjectCountOutputTypeCountInitiativesArgs
+    features?: boolean | ProjectCountOutputTypeCountFeaturesArgs
     sprints?: boolean | ProjectCountOutputTypeCountSprintsArgs
     files?: boolean | ProjectCountOutputTypeCountFilesArgs
     channels?: boolean | ProjectCountOutputTypeCountChannelsArgs
@@ -3836,6 +3840,13 @@ export namespace Prisma {
   /**
    * ProjectCountOutputType without action
    */
+  export type ProjectCountOutputTypeCountUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
   export type ProjectCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectMemberWhereInput
   }
@@ -3845,6 +3856,13 @@ export namespace Prisma {
    */
   export type ProjectCountOutputTypeCountInitiativesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: InitiativeWhereInput
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountFeaturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FeatureWhereInput
   }
 
   /**
@@ -4685,6 +4703,7 @@ export namespace Prisma {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     organizationMemberships?: boolean | User$organizationMembershipsArgs<ExtArgs>
     projectMemberships?: boolean | User$projectMembershipsArgs<ExtArgs>
+    projects?: boolean | User$projectsArgs<ExtArgs>
     assignedTasks?: boolean | User$assignedTasksArgs<ExtArgs>
     createdTasks?: boolean | User$createdTasksArgs<ExtArgs>
     assignedUserStories?: boolean | User$assignedUserStoriesArgs<ExtArgs>
@@ -4765,6 +4784,7 @@ export namespace Prisma {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     organizationMemberships?: boolean | User$organizationMembershipsArgs<ExtArgs>
     projectMemberships?: boolean | User$projectMembershipsArgs<ExtArgs>
+    projects?: boolean | User$projectsArgs<ExtArgs>
     assignedTasks?: boolean | User$assignedTasksArgs<ExtArgs>
     createdTasks?: boolean | User$createdTasksArgs<ExtArgs>
     assignedUserStories?: boolean | User$assignedUserStoriesArgs<ExtArgs>
@@ -4791,6 +4811,7 @@ export namespace Prisma {
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       organizationMemberships: Prisma.$TeamMemberPayload<ExtArgs>[]
       projectMemberships: Prisma.$ProjectMemberPayload<ExtArgs>[]
+      projects: Prisma.$ProjectPayload<ExtArgs>[]
       assignedTasks: Prisma.$TaskPayload<ExtArgs>[]
       createdTasks: Prisma.$TaskPayload<ExtArgs>[]
       assignedUserStories: Prisma.$UserStoryPayload<ExtArgs>[]
@@ -5221,6 +5242,7 @@ export namespace Prisma {
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     organizationMemberships<T extends User$organizationMembershipsArgs<ExtArgs> = {}>(args?: Subset<T, User$organizationMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeamMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     projectMemberships<T extends User$projectMembershipsArgs<ExtArgs> = {}>(args?: Subset<T, User$projectMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    projects<T extends User$projectsArgs<ExtArgs> = {}>(args?: Subset<T, User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     assignedTasks<T extends User$assignedTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     createdTasks<T extends User$createdTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$createdTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     assignedUserStories<T extends User$assignedUserStoriesArgs<ExtArgs> = {}>(args?: Subset<T, User$assignedUserStoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserStoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5761,6 +5783,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ProjectMemberScalarFieldEnum | ProjectMemberScalarFieldEnum[]
+  }
+
+  /**
+   * User.projects
+   */
+  export type User$projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    where?: ProjectWhereInput
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
+    cursor?: ProjectWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
   }
 
   /**
@@ -9584,7 +9630,6 @@ export namespace Prisma {
     parentTeam?: boolean | Team$parentTeamArgs<ExtArgs>
     children?: boolean | Team$childrenArgs<ExtArgs>
     members?: boolean | Team$membersArgs<ExtArgs>
-    projects?: boolean | Team$projectsArgs<ExtArgs>
     templates?: boolean | Team$templatesArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["team"]>
@@ -9632,7 +9677,6 @@ export namespace Prisma {
     parentTeam?: boolean | Team$parentTeamArgs<ExtArgs>
     children?: boolean | Team$childrenArgs<ExtArgs>
     members?: boolean | Team$membersArgs<ExtArgs>
-    projects?: boolean | Team$projectsArgs<ExtArgs>
     templates?: boolean | Team$templatesArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -9649,7 +9693,6 @@ export namespace Prisma {
       parentTeam: Prisma.$TeamPayload<ExtArgs> | null
       children: Prisma.$TeamPayload<ExtArgs>[]
       members: Prisma.$TeamMemberPayload<ExtArgs>[]
-      projects: Prisma.$ProjectPayload<ExtArgs>[]
       templates: Prisma.$TemplatePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -10059,7 +10102,6 @@ export namespace Prisma {
     parentTeam<T extends Team$parentTeamArgs<ExtArgs> = {}>(args?: Subset<T, Team$parentTeamArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     children<T extends Team$childrenArgs<ExtArgs> = {}>(args?: Subset<T, Team$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     members<T extends Team$membersArgs<ExtArgs> = {}>(args?: Subset<T, Team$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeamMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    projects<T extends Team$projectsArgs<ExtArgs> = {}>(args?: Subset<T, Team$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     templates<T extends Team$templatesArgs<ExtArgs> = {}>(args?: Subset<T, Team$templatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -10559,30 +10601,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TeamMemberScalarFieldEnum | TeamMemberScalarFieldEnum[]
-  }
-
-  /**
-   * Team.projects
-   */
-  export type Team$projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Project
-     */
-    select?: ProjectSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Project
-     */
-    omit?: ProjectOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProjectInclude<ExtArgs> | null
-    where?: ProjectWhereInput
-    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
-    cursor?: ProjectWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
   }
 
   /**
@@ -11741,7 +11759,6 @@ export namespace Prisma {
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
-    teamId: string | null
   }
 
   export type ProjectMaxAggregateOutputType = {
@@ -11758,7 +11775,6 @@ export namespace Prisma {
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
-    teamId: string | null
   }
 
   export type ProjectCountAggregateOutputType = {
@@ -11777,7 +11793,6 @@ export namespace Prisma {
     isActive: number
     createdAt: number
     updatedAt: number
-    teamId: number
     _all: number
   }
 
@@ -11804,7 +11819,6 @@ export namespace Prisma {
     isActive?: true
     createdAt?: true
     updatedAt?: true
-    teamId?: true
   }
 
   export type ProjectMaxAggregateInputType = {
@@ -11821,7 +11835,6 @@ export namespace Prisma {
     isActive?: true
     createdAt?: true
     updatedAt?: true
-    teamId?: true
   }
 
   export type ProjectCountAggregateInputType = {
@@ -11840,7 +11853,6 @@ export namespace Prisma {
     isActive?: true
     createdAt?: true
     updatedAt?: true
-    teamId?: true
     _all?: true
   }
 
@@ -11946,7 +11958,6 @@ export namespace Prisma {
     isActive: boolean
     createdAt: Date
     updatedAt: Date
-    teamId: string
     _count: ProjectCountAggregateOutputType | null
     _avg: ProjectAvgAggregateOutputType | null
     _sum: ProjectSumAggregateOutputType | null
@@ -11984,10 +11995,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    teamId?: boolean
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    user?: boolean | Project$userArgs<ExtArgs>
     members?: boolean | Project$membersArgs<ExtArgs>
     initiatives?: boolean | Project$initiativesArgs<ExtArgs>
+    features?: boolean | Project$featuresArgs<ExtArgs>
     sprints?: boolean | Project$sprintsArgs<ExtArgs>
     files?: boolean | Project$filesArgs<ExtArgs>
     channels?: boolean | Project$channelsArgs<ExtArgs>
@@ -12011,8 +12022,6 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    teamId?: boolean
-    team?: boolean | TeamDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12031,8 +12040,6 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    teamId?: boolean
-    team?: boolean | TeamDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectScalar = {
@@ -12051,33 +12058,30 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    teamId?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "slug" | "key" | "order" | "startDate" | "endDate" | "status" | "visibility" | "settings" | "metadata" | "isActive" | "createdAt" | "updatedAt" | "teamId", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "slug" | "key" | "order" | "startDate" | "endDate" | "status" | "visibility" | "settings" | "metadata" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    user?: boolean | Project$userArgs<ExtArgs>
     members?: boolean | Project$membersArgs<ExtArgs>
     initiatives?: boolean | Project$initiativesArgs<ExtArgs>
+    features?: boolean | Project$featuresArgs<ExtArgs>
     sprints?: boolean | Project$sprintsArgs<ExtArgs>
     files?: boolean | Project$filesArgs<ExtArgs>
     channels?: boolean | Project$channelsArgs<ExtArgs>
     templates?: boolean | Project$templatesArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    team?: boolean | TeamDefaultArgs<ExtArgs>
-  }
-  export type ProjectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    team?: boolean | TeamDefaultArgs<ExtArgs>
-  }
+  export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ProjectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Project"
     objects: {
-      team: Prisma.$TeamPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>[]
       members: Prisma.$ProjectMemberPayload<ExtArgs>[]
       initiatives: Prisma.$InitiativePayload<ExtArgs>[]
+      features: Prisma.$FeaturePayload<ExtArgs>[]
       sprints: Prisma.$SprintPayload<ExtArgs>[]
       files: Prisma.$FilePayload<ExtArgs>[]
       channels: Prisma.$ChannelPayload<ExtArgs>[]
@@ -12099,7 +12103,6 @@ export namespace Prisma {
       isActive: boolean
       createdAt: Date
       updatedAt: Date
-      teamId: string
     }, ExtArgs["result"]["project"]>
     composites: {}
   }
@@ -12494,9 +12497,10 @@ export namespace Prisma {
    */
   export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    team<T extends TeamDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TeamDefaultArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends Project$userArgs<ExtArgs> = {}>(args?: Subset<T, Project$userArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     members<T extends Project$membersArgs<ExtArgs> = {}>(args?: Subset<T, Project$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     initiatives<T extends Project$initiativesArgs<ExtArgs> = {}>(args?: Subset<T, Project$initiativesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InitiativePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    features<T extends Project$featuresArgs<ExtArgs> = {}>(args?: Subset<T, Project$featuresArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sprints<T extends Project$sprintsArgs<ExtArgs> = {}>(args?: Subset<T, Project$sprintsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SprintPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     files<T extends Project$filesArgs<ExtArgs> = {}>(args?: Subset<T, Project$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     channels<T extends Project$channelsArgs<ExtArgs> = {}>(args?: Subset<T, Project$channelsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -12545,7 +12549,6 @@ export namespace Prisma {
     readonly isActive: FieldRef<"Project", 'Boolean'>
     readonly createdAt: FieldRef<"Project", 'DateTime'>
     readonly updatedAt: FieldRef<"Project", 'DateTime'>
-    readonly teamId: FieldRef<"Project", 'String'>
   }
     
 
@@ -12795,10 +12798,6 @@ export namespace Prisma {
      */
     data: ProjectCreateManyInput | ProjectCreateManyInput[]
     skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProjectIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -12869,10 +12868,6 @@ export namespace Prisma {
      * Limit how many Projects to update.
      */
     limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProjectIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -12942,6 +12937,30 @@ export namespace Prisma {
   }
 
   /**
+   * Project.user
+   */
+  export type Project$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
    * Project.members
    */
   export type Project$membersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12987,6 +13006,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: InitiativeScalarFieldEnum | InitiativeScalarFieldEnum[]
+  }
+
+  /**
+   * Project.features
+   */
+  export type Project$featuresArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Feature
+     */
+    select?: FeatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Feature
+     */
+    omit?: FeatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeatureInclude<ExtArgs> | null
+    where?: FeatureWhereInput
+    orderBy?: FeatureOrderByWithRelationInput | FeatureOrderByWithRelationInput[]
+    cursor?: FeatureWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FeatureScalarFieldEnum | FeatureScalarFieldEnum[]
   }
 
   /**
@@ -16679,6 +16722,7 @@ export namespace Prisma {
     updatedAt: Date | null
     epicId: string | null
     parentId: string | null
+    projectId: string | null
   }
 
   export type FeatureMaxAggregateOutputType = {
@@ -16700,6 +16744,7 @@ export namespace Prisma {
     updatedAt: Date | null
     epicId: string | null
     parentId: string | null
+    projectId: string | null
   }
 
   export type FeatureCountAggregateOutputType = {
@@ -16721,6 +16766,7 @@ export namespace Prisma {
     updatedAt: number
     epicId: number
     parentId: number
+    projectId: number
     _all: number
   }
 
@@ -16762,6 +16808,7 @@ export namespace Prisma {
     updatedAt?: true
     epicId?: true
     parentId?: true
+    projectId?: true
   }
 
   export type FeatureMaxAggregateInputType = {
@@ -16783,6 +16830,7 @@ export namespace Prisma {
     updatedAt?: true
     epicId?: true
     parentId?: true
+    projectId?: true
   }
 
   export type FeatureCountAggregateInputType = {
@@ -16804,6 +16852,7 @@ export namespace Prisma {
     updatedAt?: true
     epicId?: true
     parentId?: true
+    projectId?: true
     _all?: true
   }
 
@@ -16912,6 +16961,7 @@ export namespace Prisma {
     updatedAt: Date
     epicId: string
     parentId: string | null
+    projectId: string | null
     _count: FeatureCountAggregateOutputType | null
     _avg: FeatureAvgAggregateOutputType | null
     _sum: FeatureSumAggregateOutputType | null
@@ -16952,6 +17002,7 @@ export namespace Prisma {
     updatedAt?: boolean
     epicId?: boolean
     parentId?: boolean
+    projectId?: boolean
     epic?: boolean | EpicDefaultArgs<ExtArgs>
     parent?: boolean | Feature$parentArgs<ExtArgs>
     children?: boolean | Feature$childrenArgs<ExtArgs>
@@ -16959,6 +17010,7 @@ export namespace Prisma {
     dependencies?: boolean | Feature$dependenciesArgs<ExtArgs>
     dependents?: boolean | Feature$dependentsArgs<ExtArgs>
     files?: boolean | Feature$filesArgs<ExtArgs>
+    Project?: boolean | Feature$ProjectArgs<ExtArgs>
     _count?: boolean | FeatureCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["feature"]>
 
@@ -16981,8 +17033,10 @@ export namespace Prisma {
     updatedAt?: boolean
     epicId?: boolean
     parentId?: boolean
+    projectId?: boolean
     epic?: boolean | EpicDefaultArgs<ExtArgs>
     parent?: boolean | Feature$parentArgs<ExtArgs>
+    Project?: boolean | Feature$ProjectArgs<ExtArgs>
   }, ExtArgs["result"]["feature"]>
 
   export type FeatureSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -17004,8 +17058,10 @@ export namespace Prisma {
     updatedAt?: boolean
     epicId?: boolean
     parentId?: boolean
+    projectId?: boolean
     epic?: boolean | EpicDefaultArgs<ExtArgs>
     parent?: boolean | Feature$parentArgs<ExtArgs>
+    Project?: boolean | Feature$ProjectArgs<ExtArgs>
   }, ExtArgs["result"]["feature"]>
 
   export type FeatureSelectScalar = {
@@ -17027,9 +17083,10 @@ export namespace Prisma {
     updatedAt?: boolean
     epicId?: boolean
     parentId?: boolean
+    projectId?: boolean
   }
 
-  export type FeatureOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "acceptanceCriteria" | "priority" | "status" | "storyPoints" | "businessValue" | "technicalRisk" | "effort" | "startDate" | "endDate" | "progress" | "position" | "createdAt" | "updatedAt" | "epicId" | "parentId", ExtArgs["result"]["feature"]>
+  export type FeatureOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "acceptanceCriteria" | "priority" | "status" | "storyPoints" | "businessValue" | "technicalRisk" | "effort" | "startDate" | "endDate" | "progress" | "position" | "createdAt" | "updatedAt" | "epicId" | "parentId" | "projectId", ExtArgs["result"]["feature"]>
   export type FeatureInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     epic?: boolean | EpicDefaultArgs<ExtArgs>
     parent?: boolean | Feature$parentArgs<ExtArgs>
@@ -17038,15 +17095,18 @@ export namespace Prisma {
     dependencies?: boolean | Feature$dependenciesArgs<ExtArgs>
     dependents?: boolean | Feature$dependentsArgs<ExtArgs>
     files?: boolean | Feature$filesArgs<ExtArgs>
+    Project?: boolean | Feature$ProjectArgs<ExtArgs>
     _count?: boolean | FeatureCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type FeatureIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     epic?: boolean | EpicDefaultArgs<ExtArgs>
     parent?: boolean | Feature$parentArgs<ExtArgs>
+    Project?: boolean | Feature$ProjectArgs<ExtArgs>
   }
   export type FeatureIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     epic?: boolean | EpicDefaultArgs<ExtArgs>
     parent?: boolean | Feature$parentArgs<ExtArgs>
+    Project?: boolean | Feature$ProjectArgs<ExtArgs>
   }
 
   export type $FeaturePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -17059,6 +17119,7 @@ export namespace Prisma {
       dependencies: Prisma.$FeatureDependencyPayload<ExtArgs>[]
       dependents: Prisma.$FeatureDependencyPayload<ExtArgs>[]
       files: Prisma.$FilePayload<ExtArgs>[]
+      Project: Prisma.$ProjectPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -17079,6 +17140,7 @@ export namespace Prisma {
       updatedAt: Date
       epicId: string
       parentId: string | null
+      projectId: string | null
     }, ExtArgs["result"]["feature"]>
     composites: {}
   }
@@ -17480,6 +17542,7 @@ export namespace Prisma {
     dependencies<T extends Feature$dependenciesArgs<ExtArgs> = {}>(args?: Subset<T, Feature$dependenciesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeatureDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     dependents<T extends Feature$dependentsArgs<ExtArgs> = {}>(args?: Subset<T, Feature$dependentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeatureDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     files<T extends Feature$filesArgs<ExtArgs> = {}>(args?: Subset<T, Feature$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Project<T extends Feature$ProjectArgs<ExtArgs> = {}>(args?: Subset<T, Feature$ProjectArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17527,6 +17590,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"Feature", 'DateTime'>
     readonly epicId: FieldRef<"Feature", 'String'>
     readonly parentId: FieldRef<"Feature", 'String'>
+    readonly projectId: FieldRef<"Feature", 'String'>
   }
     
 
@@ -18059,6 +18123,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
+  }
+
+  /**
+   * Feature.Project
+   */
+  export type Feature$ProjectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    where?: ProjectWhereInput
   }
 
   /**
@@ -40603,8 +40686,7 @@ export namespace Prisma {
     metadata: 'metadata',
     isActive: 'isActive',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    teamId: 'teamId'
+    updatedAt: 'updatedAt'
   };
 
   export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -40677,7 +40759,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     epicId: 'epicId',
-    parentId: 'parentId'
+    parentId: 'parentId',
+    projectId: 'projectId'
   };
 
   export type FeatureScalarFieldEnum = (typeof FeatureScalarFieldEnum)[keyof typeof FeatureScalarFieldEnum]
@@ -41285,6 +41368,7 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     organizationMemberships?: TeamMemberListRelationFilter
     projectMemberships?: ProjectMemberListRelationFilter
+    projects?: ProjectListRelationFilter
     assignedTasks?: TaskListRelationFilter
     createdTasks?: TaskListRelationFilter
     assignedUserStories?: UserStoryListRelationFilter
@@ -41322,6 +41406,7 @@ export namespace Prisma {
     sessions?: SessionOrderByRelationAggregateInput
     organizationMemberships?: TeamMemberOrderByRelationAggregateInput
     projectMemberships?: ProjectMemberOrderByRelationAggregateInput
+    projects?: ProjectOrderByRelationAggregateInput
     assignedTasks?: TaskOrderByRelationAggregateInput
     createdTasks?: TaskOrderByRelationAggregateInput
     assignedUserStories?: UserStoryOrderByRelationAggregateInput
@@ -41362,6 +41447,7 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     organizationMemberships?: TeamMemberListRelationFilter
     projectMemberships?: ProjectMemberListRelationFilter
+    projects?: ProjectListRelationFilter
     assignedTasks?: TaskListRelationFilter
     createdTasks?: TaskListRelationFilter
     assignedUserStories?: UserStoryListRelationFilter
@@ -41662,7 +41748,6 @@ export namespace Prisma {
     parentTeam?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
     children?: TeamListRelationFilter
     members?: TeamMemberListRelationFilter
-    projects?: ProjectListRelationFilter
     templates?: TemplateListRelationFilter
   }
 
@@ -41679,7 +41764,6 @@ export namespace Prisma {
     parentTeam?: TeamOrderByWithRelationInput
     children?: TeamOrderByRelationAggregateInput
     members?: TeamMemberOrderByRelationAggregateInput
-    projects?: ProjectOrderByRelationAggregateInput
     templates?: TemplateOrderByRelationAggregateInput
   }
 
@@ -41699,7 +41783,6 @@ export namespace Prisma {
     parentTeam?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
     children?: TeamListRelationFilter
     members?: TeamMemberListRelationFilter
-    projects?: ProjectListRelationFilter
     templates?: TemplateListRelationFilter
   }, "id" | "slug">
 
@@ -41816,10 +41899,10 @@ export namespace Prisma {
     isActive?: BoolFilter<"Project"> | boolean
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
-    teamId?: StringFilter<"Project"> | string
-    team?: XOR<TeamScalarRelationFilter, TeamWhereInput>
+    user?: UserListRelationFilter
     members?: ProjectMemberListRelationFilter
     initiatives?: InitiativeListRelationFilter
+    features?: FeatureListRelationFilter
     sprints?: SprintListRelationFilter
     files?: FileListRelationFilter
     channels?: ChannelListRelationFilter
@@ -41842,10 +41925,10 @@ export namespace Prisma {
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    teamId?: SortOrder
-    team?: TeamOrderByWithRelationInput
+    user?: UserOrderByRelationAggregateInput
     members?: ProjectMemberOrderByRelationAggregateInput
     initiatives?: InitiativeOrderByRelationAggregateInput
+    features?: FeatureOrderByRelationAggregateInput
     sprints?: SprintOrderByRelationAggregateInput
     files?: FileOrderByRelationAggregateInput
     channels?: ChannelOrderByRelationAggregateInput
@@ -41854,8 +41937,6 @@ export namespace Prisma {
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    teamId_slug?: ProjectTeamIdSlugCompoundUniqueInput
-    teamId_key?: ProjectTeamIdKeyCompoundUniqueInput
     AND?: ProjectWhereInput | ProjectWhereInput[]
     OR?: ProjectWhereInput[]
     NOT?: ProjectWhereInput | ProjectWhereInput[]
@@ -41873,15 +41954,15 @@ export namespace Prisma {
     isActive?: BoolFilter<"Project"> | boolean
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
-    teamId?: StringFilter<"Project"> | string
-    team?: XOR<TeamScalarRelationFilter, TeamWhereInput>
+    user?: UserListRelationFilter
     members?: ProjectMemberListRelationFilter
     initiatives?: InitiativeListRelationFilter
+    features?: FeatureListRelationFilter
     sprints?: SprintListRelationFilter
     files?: FileListRelationFilter
     channels?: ChannelListRelationFilter
     templates?: TemplateListRelationFilter
-  }, "id" | "teamId_slug" | "teamId_key">
+  }, "id">
 
   export type ProjectOrderByWithAggregationInput = {
     id?: SortOrder
@@ -41899,7 +41980,6 @@ export namespace Prisma {
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    teamId?: SortOrder
     _count?: ProjectCountOrderByAggregateInput
     _avg?: ProjectAvgOrderByAggregateInput
     _max?: ProjectMaxOrderByAggregateInput
@@ -41926,7 +42006,6 @@ export namespace Prisma {
     isActive?: BoolWithAggregatesFilter<"Project"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
-    teamId?: StringWithAggregatesFilter<"Project"> | string
   }
 
   export type ProjectMemberWhereInput = {
@@ -42210,6 +42289,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Feature"> | Date | string
     epicId?: StringFilter<"Feature"> | string
     parentId?: StringNullableFilter<"Feature"> | string | null
+    projectId?: StringNullableFilter<"Feature"> | string | null
     epic?: XOR<EpicScalarRelationFilter, EpicWhereInput>
     parent?: XOR<FeatureNullableScalarRelationFilter, FeatureWhereInput> | null
     children?: FeatureListRelationFilter
@@ -42217,6 +42297,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyListRelationFilter
     dependents?: FeatureDependencyListRelationFilter
     files?: FileListRelationFilter
+    Project?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
   }
 
   export type FeatureOrderByWithRelationInput = {
@@ -42238,6 +42319,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     epicId?: SortOrder
     parentId?: SortOrderInput | SortOrder
+    projectId?: SortOrderInput | SortOrder
     epic?: EpicOrderByWithRelationInput
     parent?: FeatureOrderByWithRelationInput
     children?: FeatureOrderByRelationAggregateInput
@@ -42245,6 +42327,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyOrderByRelationAggregateInput
     dependents?: FeatureDependencyOrderByRelationAggregateInput
     files?: FileOrderByRelationAggregateInput
+    Project?: ProjectOrderByWithRelationInput
   }
 
   export type FeatureWhereUniqueInput = Prisma.AtLeast<{
@@ -42269,6 +42352,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Feature"> | Date | string
     epicId?: StringFilter<"Feature"> | string
     parentId?: StringNullableFilter<"Feature"> | string | null
+    projectId?: StringNullableFilter<"Feature"> | string | null
     epic?: XOR<EpicScalarRelationFilter, EpicWhereInput>
     parent?: XOR<FeatureNullableScalarRelationFilter, FeatureWhereInput> | null
     children?: FeatureListRelationFilter
@@ -42276,6 +42360,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyListRelationFilter
     dependents?: FeatureDependencyListRelationFilter
     files?: FileListRelationFilter
+    Project?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
   }, "id">
 
   export type FeatureOrderByWithAggregationInput = {
@@ -42297,6 +42382,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     epicId?: SortOrder
     parentId?: SortOrderInput | SortOrder
+    projectId?: SortOrderInput | SortOrder
     _count?: FeatureCountOrderByAggregateInput
     _avg?: FeatureAvgOrderByAggregateInput
     _max?: FeatureMaxOrderByAggregateInput
@@ -42326,6 +42412,7 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Feature"> | Date | string
     epicId?: StringWithAggregatesFilter<"Feature"> | string
     parentId?: StringNullableWithAggregatesFilter<"Feature"> | string | null
+    projectId?: StringNullableWithAggregatesFilter<"Feature"> | string | null
   }
 
   export type FeatureDependencyWhereInput = {
@@ -44200,6 +44287,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -44237,6 +44325,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -44274,6 +44363,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -44311,6 +44401,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -44646,7 +44737,6 @@ export namespace Prisma {
     parentTeam?: TeamCreateNestedOneWithoutChildrenInput
     children?: TeamCreateNestedManyWithoutParentTeamInput
     members?: TeamMemberCreateNestedManyWithoutTeamInput
-    projects?: ProjectCreateNestedManyWithoutTeamInput
     templates?: TemplateCreateNestedManyWithoutTeamInput
   }
 
@@ -44662,7 +44752,6 @@ export namespace Prisma {
     parentTeamId?: string | null
     children?: TeamUncheckedCreateNestedManyWithoutParentTeamInput
     members?: TeamMemberUncheckedCreateNestedManyWithoutTeamInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutTeamInput
     templates?: TemplateUncheckedCreateNestedManyWithoutTeamInput
   }
 
@@ -44678,7 +44767,6 @@ export namespace Prisma {
     parentTeam?: TeamUpdateOneWithoutChildrenNestedInput
     children?: TeamUpdateManyWithoutParentTeamNestedInput
     members?: TeamMemberUpdateManyWithoutTeamNestedInput
-    projects?: ProjectUpdateManyWithoutTeamNestedInput
     templates?: TemplateUpdateManyWithoutTeamNestedInput
   }
 
@@ -44694,7 +44782,6 @@ export namespace Prisma {
     parentTeamId?: NullableStringFieldUpdateOperationsInput | string | null
     children?: TeamUncheckedUpdateManyWithoutParentTeamNestedInput
     members?: TeamMemberUncheckedUpdateManyWithoutTeamNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutTeamNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutTeamNestedInput
   }
 
@@ -44810,9 +44897,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    team: TeamCreateNestedOneWithoutProjectsInput
+    user?: UserCreateNestedManyWithoutProjectsInput
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
     initiatives?: InitiativeCreateNestedManyWithoutProjectInput
+    features?: FeatureCreateNestedManyWithoutProjectInput
     sprints?: SprintCreateNestedManyWithoutProjectInput
     files?: FileCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
@@ -44835,9 +44923,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    teamId: string
+    user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutProjectInput
+    features?: FeatureUncheckedCreateNestedManyWithoutProjectInput
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     files?: FileUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
@@ -44860,9 +44949,10 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    team?: TeamUpdateOneRequiredWithoutProjectsNestedInput
+    user?: UserUpdateManyWithoutProjectsNestedInput
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
     initiatives?: InitiativeUpdateManyWithoutProjectNestedInput
+    features?: FeatureUpdateManyWithoutProjectNestedInput
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     files?: FileUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
@@ -44885,9 +44975,10 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutProjectNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutProjectNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     files?: FileUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
@@ -44910,7 +45001,6 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    teamId: string
   }
 
   export type ProjectUpdateManyMutationInput = {
@@ -44947,7 +45037,6 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ProjectMemberCreateInput = {
@@ -45258,6 +45347,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
     files?: FileCreateNestedManyWithoutFeatureInput
+    Project?: ProjectCreateNestedOneWithoutFeaturesInput
   }
 
   export type FeatureUncheckedCreateInput = {
@@ -45279,6 +45369,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     epicId: string
     parentId?: string | null
+    projectId?: string | null
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
@@ -45310,6 +45401,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
     files?: FileUpdateManyWithoutFeatureNestedInput
+    Project?: ProjectUpdateOneWithoutFeaturesNestedInput
   }
 
   export type FeatureUncheckedUpdateInput = {
@@ -45331,6 +45423,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     epicId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
@@ -45357,6 +45450,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     epicId: string
     parentId?: string | null
+    projectId?: string | null
   }
 
   export type FeatureUpdateManyMutationInput = {
@@ -45397,6 +45491,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     epicId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FeatureDependencyCreateInput = {
@@ -47533,6 +47628,12 @@ export namespace Prisma {
     none?: ProjectMemberWhereInput
   }
 
+  export type ProjectListRelationFilter = {
+    every?: ProjectWhereInput
+    some?: ProjectWhereInput
+    none?: ProjectWhereInput
+  }
+
   export type TaskListRelationFilter = {
     every?: TaskWhereInput
     some?: TaskWhereInput
@@ -47617,6 +47718,10 @@ export namespace Prisma {
   }
 
   export type ProjectMemberOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ProjectOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -47951,12 +48056,6 @@ export namespace Prisma {
     none?: TeamWhereInput
   }
 
-  export type ProjectListRelationFilter = {
-    every?: ProjectWhereInput
-    some?: ProjectWhereInput
-    none?: ProjectWhereInput
-  }
-
   export type TemplateListRelationFilter = {
     every?: TemplateWhereInput
     some?: TemplateWhereInput
@@ -47964,10 +48063,6 @@ export namespace Prisma {
   }
 
   export type TeamOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type ProjectOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -48076,10 +48171,22 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type UserListRelationFilter = {
+    every?: UserWhereInput
+    some?: UserWhereInput
+    none?: UserWhereInput
+  }
+
   export type InitiativeListRelationFilter = {
     every?: InitiativeWhereInput
     some?: InitiativeWhereInput
     none?: InitiativeWhereInput
+  }
+
+  export type FeatureListRelationFilter = {
+    every?: FeatureWhereInput
+    some?: FeatureWhereInput
+    none?: FeatureWhereInput
   }
 
   export type SprintListRelationFilter = {
@@ -48094,7 +48201,15 @@ export namespace Prisma {
     none?: ChannelWhereInput
   }
 
+  export type UserOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type InitiativeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FeatureOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -48104,16 +48219,6 @@ export namespace Prisma {
 
   export type ChannelOrderByRelationAggregateInput = {
     _count?: SortOrder
-  }
-
-  export type ProjectTeamIdSlugCompoundUniqueInput = {
-    teamId: string
-    slug: string
-  }
-
-  export type ProjectTeamIdKeyCompoundUniqueInput = {
-    teamId: string
-    key: string
   }
 
   export type ProjectCountOrderByAggregateInput = {
@@ -48132,7 +48237,6 @@ export namespace Prisma {
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    teamId?: SortOrder
   }
 
   export type ProjectAvgOrderByAggregateInput = {
@@ -48153,7 +48257,6 @@ export namespace Prisma {
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    teamId?: SortOrder
   }
 
   export type ProjectMinOrderByAggregateInput = {
@@ -48170,7 +48273,6 @@ export namespace Prisma {
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    teamId?: SortOrder
   }
 
   export type ProjectSumOrderByAggregateInput = {
@@ -48379,16 +48481,6 @@ export namespace Prisma {
     isNot?: InitiativeWhereInput
   }
 
-  export type FeatureListRelationFilter = {
-    every?: FeatureWhereInput
-    some?: FeatureWhereInput
-    none?: FeatureWhereInput
-  }
-
-  export type FeatureOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type EpicCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -48466,6 +48558,11 @@ export namespace Prisma {
     none?: FeatureDependencyWhereInput
   }
 
+  export type ProjectNullableScalarRelationFilter = {
+    is?: ProjectWhereInput | null
+    isNot?: ProjectWhereInput | null
+  }
+
   export type FeatureDependencyOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -48489,6 +48586,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     epicId?: SortOrder
     parentId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type FeatureAvgOrderByAggregateInput = {
@@ -48519,6 +48617,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     epicId?: SortOrder
     parentId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type FeatureMinOrderByAggregateInput = {
@@ -48540,6 +48639,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     epicId?: SortOrder
     parentId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type FeatureSumOrderByAggregateInput = {
@@ -48619,20 +48719,10 @@ export namespace Prisma {
     isEmpty?: boolean
   }
 
-  export type UserListRelationFilter = {
-    every?: UserWhereInput
-    some?: UserWhereInput
-    none?: UserWhereInput
-  }
-
   export type UserStoryDependencyListRelationFilter = {
     every?: UserStoryDependencyWhereInput
     some?: UserStoryDependencyWhereInput
     none?: UserStoryDependencyWhereInput
-  }
-
-  export type UserOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type UserStoryDependencyOrderByRelationAggregateInput = {
@@ -48970,11 +49060,6 @@ export namespace Prisma {
   export type FileNullableScalarRelationFilter = {
     is?: FileWhereInput | null
     isNot?: FileWhereInput | null
-  }
-
-  export type ProjectNullableScalarRelationFilter = {
-    is?: ProjectWhereInput | null
-    isNot?: ProjectWhereInput | null
   }
 
   export type UserStoryNullableScalarRelationFilter = {
@@ -49781,6 +49866,12 @@ export namespace Prisma {
     connect?: ProjectMemberWhereUniqueInput | ProjectMemberWhereUniqueInput[]
   }
 
+  export type ProjectCreateNestedManyWithoutUserInput = {
+    create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
   export type TaskCreateNestedManyWithoutAssigneesInput = {
     create?: XOR<TaskCreateWithoutAssigneesInput, TaskUncheckedCreateWithoutAssigneesInput> | TaskCreateWithoutAssigneesInput[] | TaskUncheckedCreateWithoutAssigneesInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutAssigneesInput | TaskCreateOrConnectWithoutAssigneesInput[]
@@ -49902,6 +49993,12 @@ export namespace Prisma {
     connectOrCreate?: ProjectMemberCreateOrConnectWithoutUserInput | ProjectMemberCreateOrConnectWithoutUserInput[]
     createMany?: ProjectMemberCreateManyUserInputEnvelope
     connect?: ProjectMemberWhereUniqueInput | ProjectMemberWhereUniqueInput[]
+  }
+
+  export type ProjectUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
   export type TaskUncheckedCreateNestedManyWithoutAssigneesInput = {
@@ -50073,6 +50170,19 @@ export namespace Prisma {
     update?: ProjectMemberUpdateWithWhereUniqueWithoutUserInput | ProjectMemberUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ProjectMemberUpdateManyWithWhereWithoutUserInput | ProjectMemberUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ProjectMemberScalarWhereInput | ProjectMemberScalarWhereInput[]
+  }
+
+  export type ProjectUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutUserInput | ProjectUpsertWithWhereUniqueWithoutUserInput[]
+    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutUserInput | ProjectUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutUserInput | ProjectUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
   export type TaskUpdateManyWithoutAssigneesNestedInput = {
@@ -50324,6 +50434,19 @@ export namespace Prisma {
     deleteMany?: ProjectMemberScalarWhereInput | ProjectMemberScalarWhereInput[]
   }
 
+  export type ProjectUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutUserInput | ProjectUpsertWithWhereUniqueWithoutUserInput[]
+    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutUserInput | ProjectUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutUserInput | ProjectUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  }
+
   export type TaskUncheckedUpdateManyWithoutAssigneesNestedInput = {
     create?: XOR<TaskCreateWithoutAssigneesInput, TaskUncheckedCreateWithoutAssigneesInput> | TaskCreateWithoutAssigneesInput[] | TaskUncheckedCreateWithoutAssigneesInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutAssigneesInput | TaskCreateOrConnectWithoutAssigneesInput[]
@@ -50565,13 +50688,6 @@ export namespace Prisma {
     connect?: TeamMemberWhereUniqueInput | TeamMemberWhereUniqueInput[]
   }
 
-  export type ProjectCreateNestedManyWithoutTeamInput = {
-    create?: XOR<ProjectCreateWithoutTeamInput, ProjectUncheckedCreateWithoutTeamInput> | ProjectCreateWithoutTeamInput[] | ProjectUncheckedCreateWithoutTeamInput[]
-    connectOrCreate?: ProjectCreateOrConnectWithoutTeamInput | ProjectCreateOrConnectWithoutTeamInput[]
-    createMany?: ProjectCreateManyTeamInputEnvelope
-    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-  }
-
   export type TemplateCreateNestedManyWithoutTeamInput = {
     create?: XOR<TemplateCreateWithoutTeamInput, TemplateUncheckedCreateWithoutTeamInput> | TemplateCreateWithoutTeamInput[] | TemplateUncheckedCreateWithoutTeamInput[]
     connectOrCreate?: TemplateCreateOrConnectWithoutTeamInput | TemplateCreateOrConnectWithoutTeamInput[]
@@ -50591,13 +50707,6 @@ export namespace Prisma {
     connectOrCreate?: TeamMemberCreateOrConnectWithoutTeamInput | TeamMemberCreateOrConnectWithoutTeamInput[]
     createMany?: TeamMemberCreateManyTeamInputEnvelope
     connect?: TeamMemberWhereUniqueInput | TeamMemberWhereUniqueInput[]
-  }
-
-  export type ProjectUncheckedCreateNestedManyWithoutTeamInput = {
-    create?: XOR<ProjectCreateWithoutTeamInput, ProjectUncheckedCreateWithoutTeamInput> | ProjectCreateWithoutTeamInput[] | ProjectUncheckedCreateWithoutTeamInput[]
-    connectOrCreate?: ProjectCreateOrConnectWithoutTeamInput | ProjectCreateOrConnectWithoutTeamInput[]
-    createMany?: ProjectCreateManyTeamInputEnvelope
-    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
   export type TemplateUncheckedCreateNestedManyWithoutTeamInput = {
@@ -50645,20 +50754,6 @@ export namespace Prisma {
     deleteMany?: TeamMemberScalarWhereInput | TeamMemberScalarWhereInput[]
   }
 
-  export type ProjectUpdateManyWithoutTeamNestedInput = {
-    create?: XOR<ProjectCreateWithoutTeamInput, ProjectUncheckedCreateWithoutTeamInput> | ProjectCreateWithoutTeamInput[] | ProjectUncheckedCreateWithoutTeamInput[]
-    connectOrCreate?: ProjectCreateOrConnectWithoutTeamInput | ProjectCreateOrConnectWithoutTeamInput[]
-    upsert?: ProjectUpsertWithWhereUniqueWithoutTeamInput | ProjectUpsertWithWhereUniqueWithoutTeamInput[]
-    createMany?: ProjectCreateManyTeamInputEnvelope
-    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    update?: ProjectUpdateWithWhereUniqueWithoutTeamInput | ProjectUpdateWithWhereUniqueWithoutTeamInput[]
-    updateMany?: ProjectUpdateManyWithWhereWithoutTeamInput | ProjectUpdateManyWithWhereWithoutTeamInput[]
-    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
-  }
-
   export type TemplateUpdateManyWithoutTeamNestedInput = {
     create?: XOR<TemplateCreateWithoutTeamInput, TemplateUncheckedCreateWithoutTeamInput> | TemplateCreateWithoutTeamInput[] | TemplateUncheckedCreateWithoutTeamInput[]
     connectOrCreate?: TemplateCreateOrConnectWithoutTeamInput | TemplateCreateOrConnectWithoutTeamInput[]
@@ -50699,20 +50794,6 @@ export namespace Prisma {
     update?: TeamMemberUpdateWithWhereUniqueWithoutTeamInput | TeamMemberUpdateWithWhereUniqueWithoutTeamInput[]
     updateMany?: TeamMemberUpdateManyWithWhereWithoutTeamInput | TeamMemberUpdateManyWithWhereWithoutTeamInput[]
     deleteMany?: TeamMemberScalarWhereInput | TeamMemberScalarWhereInput[]
-  }
-
-  export type ProjectUncheckedUpdateManyWithoutTeamNestedInput = {
-    create?: XOR<ProjectCreateWithoutTeamInput, ProjectUncheckedCreateWithoutTeamInput> | ProjectCreateWithoutTeamInput[] | ProjectUncheckedCreateWithoutTeamInput[]
-    connectOrCreate?: ProjectCreateOrConnectWithoutTeamInput | ProjectCreateOrConnectWithoutTeamInput[]
-    upsert?: ProjectUpsertWithWhereUniqueWithoutTeamInput | ProjectUpsertWithWhereUniqueWithoutTeamInput[]
-    createMany?: ProjectCreateManyTeamInputEnvelope
-    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    update?: ProjectUpdateWithWhereUniqueWithoutTeamInput | ProjectUpdateWithWhereUniqueWithoutTeamInput[]
-    updateMany?: ProjectUpdateManyWithWhereWithoutTeamInput | ProjectUpdateManyWithWhereWithoutTeamInput[]
-    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
   export type TemplateUncheckedUpdateManyWithoutTeamNestedInput = {
@@ -50761,10 +50842,10 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOrganizationMembershipsInput, UserUpdateWithoutOrganizationMembershipsInput>, UserUncheckedUpdateWithoutOrganizationMembershipsInput>
   }
 
-  export type TeamCreateNestedOneWithoutProjectsInput = {
-    create?: XOR<TeamCreateWithoutProjectsInput, TeamUncheckedCreateWithoutProjectsInput>
-    connectOrCreate?: TeamCreateOrConnectWithoutProjectsInput
-    connect?: TeamWhereUniqueInput
+  export type UserCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput> | UserCreateWithoutProjectsInput[] | UserUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutProjectsInput | UserCreateOrConnectWithoutProjectsInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
   export type ProjectMemberCreateNestedManyWithoutProjectInput = {
@@ -50779,6 +50860,13 @@ export namespace Prisma {
     connectOrCreate?: InitiativeCreateOrConnectWithoutProjectInput | InitiativeCreateOrConnectWithoutProjectInput[]
     createMany?: InitiativeCreateManyProjectInputEnvelope
     connect?: InitiativeWhereUniqueInput | InitiativeWhereUniqueInput[]
+  }
+
+  export type FeatureCreateNestedManyWithoutProjectInput = {
+    create?: XOR<FeatureCreateWithoutProjectInput, FeatureUncheckedCreateWithoutProjectInput> | FeatureCreateWithoutProjectInput[] | FeatureUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: FeatureCreateOrConnectWithoutProjectInput | FeatureCreateOrConnectWithoutProjectInput[]
+    createMany?: FeatureCreateManyProjectInputEnvelope
+    connect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
   }
 
   export type SprintCreateNestedManyWithoutProjectInput = {
@@ -50809,6 +50897,12 @@ export namespace Prisma {
     connect?: TemplateWhereUniqueInput | TemplateWhereUniqueInput[]
   }
 
+  export type UserUncheckedCreateNestedManyWithoutProjectsInput = {
+    create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput> | UserCreateWithoutProjectsInput[] | UserUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutProjectsInput | UserCreateOrConnectWithoutProjectsInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
   export type ProjectMemberUncheckedCreateNestedManyWithoutProjectInput = {
     create?: XOR<ProjectMemberCreateWithoutProjectInput, ProjectMemberUncheckedCreateWithoutProjectInput> | ProjectMemberCreateWithoutProjectInput[] | ProjectMemberUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ProjectMemberCreateOrConnectWithoutProjectInput | ProjectMemberCreateOrConnectWithoutProjectInput[]
@@ -50821,6 +50915,13 @@ export namespace Prisma {
     connectOrCreate?: InitiativeCreateOrConnectWithoutProjectInput | InitiativeCreateOrConnectWithoutProjectInput[]
     createMany?: InitiativeCreateManyProjectInputEnvelope
     connect?: InitiativeWhereUniqueInput | InitiativeWhereUniqueInput[]
+  }
+
+  export type FeatureUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<FeatureCreateWithoutProjectInput, FeatureUncheckedCreateWithoutProjectInput> | FeatureCreateWithoutProjectInput[] | FeatureUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: FeatureCreateOrConnectWithoutProjectInput | FeatureCreateOrConnectWithoutProjectInput[]
+    createMany?: FeatureCreateManyProjectInputEnvelope
+    connect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
   }
 
   export type SprintUncheckedCreateNestedManyWithoutProjectInput = {
@@ -50859,12 +50960,17 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type TeamUpdateOneRequiredWithoutProjectsNestedInput = {
-    create?: XOR<TeamCreateWithoutProjectsInput, TeamUncheckedCreateWithoutProjectsInput>
-    connectOrCreate?: TeamCreateOrConnectWithoutProjectsInput
-    upsert?: TeamUpsertWithoutProjectsInput
-    connect?: TeamWhereUniqueInput
-    update?: XOR<XOR<TeamUpdateToOneWithWhereWithoutProjectsInput, TeamUpdateWithoutProjectsInput>, TeamUncheckedUpdateWithoutProjectsInput>
+  export type UserUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput> | UserCreateWithoutProjectsInput[] | UserUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutProjectsInput | UserCreateOrConnectWithoutProjectsInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutProjectsInput | UserUpsertWithWhereUniqueWithoutProjectsInput[]
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutProjectsInput | UserUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutProjectsInput | UserUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
   export type ProjectMemberUpdateManyWithoutProjectNestedInput = {
@@ -50893,6 +50999,20 @@ export namespace Prisma {
     update?: InitiativeUpdateWithWhereUniqueWithoutProjectInput | InitiativeUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: InitiativeUpdateManyWithWhereWithoutProjectInput | InitiativeUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: InitiativeScalarWhereInput | InitiativeScalarWhereInput[]
+  }
+
+  export type FeatureUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<FeatureCreateWithoutProjectInput, FeatureUncheckedCreateWithoutProjectInput> | FeatureCreateWithoutProjectInput[] | FeatureUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: FeatureCreateOrConnectWithoutProjectInput | FeatureCreateOrConnectWithoutProjectInput[]
+    upsert?: FeatureUpsertWithWhereUniqueWithoutProjectInput | FeatureUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: FeatureCreateManyProjectInputEnvelope
+    set?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    disconnect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    delete?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    connect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    update?: FeatureUpdateWithWhereUniqueWithoutProjectInput | FeatureUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: FeatureUpdateManyWithWhereWithoutProjectInput | FeatureUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: FeatureScalarWhereInput | FeatureScalarWhereInput[]
   }
 
   export type SprintUpdateManyWithoutProjectNestedInput = {
@@ -50951,6 +51071,19 @@ export namespace Prisma {
     deleteMany?: TemplateScalarWhereInput | TemplateScalarWhereInput[]
   }
 
+  export type UserUncheckedUpdateManyWithoutProjectsNestedInput = {
+    create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput> | UserCreateWithoutProjectsInput[] | UserUncheckedCreateWithoutProjectsInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutProjectsInput | UserCreateOrConnectWithoutProjectsInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutProjectsInput | UserUpsertWithWhereUniqueWithoutProjectsInput[]
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutProjectsInput | UserUpdateWithWhereUniqueWithoutProjectsInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutProjectsInput | UserUpdateManyWithWhereWithoutProjectsInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
   export type ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput = {
     create?: XOR<ProjectMemberCreateWithoutProjectInput, ProjectMemberUncheckedCreateWithoutProjectInput> | ProjectMemberCreateWithoutProjectInput[] | ProjectMemberUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ProjectMemberCreateOrConnectWithoutProjectInput | ProjectMemberCreateOrConnectWithoutProjectInput[]
@@ -50977,6 +51110,20 @@ export namespace Prisma {
     update?: InitiativeUpdateWithWhereUniqueWithoutProjectInput | InitiativeUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: InitiativeUpdateManyWithWhereWithoutProjectInput | InitiativeUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: InitiativeScalarWhereInput | InitiativeScalarWhereInput[]
+  }
+
+  export type FeatureUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<FeatureCreateWithoutProjectInput, FeatureUncheckedCreateWithoutProjectInput> | FeatureCreateWithoutProjectInput[] | FeatureUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: FeatureCreateOrConnectWithoutProjectInput | FeatureCreateOrConnectWithoutProjectInput[]
+    upsert?: FeatureUpsertWithWhereUniqueWithoutProjectInput | FeatureUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: FeatureCreateManyProjectInputEnvelope
+    set?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    disconnect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    delete?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    connect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    update?: FeatureUpdateWithWhereUniqueWithoutProjectInput | FeatureUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: FeatureUpdateManyWithWhereWithoutProjectInput | FeatureUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: FeatureScalarWhereInput | FeatureScalarWhereInput[]
   }
 
   export type SprintUncheckedUpdateManyWithoutProjectNestedInput = {
@@ -51242,6 +51389,12 @@ export namespace Prisma {
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
+  export type ProjectCreateNestedOneWithoutFeaturesInput = {
+    create?: XOR<ProjectCreateWithoutFeaturesInput, ProjectUncheckedCreateWithoutFeaturesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutFeaturesInput
+    connect?: ProjectWhereUniqueInput
+  }
+
   export type FeatureUncheckedCreateNestedManyWithoutParentInput = {
     create?: XOR<FeatureCreateWithoutParentInput, FeatureUncheckedCreateWithoutParentInput> | FeatureCreateWithoutParentInput[] | FeatureUncheckedCreateWithoutParentInput[]
     connectOrCreate?: FeatureCreateOrConnectWithoutParentInput | FeatureCreateOrConnectWithoutParentInput[]
@@ -51371,6 +51524,16 @@ export namespace Prisma {
     update?: FileUpdateWithWhereUniqueWithoutFeatureInput | FileUpdateWithWhereUniqueWithoutFeatureInput[]
     updateMany?: FileUpdateManyWithWhereWithoutFeatureInput | FileUpdateManyWithWhereWithoutFeatureInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
+  }
+
+  export type ProjectUpdateOneWithoutFeaturesNestedInput = {
+    create?: XOR<ProjectCreateWithoutFeaturesInput, ProjectUncheckedCreateWithoutFeaturesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutFeaturesInput
+    upsert?: ProjectUpsertWithoutFeaturesInput
+    disconnect?: ProjectWhereInput | boolean
+    delete?: ProjectWhereInput | boolean
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutFeaturesInput, ProjectUpdateWithoutFeaturesInput>, ProjectUncheckedUpdateWithoutFeaturesInput>
   }
 
   export type FeatureUncheckedUpdateManyWithoutParentNestedInput = {
@@ -53958,6 +54121,61 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ProjectCreateWithoutUserInput = {
+    id?: string
+    name: string
+    description?: string | null
+    slug: string
+    key: string
+    order?: number
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    status?: string
+    visibility?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: ProjectMemberCreateNestedManyWithoutProjectInput
+    initiatives?: InitiativeCreateNestedManyWithoutProjectInput
+    features?: FeatureCreateNestedManyWithoutProjectInput
+    sprints?: SprintCreateNestedManyWithoutProjectInput
+    files?: FileCreateNestedManyWithoutProjectInput
+    channels?: ChannelCreateNestedManyWithoutProjectInput
+    templates?: TemplateCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutUserInput = {
+    id?: string
+    name: string
+    description?: string | null
+    slug: string
+    key: string
+    order?: number
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    status?: string
+    visibility?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
+    initiatives?: InitiativeUncheckedCreateNestedManyWithoutProjectInput
+    features?: FeatureUncheckedCreateNestedManyWithoutProjectInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
+    files?: FileUncheckedCreateNestedManyWithoutProjectInput
+    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
+    templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutUserInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput>
+  }
+
   export type TaskCreateWithoutAssigneesInput = {
     id?: string
     title: string
@@ -54810,6 +55028,43 @@ export namespace Prisma {
     userId?: StringFilter<"ProjectMember"> | string
   }
 
+  export type ProjectUpsertWithWhereUniqueWithoutUserInput = {
+    where: ProjectWhereUniqueInput
+    update: XOR<ProjectUpdateWithoutUserInput, ProjectUncheckedUpdateWithoutUserInput>
+    create: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput>
+  }
+
+  export type ProjectUpdateWithWhereUniqueWithoutUserInput = {
+    where: ProjectWhereUniqueInput
+    data: XOR<ProjectUpdateWithoutUserInput, ProjectUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ProjectUpdateManyWithWhereWithoutUserInput = {
+    where: ProjectScalarWhereInput
+    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ProjectScalarWhereInput = {
+    AND?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+    OR?: ProjectScalarWhereInput[]
+    NOT?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+    id?: StringFilter<"Project"> | string
+    name?: StringFilter<"Project"> | string
+    description?: StringNullableFilter<"Project"> | string | null
+    slug?: StringFilter<"Project"> | string
+    key?: StringFilter<"Project"> | string
+    order?: IntFilter<"Project"> | number
+    startDate?: DateTimeNullableFilter<"Project"> | Date | string | null
+    endDate?: DateTimeNullableFilter<"Project"> | Date | string | null
+    status?: StringFilter<"Project"> | string
+    visibility?: StringFilter<"Project"> | string
+    settings?: JsonNullableFilter<"Project">
+    metadata?: JsonNullableFilter<"Project">
+    isActive?: BoolFilter<"Project"> | boolean
+    createdAt?: DateTimeFilter<"Project"> | Date | string
+    updatedAt?: DateTimeFilter<"Project"> | Date | string
+  }
+
   export type TaskUpsertWithWhereUniqueWithoutAssigneesInput = {
     where: TaskWhereUniqueInput
     update: XOR<TaskUpdateWithoutAssigneesInput, TaskUncheckedUpdateWithoutAssigneesInput>
@@ -55283,6 +55538,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -55319,6 +55575,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -55371,6 +55628,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -55407,6 +55665,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -55443,6 +55702,7 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -55479,6 +55739,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -55531,6 +55792,7 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -55567,6 +55829,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -55594,7 +55857,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     parentTeam?: TeamCreateNestedOneWithoutChildrenInput
     members?: TeamMemberCreateNestedManyWithoutTeamInput
-    projects?: ProjectCreateNestedManyWithoutTeamInput
     templates?: TemplateCreateNestedManyWithoutTeamInput
   }
 
@@ -55609,7 +55871,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     parentTeamId?: string | null
     members?: TeamMemberUncheckedCreateNestedManyWithoutTeamInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutTeamInput
     templates?: TemplateUncheckedCreateNestedManyWithoutTeamInput
   }
 
@@ -55629,7 +55890,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     children?: TeamCreateNestedManyWithoutParentTeamInput
     members?: TeamMemberCreateNestedManyWithoutTeamInput
-    projects?: ProjectCreateNestedManyWithoutTeamInput
     templates?: TemplateCreateNestedManyWithoutTeamInput
   }
 
@@ -55644,7 +55904,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     children?: TeamUncheckedCreateNestedManyWithoutParentTeamInput
     members?: TeamMemberUncheckedCreateNestedManyWithoutTeamInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutTeamInput
     templates?: TemplateUncheckedCreateNestedManyWithoutTeamInput
   }
 
@@ -55681,64 +55940,6 @@ export namespace Prisma {
 
   export type TeamMemberCreateManyTeamInputEnvelope = {
     data: TeamMemberCreateManyTeamInput | TeamMemberCreateManyTeamInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type ProjectCreateWithoutTeamInput = {
-    id?: string
-    name: string
-    description?: string | null
-    slug: string
-    key: string
-    order?: number
-    startDate?: Date | string | null
-    endDate?: Date | string | null
-    status?: string
-    visibility?: string
-    settings?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    members?: ProjectMemberCreateNestedManyWithoutProjectInput
-    initiatives?: InitiativeCreateNestedManyWithoutProjectInput
-    sprints?: SprintCreateNestedManyWithoutProjectInput
-    files?: FileCreateNestedManyWithoutProjectInput
-    channels?: ChannelCreateNestedManyWithoutProjectInput
-    templates?: TemplateCreateNestedManyWithoutProjectInput
-  }
-
-  export type ProjectUncheckedCreateWithoutTeamInput = {
-    id?: string
-    name: string
-    description?: string | null
-    slug: string
-    key: string
-    order?: number
-    startDate?: Date | string | null
-    endDate?: Date | string | null
-    status?: string
-    visibility?: string
-    settings?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
-    initiatives?: InitiativeUncheckedCreateNestedManyWithoutProjectInput
-    sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
-    files?: FileUncheckedCreateNestedManyWithoutProjectInput
-    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
-    templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
-  }
-
-  export type ProjectCreateOrConnectWithoutTeamInput = {
-    where: ProjectWhereUniqueInput
-    create: XOR<ProjectCreateWithoutTeamInput, ProjectUncheckedCreateWithoutTeamInput>
-  }
-
-  export type ProjectCreateManyTeamInputEnvelope = {
-    data: ProjectCreateManyTeamInput | ProjectCreateManyTeamInput[]
     skipDuplicates?: boolean
   }
 
@@ -55804,7 +56005,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parentTeam?: TeamUpdateOneWithoutChildrenNestedInput
     members?: TeamMemberUpdateManyWithoutTeamNestedInput
-    projects?: ProjectUpdateManyWithoutTeamNestedInput
     templates?: TemplateUpdateManyWithoutTeamNestedInput
   }
 
@@ -55819,7 +56019,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parentTeamId?: NullableStringFieldUpdateOperationsInput | string | null
     members?: TeamMemberUncheckedUpdateManyWithoutTeamNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutTeamNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutTeamNestedInput
   }
 
@@ -55870,44 +56069,6 @@ export namespace Prisma {
     data: XOR<TeamMemberUpdateManyMutationInput, TeamMemberUncheckedUpdateManyWithoutTeamInput>
   }
 
-  export type ProjectUpsertWithWhereUniqueWithoutTeamInput = {
-    where: ProjectWhereUniqueInput
-    update: XOR<ProjectUpdateWithoutTeamInput, ProjectUncheckedUpdateWithoutTeamInput>
-    create: XOR<ProjectCreateWithoutTeamInput, ProjectUncheckedCreateWithoutTeamInput>
-  }
-
-  export type ProjectUpdateWithWhereUniqueWithoutTeamInput = {
-    where: ProjectWhereUniqueInput
-    data: XOR<ProjectUpdateWithoutTeamInput, ProjectUncheckedUpdateWithoutTeamInput>
-  }
-
-  export type ProjectUpdateManyWithWhereWithoutTeamInput = {
-    where: ProjectScalarWhereInput
-    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutTeamInput>
-  }
-
-  export type ProjectScalarWhereInput = {
-    AND?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
-    OR?: ProjectScalarWhereInput[]
-    NOT?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
-    id?: StringFilter<"Project"> | string
-    name?: StringFilter<"Project"> | string
-    description?: StringNullableFilter<"Project"> | string | null
-    slug?: StringFilter<"Project"> | string
-    key?: StringFilter<"Project"> | string
-    order?: IntFilter<"Project"> | number
-    startDate?: DateTimeNullableFilter<"Project"> | Date | string | null
-    endDate?: DateTimeNullableFilter<"Project"> | Date | string | null
-    status?: StringFilter<"Project"> | string
-    visibility?: StringFilter<"Project"> | string
-    settings?: JsonNullableFilter<"Project">
-    metadata?: JsonNullableFilter<"Project">
-    isActive?: BoolFilter<"Project"> | boolean
-    createdAt?: DateTimeFilter<"Project"> | Date | string
-    updatedAt?: DateTimeFilter<"Project"> | Date | string
-    teamId?: StringFilter<"Project"> | string
-  }
-
   export type TemplateUpsertWithWhereUniqueWithoutTeamInput = {
     where: TemplateWhereUniqueInput
     update: XOR<TemplateUpdateWithoutTeamInput, TemplateUncheckedUpdateWithoutTeamInput>
@@ -55954,7 +56115,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     parentTeam?: TeamCreateNestedOneWithoutChildrenInput
     children?: TeamCreateNestedManyWithoutParentTeamInput
-    projects?: ProjectCreateNestedManyWithoutTeamInput
     templates?: TemplateCreateNestedManyWithoutTeamInput
   }
 
@@ -55969,7 +56129,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     parentTeamId?: string | null
     children?: TeamUncheckedCreateNestedManyWithoutParentTeamInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutTeamInput
     templates?: TemplateUncheckedCreateNestedManyWithoutTeamInput
   }
 
@@ -55998,6 +56157,7 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -56034,6 +56194,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -56077,7 +56238,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parentTeam?: TeamUpdateOneWithoutChildrenNestedInput
     children?: TeamUpdateManyWithoutParentTeamNestedInput
-    projects?: ProjectUpdateManyWithoutTeamNestedInput
     templates?: TemplateUpdateManyWithoutTeamNestedInput
   }
 
@@ -56092,7 +56252,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parentTeamId?: NullableStringFieldUpdateOperationsInput | string | null
     children?: TeamUncheckedUpdateManyWithoutParentTeamNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutTeamNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutTeamNestedInput
   }
 
@@ -56127,6 +56286,7 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -56163,6 +56323,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -56179,39 +56340,83 @@ export namespace Prisma {
     assignedItems?: ItemUncheckedUpdateManyWithoutAssigneesNestedInput
   }
 
-  export type TeamCreateWithoutProjectsInput = {
+  export type UserCreateWithoutProjectsInput = {
     id?: string
-    name: string
-    description?: string | null
-    slug: string
-    logoUrl?: string | null
+    name?: string | null
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    username?: string | null
+    firstName?: string | null
+    lastName?: string | null
+    bio?: string | null
+    timezone?: string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
+    lastLoginAt?: Date | string | null
+    twoFactorEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    parentTeam?: TeamCreateNestedOneWithoutChildrenInput
-    children?: TeamCreateNestedManyWithoutParentTeamInput
-    members?: TeamMemberCreateNestedManyWithoutTeamInput
-    templates?: TemplateCreateNestedManyWithoutTeamInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
+    projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    createdTasks?: TaskCreateNestedManyWithoutCreatorInput
+    assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
+    createdUserStories?: UserStoryCreateNestedManyWithoutCreatorInput
+    comments?: CommentCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
+    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
+    ChannelMember?: ChannelMemberCreateNestedManyWithoutUserInput
+    Message?: MessageCreateNestedManyWithoutAuthorInput
+    ownedItems?: ItemCreateNestedManyWithoutUserInput
+    assignedItems?: ItemCreateNestedManyWithoutAssigneesInput
   }
 
-  export type TeamUncheckedCreateWithoutProjectsInput = {
+  export type UserUncheckedCreateWithoutProjectsInput = {
     id?: string
-    name: string
-    description?: string | null
-    slug: string
-    logoUrl?: string | null
+    name?: string | null
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    username?: string | null
+    firstName?: string | null
+    lastName?: string | null
+    bio?: string | null
+    timezone?: string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
+    lastLoginAt?: Date | string | null
+    twoFactorEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    parentTeamId?: string | null
-    children?: TeamUncheckedCreateNestedManyWithoutParentTeamInput
-    members?: TeamMemberUncheckedCreateNestedManyWithoutTeamInput
-    templates?: TemplateUncheckedCreateNestedManyWithoutTeamInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
+    projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
+    assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
+    createdUserStories?: UserStoryUncheckedCreateNestedManyWithoutCreatorInput
+    comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
+    ChannelMember?: ChannelMemberUncheckedCreateNestedManyWithoutUserInput
+    Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
+    ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
+    assignedItems?: ItemUncheckedCreateNestedManyWithoutAssigneesInput
   }
 
-  export type TeamCreateOrConnectWithoutProjectsInput = {
-    where: TeamWhereUniqueInput
-    create: XOR<TeamCreateWithoutProjectsInput, TeamUncheckedCreateWithoutProjectsInput>
+  export type UserCreateOrConnectWithoutProjectsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
   }
 
   export type ProjectMemberCreateWithoutProjectInput = {
@@ -56281,6 +56486,68 @@ export namespace Prisma {
 
   export type InitiativeCreateManyProjectInputEnvelope = {
     data: InitiativeCreateManyProjectInput | InitiativeCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FeatureCreateWithoutProjectInput = {
+    id?: string
+    name: string
+    description?: string | null
+    acceptanceCriteria?: string | null
+    priority?: $Enums.Priority
+    status?: string
+    storyPoints?: number | null
+    businessValue?: number | null
+    technicalRisk?: number | null
+    effort?: number | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    progress?: number
+    position?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    epic: EpicCreateNestedOneWithoutFeaturesInput
+    parent?: FeatureCreateNestedOneWithoutChildrenInput
+    children?: FeatureCreateNestedManyWithoutParentInput
+    userStories?: UserStoryCreateNestedManyWithoutFeatureInput
+    dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
+    dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
+    files?: FileCreateNestedManyWithoutFeatureInput
+  }
+
+  export type FeatureUncheckedCreateWithoutProjectInput = {
+    id?: string
+    name: string
+    description?: string | null
+    acceptanceCriteria?: string | null
+    priority?: $Enums.Priority
+    status?: string
+    storyPoints?: number | null
+    businessValue?: number | null
+    technicalRisk?: number | null
+    effort?: number | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    progress?: number
+    position?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    epicId: string
+    parentId?: string | null
+    children?: FeatureUncheckedCreateNestedManyWithoutParentInput
+    userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
+    dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
+    dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
+    files?: FileUncheckedCreateNestedManyWithoutFeatureInput
+  }
+
+  export type FeatureCreateOrConnectWithoutProjectInput = {
+    where: FeatureWhereUniqueInput
+    create: XOR<FeatureCreateWithoutProjectInput, FeatureUncheckedCreateWithoutProjectInput>
+  }
+
+  export type FeatureCreateManyProjectInputEnvelope = {
+    data: FeatureCreateManyProjectInput | FeatureCreateManyProjectInput[]
     skipDuplicates?: boolean
   }
 
@@ -56484,45 +56751,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type TeamUpsertWithoutProjectsInput = {
-    update: XOR<TeamUpdateWithoutProjectsInput, TeamUncheckedUpdateWithoutProjectsInput>
-    create: XOR<TeamCreateWithoutProjectsInput, TeamUncheckedCreateWithoutProjectsInput>
-    where?: TeamWhereInput
+  export type UserUpsertWithWhereUniqueWithoutProjectsInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutProjectsInput, UserUncheckedUpdateWithoutProjectsInput>
+    create: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
   }
 
-  export type TeamUpdateToOneWithWhereWithoutProjectsInput = {
-    where?: TeamWhereInput
-    data: XOR<TeamUpdateWithoutProjectsInput, TeamUncheckedUpdateWithoutProjectsInput>
+  export type UserUpdateWithWhereUniqueWithoutProjectsInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutProjectsInput, UserUncheckedUpdateWithoutProjectsInput>
   }
 
-  export type TeamUpdateWithoutProjectsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: StringFieldUpdateOperationsInput | string
-    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    parentTeam?: TeamUpdateOneWithoutChildrenNestedInput
-    children?: TeamUpdateManyWithoutParentTeamNestedInput
-    members?: TeamMemberUpdateManyWithoutTeamNestedInput
-    templates?: TemplateUpdateManyWithoutTeamNestedInput
+  export type UserUpdateManyWithWhereWithoutProjectsInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutProjectsInput>
   }
 
-  export type TeamUncheckedUpdateWithoutProjectsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: StringFieldUpdateOperationsInput | string
-    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    parentTeamId?: NullableStringFieldUpdateOperationsInput | string | null
-    children?: TeamUncheckedUpdateManyWithoutParentTeamNestedInput
-    members?: TeamMemberUncheckedUpdateManyWithoutTeamNestedInput
-    templates?: TemplateUncheckedUpdateManyWithoutTeamNestedInput
+  export type UserScalarWhereInput = {
+    AND?: UserScalarWhereInput | UserScalarWhereInput[]
+    OR?: UserScalarWhereInput[]
+    NOT?: UserScalarWhereInput | UserScalarWhereInput[]
+    id?: StringFilter<"User"> | string
+    name?: StringNullableFilter<"User"> | string | null
+    email?: StringFilter<"User"> | string
+    emailVerified?: BoolFilter<"User"> | boolean
+    image?: StringNullableFilter<"User"> | string | null
+    username?: StringNullableFilter<"User"> | string | null
+    firstName?: StringNullableFilter<"User"> | string | null
+    lastName?: StringNullableFilter<"User"> | string | null
+    bio?: StringNullableFilter<"User"> | string | null
+    timezone?: StringNullableFilter<"User"> | string | null
+    preferences?: JsonNullableFilter<"User">
+    isActive?: BoolFilter<"User"> | boolean
+    lastLoginAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    twoFactorEnabled?: BoolFilter<"User"> | boolean
+    createdAt?: DateTimeFilter<"User"> | Date | string
+    updatedAt?: DateTimeFilter<"User"> | Date | string
   }
 
   export type ProjectMemberUpsertWithWhereUniqueWithoutProjectInput = {
@@ -56575,6 +56839,47 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Initiative"> | Date | string
     updatedAt?: DateTimeFilter<"Initiative"> | Date | string
     projectId?: StringFilter<"Initiative"> | string
+  }
+
+  export type FeatureUpsertWithWhereUniqueWithoutProjectInput = {
+    where: FeatureWhereUniqueInput
+    update: XOR<FeatureUpdateWithoutProjectInput, FeatureUncheckedUpdateWithoutProjectInput>
+    create: XOR<FeatureCreateWithoutProjectInput, FeatureUncheckedCreateWithoutProjectInput>
+  }
+
+  export type FeatureUpdateWithWhereUniqueWithoutProjectInput = {
+    where: FeatureWhereUniqueInput
+    data: XOR<FeatureUpdateWithoutProjectInput, FeatureUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type FeatureUpdateManyWithWhereWithoutProjectInput = {
+    where: FeatureScalarWhereInput
+    data: XOR<FeatureUpdateManyMutationInput, FeatureUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type FeatureScalarWhereInput = {
+    AND?: FeatureScalarWhereInput | FeatureScalarWhereInput[]
+    OR?: FeatureScalarWhereInput[]
+    NOT?: FeatureScalarWhereInput | FeatureScalarWhereInput[]
+    id?: StringFilter<"Feature"> | string
+    name?: StringFilter<"Feature"> | string
+    description?: StringNullableFilter<"Feature"> | string | null
+    acceptanceCriteria?: StringNullableFilter<"Feature"> | string | null
+    priority?: EnumPriorityFilter<"Feature"> | $Enums.Priority
+    status?: StringFilter<"Feature"> | string
+    storyPoints?: IntNullableFilter<"Feature"> | number | null
+    businessValue?: IntNullableFilter<"Feature"> | number | null
+    technicalRisk?: IntNullableFilter<"Feature"> | number | null
+    effort?: IntNullableFilter<"Feature"> | number | null
+    startDate?: DateTimeNullableFilter<"Feature"> | Date | string | null
+    endDate?: DateTimeNullableFilter<"Feature"> | Date | string | null
+    progress?: FloatFilter<"Feature"> | number
+    position?: IntFilter<"Feature"> | number
+    createdAt?: DateTimeFilter<"Feature"> | Date | string
+    updatedAt?: DateTimeFilter<"Feature"> | Date | string
+    epicId?: StringFilter<"Feature"> | string
+    parentId?: StringNullableFilter<"Feature"> | string | null
+    projectId?: StringNullableFilter<"Feature"> | string | null
   }
 
   export type SprintUpsertWithWhereUniqueWithoutProjectInput = {
@@ -56692,8 +56997,9 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    team: TeamCreateNestedOneWithoutProjectsInput
+    user?: UserCreateNestedManyWithoutProjectsInput
     initiatives?: InitiativeCreateNestedManyWithoutProjectInput
+    features?: FeatureCreateNestedManyWithoutProjectInput
     sprints?: SprintCreateNestedManyWithoutProjectInput
     files?: FileCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
@@ -56716,8 +57022,9 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    teamId: string
+    user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutProjectInput
+    features?: FeatureUncheckedCreateNestedManyWithoutProjectInput
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     files?: FileUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
@@ -56749,6 +57056,7 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -56785,6 +57093,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -56833,8 +57142,9 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    team?: TeamUpdateOneRequiredWithoutProjectsNestedInput
+    user?: UserUpdateManyWithoutProjectsNestedInput
     initiatives?: InitiativeUpdateManyWithoutProjectNestedInput
+    features?: FeatureUpdateManyWithoutProjectNestedInput
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     files?: FileUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
@@ -56857,8 +57167,9 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutProjectNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutProjectNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     files?: FileUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
@@ -56896,6 +57207,7 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -56932,6 +57244,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -56964,8 +57277,9 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    team: TeamCreateNestedOneWithoutProjectsInput
+    user?: UserCreateNestedManyWithoutProjectsInput
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
+    features?: FeatureCreateNestedManyWithoutProjectInput
     sprints?: SprintCreateNestedManyWithoutProjectInput
     files?: FileCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
@@ -56988,8 +57302,9 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    teamId: string
+    user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
+    features?: FeatureUncheckedCreateNestedManyWithoutProjectInput
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     files?: FileUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
@@ -57066,8 +57381,9 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    team?: TeamUpdateOneRequiredWithoutProjectsNestedInput
+    user?: UserUpdateManyWithoutProjectsNestedInput
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
+    features?: FeatureUpdateManyWithoutProjectNestedInput
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     files?: FileUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
@@ -57090,8 +57406,9 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutProjectNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     files?: FileUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
@@ -57193,6 +57510,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
     files?: FileCreateNestedManyWithoutFeatureInput
+    Project?: ProjectCreateNestedOneWithoutFeaturesInput
   }
 
   export type FeatureUncheckedCreateWithoutEpicInput = {
@@ -57213,6 +57531,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     parentId?: string | null
+    projectId?: string | null
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
@@ -57291,30 +57610,6 @@ export namespace Prisma {
     data: XOR<FeatureUpdateManyMutationInput, FeatureUncheckedUpdateManyWithoutEpicInput>
   }
 
-  export type FeatureScalarWhereInput = {
-    AND?: FeatureScalarWhereInput | FeatureScalarWhereInput[]
-    OR?: FeatureScalarWhereInput[]
-    NOT?: FeatureScalarWhereInput | FeatureScalarWhereInput[]
-    id?: StringFilter<"Feature"> | string
-    name?: StringFilter<"Feature"> | string
-    description?: StringNullableFilter<"Feature"> | string | null
-    acceptanceCriteria?: StringNullableFilter<"Feature"> | string | null
-    priority?: EnumPriorityFilter<"Feature"> | $Enums.Priority
-    status?: StringFilter<"Feature"> | string
-    storyPoints?: IntNullableFilter<"Feature"> | number | null
-    businessValue?: IntNullableFilter<"Feature"> | number | null
-    technicalRisk?: IntNullableFilter<"Feature"> | number | null
-    effort?: IntNullableFilter<"Feature"> | number | null
-    startDate?: DateTimeNullableFilter<"Feature"> | Date | string | null
-    endDate?: DateTimeNullableFilter<"Feature"> | Date | string | null
-    progress?: FloatFilter<"Feature"> | number
-    position?: IntFilter<"Feature"> | number
-    createdAt?: DateTimeFilter<"Feature"> | Date | string
-    updatedAt?: DateTimeFilter<"Feature"> | Date | string
-    epicId?: StringFilter<"Feature"> | string
-    parentId?: StringNullableFilter<"Feature"> | string | null
-  }
-
   export type EpicCreateWithoutFeaturesInput = {
     id?: string
     name: string
@@ -57371,6 +57666,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
     files?: FileCreateNestedManyWithoutFeatureInput
+    Project?: ProjectCreateNestedOneWithoutFeaturesInput
   }
 
   export type FeatureUncheckedCreateWithoutChildrenInput = {
@@ -57392,6 +57688,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     epicId: string
     parentId?: string | null
+    projectId?: string | null
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
@@ -57426,6 +57723,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
     files?: FileCreateNestedManyWithoutFeatureInput
+    Project?: ProjectCreateNestedOneWithoutFeaturesInput
   }
 
   export type FeatureUncheckedCreateWithoutParentInput = {
@@ -57446,6 +57744,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     epicId: string
+    projectId?: string | null
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
@@ -57657,6 +57956,61 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ProjectCreateWithoutFeaturesInput = {
+    id?: string
+    name: string
+    description?: string | null
+    slug: string
+    key: string
+    order?: number
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    status?: string
+    visibility?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedManyWithoutProjectsInput
+    members?: ProjectMemberCreateNestedManyWithoutProjectInput
+    initiatives?: InitiativeCreateNestedManyWithoutProjectInput
+    sprints?: SprintCreateNestedManyWithoutProjectInput
+    files?: FileCreateNestedManyWithoutProjectInput
+    channels?: ChannelCreateNestedManyWithoutProjectInput
+    templates?: TemplateCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutFeaturesInput = {
+    id?: string
+    name: string
+    description?: string | null
+    slug: string
+    key: string
+    order?: number
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    status?: string
+    visibility?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserUncheckedCreateNestedManyWithoutProjectsInput
+    members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
+    initiatives?: InitiativeUncheckedCreateNestedManyWithoutProjectInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
+    files?: FileUncheckedCreateNestedManyWithoutProjectInput
+    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
+    templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutFeaturesInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutFeaturesInput, ProjectUncheckedCreateWithoutFeaturesInput>
+  }
+
   export type EpicUpsertWithoutFeaturesInput = {
     update: XOR<EpicUpdateWithoutFeaturesInput, EpicUncheckedUpdateWithoutFeaturesInput>
     create: XOR<EpicCreateWithoutFeaturesInput, EpicUncheckedCreateWithoutFeaturesInput>
@@ -57730,6 +58084,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
     files?: FileUpdateManyWithoutFeatureNestedInput
+    Project?: ProjectUpdateOneWithoutFeaturesNestedInput
   }
 
   export type FeatureUncheckedUpdateWithoutChildrenInput = {
@@ -57751,6 +58106,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     epicId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
@@ -57849,6 +58205,67 @@ export namespace Prisma {
     data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutFeatureInput>
   }
 
+  export type ProjectUpsertWithoutFeaturesInput = {
+    update: XOR<ProjectUpdateWithoutFeaturesInput, ProjectUncheckedUpdateWithoutFeaturesInput>
+    create: XOR<ProjectCreateWithoutFeaturesInput, ProjectUncheckedCreateWithoutFeaturesInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutFeaturesInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutFeaturesInput, ProjectUncheckedUpdateWithoutFeaturesInput>
+  }
+
+  export type ProjectUpdateWithoutFeaturesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateManyWithoutProjectsNestedInput
+    members?: ProjectMemberUpdateManyWithoutProjectNestedInput
+    initiatives?: InitiativeUpdateManyWithoutProjectNestedInput
+    sprints?: SprintUpdateManyWithoutProjectNestedInput
+    files?: FileUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUpdateManyWithoutProjectNestedInput
+    templates?: TemplateUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutFeaturesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
+    members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
+    initiatives?: InitiativeUncheckedUpdateManyWithoutProjectNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
+    files?: FileUncheckedUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
+    templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
   export type FeatureCreateWithoutDependenciesInput = {
     id?: string
     name: string
@@ -57872,6 +58289,7 @@ export namespace Prisma {
     userStories?: UserStoryCreateNestedManyWithoutFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
     files?: FileCreateNestedManyWithoutFeatureInput
+    Project?: ProjectCreateNestedOneWithoutFeaturesInput
   }
 
   export type FeatureUncheckedCreateWithoutDependenciesInput = {
@@ -57893,6 +58311,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     epicId: string
     parentId?: string | null
+    projectId?: string | null
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
     dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
@@ -57927,6 +58346,7 @@ export namespace Prisma {
     userStories?: UserStoryCreateNestedManyWithoutFeatureInput
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     files?: FileCreateNestedManyWithoutFeatureInput
+    Project?: ProjectCreateNestedOneWithoutFeaturesInput
   }
 
   export type FeatureUncheckedCreateWithoutDependentsInput = {
@@ -57948,6 +58368,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     epicId: string
     parentId?: string | null
+    projectId?: string | null
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
@@ -57993,6 +58414,7 @@ export namespace Prisma {
     userStories?: UserStoryUpdateManyWithoutFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
     files?: FileUpdateManyWithoutFeatureNestedInput
+    Project?: ProjectUpdateOneWithoutFeaturesNestedInput
   }
 
   export type FeatureUncheckedUpdateWithoutDependenciesInput = {
@@ -58014,6 +58436,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     epicId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
     dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
@@ -58054,6 +58477,7 @@ export namespace Prisma {
     userStories?: UserStoryUpdateManyWithoutFeatureNestedInput
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     files?: FileUpdateManyWithoutFeatureNestedInput
+    Project?: ProjectUpdateOneWithoutFeaturesNestedInput
   }
 
   export type FeatureUncheckedUpdateWithoutDependentsInput = {
@@ -58075,6 +58499,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     epicId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
@@ -58104,6 +58529,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
     files?: FileCreateNestedManyWithoutFeatureInput
+    Project?: ProjectCreateNestedOneWithoutFeaturesInput
   }
 
   export type FeatureUncheckedCreateWithoutUserStoriesInput = {
@@ -58125,6 +58551,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     epicId: string
     parentId?: string | null
+    projectId?: string | null
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
@@ -58157,6 +58584,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -58193,6 +58621,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -58234,6 +58663,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     createdUserStories?: UserStoryCreateNestedManyWithoutCreatorInput
@@ -58270,6 +58700,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     createdUserStories?: UserStoryUncheckedCreateNestedManyWithoutCreatorInput
@@ -58637,6 +59068,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
     files?: FileUpdateManyWithoutFeatureNestedInput
+    Project?: ProjectUpdateOneWithoutFeaturesNestedInput
   }
 
   export type FeatureUncheckedUpdateWithoutUserStoriesInput = {
@@ -58658,6 +59090,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     epicId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
@@ -58696,6 +59129,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -58732,6 +59166,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -58761,28 +59196,6 @@ export namespace Prisma {
   export type UserUpdateManyWithWhereWithoutAssignedUserStoriesInput = {
     where: UserScalarWhereInput
     data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutAssignedUserStoriesInput>
-  }
-
-  export type UserScalarWhereInput = {
-    AND?: UserScalarWhereInput | UserScalarWhereInput[]
-    OR?: UserScalarWhereInput[]
-    NOT?: UserScalarWhereInput | UserScalarWhereInput[]
-    id?: StringFilter<"User"> | string
-    name?: StringNullableFilter<"User"> | string | null
-    email?: StringFilter<"User"> | string
-    emailVerified?: BoolFilter<"User"> | boolean
-    image?: StringNullableFilter<"User"> | string | null
-    username?: StringNullableFilter<"User"> | string | null
-    firstName?: StringNullableFilter<"User"> | string | null
-    lastName?: StringNullableFilter<"User"> | string | null
-    bio?: StringNullableFilter<"User"> | string | null
-    timezone?: StringNullableFilter<"User"> | string | null
-    preferences?: JsonNullableFilter<"User">
-    isActive?: BoolFilter<"User"> | boolean
-    lastLoginAt?: DateTimeNullableFilter<"User"> | Date | string | null
-    twoFactorEnabled?: BoolFilter<"User"> | boolean
-    createdAt?: DateTimeFilter<"User"> | Date | string
-    updatedAt?: DateTimeFilter<"User"> | Date | string
   }
 
   export type TaskUpsertWithWhereUniqueWithoutUserStoryInput = {
@@ -59257,6 +59670,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
     createdUserStories?: UserStoryCreateNestedManyWithoutCreatorInput
@@ -59293,6 +59707,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
     createdUserStories?: UserStoryUncheckedCreateNestedManyWithoutCreatorInput
@@ -59334,6 +59749,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
     createdUserStories?: UserStoryCreateNestedManyWithoutCreatorInput
@@ -59370,6 +59786,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
     createdUserStories?: UserStoryUncheckedCreateNestedManyWithoutCreatorInput
@@ -59697,6 +60114,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
     createdUserStories?: UserStoryUpdateManyWithoutCreatorNestedInput
@@ -59733,6 +60151,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
     createdUserStories?: UserStoryUncheckedUpdateManyWithoutCreatorNestedInput
@@ -60112,9 +60531,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    team: TeamCreateNestedOneWithoutProjectsInput
+    user?: UserCreateNestedManyWithoutProjectsInput
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
     initiatives?: InitiativeCreateNestedManyWithoutProjectInput
+    features?: FeatureCreateNestedManyWithoutProjectInput
     files?: FileCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
@@ -60136,9 +60556,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    teamId: string
+    user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutProjectInput
+    features?: FeatureUncheckedCreateNestedManyWithoutProjectInput
     files?: FileUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
@@ -60443,9 +60864,10 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    team?: TeamUpdateOneRequiredWithoutProjectsNestedInput
+    user?: UserUpdateManyWithoutProjectsNestedInput
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
     initiatives?: InitiativeUpdateManyWithoutProjectNestedInput
+    features?: FeatureUpdateManyWithoutProjectNestedInput
     files?: FileUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
@@ -60467,9 +60889,10 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutProjectNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutProjectNestedInput
     files?: FileUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
@@ -60560,6 +60983,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -60596,6 +61020,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -60775,9 +61200,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    team: TeamCreateNestedOneWithoutProjectsInput
+    user?: UserCreateNestedManyWithoutProjectsInput
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
     initiatives?: InitiativeCreateNestedManyWithoutProjectInput
+    features?: FeatureCreateNestedManyWithoutProjectInput
     sprints?: SprintCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
@@ -60799,9 +61225,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    teamId: string
+    user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutProjectInput
+    features?: FeatureUncheckedCreateNestedManyWithoutProjectInput
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
@@ -60835,6 +61262,7 @@ export namespace Prisma {
     userStories?: UserStoryCreateNestedManyWithoutFeatureInput
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
+    Project?: ProjectCreateNestedOneWithoutFeaturesInput
   }
 
   export type FeatureUncheckedCreateWithoutFilesInput = {
@@ -60856,6 +61284,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     epicId: string
     parentId?: string | null
+    projectId?: string | null
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
@@ -61217,6 +61646,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -61253,6 +61683,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -61386,9 +61817,10 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    team?: TeamUpdateOneRequiredWithoutProjectsNestedInput
+    user?: UserUpdateManyWithoutProjectsNestedInput
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
     initiatives?: InitiativeUpdateManyWithoutProjectNestedInput
+    features?: FeatureUpdateManyWithoutProjectNestedInput
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
@@ -61410,9 +61842,10 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutProjectNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutProjectNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
@@ -61452,6 +61885,7 @@ export namespace Prisma {
     userStories?: UserStoryUpdateManyWithoutFeatureNestedInput
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
+    Project?: ProjectUpdateOneWithoutFeaturesNestedInput
   }
 
   export type FeatureUncheckedUpdateWithoutFilesInput = {
@@ -61473,6 +61907,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     epicId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
@@ -61800,6 +62235,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -61836,6 +62272,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -61963,6 +62400,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -61999,6 +62437,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -62035,6 +62474,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -62071,6 +62511,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -62466,6 +62907,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -62502,6 +62944,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -62884,9 +63327,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    team: TeamCreateNestedOneWithoutProjectsInput
+    user?: UserCreateNestedManyWithoutProjectsInput
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
     initiatives?: InitiativeCreateNestedManyWithoutProjectInput
+    features?: FeatureCreateNestedManyWithoutProjectInput
     sprints?: SprintCreateNestedManyWithoutProjectInput
     files?: FileCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
@@ -62908,9 +63352,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    teamId: string
+    user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutProjectInput
+    features?: FeatureUncheckedCreateNestedManyWithoutProjectInput
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     files?: FileUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
@@ -63004,9 +63449,10 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    team?: TeamUpdateOneRequiredWithoutProjectsNestedInput
+    user?: UserUpdateManyWithoutProjectsNestedInput
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
     initiatives?: InitiativeUpdateManyWithoutProjectNestedInput
+    features?: FeatureUpdateManyWithoutProjectNestedInput
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     files?: FileUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
@@ -63028,9 +63474,10 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutProjectNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutProjectNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     files?: FileUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
@@ -63120,6 +63567,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -63156,6 +63604,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -63245,6 +63694,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -63281,6 +63731,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -63348,6 +63799,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -63384,6 +63836,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -63473,6 +63926,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -63509,6 +63963,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -63536,7 +63991,6 @@ export namespace Prisma {
     parentTeam?: TeamCreateNestedOneWithoutChildrenInput
     children?: TeamCreateNestedManyWithoutParentTeamInput
     members?: TeamMemberCreateNestedManyWithoutTeamInput
-    projects?: ProjectCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUncheckedCreateWithoutTemplatesInput = {
@@ -63551,7 +64005,6 @@ export namespace Prisma {
     parentTeamId?: string | null
     children?: TeamUncheckedCreateNestedManyWithoutParentTeamInput
     members?: TeamMemberUncheckedCreateNestedManyWithoutTeamInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutTeamInput
   }
 
   export type TeamCreateOrConnectWithoutTemplatesInput = {
@@ -63575,9 +64028,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    team: TeamCreateNestedOneWithoutProjectsInput
+    user?: UserCreateNestedManyWithoutProjectsInput
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
     initiatives?: InitiativeCreateNestedManyWithoutProjectInput
+    features?: FeatureCreateNestedManyWithoutProjectInput
     sprints?: SprintCreateNestedManyWithoutProjectInput
     files?: FileCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
@@ -63599,9 +64053,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    teamId: string
+    user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutProjectInput
+    features?: FeatureUncheckedCreateNestedManyWithoutProjectInput
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     files?: FileUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
@@ -63635,7 +64090,6 @@ export namespace Prisma {
     parentTeam?: TeamUpdateOneWithoutChildrenNestedInput
     children?: TeamUpdateManyWithoutParentTeamNestedInput
     members?: TeamMemberUpdateManyWithoutTeamNestedInput
-    projects?: ProjectUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateWithoutTemplatesInput = {
@@ -63650,7 +64104,6 @@ export namespace Prisma {
     parentTeamId?: NullableStringFieldUpdateOperationsInput | string | null
     children?: TeamUncheckedUpdateManyWithoutParentTeamNestedInput
     members?: TeamMemberUncheckedUpdateManyWithoutTeamNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutTeamNestedInput
   }
 
   export type ProjectUpsertWithoutTemplatesInput = {
@@ -63680,9 +64133,10 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    team?: TeamUpdateOneRequiredWithoutProjectsNestedInput
+    user?: UserUpdateManyWithoutProjectsNestedInput
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
     initiatives?: InitiativeUpdateManyWithoutProjectNestedInput
+    features?: FeatureUpdateManyWithoutProjectNestedInput
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     files?: FileUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
@@ -63704,9 +64158,10 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutProjectNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutProjectNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     files?: FileUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
@@ -63733,6 +64188,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -63769,6 +64225,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -64069,6 +64526,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -64105,6 +64563,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -64413,6 +64872,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -64449,6 +64909,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -64501,6 +64962,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -64537,6 +64999,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -64573,6 +65036,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -64609,6 +65073,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -64661,6 +65126,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -64697,6 +65163,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -64733,6 +65200,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -64769,6 +65237,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -64981,6 +65450,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryCreateNestedManyWithoutAssigneesInput
@@ -65017,6 +65487,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     assignedUserStories?: UserStoryUncheckedCreateNestedManyWithoutAssigneesInput
@@ -65263,6 +65734,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -65299,6 +65771,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
@@ -65881,6 +66354,74 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     projectId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ProjectUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: ProjectMemberUpdateManyWithoutProjectNestedInput
+    initiatives?: InitiativeUpdateManyWithoutProjectNestedInput
+    features?: FeatureUpdateManyWithoutProjectNestedInput
+    sprints?: SprintUpdateManyWithoutProjectNestedInput
+    files?: FileUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUpdateManyWithoutProjectNestedInput
+    templates?: TemplateUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
+    initiatives?: InitiativeUncheckedUpdateManyWithoutProjectNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutProjectNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
+    files?: FileUncheckedUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
+    templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TaskUpdateWithoutAssigneesInput = {
@@ -66771,24 +67312,6 @@ export namespace Prisma {
     userId: string
   }
 
-  export type ProjectCreateManyTeamInput = {
-    id?: string
-    name: string
-    description?: string | null
-    slug: string
-    key: string
-    order?: number
-    startDate?: Date | string | null
-    endDate?: Date | string | null
-    status?: string
-    visibility?: string
-    settings?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
   export type TemplateCreateManyTeamInput = {
     id?: string
     name: string
@@ -66815,7 +67338,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: TeamUpdateManyWithoutParentTeamNestedInput
     members?: TeamMemberUpdateManyWithoutTeamNestedInput
-    projects?: ProjectUpdateManyWithoutTeamNestedInput
     templates?: TemplateUpdateManyWithoutTeamNestedInput
   }
 
@@ -66830,7 +67352,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: TeamUncheckedUpdateManyWithoutParentTeamNestedInput
     members?: TeamMemberUncheckedUpdateManyWithoutTeamNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutTeamNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutTeamNestedInput
   }
 
@@ -66867,72 +67388,6 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type ProjectUpdateWithoutTeamInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: StringFieldUpdateOperationsInput | string
-    key?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: StringFieldUpdateOperationsInput | string
-    settings?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    members?: ProjectMemberUpdateManyWithoutProjectNestedInput
-    initiatives?: InitiativeUpdateManyWithoutProjectNestedInput
-    sprints?: SprintUpdateManyWithoutProjectNestedInput
-    files?: FileUpdateManyWithoutProjectNestedInput
-    channels?: ChannelUpdateManyWithoutProjectNestedInput
-    templates?: TemplateUpdateManyWithoutProjectNestedInput
-  }
-
-  export type ProjectUncheckedUpdateWithoutTeamInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: StringFieldUpdateOperationsInput | string
-    key?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: StringFieldUpdateOperationsInput | string
-    settings?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
-    initiatives?: InitiativeUncheckedUpdateManyWithoutProjectNestedInput
-    sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
-    files?: FileUncheckedUpdateManyWithoutProjectNestedInput
-    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
-    templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
-  }
-
-  export type ProjectUncheckedUpdateManyWithoutTeamInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: StringFieldUpdateOperationsInput | string
-    key?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: StringFieldUpdateOperationsInput | string
-    settings?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TemplateUpdateWithoutTeamInput = {
@@ -67004,6 +67459,27 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type FeatureCreateManyProjectInput = {
+    id?: string
+    name: string
+    description?: string | null
+    acceptanceCriteria?: string | null
+    priority?: $Enums.Priority
+    status?: string
+    storyPoints?: number | null
+    businessValue?: number | null
+    technicalRisk?: number | null
+    effort?: number | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    progress?: number
+    position?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    epicId: string
+    parentId?: string | null
+  }
+
   export type SprintCreateManyProjectInput = {
     id?: string
     name: string
@@ -67072,6 +67548,99 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     teamId: string
+  }
+
+  export type UserUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
+    projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
+    assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
+    createdUserStories?: UserStoryUpdateManyWithoutCreatorNestedInput
+    comments?: CommentUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
+    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
+    ChannelMember?: ChannelMemberUpdateManyWithoutUserNestedInput
+    Message?: MessageUpdateManyWithoutAuthorNestedInput
+    ownedItems?: ItemUpdateManyWithoutUserNestedInput
+    assignedItems?: ItemUpdateManyWithoutAssigneesNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
+    projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
+    assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
+    createdUserStories?: UserStoryUncheckedUpdateManyWithoutCreatorNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
+    ChannelMember?: ChannelMemberUncheckedUpdateManyWithoutUserNestedInput
+    Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
+    ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
+    assignedItems?: ItemUncheckedUpdateManyWithoutAssigneesNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProjectMemberUpdateWithoutProjectInput = {
@@ -67146,6 +67715,79 @@ export namespace Prisma {
     roi?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeatureUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: StringFieldUpdateOperationsInput | string
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: FloatFieldUpdateOperationsInput | number
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    epic?: EpicUpdateOneRequiredWithoutFeaturesNestedInput
+    parent?: FeatureUpdateOneWithoutChildrenNestedInput
+    children?: FeatureUpdateManyWithoutParentNestedInput
+    userStories?: UserStoryUpdateManyWithoutFeatureNestedInput
+    dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
+    dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
+    files?: FileUpdateManyWithoutFeatureNestedInput
+  }
+
+  export type FeatureUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: StringFieldUpdateOperationsInput | string
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: FloatFieldUpdateOperationsInput | number
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    epicId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
+    userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
+    dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
+    dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
+    files?: FileUncheckedUpdateManyWithoutFeatureNestedInput
+  }
+
+  export type FeatureUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: StringFieldUpdateOperationsInput | string
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: FloatFieldUpdateOperationsInput | number
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    epicId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SprintUpdateWithoutProjectInput = {
@@ -67450,6 +68092,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     parentId?: string | null
+    projectId?: string | null
   }
 
   export type FeatureUpdateWithoutEpicInput = {
@@ -67475,6 +68118,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
     files?: FileUpdateManyWithoutFeatureNestedInput
+    Project?: ProjectUpdateOneWithoutFeaturesNestedInput
   }
 
   export type FeatureUncheckedUpdateWithoutEpicInput = {
@@ -67495,6 +68139,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
@@ -67520,6 +68165,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FeatureCreateManyParentInput = {
@@ -67540,6 +68186,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     epicId: string
+    projectId?: string | null
   }
 
   export type UserStoryCreateManyFeatureInput = {
@@ -67630,6 +68277,7 @@ export namespace Prisma {
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
     files?: FileUpdateManyWithoutFeatureNestedInput
+    Project?: ProjectUpdateOneWithoutFeaturesNestedInput
   }
 
   export type FeatureUncheckedUpdateWithoutParentInput = {
@@ -67650,6 +68298,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     epicId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
@@ -67675,6 +68324,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     epicId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserStoryUpdateWithoutFeatureInput = {
@@ -68010,6 +68660,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     createdUserStories?: UserStoryUpdateManyWithoutCreatorNestedInput
@@ -68046,6 +68697,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     createdUserStories?: UserStoryUncheckedUpdateManyWithoutCreatorNestedInput
@@ -68532,6 +69184,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
     createdUserStories?: UserStoryUpdateManyWithoutCreatorNestedInput
@@ -68568,6 +69221,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
     createdUserStories?: UserStoryUncheckedUpdateManyWithoutCreatorNestedInput
@@ -69894,6 +70548,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUpdateManyWithoutAssigneesNestedInput
@@ -69930,6 +70585,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     assignedUserStories?: UserStoryUncheckedUpdateManyWithoutAssigneesNestedInput
