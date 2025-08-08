@@ -1,553 +1,435 @@
 // components/projects/views/ProjectCard.tsx
+
 "use client";
 
-import React from "react";
-import Link from "next/link";
+import React, { JSX } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  ChevronUp,
-  ChevronDown,
-  Edit,
-  Trash2,
+  Building2,
   Calendar,
   Users,
+  Target,
+  Layers,
+  FileText,
+  FolderOpen,
+  Activity,
   MoreHorizontal,
-  Globe,
-  Lock,
-  Building,
-  TrendingUp,
+  Edit,
+  Eye,
+  Trash2,
+  CheckCircle2,
+  PauseCircle,
+  XCircle,
   Clock,
-  AlertCircle,
-  ExternalLink,
+  Zap,
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { moveItemUp, moveItemDown } from "@/utils/order";
-import { deleteItemUtil } from "@/utils/delete-item";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { ProjectWithRelations } from "@/types/project";
+import type { User, UserRole } from "@/lib/generated/prisma/client";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
-// Interface basée exactement sur votre schéma Prisma complet
-interface ProjectWithRelations {
-  id: string;
-  name: string;
-  description: string | null;
-  slug: string;
-  key: string;
-  order: number;
-  startDate: Date | null;
-  endDate: Date | null;
-  status: string;
-  visibility: string;
-  settings: any;
-  metadata: any;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-
-  // Relations selon votre schéma Prisma User complet
-  user: Array<{
-    id: string;
-    name: string | null;
-    email: string;
-    emailVerified: boolean; // Champ obligatoire du schéma
-    image: string | null;
-    username?: string | null;
-    firstName?: string | null;
-    lastName?: string | null;
-    bio?: string | null;
-    timezone?: string | null;
-    preferences?: any;
-    isActive: boolean;
-    lastLoginAt?: Date | null;
-    twoFactorEnabled?: boolean;
-  }>;
-
-  // Relations ProjectMember selon le schéma
-  members: Array<{
-    id: string;
-    role:
-      | "ADMIN"
-      | "PRODUCT_OWNER"
-      | "SCRUM_MASTER"
-      | "DEVELOPER"
-      | "STAKEHOLDER"
-      | "VIEWER";
-    joinedAt: Date;
-    isActive: boolean;
-    user: {
-      id: string;
-      name: string | null;
-      email: string;
-      emailVerified: boolean; // Champ obligatoire du schéma
-      image: string | null;
-      username?: string | null;
-      firstName?: string | null;
-      lastName?: string | null;
-      bio?: string | null;
-      timezone?: string | null;
-      preferences?: any;
-      isActive: boolean;
-    };
-  }>;
-
-  _count?: {
-    user?: number;
-    members?: number;
-    initiatives?: number;
-    features?: number;
-    sprints?: number;
-    files?: number;
-    channels?: number;
-    templates?: number;
-  };
-}
-
-export interface ProjectCardProps {
+interface ProjectCardProps {
   project: ProjectWithRelations;
   onEdit: (project: ProjectWithRelations) => void;
   onRefresh: () => void;
+  onView?: (project: ProjectWithRelations) => void;
+  onDelete?: (project: ProjectWithRelations) => void;
+  onManageTeam?: (project: ProjectWithRelations) => void;
+  onProjectClick?: (project: ProjectWithRelations) => Promise<void>; // Nouvelle prop
 }
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({
   project,
   onEdit,
   onRefresh,
+  onView,
+  onDelete,
+  onManageTeam,
+  onProjectClick,
 }) => {
-  const handleMoveUp = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      await moveItemUp("projects", project.id);
-      onRefresh();
-      toast.success("Projet déplacé vers le haut");
-    } catch (error) {
-      toast.error("Impossible de déplacer le projet");
-    }
-  };
-
-  const handleMoveDown = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      await moveItemDown("projects", project.id);
-      onRefresh();
-      toast.success("Projet déplacé vers le bas");
-    } catch (error) {
-      toast.error("Impossible de déplacer le projet");
-    }
-  };
-
-  const handleEdit = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onEdit(project);
-  };
-
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (
-      !confirm(
-        "Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible."
-      )
-    )
-      return;
-
-    try {
-      await deleteItemUtil("projects", project.id);
-      onRefresh();
-      toast.success("Projet supprimé avec succès");
-    } catch (error) {
-      toast.error("Impossible de supprimer le projet");
-    }
-  };
-
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case "ACTIVE":
-        return {
-          color: "bg-green-100 text-green-800 border-green-200",
-          label: "Actif",
-          icon: <TrendingUp className="h-3 w-3" />,
-        };
-      case "COMPLETED":
-        return {
-          color: "bg-blue-100 text-blue-800 border-blue-200",
-          label: "Terminé",
-          icon: <Clock className="h-3 w-3" />,
-        };
-      case "CANCELLED":
-        return {
-          color: "bg-red-100 text-red-800 border-red-200",
-          label: "Annulé",
-          icon: <AlertCircle className="h-3 w-3" />,
-        };
-      case "ON_HOLD":
-        return {
-          color: "bg-yellow-100 text-yellow-800 border-yellow-200",
-          label: "En pause",
-          icon: <Clock className="h-3 w-3" />,
-        };
-      default:
-        return {
-          color: "bg-gray-100 text-gray-800 border-gray-200",
-          label: status,
-          icon: <AlertCircle className="h-3 w-3" />,
-        };
-    }
-  };
-
-  const getVisibilityConfig = (visibility: string) => {
-    switch (visibility) {
-      case "PUBLIC":
-        return {
-          icon: <Globe className="h-4 w-4" />,
-          label: "Public",
-          color: "text-blue-600",
-        };
-      case "PRIVATE":
-        return {
-          icon: <Lock className="h-4 w-4" />,
-          label: "Privé",
-          color: "text-gray-600",
-        };
-      case "INTERNAL":
-        return {
-          icon: <Building className="h-4 w-4" />,
-          label: "Interne",
-          color: "text-orange-600",
-        };
-      default:
-        return {
-          icon: <Lock className="h-4 w-4" />,
-          label: "Privé",
-          color: "text-gray-600",
-        };
-    }
-  };
-
-  const getRoleLabel = (
-    role:
-      | "ADMIN"
-      | "PRODUCT_OWNER"
-      | "SCRUM_MASTER"
-      | "DEVELOPER"
-      | "STAKEHOLDER"
-      | "VIEWER"
-  ) => {
-    switch (role) {
-      case "ADMIN":
-        return "Admin";
-      case "PRODUCT_OWNER":
-        return "Product Owner";
-      case "SCRUM_MASTER":
-        return "Scrum Master";
-      case "DEVELOPER":
-        return "Développeur";
-      case "STAKEHOLDER":
-        return "Partie prenante";
-      case "VIEWER":
-        return "Observateur";
-      default:
-        return role;
-    }
-  };
-
-  const getUserDisplayName = (user: {
-    name: string | null;
-    email: string;
-    firstName?: string | null;
-    lastName?: string | null;
-  }) => {
+  const getUserDisplayName = (user: User): string => {
     if (user.firstName && user.lastName) {
       return `${user.firstName} ${user.lastName}`;
     }
-    return user.name || user.email;
+    return user.name || user.email || "Utilisateur";
   };
 
-  const statusConfig = getStatusConfig(project.status);
-  const visibilityConfig = getVisibilityConfig(project.visibility);
+  const getRoleLabel = (role: UserRole): string => {
+    const roleLabels: Record<UserRole, string> = {
+      ADMIN: "Admin",
+      PRODUCT_OWNER: "Product Owner",
+      SCRUM_MASTER: "Scrum Master",
+      DEVELOPER: "Développeur",
+      STAKEHOLDER: "Stakeholder",
+      VIEWER: "Observateur",
+    };
+    return roleLabels[role] || role;
+  };
 
-  // Filtrage des membres et propriétaires actifs
-  const activeMembers = (project.members || []).filter(
-    (member) => member.isActive
-  );
-  const activeOwners = (project.user || []).filter((owner) => owner.isActive);
+  const getStatusIcon = (status: string): JSX.Element => {
+    switch (status) {
+      case "ACTIVE":
+        return <Activity className="w-4 h-4 text-green-600" />;
+      case "COMPLETED":
+        return <CheckCircle2 className="w-4 h-4 text-blue-600" />;
+      case "ON_HOLD":
+        return <PauseCircle className="w-4 h-4 text-yellow-600" />;
+      case "CANCELLED":
+        return <XCircle className="w-4 h-4 text-red-600" />;
+      default:
+        return <Clock className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  const getStatusColor = (status: string): string => {
+    switch (status) {
+      case "ACTIVE":
+        return "bg-green-50 text-green-700 border-green-200";
+      case "COMPLETED":
+        return "bg-blue-50 text-blue-700 border-blue-200";
+      case "ON_HOLD":
+        return "bg-yellow-50 text-yellow-700 border-yellow-200";
+      case "CANCELLED":
+        return "bg-red-50 text-red-700 border-red-200";
+      default:
+        return "bg-gray-50 text-gray-700 border-gray-200";
+    }
+  };
+
+  const calculateProgress = (): number => {
+    const total =
+      (project._count?.initiatives || 0) +
+      (project._count?.epics || 0) +
+      (project._count?.features || 0) +
+      (project._count?.userStories || 0) +
+      (project._count?.tasks || 0);
+
+    if (total === 0) return 0;
+    if (project.status === "COMPLETED") return 100;
+    if (project.status === "CANCELLED") return 0;
+    if (project.status === "ON_HOLD") return 25;
+
+    return Math.min(Math.floor((total / 50) * 100), 85);
+  };
+
+  const activeMembers =
+    project.members?.filter((member) => member.isActive) || [];
+  const progress = calculateProgress();
+
+  // Handler pour le clic sur la carte
+  const handleCardClick = async (
+    e: React.MouseEvent<HTMLDivElement>
+  ): Promise<void> => {
+    // Éviter la navigation si on clique sur un bouton ou menu
+    const target = e.target as HTMLElement;
+    if (
+      target.closest("button") ||
+      target.closest('[role="menuitem"]') ||
+      target.closest("[data-radix-popper-content-wrapper]")
+    ) {
+      return;
+    }
+
+    if (onProjectClick) {
+      await onProjectClick(project);
+    }
+  };
+
+  const handleView = async (): Promise<void> => {
+    if (onView) {
+      await onView(project);
+    } else if (onProjectClick) {
+      await onProjectClick(project);
+    }
+  };
+
+  const handleDelete = (): void => {
+    if (onDelete) {
+      onDelete(project);
+    }
+  };
+
+  const handleManageTeam = (): void => {
+    if (onManageTeam) {
+      onManageTeam(project);
+    }
+  };
 
   return (
-    <TooltipProvider>
-      <Link href={`/projects/${project.id}`} className="block group">
-        <Card className="hover:shadow-lg transition-all duration-200 border-slate-200/60 hover:border-slate-300 cursor-pointer relative">
-          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <div className="bg-blue-500 text-white p-1 rounded-full">
-              <ExternalLink className="h-3 w-3" />
+    <Card
+      className="group hover:shadow-xl transition-all duration-300 border border-gray-200/60 bg-white/90 backdrop-blur-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+      onClick={handleCardClick}
+    >
+      <CardHeader className="pb-3 sm:pb-4">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+              <Building2 className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-sm sm:text-lg lg:text-xl font-bold text-gray-900 truncate hover:text-blue-600 transition-colors">
+                {project.name}
+              </CardTitle>
+              <div className="flex items-center flex-wrap gap-1 sm:gap-2 mt-1">
+                <Badge
+                  variant="outline"
+                  className="text-xs font-mono bg-gray-50 font-semibold"
+                >
+                  {project.key}
+                </Badge>
+                <Badge
+                  className={`text-xs font-medium ${getStatusColor(
+                    project.status
+                  )}`}
+                >
+                  {getStatusIcon(project.status)}
+                  <span className="ml-1">
+                    {project.status === "ACTIVE" && "Actif"}
+                    {project.status === "COMPLETED" && "Terminé"}
+                    {project.status === "ON_HOLD" && "En pause"}
+                    {project.status === "CANCELLED" && "Annulé"}
+                  </span>
+                </Badge>
+              </div>
             </div>
           </div>
 
-          <CardHeader className="pb-4">
-            <div className="flex items-start justify-between">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-3 mb-3">
-                  <CardTitle className="text-lg font-semibold text-gray-900 truncate group-hover:text-blue-700 transition-colors">
-                    {project.name}
-                  </CardTitle>
-                  <Badge
-                    variant="outline"
-                    className="text-xs font-mono shrink-0 bg-slate-50 border-slate-200"
-                  >
-                    {project.key}
-                  </Badge>
-                </div>
-                <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                  {project.description || "Aucune description disponible"}
-                </p>
-                <div className="flex items-center space-x-4 text-sm text-gray-500">
-                  {/* Affichage des propriétaires actifs */}
-                  {activeOwners.length > 0 && (
-                    <div className="flex items-center space-x-1">
-                      <Users className="h-4 w-4" />
-                      <span>
-                        {activeOwners.length === 1
-                          ? getUserDisplayName(activeOwners[0])
-                          : `${activeOwners.length} propriétaires`}
-                      </span>
-                    </div>
-                  )}
-                  <div
-                    className={`flex items-center space-x-1 ${visibilityConfig.color}`}
-                  >
-                    {visibilityConfig.icon}
-                    <span>{visibilityConfig.label}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col items-end space-y-2 ml-4">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 relative z-10"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={handleEdit}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Modifier
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleMoveUp}>
-                      <ChevronUp className="h-4 w-4 mr-2" />
-                      Monter
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleMoveDown}>
-                      <ChevronDown className="h-4 w-4 mr-2" />
-                      Descendre
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={handleDelete}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Supprimer
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <Badge
-                  className={cn(
-                    statusConfig.color,
-                    "text-xs flex items-center gap-1"
-                  )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0 flex-shrink-0"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(project);
+                }}
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Modifier
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleView();
+                }}
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                Voir les détails
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {onDelete && (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete();
+                  }}
+                  className="text-red-600 focus:text-red-600"
                 >
-                  {statusConfig.icon}
-                  {statusConfig.label}
-                </Badge>
-                {!project.isActive && (
-                  <Badge
-                    variant="outline"
-                    className="text-xs text-red-600 border-red-200"
-                  >
-                    Inactif
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </CardHeader>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Supprimer
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-          <CardContent className="pt-0">
-            <div className="space-y-4">
-              {/* Affichage des dates du projet */}
-              {(project.startDate || project.endDate) && (
-                <div className="flex items-center text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
-                  <Calendar className="h-4 w-4 mr-2 text-gray-500" />
-                  <span>
-                    {project.startDate && project.endDate ? (
-                      <>
-                        {new Date(project.startDate).toLocaleDateString(
-                          "fr-FR"
-                        )}
-                        {" → "}
-                        {new Date(project.endDate).toLocaleDateString("fr-FR")}
-                      </>
-                    ) : project.startDate ? (
-                      <>
-                        Début:{" "}
-                        {new Date(project.startDate).toLocaleDateString(
-                          "fr-FR"
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        Fin:{" "}
-                        {new Date(project.endDate!).toLocaleDateString("fr-FR")}
-                      </>
-                    )}
+        <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mt-2 sm:mt-3 leading-relaxed">
+          {project.description || "Aucune description disponible"}
+        </p>
+      </CardHeader>
+
+      <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+        {/* Progression */}
+        <div>
+          <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
+            <span className="text-gray-600 font-medium">Progression</span>
+            <span className="text-gray-900 font-bold">{progress}%</span>
+          </div>
+          <Progress value={progress} className="h-2 sm:h-3" />
+        </div>
+
+        {/* Statistiques des éléments de travail */}
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
+          <div className="text-center p-2 sm:p-3 bg-purple-50/80 rounded-lg sm:rounded-xl border border-purple-100">
+            <Target className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 mx-auto mb-1" />
+            <div className="text-sm sm:text-base lg:text-lg font-bold text-purple-900">
+              {project._count?.initiatives || 0}
+            </div>
+            <div className="text-xs text-purple-600 font-medium">
+              Initiatives
+            </div>
+            <div className="text-xs text-purple-500 opacity-70 hidden sm:block">
+              Objectifs stratégiques
+            </div>
+          </div>
+
+          <div className="text-center p-2 sm:p-3 bg-green-50/80 rounded-lg sm:rounded-xl border border-green-100">
+            <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mx-auto mb-1" />
+            <div className="text-sm sm:text-base lg:text-lg font-bold text-green-900">
+              {(project._count?.epics || 0) + (project._count?.features || 0)}
+            </div>
+            <div className="text-xs text-green-600 font-medium">
+              Epics & Features
+            </div>
+            <div className="text-xs text-green-500 opacity-70 hidden sm:block">
+              Fonctionnalités métier
+            </div>
+          </div>
+
+          <div className="text-center p-2 sm:p-3 bg-orange-50/80 rounded-lg sm:rounded-xl border border-orange-100">
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 mx-auto mb-1" />
+            <div className="text-sm sm:text-base lg:text-lg font-bold text-orange-900">
+              {(project._count?.userStories || 0) +
+                (project._count?.tasks || 0)}
+            </div>
+            <div className="text-xs text-orange-600 font-medium">
+              Stories & Tasks
+            </div>
+            <div className="text-xs text-orange-500 opacity-70 hidden sm:block">
+              Éléments de développement
+            </div>
+          </div>
+
+          <div className="text-center p-2 sm:p-3 bg-blue-50/80 rounded-lg sm:rounded-xl border border-blue-100">
+            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mx-auto mb-1" />
+            <div className="text-sm sm:text-base lg:text-lg font-bold text-blue-900">
+              {project._count?.sprints || 0}
+            </div>
+            <div className="text-xs text-blue-600 font-medium">Sprints</div>
+            <div className="text-xs text-blue-500 opacity-70 hidden sm:block">
+              Cycles de développement
+            </div>
+          </div>
+        </div>
+
+        {/* Fichiers */}
+        {(project._count?.files || 0) > 0 && (
+          <div className="flex items-center space-x-2 p-2 bg-gray-50/50 rounded-lg">
+            <FolderOpen className="w-4 h-4 text-gray-500" />
+            <span className="text-xs sm:text-sm text-gray-600 font-medium">
+              {project._count?.files} fichier
+              {(project._count?.files || 0) > 1 ? "s" : ""}
+            </span>
+          </div>
+        )}
+
+        {/* Dates */}
+        {(project.startDate || project.endDate) && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-gray-500 bg-gray-50/50 rounded-lg p-2">
+            {project.startDate && (
+              <div className="flex items-center space-x-1">
+                <Calendar className="w-3 h-3" />
+                <span className="font-medium">
+                  Début:{" "}
+                  {format(new Date(project.startDate), "dd/MM/yyyy", {
+                    locale: fr,
+                  })}
+                </span>
+              </div>
+            )}
+            {project.endDate && (
+              <div className="flex items-center space-x-1">
+                <Calendar className="w-3 h-3" />
+                <span className="font-medium">
+                  Fin:{" "}
+                  {format(new Date(project.endDate), "dd/MM/yyyy", {
+                    locale: fr,
+                  })}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Équipe */}
+        <div>
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-700 font-medium">
+              <Users className="w-4 h-4" />
+              <span>Équipe ({activeMembers.length})</span>
+            </div>
+            {onManageTeam && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleManageTeam();
+                }}
+                className="h-6 sm:h-7 px-2 text-xs hover:bg-blue-50 hover:border-blue-200"
+              >
+                <Zap className="w-3 h-3 mr-1" />
+                Gérer
+              </Button>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex -space-x-1 sm:-space-x-2">
+              {activeMembers.slice(0, 5).map((member, index) => (
+                <Avatar
+                  key={`${member.userId}-${index}`}
+                  className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-white shadow-md hover:z-10 transition-transform hover:scale-110"
+                  title={`${getUserDisplayName(member.user)} - ${getRoleLabel(
+                    member.role
+                  )}`}
+                >
+                  <AvatarImage src={member.user.image || undefined} />
+                  <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold">
+                    {getUserDisplayName(member.user)
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()
+                      .slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+              ))}
+
+              {activeMembers.length > 5 && (
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-100 border-2 border-white rounded-full flex items-center justify-center shadow-md">
+                  <span className="text-xs text-gray-600 font-bold">
+                    +{activeMembers.length - 5}
                   </span>
                 </div>
               )}
-
-              {/* Statistiques du projet */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="bg-blue-50 rounded-lg p-3 cursor-help hover:bg-blue-100 transition-colors">
-                      <div className="text-blue-700 font-medium mb-1">
-                        Initiatives
-                      </div>
-                      <div className="text-blue-900 text-lg font-semibold">
-                        {project._count?.initiatives || 0}
-                      </div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Nombre d'initiatives dans ce projet</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="bg-green-50 rounded-lg p-3 cursor-help hover:bg-green-100 transition-colors">
-                      <div className="text-green-700 font-medium mb-1">
-                        Features
-                      </div>
-                      <div className="text-green-900 text-lg font-semibold">
-                        {project._count?.features || 0}
-                      </div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Nombre de fonctionnalités dans ce projet</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="bg-purple-50 rounded-lg p-3 cursor-help hover:bg-purple-100 transition-colors">
-                      <div className="text-purple-700 font-medium mb-1">
-                        Sprints
-                      </div>
-                      <div className="text-purple-900 text-lg font-semibold">
-                        {project._count?.sprints || 0}
-                      </div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Nombre de sprints planifiés</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="bg-orange-50 rounded-lg p-3 cursor-help hover:bg-orange-100 transition-colors">
-                      <div className="text-orange-700 font-medium mb-1">
-                        Fichiers
-                      </div>
-                      <div className="text-orange-900 text-lg font-semibold">
-                        {project._count?.files || 0}
-                      </div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Nombre de fichiers attachés</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-
-              {/* Membres de l'équipe */}
-              {activeMembers.length > 0 && (
-                <div className="pt-4 border-t border-slate-100">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium text-gray-700 mb-2">
-                      Membres de l'équipe ({activeMembers.length})
-                    </div>
-                    <div className="flex -space-x-2">
-                      {activeMembers.slice(0, 5).map((member) => (
-                        <Tooltip key={member.id}>
-                          <TooltipTrigger asChild>
-                            <Avatar className="h-8 w-8 border-2 border-white shadow-sm cursor-help">
-                              <AvatarImage
-                                src={member.user.image || undefined}
-                              />
-                              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white text-xs">
-                                {member.user.name?.charAt(0) ||
-                                  member.user.firstName?.charAt(0) ||
-                                  member.user.email?.charAt(0) ||
-                                  "U"}
-                              </AvatarFallback>
-                            </Avatar>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>
-                              {getUserDisplayName(member.user)}
-                              <br />
-                              <span className="text-xs opacity-80">
-                                {getRoleLabel(member.role)}
-                              </span>
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      ))}
-                      {activeMembers.length > 5 && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="h-8 w-8 bg-gray-100 rounded-full border-2 border-white flex items-center justify-center shadow-sm cursor-help">
-                              <span className="text-xs font-medium text-gray-600">
-                                +{activeMembers.length - 5}
-                              </span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Et {activeMembers.length - 5} autres membres</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
-          </CardContent>
-        </Card>
-      </Link>
-    </TooltipProvider>
+          </div>
+
+          {/* Rôles de l'équipe */}
+          {activeMembers.length > 0 && (
+            <div className="mt-2 text-xs text-gray-500">
+              <span className="font-medium">
+                Rôles:{" "}
+                {Array.from(
+                  new Set(activeMembers.map((m) => getRoleLabel(m.role)))
+                ).join(", ")}
+              </span>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
+
+export default ProjectCard;
