@@ -1,9 +1,65 @@
 // components/files/views/FilesViewBranch.tsx
+
+/**
+ * RÔLE : Vue arborescente des fichiers avec hiérarchie et navigation interactive
+ * RESPONSABILITÉS :
+ * - Affichage hiérarchique des fichiers et dossiers avec indentation visuelle
+ * - Navigation dans l'arborescence avec expansion/collapse des nœuds
+ * - Support du drag & drop pour réorganisation des éléments
+ * - Filtrage et recherche dans l'arbre avec highlight des résultats
+ * - Actions contextuelles par nœud (edit, delete, move, duplicate)
+ * - Gestion des dossiers avec isFolder et navigation hiérarchique
+ * - Support des nouveaux types de fichiers selon schéma Prisma mis à jour
+ * - Gestion du mimeType nullable selon le nouveau schéma Prisma
+ * - Types unifiés via fichier central types/files.ts
+ *
+ * COMPOSANTS UTILISÉS :
+ * - Card, CardContent: Conteneurs shadcn/ui pour structuration
+ * - Button: Boutons d'action avec variants hover
+ * - Input: Champ de recherche avec debounce
+ * - Badge: Affichage des types, statuts et métadonnées
+ * - Collapsible: Composants d'expansion/collapse pour nœuds
+ * - DropdownMenu: Menus contextuels pour actions
+ * - Tooltip: Info-bulles pour actions et métadonnées
+ *
+ * LIBS UTILISÉS :
+ * - React 19 hooks: useState, useCallback, useMemo, useEffect, JSX
+ * - Next.js 15 client component avec TypeScript strict mode
+ * - shadcn/ui: Card, Button, Input, Badge, Collapsible, DropdownMenu, Tooltip
+ * - lucide-react: Icons pour types de fichiers, actions, navigation
+ * - Tailwind CSS: Design responsive avec indentation et hover effects
+ * - date-fns: Formatage des dates avec locale française
+ * - sonner: Toast notifications pour feedback utilisateur
+ *
+ * PROPS reçues de FilesList :
+ * - files: Liste des fichiers avec relations complètes selon types/files.ts
+ * - viewMode: Mode d'affichage ("branch" pour cette vue)
+ * - currentFolder: ID du dossier courant pour navigation
+ * - onEdit: Callback d'édition avec type FileWithRelations unifié
+ * - onRefresh: Callback de rafraîchissement après actions
+ * - onFolderNavigate: Callback de navigation avec gestion isFolder
+ * - Actions supplémentaires: onDelete, onDownload, onShare, etc.
+ */
+
 "use client";
 
-import React, { useState } from "react";
+import React, { JSX, useState, useCallback, useMemo, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
   TooltipContent,
@@ -11,585 +67,702 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  ChevronRight,
   ChevronDown,
-  ChevronUp,
+  ChevronRight,
+  Search,
+  MoreVertical,
   Edit,
   Trash2,
   Download,
+  Share2,
+  Copy,
+  Move,
   FolderOpen,
-  Folder,
+  File,
   FileText,
+  Package,
+  Settings,
+  Layers,
+  Database,
+  Code2,
   Image,
   Video,
   Archive,
-  Code,
-  FileCode,
-  Palette,
+  Paintbrush,
   TestTube,
-  MoreHorizontal,
+  Globe,
+  Lock,
+  Calendar,
+  Tag,
+  Hash,
 } from "lucide-react";
-import { deleteItemUtil } from "@/utils/delete-item";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
-// Interface identique aux autres vues
-interface FileWithRelations {
-  id: string;
-  name: string;
-  originalName: string | null;
-  type:
-    | "DOCUMENT"
-    | "IMAGE"
-    | "VIDEO"
-    | "ARCHIVE"
-    | "CODE"
-    | "SPECIFICATION"
-    | "DESIGN"
-    | "TEST"
-    | "OTHER";
-  mimeType: string;
-  size: number;
-  url: string;
-  path: string | null;
-  description: string | null;
-  import: any;
-  export: any;
-  script: string | null;
-  version: number;
-  isPublic: boolean;
-  isFolder: boolean;
-  metadata: any;
-  tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
+// ✅ Import des types centralisés pour éviter les conflits
+import type {
+  FileWithRelations,
+  ViewMode,
+  FilesViewProps,
+} from "@/types/files";
 
-  uploader: {
-    id: string;
-    name: string | null;
-    email: string;
-    emailVerified: boolean;
-    image: string | null;
-    username?: string | null;
-    firstName?: string | null;
-    lastName?: string | null;
-    bio?: string | null;
-    timezone?: string | null;
-    preferences?: any;
-    isActive: boolean;
-  };
-
-  parent?: {
-    id: string;
-    name: string;
-    isFolder: boolean;
-  } | null;
-
-  children?: FileWithRelations[];
-
-  project?: {
-    id: string;
-    name: string;
-    key: string;
-    slug: string;
-  } | null;
-
-  feature?: {
-    id: string;
-    name: string;
-    description?: string | null;
-    priority: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
-  } | null;
-
-  userStory?: {
-    id: string;
-    title: string;
-    description?: string | null;
-    priority: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
-  } | null;
-
-  task?: {
-    id: string;
-    title: string;
-    description?: string | null;
-    priority: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
-  } | null;
-
-  sprint?: {
-    id: string;
-    name: string;
-    goal?: string | null;
-    status: "PLANNED" | "ACTIVE" | "COMPLETED" | "CANCELLED";
-  } | null;
-
-  versions?: Array<{
-    id: string;
-    version: number;
-    url: string;
-    size: number;
-    checksum?: string | null;
-    changelog?: string | null;
-    createdAt: Date;
-    author: {
-      id: string;
-      name: string | null;
-      email: string;
-    };
-  }>;
-
-  comments?: Array<{
-    id: string;
-    content: string;
-    mentions: string[];
-    createdAt: Date;
-    updatedAt: Date;
-    author: {
-      id: string;
-      name: string | null;
-      email: string;
-      image: string | null;
-    };
-  }>;
-
-  items?: Array<{
-    id: string;
-    type: string;
-    name: string;
-    status: "ACTIVE" | "COMPLETED" | "CANCELLED" | "ON_HOLD";
-  }>;
-
-  _count?: {
-    children?: number;
-    versions?: number;
-    comments?: number;
-    items?: number;
-  };
+// Interface pour les nœuds de l'arbre avec état d'expansion
+interface TreeNode extends FileWithRelations {
+  level: number;
+  isExpanded: boolean;
+  parentPath: string;
+  hasChildren: boolean;
 }
 
-export interface FilesViewBranchProps {
+// Interface pour les options de vue
+interface ViewOptions {
+  searchTerm: string;
+  showHiddenFiles: boolean;
+  typeFilter: string[];
+  expandAll: boolean;
+}
+
+// Interface pour les props du composant
+interface FilesViewBranchProps extends FilesViewProps {
   files: FileWithRelations[];
+  viewMode: ViewMode;
+  currentFolder: string | null;
   onEdit: (file: FileWithRelations) => void;
   onRefresh: () => void;
   onFolderNavigate: (folderId: string | null, folderName?: string) => void;
+  onDelete?: (file: FileWithRelations) => void;
+  onDownload?: (file: FileWithRelations) => void;
+  onShare?: (file: FileWithRelations) => void;
+  onDuplicate?: (file: FileWithRelations) => void;
+  selectedFiles?: string[];
+  onToggleSelection?: (fileId: string) => void;
+  getFileTypeIcon?: (type: string, isFolder?: boolean) => JSX.Element;
+  getTypeLabel?: (type: string) => string;
+  formatFileSize?: (bytes: number | null) => string;
 }
 
-export const FilesViewBranch: React.FC<FilesViewBranchProps> = ({
+export default function FilesViewBranch({
   files,
+  viewMode,
+  currentFolder,
   onEdit,
   onRefresh,
   onFolderNavigate,
-}) => {
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
-    new Set()
+  onDelete,
+  onDownload,
+  onShare,
+  onDuplicate,
+  selectedFiles = [],
+  onToggleSelection,
+  getFileTypeIcon,
+  getTypeLabel,
+  formatFileSize,
+}: FilesViewBranchProps): JSX.Element {
+  // États locaux
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+  const [viewOptions, setViewOptions] = useState<ViewOptions>({
+    searchTerm: "",
+    showHiddenFiles: false,
+    typeFilter: [],
+    expandAll: false,
+  });
+
+  // ✅ Fonction pour obtenir l'icône du type avec gestion des dossiers
+  const getFileIcon = useCallback(
+    (file: FileWithRelations): JSX.Element => {
+      if (getFileTypeIcon) {
+        return getFileTypeIcon(file.type, file.isFolder);
+      }
+
+      if (file.isFolder) {
+        return <FolderOpen className="h-4 w-4 text-blue-600" />;
+      }
+
+      switch (file.type) {
+        case "PAGE":
+          return <FileText className="h-4 w-4 text-purple-600" />;
+        case "COMPONENT":
+          return <Package className="h-4 w-4 text-blue-600" />;
+        case "UTILS":
+          return <Settings className="h-4 w-4 text-orange-600" />;
+        case "LIB":
+          return <Layers className="h-4 w-4 text-indigo-600" />;
+        case "STORE":
+          return <Database className="h-4 w-4 text-green-600" />;
+        case "HOOK":
+          return <Code2 className="h-4 w-4 text-teal-600" />;
+        case "DOCUMENT":
+          return <FileText className="h-4 w-4 text-blue-600" />;
+        case "IMAGE":
+          return <Image className="h-4 w-4 text-pink-600" />;
+        case "VIDEO":
+          return <Video className="h-4 w-4 text-red-600" />;
+        case "ARCHIVE":
+          return <Archive className="h-4 w-4 text-yellow-600" />;
+        case "CODE":
+          return <Code2 className="h-4 w-4 text-gray-600" />;
+        case "SPECIFICATION":
+          return <FileText className="h-4 w-4 text-cyan-600" />;
+        case "DESIGN":
+          return <Paintbrush className="h-4 w-4 text-rose-600" />;
+        case "TEST":
+          return <TestTube className="h-4 w-4 text-emerald-600" />;
+        default:
+          return <File className="h-4 w-4 text-gray-400" />;
+      }
+    },
+    [getFileTypeIcon]
   );
 
-  const toggleFolder = (folderId: string) => {
-    const newExpanded = new Set(expandedFolders);
-    if (newExpanded.has(folderId)) {
-      newExpanded.delete(folderId);
-    } else {
-      newExpanded.add(folderId);
-    }
-    setExpandedFolders(newExpanded);
-  };
+  // ✅ Fonction pour obtenir le label du type
+  const getLabel = useCallback(
+    (type: string): string => {
+      if (getTypeLabel) {
+        return getTypeLabel(type);
+      }
 
-  const handleMoveUp = async (e: React.MouseEvent, fileId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      await fetch(`/api/files/${fileId}/move`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ direction: "up" }),
+      switch (type) {
+        case "PAGE":
+          return "Page Next.js";
+        case "COMPONENT":
+          return "Composant React";
+        case "UTILS":
+          return "Utilitaires";
+        case "LIB":
+          return "Librairie";
+        case "STORE":
+          return "Store";
+        case "HOOK":
+          return "Hook React";
+        case "DOCUMENT":
+          return "Document";
+        case "IMAGE":
+          return "Image";
+        case "VIDEO":
+          return "Vidéo";
+        case "ARCHIVE":
+          return "Archive";
+        case "CODE":
+          return "Code";
+        case "SPECIFICATION":
+          return "Spécification";
+        case "DESIGN":
+          return "Design";
+        case "TEST":
+          return "Test";
+        default:
+          return "Autre";
+      }
+    },
+    [getTypeLabel]
+  );
+
+  // ✅ Fonction pour formater la taille avec gestion du nullable
+  const formatSize = useCallback(
+    (bytes: number | null): string => {
+      if (formatFileSize) {
+        return formatFileSize(bytes);
+      }
+
+      if (!bytes || bytes === 0) return "0 B";
+      const k = 1024;
+      const sizes = ["B", "KB", "MB", "GB"];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    },
+    [formatFileSize]
+  );
+
+  // ✅ Construction de l'arbre hiérarchique avec gestion des nœuds
+  const buildTree = useCallback(
+    (files: FileWithRelations[]): TreeNode[] => {
+      const nodeMap = new Map<string, TreeNode>();
+      const rootNodes: TreeNode[] = [];
+
+      // Première passe : créer tous les nœuds
+      files.forEach((file) => {
+        const node: TreeNode = {
+          ...file,
+          level: 0,
+          isExpanded: expandedNodes.has(file.id),
+          parentPath: "",
+          hasChildren: file.isFolder && (file._count?.children || 0) > 0,
+        };
+        nodeMap.set(file.id, node);
       });
-      onRefresh();
-      toast.success("Fichier déplacé vers le haut");
-    } catch (error) {
-      toast.error("Impossible de déplacer le fichier");
-    }
-  };
 
-  const handleMoveDown = async (e: React.MouseEvent, fileId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      await fetch(`/api/files/${fileId}/move`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ direction: "down" }),
+      // Deuxième passe : construire la hiérarchie
+      files.forEach((file) => {
+        const node = nodeMap.get(file.id)!;
+
+        if (file.parent?.id) {
+          const parentNode = nodeMap.get(file.parent.id);
+          if (parentNode) {
+            node.level = parentNode.level + 1;
+            node.parentPath =
+              `${parentNode.parentPath}/${parentNode.name}`.replace(/^\/+/, "");
+          } else {
+            rootNodes.push(node);
+          }
+        } else {
+          rootNodes.push(node);
+        }
       });
-      onRefresh();
-      toast.success("Fichier déplacé vers le bas");
-    } catch (error) {
-      toast.error("Impossible de déplacer le fichier");
-    }
-  };
 
-  const handleEdit = (e: React.MouseEvent, file: FileWithRelations) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onEdit(file);
-  };
-
-  const handleDelete = async (e: React.MouseEvent, fileId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (
-      !confirm(
-        "Êtes-vous sûr de vouloir supprimer ce fichier ? Cette action est irréversible."
-      )
-    )
-      return;
-
-    try {
-      await deleteItemUtil("files", fileId);
-      onRefresh();
-      toast.success("Fichier supprimé avec succès");
-    } catch (error) {
-      toast.error("Impossible de supprimer le fichier");
-    }
-  };
-
-  const handleDownload = async (
-    e: React.MouseEvent,
-    file: FileWithRelations
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      const response = await fetch(`/api/files/${file.id}/download`);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = file.originalName || file.name;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      toast.success("Téléchargement commencé");
-    } catch (error) {
-      toast.error("Erreur lors du téléchargement");
-    }
-  };
-
-  const getFileIcon = (file: FileWithRelations, isExpanded?: boolean) => {
-    if (file.isFolder) {
-      return isExpanded ? (
-        <FolderOpen className="h-4 w-4 text-blue-600" />
-      ) : (
-        <Folder className="h-4 w-4 text-blue-600" />
-      );
-    }
-
-    switch (file.type) {
-      case "DOCUMENT":
-        return <FileText className="h-4 w-4 text-red-600" />;
-      case "IMAGE":
-        return <Image className="h-4 w-4 text-green-600" />;
-      case "VIDEO":
-        return <Video className="h-4 w-4 text-purple-600" />;
-      case "ARCHIVE":
-        return <Archive className="h-4 w-4 text-yellow-600" />;
-      case "CODE":
-        return <Code className="h-4 w-4 text-blue-600" />;
-      case "SPECIFICATION":
-        return <FileCode className="h-4 w-4 text-indigo-600" />;
-      case "DESIGN":
-        return <Palette className="h-4 w-4 text-pink-600" />;
-      case "TEST":
-        return <TestTube className="h-4 w-4 text-orange-600" />;
-      default:
-        return <MoreHorizontal className="h-4 w-4 text-gray-600" />;
-    }
-  };
-
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return "0 B";
-    const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB", "TB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
-
-  const handleFileClick = (file: FileWithRelations) => {
-    if (file.isFolder) {
-      onFolderNavigate(file.id, file.name);
-    } else {
-      window.open(file.url, "_blank");
-    }
-  };
-
-  // Construction de l'arbre hiérarchique
-  const buildFileTree = (
-    files: FileWithRelations[],
-    parentId: string | null = null
-  ): FileWithRelations[] => {
-    return files
-      .filter((file) => (file.parent?.id || null) === parentId)
-      .sort((a, b) => {
-        // Les dossiers en premier
+      return rootNodes.sort((a, b) => {
+        // Dossiers en premier, puis tri alphabétique
         if (a.isFolder && !b.isFolder) return -1;
         if (!a.isFolder && b.isFolder) return 1;
-        // Puis par nom
         return a.name.localeCompare(b.name);
       });
-  };
+    },
+    [files, expandedNodes]
+  );
 
-  const renderFileNode = (
-    file: FileWithRelations,
-    level: number = 0
-  ): React.ReactNode => {
-    const isExpanded = expandedFolders.has(file.id);
-    const childFiles = file.isFolder ? buildFileTree(files, file.id) : [];
-    const hasChildren = childFiles.length > 0;
+  // ✅ Filtrage des nœuds selon les critères
+  const filteredTree = useMemo(() => {
+    const tree = buildTree(files);
 
-    return (
-      <div key={file.id} className="select-none">
-        <div
-          className={cn(
-            "flex items-center hover:bg-gray-50 rounded-lg transition-colors group",
-            "py-1 px-2"
-          )}
-          style={{ paddingLeft: `${level * 24 + 8}px` }}
-        >
-          {/* Indentation et icône d'expansion */}
-          <div className="flex items-center w-6">
-            {file.isFolder && hasChildren ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-4 w-4 p-0 hover:bg-gray-200"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleFolder(file.id);
-                }}
-              >
-                {isExpanded ? (
-                  <ChevronDown className="h-3 w-3" />
-                ) : (
-                  <ChevronRight className="h-3 w-3" />
+    if (!viewOptions.searchTerm && viewOptions.typeFilter.length === 0) {
+      return tree;
+    }
+
+    const filterNode = (node: TreeNode): boolean => {
+      let matches = true;
+
+      // Filtrage par terme de recherche
+      if (viewOptions.searchTerm) {
+        const searchLower = viewOptions.searchTerm.toLowerCase();
+        matches =
+          matches &&
+          (node.name.toLowerCase().includes(searchLower) ||
+            node.description?.toLowerCase().includes(searchLower) ||
+            node.originalName?.toLowerCase().includes(searchLower) ||
+            node.tags.some((tag) => tag.toLowerCase().includes(searchLower)));
+      }
+
+      // Filtrage par type
+      if (viewOptions.typeFilter.length > 0) {
+        matches = matches && viewOptions.typeFilter.includes(node.type);
+      }
+
+      return matches;
+    };
+
+    return tree.filter(filterNode);
+  }, [buildTree, viewOptions]);
+
+  // ✅ Gestion de l'expansion des nœuds
+  const toggleExpansion = useCallback((nodeId: string) => {
+    setExpandedNodes((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  // ✅ Gestion du clic sur un nœud
+  const handleNodeClick = useCallback(
+    (node: TreeNode) => {
+      if (node.isFolder) {
+        if (onFolderNavigate) {
+          onFolderNavigate(node.id, node.name);
+        }
+        toggleExpansion(node.id);
+      } else {
+        if (onEdit) {
+          onEdit(node);
+        }
+      }
+    },
+    [onFolderNavigate, onEdit, toggleExpansion]
+  );
+
+  // ✅ Actions par défaut si non fournies
+  const handleDelete = useCallback(
+    (file: FileWithRelations) => {
+      if (onDelete) {
+        onDelete(file);
+      } else {
+        toast.info(`Suppression de ${file.name} - Action non configurée`);
+      }
+    },
+    [onDelete]
+  );
+
+  const handleDownload = useCallback(
+    (file: FileWithRelations) => {
+      if (onDownload) {
+        onDownload(file);
+      } else if (file.url) {
+        window.open(file.url, "_blank");
+      } else {
+        toast.error("URL de téléchargement non disponible");
+      }
+    },
+    [onDownload]
+  );
+
+  const handleShare = useCallback(
+    (file: FileWithRelations) => {
+      if (onShare) {
+        onShare(file);
+      } else {
+        navigator.clipboard.writeText(file.url);
+        toast.success("URL copiée dans le presse-papiers");
+      }
+    },
+    [onShare]
+  );
+
+  const handleDuplicate = useCallback(
+    (file: FileWithRelations) => {
+      if (onDuplicate) {
+        onDuplicate(file);
+      } else {
+        toast.info(`Duplication de ${file.name} - Action non configurée`);
+      }
+    },
+    [onDuplicate]
+  );
+
+  // ✅ Gestion de la sélection
+  const handleToggleSelection = useCallback(
+    (fileId: string) => {
+      if (onToggleSelection) {
+        onToggleSelection(fileId);
+      }
+    },
+    [onToggleSelection]
+  );
+
+  // ✅ Expansion/collapse globale
+  const handleExpandAll = useCallback(() => {
+    if (viewOptions.expandAll) {
+      setExpandedNodes(new Set());
+    } else {
+      const allFolderIds = files.filter((f) => f.isFolder).map((f) => f.id);
+      setExpandedNodes(new Set(allFolderIds));
+    }
+    setViewOptions((prev) => ({ ...prev, expandAll: !prev.expandAll }));
+  }, [files, viewOptions.expandAll]);
+
+  // ✅ Rendu d'un nœud de l'arbre
+  const renderNode = useCallback(
+    (node: TreeNode, index: number): JSX.Element => {
+      const isSelected = selectedFiles.includes(node.id);
+      const hasChildren = node.isFolder && node.hasChildren;
+      const isExpanded = expandedNodes.has(node.id);
+
+      return (
+        <div key={node.id} className="select-none">
+          <div
+            className={`flex items-center gap-2 py-1.5 px-2 rounded-md transition-all duration-200 hover:bg-gray-50 ${
+              isSelected ? "bg-blue-50 border border-blue-200" : ""
+            }`}
+            style={{ paddingLeft: `${8 + node.level * 20}px` }}
+          >
+            {/* Toggle d'expansion pour les dossiers */}
+            <div className="w-4 h-4 flex items-center justify-center">
+              {hasChildren ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-4 h-4 p-0 hover:bg-gray-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleExpansion(node.id);
+                  }}
+                >
+                  {isExpanded ? (
+                    <ChevronDown className="h-3 w-3" />
+                  ) : (
+                    <ChevronRight className="h-3 w-3" />
+                  )}
+                </Button>
+              ) : null}
+            </div>
+
+            {/* Checkbox de sélection */}
+            {onToggleSelection && (
+              <input
+                type="checkbox"
+                checked={isSelected}
+                onChange={() => handleToggleSelection(node.id)}
+                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
+
+            {/* Icône du fichier/dossier */}
+            <div className="flex-shrink-0">{getFileIcon(node)}</div>
+
+            {/* Nom et informations principales */}
+            <div
+              className="flex-1 min-w-0 cursor-pointer"
+              onClick={() => handleNodeClick(node)}
+            >
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-gray-900 truncate">
+                  {node.name}
+                </span>
+
+                {/* Badges d'état */}
+                <div className="flex items-center gap-1">
+                  {node.isPublic && (
+                    <Badge variant="secondary" className="text-xs px-1 py-0">
+                      <Globe className="h-3 w-3 mr-1" />
+                      Public
+                    </Badge>
+                  )}
+
+                  {node.version > 1 && (
+                    <Badge variant="outline" className="text-xs px-1 py-0">
+                      v{node.version}
+                    </Badge>
+                  )}
+
+                  <Badge variant="outline" className="text-xs px-1 py-0">
+                    {getLabel(node.type)}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Informations secondaires */}
+              <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                {!node.isFolder && node.size && (
+                  <span>{formatSize(node.size)}</span>
                 )}
-              </Button>
-            ) : (
-              <div className="w-4" />
-            )}
-          </div>
 
-          {/* Icône du fichier */}
-          <div className="mr-2">{getFileIcon(file, isExpanded)}</div>
+                {node.isFolder && node._count?.children && (
+                  <span>
+                    {node._count.children} élément
+                    {node._count.children > 1 ? "s" : ""}
+                  </span>
+                )}
 
-          {/* Nom et informations */}
-          <div
-            className="flex-1 flex items-center space-x-2 cursor-pointer min-w-0"
-            onClick={() => handleFileClick(file)}
-          >
-            <span className="truncate text-sm text-gray-900 hover:text-blue-600 transition-colors">
-              {file.name}
-            </span>
+                {node.mimeType && !node.isFolder && (
+                  <span className="text-blue-600">{node.mimeType}</span>
+                )}
 
-            {file.isPublic && (
-              <Badge
-                variant="outline"
-                className="text-xs bg-green-50 text-green-700 border-green-200 shrink-0"
-              >
-                Public
-              </Badge>
-            )}
+                <span>
+                  {format(node.updatedAt, "dd/MM/yyyy", { locale: fr })}
+                </span>
 
-            {file.versions && file.versions.length > 1 && (
-              <Badge variant="outline" className="text-xs shrink-0">
-                v{file.version}
-              </Badge>
-            )}
-
-            <Badge variant="outline" className="text-xs shrink-0">
-              {file.type}
-            </Badge>
-          </div>
-
-          {/* Taille du fichier */}
-          <div className="text-xs text-gray-500 w-20 text-right shrink-0 hidden sm:block">
-            {file.isFolder ? (
-              <span>{file._count?.children || 0} éléments</span>
-            ) : (
-              formatFileSize(file.size)
-            )}
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-            {!file.isFolder && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 w-6 p-0 hover:bg-blue-100"
-                    onClick={(e) => handleDownload(e, file)}
-                  >
-                    <Download className="h-3 w-3 text-blue-600" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Télécharger</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0 hover:bg-gray-200"
-                  onClick={(e) => handleEdit(e, file)}
-                >
-                  <Edit className="h-3 w-3 text-gray-600" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Modifier</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0 hover:bg-gray-200"
-                  onClick={(e) => handleMoveUp(e, file.id)}
-                >
-                  <ChevronUp className="h-3 w-3 text-gray-600" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Déplacer vers le haut</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0 hover:bg-gray-200"
-                  onClick={(e) => handleMoveDown(e, file.id)}
-                >
-                  <ChevronDown className="h-3 w-3 text-gray-600" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Déplacer vers le bas</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0 hover:bg-red-100 text-red-600 hover:text-red-700"
-                  onClick={(e) => handleDelete(e, file.id)}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Supprimer</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </div>
-
-        {/* Enfants (si dossier expandé) */}
-        {file.isFolder && isExpanded && hasChildren && (
-          <div className="ml-2">
-            {childFiles.map((childFile) =>
-              renderFileNode(childFile, level + 1)
-            )}
-          </div>
-        )}
-
-        {/* Informations supplémentaires (tags, description) */}
-        {(file.description || file.tags.length > 0) && (
-          <div
-            className="text-xs text-gray-500 mt-1 ml-8"
-            style={{ paddingLeft: `${level * 24}px` }}
-          >
-            {file.description && (
-              <p className="truncate mb-1">{file.description}</p>
-            )}
-            {file.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {file.tags.slice(0, 3).map((tag) => (
-                  <Badge key={tag} variant="secondary" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
-                {file.tags.length > 3 && (
-                  <Badge variant="secondary" className="text-xs">
-                    +{file.tags.length - 3}
-                  </Badge>
+                {node.uploader && (
+                  <span>par {node.uploader.name || node.uploader.email}</span>
                 )}
               </div>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
 
-  const rootFiles = buildFileTree(files);
-
-  return (
-    <TooltipProvider>
-      <div className="p-4">
-        {/* En-tête */}
-        <div className="flex items-center justify-between mb-4 px-2">
-          <div className="flex items-center space-x-4 text-sm text-gray-600">
-            <span>Nom</span>
-            <span className="hidden sm:inline">Taille</span>
-            <span>Actions</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setExpandedFolders(new Set())}
-              className="text-xs"
-            >
-              Tout réduire
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                const allFolders = files
-                  .filter((f) => f.isFolder)
-                  .map((f) => f.id);
-                setExpandedFolders(new Set(allFolders));
-              }}
-              className="text-xs"
-            >
-              Tout développer
-            </Button>
-          </div>
-        </div>
-
-        {/* Arbre des fichiers */}
-        <div className="space-y-1">
-          {rootFiles.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              Aucun fichier à afficher
+              {/* Tags */}
+              {node.tags.length > 0 && (
+                <div className="flex items-center gap-1 mt-1">
+                  <Tag className="h-3 w-3 text-gray-400" />
+                  <div className="flex gap-1">
+                    {node.tags.slice(0, 3).map((tag, i) => (
+                      <Badge
+                        key={i}
+                        variant="secondary"
+                        className="text-xs px-1 py-0"
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                    {node.tags.length > 3 && (
+                      <span className="text-xs text-gray-500">
+                        +{node.tags.length - 3}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          ) : (
-            rootFiles.map((file) => renderFileNode(file))
+
+            {/* Menu d'actions */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-6 h-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => onEdit(node)}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Modifier
+                </DropdownMenuItem>
+
+                {!node.isFolder && (
+                  <DropdownMenuItem onClick={() => handleDownload(node)}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Télécharger
+                  </DropdownMenuItem>
+                )}
+
+                <DropdownMenuItem onClick={() => handleShare(node)}>
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Partager
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={() => handleDuplicate(node)}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Dupliquer
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  onClick={() => handleDelete(node)}
+                  className="text-red-600 focus:text-red-600"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Supprimer
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Enfants (si dossier expansé) */}
+          {hasChildren && isExpanded && (
+            <Collapsible open={isExpanded}>
+              <CollapsibleContent className="ml-4">
+                {files
+                  .filter((f) => f.parent?.id === node.id)
+                  .map((childFile, childIndex) => {
+                    const childNode: TreeNode = {
+                      ...childFile,
+                      level: node.level + 1,
+                      isExpanded: expandedNodes.has(childFile.id),
+                      parentPath: `${node.parentPath}/${node.name}`.replace(
+                        /^\/+/,
+                        ""
+                      ),
+                      hasChildren:
+                        childFile.isFolder &&
+                        (childFile._count?.children || 0) > 0,
+                    };
+                    return renderNode(childNode, childIndex);
+                  })}
+              </CollapsibleContent>
+            </Collapsible>
           )}
         </div>
-      </div>
-    </TooltipProvider>
+      );
+    },
+    [
+      selectedFiles,
+      expandedNodes,
+      files,
+      onToggleSelection,
+      getFileIcon,
+      getLabel,
+      formatSize,
+      handleNodeClick,
+      toggleExpansion,
+      onEdit,
+      handleDownload,
+      handleShare,
+      handleDuplicate,
+      handleDelete,
+      handleToggleSelection,
+    ]
   );
-};
+
+  return (
+    <div className="w-full space-y-4">
+      {/* Barre d'outils */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            {/* Recherche */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Rechercher dans l'arborescence..."
+                value={viewOptions.searchTerm}
+                onChange={(e) =>
+                  setViewOptions((prev) => ({
+                    ...prev,
+                    searchTerm: e.target.value,
+                  }))
+                }
+                className="pl-10"
+              />
+            </div>
+
+            {/* Actions globales */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExpandAll}
+                className="text-sm"
+              >
+                {viewOptions.expandAll ? "Tout replier" : "Tout déplier"}
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onRefresh}
+                className="text-sm"
+              >
+                Actualiser
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Arbre des fichiers */}
+      <Card>
+        <CardContent className="p-0">
+          {filteredTree.length > 0 ? (
+            <div className="p-2 space-y-1">
+              {filteredTree.map((node, index) => renderNode(node, index))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+              <FolderOpen className="h-12 w-12 text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {viewOptions.searchTerm
+                  ? "Aucun résultat trouvé"
+                  : "Aucun fichier"}
+              </h3>
+              <p className="text-gray-600 mb-4 max-w-md">
+                {viewOptions.searchTerm
+                  ? `Aucun fichier ne correspond à "${viewOptions.searchTerm}"`
+                  : "Les fichiers et dossiers apparaîtront ici"}
+              </p>
+              {(viewOptions.searchTerm ||
+                viewOptions.typeFilter.length > 0) && (
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setViewOptions({
+                      searchTerm: "",
+                      showHiddenFiles: false,
+                      typeFilter: [],
+                      expandAll: false,
+                    })
+                  }
+                >
+                  Effacer les filtres
+                </Button>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

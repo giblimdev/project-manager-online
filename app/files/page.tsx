@@ -1,97 +1,42 @@
-/*
-je veux que tu me donnes le code complet du fichiers suivant :   
-app/files/page.tsx qui utilisera les commposants  :
-FilesDisplay.tsx (liste, card, branch)
-FilesFilter.tsx (by name, by type, by date)
-FilesList.tsx (pours chaque fichier les boutons up dawn edit, delete)
-FilesForm.tsx (creation / modification de fichier)
-
-views/FileswiewList.tsx 
-views/FilesViewCard.tsx
-views/FilesViewBranch.tsx
-
- et les fichier suivant deja existant : 
-
-// lib/auth-client.ts
-import { createAuthClient } from "better-auth/react";
-
-export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
-});
-
-export const { signIn, signOut, signUp, useSession, getSession } = authClient;
-
-
-
-// lib/prisma.ts
-import { PrismaClient } from "@/lib/generated/prisma/client";
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-let prisma: PrismaClient;
-
-if (process.env.NODE_ENV === "production") {
-  prisma = new PrismaClient();
-} else {
-  if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = new PrismaClient();
-  }
-  prisma = globalForPrisma.prisma;
-}
-
-export default prisma;
-
-
- // utils/delete-item.ts
-// Fonction utilitaire pour supprimer un item
-export const deleteItemUtil = async (
-  tableName: string,
-  itemId: string
-): Promise<void> => {
-  const response = await fetch(`/api/${tableName}/${itemId}`, {
-    method: "DELETE",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to delete ${tableName} item`);
-  }
-};
-
-// utils/reorder-items.ts
-// Fonction utilitaire pour réorganiser les items
-import type { Item } from "@/types/item";
-
-export const reorderItemsUtil = async (
-  items: Item[],
-  itemId: string,
-  direction: "up" | "down"
-): Promise<void> => {
-  const currentIndex = items.findIndex((item) => item.id === itemId);
-  if (currentIndex === -1) return;
-
-  const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-  if (newIndex < 0 || newIndex >= items.length) return;
-
-  const response = await fetch(`/api/items/${itemId}/reorder`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ direction, newIndex }),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to reorder item");
-  }
-};
-
-
-*/
-
 // app/files/page.tsx
+
+/**
+ * RÔLE : Page principale de gestion des fichiers avec architecture séparée et navigation hiérarchique
+ * RESPONSABILITÉS :
+ * - Affichage des fichiers/dossiers de la table File avec relations complètes Prisma
+ * - Navigation dans l'arborescence avec breadcrumbs et gestion parentId/children
+ * - Filtrage avancé par nom, type FileType, uploader, métadonnées et relations
+ * - Basculement entre modes d'affichage (list, card, branch) avec D&D préparé
+ * - Gestion des sessions Better Auth et statistiques détaillées des fichiers
+ * - États de chargement, erreurs et feedback utilisateur avec toast notifications
+ * - Interface responsive moderne avec gradient et design cards cohérent
+ *
+ * COMPOSANTS UTILISÉS :
+ * - FilesDisplay: Sélecteur de mode d'affichage avec transmission vers FilesList
+ * - FilesFilter: Filtrage multi-critères avec search, type, date, tri
+ * - FilesList: Gestionnaire d'affichage selon le mode avec actions CRUD
+ * - FilesForm: Formulaire de création/modification en modal Dialog
+ * - Badge, Button, Dialog: Composants shadcn/ui pour l'interface moderne
+ * - Avatar: Affichage des utilisateurs avec fallback et images
+ *
+ * LIBS UTILISÉS :
+ * - React 19 hooks: useState, useEffect, useCallback, useMemo, JSX
+ * - Next.js 15 client component avec TypeScript strict mode
+ * - Better Auth: useSession pour authentification et validation utilisateur
+ * - shadcn/ui: Dialog, Badge, Button, Avatar pour interface moderne
+ * - lucide-react: Icons modernes (FilesIcon, FolderOpen, AlertCircle, Plus)
+ * - sonner: Toast notifications pour feedback utilisateur avec durées adaptées
+ * - Tailwind CSS: Design responsive moderne avec gradient et shadows
+ *
+ * API :
+ * - GET /api/files?parentId=[id] (liste des fichiers avec relations et filtres)
+ * - Réponses API selon format success/data/error avec timestamp
+ * - Support des breadcrumbs et navigation hiérarchique
+ */
+
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { JSX, useState, useEffect, useCallback, useMemo } from "react";
 import { useSession } from "@/lib/auth/auth-client";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -101,6 +46,7 @@ import {
   FolderOpen,
   AlertCircle,
   Files as FilesIcon,
+  RefreshCw,
 } from "lucide-react";
 import {
   Dialog,
@@ -109,13 +55,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FilesDisplay } from "@/components/files/FilesDisplay";
-import { FilesFilter } from "@/components/files/FilesFilter";
-import { FilesList } from "@/components/files/FilesList";
-import { FilesForm } from "@/components/files/FilesForm";
 import { toast } from "sonner";
+import FilesDisplay from "@/components/files/FilesDisplay";
+import FilesFilter from "@/components/files/FilesFilter";
+import FilesList from "@/components/files/FilesList";
+import FilesForm from "@/components/files/FilesForm";
 
-// Interface basée exactement sur votre schéma Prisma
+// Interface basée exactement sur votre schéma Prisma File
 interface FileWithRelations {
   id: string;
   name: string;
@@ -249,6 +195,7 @@ interface FileWithRelations {
   };
 }
 
+// Types pour l'interface
 type ViewMode = "list" | "card" | "branch";
 type FilterType =
   | "ALL"
@@ -264,35 +211,62 @@ type FilterType =
 type SortBy = "name" | "type" | "size" | "date" | "uploader";
 type SortOrder = "asc" | "desc";
 
-export default function FilesPage() {
+// Interface pour les breadcrumbs
+interface Breadcrumb {
+  id: string;
+  name: string;
+}
+
+// Interface pour la réponse API
+interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+  timestamp: string;
+  breadcrumbs?: Breadcrumb[];
+}
+
+export default function FilesPage(): JSX.Element {
   const { data: session, isPending } = useSession();
+
+  // États principaux
   const [files, setFiles] = useState<FileWithRelations[]>([]);
   const [filteredFiles, setFilteredFiles] = useState<FileWithRelations[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // États du formulaire et de la modal
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [editingFile, setEditingFile] = useState<FileWithRelations | null>(
     null
   );
-  const [filterValue, setFilterValue] = useState("");
+
+  // États de filtrage
+  const [filterValue, setFilterValue] = useState<string>("");
   const [filterType, setFilterType] = useState<FilterType>("ALL");
   const [sortBy, setSortBy] = useState<SortBy>("name");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
-  const [currentFolder, setCurrentFolder] = useState<string | null>(null);
-  const [breadcrumbs, setBreadcrumbs] = useState<
-    Array<{ id: string; name: string }>
-  >([]);
-  const [error, setError] = useState<string | null>(null);
 
+  // États de navigation
+  const [currentFolder, setCurrentFolder] = useState<string | null>(null);
+  const [breadcrumbs, setBreadcrumbs] = useState<Breadcrumb[]>([]);
+
+  // Chargement des fichiers lors du changement de dossier
   useEffect(() => {
     fetchFiles();
   }, [currentFolder]);
 
+  // Application des filtres et tri
   useEffect(() => {
     applyFiltersAndSort();
   }, [files, filterValue, filterType, sortBy, sortOrder]);
 
-  const fetchFiles = async () => {
+  /**
+   * Chargement des fichiers depuis l'API
+   */
+  const fetchFiles = useCallback(async (): Promise<void> => {
     try {
       setIsLoading(true);
       setError(null);
@@ -302,75 +276,66 @@ export default function FilesPage() {
         params.append("parentId", currentFolder);
       }
 
-      const response = await fetch(`/api/files?${params.toString()}`);
+      console.log("📁 Chargement des fichiers:", currentFolder || "racine");
+
+      const response = await fetch(`/api/files?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      });
 
       if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
+        throw new Error(
+          `Erreur HTTP: ${response.status} ${response.statusText}`
+        );
       }
 
-      const data = await response.json();
+      const result: ApiResponse<FileWithRelations[]> = await response.json();
 
-      if (data && typeof data === "object") {
-        let filesData: any[] = [];
-
-        if (data.files && Array.isArray(data.files)) {
-          filesData = data.files;
-        } else if (Array.isArray(data)) {
-          filesData = data;
-        } else {
-          console.error("Structure de données inattendue:", data);
-          throw new Error("Format de données inattendu reçu du serveur");
-        }
-
-        // Normalisation des données selon le schéma Prisma
-        const normalizedFiles: FileWithRelations[] = filesData.map((file) => ({
-          ...file,
-          uploader: {
-            id: file.uploader?.id || "",
-            name: file.uploader?.name || null,
-            email: file.uploader?.email || "",
-            emailVerified: file.uploader?.emailVerified ?? false,
-            image: file.uploader?.image || null,
-            username: file.uploader?.username || null,
-            firstName: file.uploader?.firstName || null,
-            lastName: file.uploader?.lastName || null,
-            bio: file.uploader?.bio || null,
-            timezone: file.uploader?.timezone || "UTC",
-            preferences: file.uploader?.preferences || {},
-            isActive: file.uploader?.isActive ?? true,
-          },
-          createdAt: new Date(file.createdAt),
-          updatedAt: new Date(file.updatedAt),
-          tags: file.tags || [],
-          metadata: file.metadata || {},
-          versions: (file.versions || []).map((version: any) => ({
-            ...version,
-            createdAt: new Date(version.createdAt),
-          })),
-          comments: (file.comments || []).map((comment: any) => ({
-            ...comment,
-            createdAt: new Date(comment.createdAt),
-            updatedAt: new Date(comment.updatedAt),
-          })),
-          _count: file._count || {
-            children: file.children?.length || 0,
-            versions: file.versions?.length || 0,
-            comments: file.comments?.length || 0,
-            items: file.items?.length || 0,
-          },
-        }));
-
-        setFiles(normalizedFiles);
-
-        // Mise à jour des breadcrumbs
-        if (data.breadcrumbs) {
-          setBreadcrumbs(data.breadcrumbs);
-        }
-      } else {
-        throw new Error("Données invalides reçues du serveur");
+      if (!result.success) {
+        throw new Error(
+          result.error || result.message || "Erreur lors du chargement"
+        );
       }
+
+      const filesData = result.data || [];
+
+      // Normalisation des données selon le schéma Prisma
+      const normalizedFiles: FileWithRelations[] = filesData.map((file) => ({
+        ...file,
+        createdAt: new Date(file.createdAt),
+        updatedAt: new Date(file.updatedAt),
+        tags: file.tags || [],
+        metadata: file.metadata || {},
+        versions: (file.versions || []).map((version) => ({
+          ...version,
+          createdAt: new Date(version.createdAt),
+        })),
+        comments: (file.comments || []).map((comment) => ({
+          ...comment,
+          createdAt: new Date(comment.createdAt),
+          updatedAt: new Date(comment.updatedAt),
+        })),
+        _count: file._count || {
+          children: file.children?.length || 0,
+          versions: file.versions?.length || 0,
+          comments: file.comments?.length || 0,
+          items: file.items?.length || 0,
+        },
+      }));
+
+      setFiles(normalizedFiles);
+
+      // Mise à jour des breadcrumbs
+      if (result.breadcrumbs) {
+        setBreadcrumbs(result.breadcrumbs);
+      }
+
+      console.log("✅ Fichiers chargés:", normalizedFiles.length);
     } catch (error) {
-      console.error("Erreur lors du chargement des fichiers:", error);
+      console.error("💥 Erreur lors du chargement des fichiers:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Erreur inconnue";
       setError(errorMessage);
@@ -380,14 +345,17 @@ export default function FilesPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentFolder]);
 
-  const applyFiltersAndSort = () => {
+  /**
+   * Application des filtres et du tri
+   */
+  const applyFiltersAndSort = useCallback((): void => {
     let filtered = [...files];
 
     // Filtrage par recherche textuelle
-    if (filterValue) {
-      const searchTerm = filterValue.toLowerCase();
+    if (filterValue.trim()) {
+      const searchTerm = filterValue.toLowerCase().trim();
       filtered = filtered.filter((file) => {
         const matchesBasicFields =
           file.name.toLowerCase().includes(searchTerm) ||
@@ -461,61 +429,86 @@ export default function FilesPage() {
     });
 
     setFilteredFiles(filtered);
-  };
+  }, [files, filterValue, filterType, sortBy, sortOrder]);
 
-  const handleFormSuccess = () => {
+  /**
+   * Gestionnaire de succès du formulaire
+   */
+  const handleFormSuccess = useCallback((): void => {
     setIsAddModalOpen(false);
     setEditingFile(null);
     fetchFiles();
     toast.success(
-      editingFile ? "Fichier modifié avec succès" : "Fichier ajouté avec succès"
+      editingFile ? "Fichier modifié avec succès" : "Fichier créé avec succès"
     );
-  };
+  }, [editingFile, fetchFiles]);
 
-  const handleEdit = (file: FileWithRelations) => {
+  /**
+   * Gestionnaire d'édition de fichier
+   */
+  const handleEdit = useCallback((file: FileWithRelations): void => {
     setEditingFile(file);
     setIsAddModalOpen(true);
-  };
+  }, []);
 
-  const handleFolderNavigation = (
-    folderId: string | null,
-    folderName?: string
-  ) => {
-    setCurrentFolder(folderId);
-    if (folderId && folderName) {
-      setBreadcrumbs((prev) => [...prev, { id: folderId, name: folderName }]);
-    } else {
-      setBreadcrumbs([]);
+  /**
+   * Gestionnaire de navigation dans les dossiers
+   */
+  const handleFolderNavigation = useCallback(
+    (folderId: string | null, folderName?: string): void => {
+      setCurrentFolder(folderId);
+      if (folderId && folderName) {
+        setBreadcrumbs((prev) => [...prev, { id: folderId, name: folderName }]);
+      } else {
+        setBreadcrumbs([]);
+      }
+    },
+    []
+  );
+
+  /**
+   * Gestionnaire de clic sur breadcrumb
+   */
+  const handleBreadcrumbClick = useCallback(
+    (index: number): void => {
+      if (index === -1) {
+        // Dossier racine
+        setCurrentFolder(null);
+        setBreadcrumbs([]);
+      } else {
+        const folder = breadcrumbs[index];
+        setCurrentFolder(folder.id);
+        setBreadcrumbs(breadcrumbs.slice(0, index + 1));
+      }
+    },
+    [breadcrumbs]
+  );
+
+  /**
+   * Fonction utilitaire pour obtenir le nom d'affichage de l'utilisateur
+   */
+  const getUserDisplayName = useCallback(
+    (user: {
+      name: string | null;
+      firstName?: string | null;
+      lastName?: string | null;
+      email: string;
+    }): string => {
+      if (user.firstName && user.lastName) {
+        return `${user.firstName} ${user.lastName}`;
+      }
+      return user.name || user.email;
+    },
+    []
+  );
+
+  /**
+   * Calcul des statistiques des fichiers
+   */
+  const getFileStats = useCallback(() => {
+    if (!Array.isArray(filteredFiles)) {
+      return { total: 0, folders: 0, files: 0, totalSize: 0, byType: {} };
     }
-  };
-
-  const handleBreadcrumbClick = (index: number) => {
-    if (index === -1) {
-      // Root folder
-      setCurrentFolder(null);
-      setBreadcrumbs([]);
-    } else {
-      const folder = breadcrumbs[index];
-      setCurrentFolder(folder.id);
-      setBreadcrumbs(breadcrumbs.slice(0, index + 1));
-    }
-  };
-
-  const getUserDisplayName = (user: {
-    name: string | null;
-    firstName?: string | null;
-    lastName?: string | null;
-    email: string;
-  }) => {
-    if (user.firstName && user.lastName) {
-      return `${user.firstName} ${user.lastName}`;
-    }
-    return user.name || user.email;
-  };
-
-  const getFileStats = () => {
-    if (!Array.isArray(filteredFiles))
-      return { total: 0, folders: 0, files: 0, totalSize: 0 };
 
     const folders = filteredFiles.filter((f) => f.isFolder).length;
     const files = filteredFiles.filter((f) => !f.isFolder).length;
@@ -533,29 +526,34 @@ export default function FilesPage() {
         return acc;
       }, {} as Record<string, number>),
     };
-  };
+  }, [filteredFiles]);
 
-  const formatFileSize = (bytes: number): string => {
+  /**
+   * Formatage de la taille des fichiers
+   */
+  const formatFileSize = useCallback((bytes: number): string => {
     if (bytes === 0) return "0 B";
     const k = 1024;
     const sizes = ["B", "KB", "MB", "GB", "TB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
+  }, []);
 
-  const stats = getFileStats();
+  const stats = useMemo(() => getFileStats(), [getFileStats]);
 
+  // Loading state
   if (isPending || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <RefreshCw className="animate-spin h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4 text-blue-600" />
           <p className="text-gray-600">Chargement des fichiers...</p>
         </div>
       </div>
     );
   }
 
+  // Error state
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
@@ -572,6 +570,7 @@ export default function FilesPage() {
               onClick={fetchFiles}
               className="bg-blue-600 hover:bg-blue-700"
             >
+              <RefreshCw className="h-4 w-4 mr-2" />
               Réessayer
             </Button>
             <Button onClick={() => window.location.reload()} variant="outline">
@@ -662,6 +661,7 @@ export default function FilesPage() {
               </div>
             </div>
 
+            {/* User info */}
             {session?.user && (
               <div className="flex items-center space-x-4">
                 <div className="hidden sm:flex items-center space-x-2 text-sm text-gray-600">
@@ -680,7 +680,6 @@ export default function FilesPage() {
                     <span className="text-sm font-medium text-gray-900">
                       {getUserDisplayName({
                         name: session.user.name,
-
                         email: session.user.email,
                       })}
                     </span>

@@ -1,7 +1,57 @@
 // components/initiatives/InitiativesForm.tsx
+
+/**
+ * RÔLE : Formulaire de création et modification des initiatives avec design moderne amélioré
+ * RESPONSABILITÉS :
+ * - Design moderne avec shadcn/ui Dialog au lieu du modal custom
+ * - Validation et soumission identiques à l'original
+ * - Interface responsive avec meilleur styling Tailwind
+ * - Icons lucide-react pour une UX moderne
+ * - Progress bar visuelle et meilleur feedback utilisateur
+ *
+ * COMPOSANTS UTILISÉS :
+ * - shadcn/ui: Dialog, Input, Textarea, Select, Button, Progress
+ * - lucide-react: Icons modernes pour l'interface
+ *
+ * LIBS UTILISÉS :
+ * - React 19 hooks: useState, useEffect, JSX
+ * - Next.js 15 client component
+ * - Tailwind CSS pour le design responsive moderne
+ */
+
 "use client";
 
 import React, { useState, useEffect, JSX } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import {
+  Save,
+  Plus,
+  Target,
+  TrendingUp,
+  DollarSign,
+  BarChart3,
+  Clock,
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+} from "lucide-react";
 import { Initiative } from "./InitiativesDisplay";
 
 interface InitiativesFormProps {
@@ -137,62 +187,79 @@ export default function InitiativesForm({
 
   const isEditing = !!initiative;
 
+  const getPriorityIcon = (priority: string) => {
+    switch (priority) {
+      case "LOW":
+        return "🟢";
+      case "MEDIUM":
+        return "🟡";
+      case "HIGH":
+        return "🟠";
+      case "CRITICAL":
+        return "🔴";
+      default:
+        return "⚪";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "PLANNING":
+        return Clock;
+      case "ACTIVE":
+        return Target;
+      case "ON_HOLD":
+        return AlertCircle;
+      case "COMPLETED":
+        return CheckCircle2;
+      case "CANCELLED":
+        return AlertCircle;
+      default:
+        return Clock;
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
-        <div className="mt-3">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-gray-900">
-              {isEditing
-                ? "Modifier l'initiative"
-                : "Créer une nouvelle initiative"}
-            </h3>
-            <button
-              onClick={onCancel}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
+    <Dialog open={true} onOpenChange={() => onCancel()}>
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            {isEditing ? (
+              <>
+                <Save className="h-5 w-5 text-blue-600" />
+                Modifier l'initiative
+              </>
+            ) : (
+              <>
+                <Plus className="h-5 w-5 text-green-600" />
+                Créer une nouvelle initiative
+              </>
+            )}
+          </DialogTitle>
+          <DialogDescription>
+            {isEditing
+              ? "Modifiez les détails de votre initiative."
+              : "Remplissez les informations pour créer une nouvelle initiative."}
+          </DialogDescription>
+        </DialogHeader>
 
-          {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-red-400"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-800">{error}</p>
-                </div>
-              </div>
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-red-400" />
+              <p className="text-sm text-red-800">{error}</p>
             </div>
-          )}
+          </div>
+        )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Informations de base */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-gray-700 border-b pb-2">
+              Informations de base
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Nom */}
               <div className="md:col-span-2">
                 <label
@@ -201,53 +268,14 @@ export default function InitiativesForm({
                 >
                   Nom de l'initiative *
                 </label>
-                <input
-                  type="text"
+                <Input
                   id="name"
                   name="name"
                   required
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Nom de l'initiative"
-                />
-              </div>
-
-              {/* Description */}
-              <div className="md:col-span-2">
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Description
-                </label>
-                <textarea
-                  id="description"
-                  name="description"
-                  rows={3}
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Description de l'initiative"
-                />
-              </div>
-
-              {/* Objectif */}
-              <div className="md:col-span-2">
-                <label
-                  htmlFor="objective"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Objectif
-                </label>
-                <textarea
-                  id="objective"
-                  name="objective"
-                  rows={2}
-                  value={formData.objective}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Objectif de l'initiative"
+                  className="font-medium"
                 />
               </div>
 
@@ -259,19 +287,35 @@ export default function InitiativesForm({
                 >
                   Priorité *
                 </label>
-                <select
-                  id="priority"
-                  name="priority"
-                  required
+                <Select
                   value={formData.priority}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      priority: value as FormData["priority"],
+                    }))
+                  }
                 >
-                  <option value="LOW">🟢 Faible</option>
-                  <option value="MEDIUM">🟡 Moyenne</option>
-                  <option value="HIGH">🟠 Élevée</option>
-                  <option value="CRITICAL">🔴 Critique</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue>
+                      <div className="flex items-center gap-2">
+                        <span>{getPriorityIcon(formData.priority)}</span>
+                        <span>
+                          {formData.priority === "LOW" && "Faible"}
+                          {formData.priority === "MEDIUM" && "Moyenne"}
+                          {formData.priority === "HIGH" && "Élevée"}
+                          {formData.priority === "CRITICAL" && "Critique"}
+                        </span>
+                      </div>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="LOW">🟢 Faible</SelectItem>
+                    <SelectItem value="MEDIUM">🟡 Moyenne</SelectItem>
+                    <SelectItem value="HIGH">🟠 Élevée</SelectItem>
+                    <SelectItem value="CRITICAL">🔴 Critique</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Statut */}
@@ -282,22 +326,117 @@ export default function InitiativesForm({
                 >
                   Statut *
                 </label>
-                <select
-                  id="status"
-                  name="status"
-                  required
+                <Select
                   value={formData.status}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, status: value }))
+                  }
                 >
-                  <option value="PLANNING">Planification</option>
-                  <option value="IN_PROGRESS">En cours</option>
-                  <option value="ON_HOLD">En pause</option>
-                  <option value="COMPLETED">Terminé</option>
-                  <option value="CANCELLED">Annulé</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue>
+                      <div className="flex items-center gap-2">
+                        {React.createElement(getStatusIcon(formData.status), {
+                          className: "h-4 w-4",
+                        })}
+                        <span>
+                          {formData.status === "PLANNING" && "Planification"}
+                          {formData.status === "ACTIVE" && "Actif"}
+                          {formData.status === "ON_HOLD" && "En pause"}
+                          {formData.status === "COMPLETED" && "Terminé"}
+                          {formData.status === "CANCELLED" && "Annulé"}
+                        </span>
+                      </div>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PLANNING">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        Planification
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="ACTIVE">
+                      <div className="flex items-center gap-2">
+                        <Target className="h-4 w-4" />
+                        Actif
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="ON_HOLD">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4" />
+                        En pause
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="COMPLETED">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4" />
+                        Terminé
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="CANCELLED">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4" />
+                        Annulé
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+            </div>
+          </div>
 
+          {/* Description et objectif */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-gray-700 border-b pb-2">
+              Description et objectifs
+            </h3>
+
+            {/* Description */}
+            <div>
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Description
+              </label>
+              <Textarea
+                id="description"
+                name="description"
+                rows={3}
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Description de l'initiative"
+                className="resize-none"
+              />
+            </div>
+
+            {/* Objectif */}
+            <div>
+              <label
+                htmlFor="objective"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Objectif
+              </label>
+              <Textarea
+                id="objective"
+                name="objective"
+                rows={2}
+                value={formData.objective}
+                onChange={handleInputChange}
+                placeholder="Objectif de l'initiative"
+                className="resize-none"
+              />
+            </div>
+          </div>
+
+          {/* Planification */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-gray-700 border-b pb-2">
+              Planification
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Date de début */}
               <div>
                 <label
@@ -306,13 +445,12 @@ export default function InitiativesForm({
                 >
                   Date de début
                 </label>
-                <input
+                <Input
                   type="date"
                   id="startDate"
                   name="startDate"
                   value={formData.startDate}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -324,53 +462,56 @@ export default function InitiativesForm({
                 >
                   Date de fin
                 </label>
-                <input
+                <Input
                   type="date"
                   id="endDate"
                   name="endDate"
                   value={formData.endDate}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
+            </div>
+          </div>
 
+          {/* Métriques */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-gray-700 border-b pb-2">
+              Métriques et suivi
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Progrès */}
               <div>
                 <label
                   htmlFor="progress"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2"
                 >
+                  <BarChart3 className="h-4 w-4" />
                   Progrès (%)
                 </label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="progress"
-                    name="progress"
-                    min="0"
-                    max="100"
-                    value={formData.progress}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${formData.progress}%` }}
-                    ></div>
-                  </div>
-                </div>
+                <Input
+                  type="number"
+                  id="progress"
+                  name="progress"
+                  min="0"
+                  max="100"
+                  value={formData.progress}
+                  onChange={handleInputChange}
+                  className="text-center font-medium"
+                />
+                <Progress value={formData.progress} className="w-full mt-2" />
               </div>
 
               {/* Budget */}
               <div>
                 <label
                   htmlFor="budget"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2"
                 >
+                  <DollarSign className="h-4 w-4" />
                   Budget (€)
                 </label>
-                <input
+                <Input
                   type="number"
                   id="budget"
                   name="budget"
@@ -378,7 +519,6 @@ export default function InitiativesForm({
                   step="0.01"
                   value={formData.budget}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="0.00"
                 />
               </div>
@@ -387,53 +527,65 @@ export default function InitiativesForm({
               <div>
                 <label
                   htmlFor="roi"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2"
                 >
+                  <TrendingUp className="h-4 w-4" />
                   ROI (%)
                 </label>
-                <input
+                <Input
                   type="number"
                   id="roi"
                   name="roi"
                   step="0.01"
                   value={formData.roi}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="0.00"
                 />
               </div>
             </div>
+          </div>
 
-            {/* Boutons d'action */}
-            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-              <button
-                type="button"
-                onClick={onCancel}
-                className="px-6 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-                disabled={loading}
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={loading}
-              >
-                {loading ? (
-                  <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    {isEditing ? "Modification..." : "Création..."}
-                  </div>
-                ) : isEditing ? (
-                  "Modifier"
-                ) : (
-                  "Créer"
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              disabled={loading}
+              className="order-2 sm:order-1"
+            >
+              Annuler
+            </Button>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="order-1 sm:order-2 bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>{isEditing ? "Modification..." : "Création..."}</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  {isEditing ? (
+                    <>
+                      <Save className="h-4 w-4" />
+                      <span>Modifier</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4" />
+                      <span>Créer</span>
+                    </>
+                  )}
+                </div>
+              )}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

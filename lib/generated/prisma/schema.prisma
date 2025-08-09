@@ -387,8 +387,8 @@ model File {
   name         String
   originalName String?
   type         FileType
-  mimeType     String
-  size         Int
+  mimeType     String?
+  size         Int?
   url          String
   path         String?
   description  String?
@@ -806,6 +806,12 @@ enum NotificationType {
 }
 
 enum FileType {
+  PAGE
+  COMPONENT
+  UTILS
+  LIB
+  STORE
+  HOOK
   DOCUMENT
   IMAGE
   VIDEO

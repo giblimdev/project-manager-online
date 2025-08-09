@@ -1,94 +1,151 @@
 /*
-je veux que tu me donnes le code complet du fichiers suivant :   
-app/files/page.tsx qui utilisera les commposants  :
-FilesDisplay.tsx (liste, card, branch)
-FilesFilter.tsx (by name, by type, by date)
-FilesList.tsx (pours chaque fichier les boutons up dawn edit, delete)
-FilesForm.tsx (creation / modification de fichier)
+app/projects/[id]/features/page.tsx qui utilisera les commposants  :
+FeatureDisplay.tsx (liste, card, branch)
+FeatureFilter.tsx (by name, by type, by date)
+FeatureList.tsx (pours chaque fichier les boutons up dawn edit, delete)
+FeatureForm.tsx (creation / modification de fichier)
 
-views/FileswiewList.tsx 
-views/FilesViewCard.tsx
-views/FilesViewBranch.tsx
+views/FeaturewiewList.tsx 
+views/FeatureViewCard.tsx
+views/FeatureViewBranch.tsx
 
  et les fichier suivant deja existant : 
 
-// lib/auth-client.ts
-import { createAuthClient } from "better-auth/react";
-
-export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
-});
-
-export const { signIn, signOut, signUp, useSession, getSession } = authClient;
+// lib/auth/auth-client.ts de better auth useSession pour verifier si l'utilisat eur est connecté et utiliser l'id pour cree une feature
 
 
 
 // lib/prisma.ts
-import { PrismaClient } from "@/lib/generated/prisma/client";
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-let prisma: PrismaClient;
-
-if (process.env.NODE_ENV === "production") {
-  prisma = new PrismaClient();
-} else {
-  if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = new PrismaClient();
-  }
-  prisma = globalForPrisma.prisma;
-}
-
-export default prisma;
-
-
- // utils/delete-item.ts
-// Fonction utilitaire pour supprimer un item
-export const deleteItemUtil = async (
-  tableName: string,
-  itemId: string
-): Promise<void> => {
-  const response = await fetch(`/api/${tableName}/${itemId}`, {
-    method: "DELETE",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to delete ${tableName} item`);
-  }
-};
-
-// utils/reorder-items.ts
-// Fonction utilitaire pour réorganiser les items
-import type { Item } from "@/types/item";
-
-export const reorderItemsUtil = async (
-  items: Item[],
-  itemId: string,
-  direction: "up" | "down"
-): Promise<void> => {
-  const currentIndex = items.findIndex((item) => item.id === itemId);
-  if (currentIndex === -1) return;
-
-  const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-  if (newIndex < 0 || newIndex >= items.length) return;
-
-  const response = await fetch(`/api/items/${itemId}/reorder`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ direction, newIndex }),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to reorder item");
-  }
-};
 
 
 */
-import React from "react";
+"use client";
 
-export default function page() {
-  return <div>Features</div>;
+import { useState, useEffect, useCallback } from "react";
+import { feature } from "@/lib/generated/prisma/client";
+import FeatureFilter from "@/components/features/FeatureFilter";
+import FeatureList from "@/components/features/FeatureList";
+import FeatureForm from "@/components/features/FeatureForm";
+import FeatureDisplay from "@/components/features/FeatureDisplay";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+import { toast } from "sonner";
+
+export default function FilesPage() {
+  const [files, setFiles] = useState<File[]>([]);
+  const [filteredFiles, setFilteredFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [viewMode, setViewMode] = useState<"list" | "grid" | "branch">("grid");
+
+  useEffect(() => {
+    const fetchFiles = async () => {
+      try {
+        const response = await fetch("/api/files");
+        const data = await response.json();
+        setFiles(data);
+        setFilteredFiles(data);
+      } catch (error) {
+        toast.error("Failed to load files");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFiles();
+  }, []);
+
+  const handleFilter = useCallback(
+    (filters: {
+      name?: string;
+      type?: FileType;
+      startDate?: Date;
+      endDate?: Date;
+    }) => {
+      let result = [...files];
+
+      if (filters.name) {
+        result = result.filter((file) =>
+          file.name.toLowerCase().includes(filters.name!.toLowerCase())
+        );
+      }
+
+      if (filters.type) {
+        result = result.filter((file) => file.type === filters.type);
+      }
+
+      if (filters.startDate && filters.endDate) {
+        result = result.filter((file) => {
+          const fileDate = new Date(file.createdAt);
+          return fileDate >= filters.startDate! && fileDate <= filters.endDate!;
+        });
+      }
+
+      setFilteredFiles(result);
+    },
+    [files]
+  );
+
+  const handleDelete = async (id: string) => {
+    try {
+      await fetch(`/api/files/${id}`, { method: "DELETE" });
+      setFiles(files.filter((file) => file.id !== id));
+      setFilteredFiles(filteredFiles.filter((file) => file.id !== id));
+      toast.success("File deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete file");
+    }
+  };
+
+  const handleFormSuccess = (file: File) => {
+    if (selectedFile) {
+      setFiles(files.map((f) => (f.id === file.id ? file : f)));
+      setFilteredFiles(filteredFiles.map((f) => (f.id === file.id ? file : f)));
+    } else {
+      setFiles([...files, file]);
+      setFilteredFiles([...filteredFiles, file]);
+    }
+    setIsFormOpen(false);
+    setSelectedFile(null);
+  };
+
+  return (
+    <div className="container mx-auto p-4 space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Files Management</h1>
+        <Button
+          onClick={() => {
+            setSelectedFile(null);
+            setIsFormOpen(true);
+          }}
+        >
+          <PlusCircle className="mr-2 h-4 w-4" />
+          New File
+        </Button>
+      </div>
+
+      <FeatureFilter onFilter={handleFilter} />
+
+      <FeatureDisplay viewMode={viewMode} onViewModeChange={setViewMode} />
+
+      <FeatureList
+        files={filteredFiles}
+        loading={loading}
+        onEdit={(file) => {
+          setSelectedFile(file);
+          setIsFormOpen(true);
+        }}
+        onDelete={handleDelete}
+        viewMode={viewMode}
+      />
+
+      <FeatureForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        file={selectedFile}
+        onSuccess={handleFormSuccess}
+      />
+    </div>
+  );
 }
