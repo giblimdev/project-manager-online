@@ -1,0 +1,195 @@
+en accord avec mon schema
+Je veux créer un CRUD complet pour la table Feature dans une application Next.js 15, 
+en utilisant la page et les dépendances et composants suivants selon l'exemple avec userStories. Remplace userstorie par Features. c'est les scripts pour Features que je veux.
+
+
+app/projects/[id]/userStories/page.tsx
+Utilise useSession de better auth @/lib/auth/auth-client.ts pour vérifier l'existence de la session et récupérer l'id de l'utilisateur.
+Récupère l'id du projet sélectionné via @/stores/useSelectedProjectStore.ts.
+
+Affiche le composant @/components/userStories/UserStoriesDisplay.tsx qui permet de semectionner le mode d'affichage list, card, tree.
+
+Affiche @/components/userStories/UserStoriesList.tsx qui Inclut un bouton "Add" pour ouvrir un modal form (@/components/userStories/UserStoriesForm).
+
+UserStoriesList Affiche soit @/components/userStories/views/UserStoriesList.tsx ou @/components/userStories/views/UserStoriesViewCard ou @/components/userStories/views/UserStoriesViewBrand en fonction du mode sélectionné.
+
+Pour chaque User Story,UserStoriesList inclut :
+
+Un bouton Edit (ouvre UserStoriesForm en mode "edit").
+
+Un bouton Delete (avec confirmation).
+
+Des icônes Lucide pour up/down (met à jour le champ order de la table).
+
+@/components/userStories/UserStoriesForm.tsx
+
+Reçoit un prop mode ("new" ou "edit").
+
+Gère la validation et la soumission des données (create/update).
+
+Composants d'affichage optionnel utiliser par UserStoriesList :
+
+UserStoriesViewCard.tsx (affichage carte).
+
+UserStoriesViewList.tsx (affichage liste).
+
+UserStoriesViewBrand.tsx (affichage tree).
+
+Contraintes techniques :
+Utilise les icônes Lucide pour les actions (edit, delete, up/down).
+
+Met à jour dynamiquement l'order des User Stories via des appels API.
+
+Le modal (UserStoriesForm) doit être géré avec un état local (ex: useState).
+
+Doit suivre les conventions de Next.js 15 (Server Components si applicable).
+
+
+
+app/projects/[id]/userStories/page.tsx
+@/components/userStories/UserStoriesDisplay.tsx
+@/components/userStories/UserStoriesList.tsx qui utilise @/components/userStories/views/UserStoriesList.tsx;  @/components/userStories/views/UserStoriesViewCard, @/components/userStories/views/UserStoriesViewBrand
+@/components/userStories/UserStoriesForm
+
+ecris les 7 scripts Pour features. adapte les nom des script.
+
+
+
+
+
+////////////////////////////////////////////////////
+
+
+# CONTEXTE
+
+Je développe une application Next.js 15 avec l’App Router, TypeScript et Prisma ORM (PostgreSQL).  
+L’architecture est pensée pour gérer un système de gestion de projets Agile basé sur le schéma Prisma suivant :  
+[INSÉRER ICI LE CONTENU DU FICHIER schema-projec-manager.txt]
+
+Hiérarchie des entités principales :
+- Project
+  - Initiative
+    - Epic
+      - Feature
+        - UserStory
+          - Task
+- Sprint (lié à Project et UserStory/Task)
+- File (lié à Project, Feature, UserStory, Task, Sprint)
+
+## ARCHITECTURE FRONTEND
+
+- Chaque type d’entité (Project, Initiative, Epic, Feature, UserStory, Task, Sprint, File) a :
+  - Une page liste (`/entity/page.tsx`) → Server Component qui récupère les données directement depuis Prisma
+  - Un composant Client pour gérer filtre, tri, affichage (`EntityPage.tsx`)
+  - Des vues réutilisables : ListView, CardView, TreeView
+  - Une barre d’outils (`Toolbar.tsx`) : filtre + tri + choix vue + bouton ajouter
+  - Des boutons d’actions rapides (`ItemActions.tsx`) : Edit, Delete, MoveUp, MoveDown
+  - Un formulaire (`EntityForm.tsx`) pour créer / éditer
+  - Des Server Actions (`/app/actions/entity/*.ts`) : create, update, delete, reorder
+
+- **Réutilisation maximale** :
+  - `Toolbar.tsx` est commun à tous
+  - `ItemActions.tsx` est commun à tous
+  - `ListView.tsx`, `CardView.tsx`, `TreeView.tsx` reçoivent `items` et les mêmes handlers
+  - Les Server Actions ne font que de la logique CRUD simple via Prisma
+
+## OBJECTIF
+
+Générer **pour chaque entité** (Project, Initiative, Epic, Feature, UserStory, Task, Sprint, File) :
+1. **page.tsx** (Server Component)  
+   - Récupère les données depuis Prisma (`db.entity.findMany(...)`)
+   - Passe à un composant Client `EntityPage` avec `initialItems`
+
+2. **EntityPage.tsx** (Client Component)  
+   - Gère `filter`, `viewMode`
+   - Applique le filtrage / tri
+   - Rends `Toolbar` et la vue choisie (`ListView`, `CardView`, `TreeView`)
+   - Passe les bons handlers CRUD aux vues
+
+3. **Formulaire `EntityForm.tsx`**  
+   - Mode ajout / édition
+   - Appelle la Server Action `createEntity` ou `updateEntity`
+
+4. **Server Actions (`create.ts`, `update.ts`, `delete.ts`, `reorder.ts`)**  
+   - Fonctions simples Prisma (ex: `await db.entity.update(...)`)
+
+5. **Réutilisation des composants communs**  
+   - `Toolbar.tsx`, `ItemActions.tsx`, `ListView.tsx`, `CardView.tsx`, `TreeView.tsx` déjà présents
+
+## ATTENTES POUR CHAQUE SCRIPT
+
+- **Langage** : TypeScript
+- **Framework** : Next.js 15 App Router
+- **Style** : Tailwind CSS + shadcn/ui + lucide-react
+- **Type-safety** : utiliser les types générés par Prisma
+- **Server Components** : pour le chargement initial des données
+- **Client Components** : uniquement pour la gestion UI (filtre, vue, actions)
+- **Server Actions** : marquées `"use server"`, pas d’API routes
+- **Lisibilité** : code clair, structuré, commenté
+
+## FORMAT ATTENDU
+
+Pour chaque entité `Entity` :
+- `/app/entity/page.tsx`
+- `/app/entity/EntityPage.tsx`
+- `/components/forms/EntityForm.tsx`
+- `/app/actions/entity/create.ts`
+- `/app/actions/entity/update.ts`
+- `/app/actions/entity/delete.ts`
+- `/app/actions/entity/reorder.ts`
+
+Merci de générer **chaque fichier complet avec le code directement utilisable**.
+
+
+app/
+ └─ projects/
+     ├─ page.tsx                      ← Liste de tous les projets
+     ├─ [projectId]/
+     │   ├─ page.tsx                  ← Détail du projet (Initiatives, Sprints, Files)
+     │   ├─ initiatives/
+     │   │   ├─ page.tsx              ← Liste initiatives d'un projet
+     │   │   ├─ [initiativeId]/
+     │   │   │   ├─ page.tsx           ← Détail initiative (Epics)
+     │   │   │   └─ epics/
+     │   │   │       ├─ page.tsx       ← Liste epics
+     │   │   │       ├─ [epicId]/
+     │   │   │       │   ├─ page.tsx   ← Détail epic (Features)
+     │   │   │       │   └─ features/
+     │   │   │       │       ├─ page.tsx
+     │   │   │       │       ├─ [featureId]/
+     │   │   │       │       │   ├─ page.tsx   ← Détail feature (UserStories, Files)
+     │   │   │       │       │   └─ userstories/
+     │   │   │       │       │       ├─ page.tsx
+     │   │   │       │       │       ├─ [userStoryId]/
+     │   │   │       │       │       │   ├─ page.tsx   ← Détail userstory (Tasks, Files)
+     │   │   │       │       │       │   └─ tasks/
+     │   │   │       │       │       │       ├─ page.tsx
+     │   │   │       │       │       │       └─ [taskId]/page.tsx
+     │   │   │       │       └─ files/page.tsx
+     │   │   │       └─ files/page.tsx
+     │   │   └─ files/page.tsx
+     │   ├─ sprints/
+     │   │   ├─ page.tsx
+     │   │   ├─ [sprintId]/page.tsx
+     │   └─ files/page.tsx
+     └─ files/page.tsx
+
+
+     components/
+ ├─ Toolbar.tsx            ← Filtre, tri, vue (list/card/tree), bouton ajouter
+ ├─ ItemActions.tsx        ← Boutons Edit/Delete/Up/Down communs
+ ├─ views/
+ │   ├─ ListView.tsx
+ │   ├─ CardView.tsx
+ │   └─ TreeView.tsx
+ ├─ forms/
+ │   ├─ ProjectForm.tsx
+ │   ├─ InitiativeForm.tsx
+ │   ├─ EpicForm.tsx
+ │   ├─ FeatureForm.tsx
+ │   ├─ UserStoryForm.tsx
+ │   ├─ TaskForm.tsx
+ │   └─ FileForm.tsx
+ └─ hierarchy/
+     ├─ HierarchyList.tsx  ← générique pour afficher une liste hiérarchique (ex. Feature enfants)
+     ├─ HierarchyNode.tsx

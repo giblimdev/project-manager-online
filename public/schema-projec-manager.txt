@@ -99,9 +99,14 @@ model Verification {
   @@map("verification")
 }
 
+////////////////////
+////    Team      ////
+//////////////////////
+
 model Team {
   id           String       @id @default(cuid())
   name         String
+  order        Int          @default(1000)
   description  String?
   slug         String       @unique
   logoUrl      String?
@@ -121,6 +126,7 @@ model Team {
 model TeamMember {
   id       String   @id @default(cuid())
   role     UserRole @default(DEVELOPER)
+  order    Int      @default(1000)
   joinedAt DateTime @default(now())
   isActive Boolean  @default(true)
   teamId   String
@@ -164,6 +170,7 @@ model Project {
 model ProjectMember {
   id        String   @id @default(cuid())
   role      UserRole @default(DEVELOPER)
+  order     Int      @default(1000)
   joinedAt  DateTime @default(now())
   isActive  Boolean  @default(true)
   projectId String
@@ -178,6 +185,7 @@ model ProjectMember {
 model Initiative {
   id          String    @id @default(cuid())
   name        String
+  order       Int       @default(1000)
   description String?
   objective   String?
   priority    Priority  @default(MEDIUM)
@@ -199,19 +207,21 @@ model Initiative {
 }
 
 model Epic {
-  id           String     @id @default(cuid())
+  id           String      @id @default(cuid())
   name         String
+  order        Int         @default(1000)
   description  String?
-  priority     Priority   @default(MEDIUM)
-  status       String     @default("ACTIVE")
+  priority     Priority    @default(MEDIUM)
+  status       String      @default("ACTIVE")
   startDate    DateTime?
   endDate      DateTime?
-  progress     Float      @default(0)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  progress     Float       @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
   initiativeId String
-  initiative   Initiative @relation(fields: [initiativeId], references: [id], onDelete: Cascade)
+  initiative   Initiative  @relation(fields: [initiativeId], references: [id], onDelete: Cascade)
   features     Feature[]
+  userstories  UserStory[]
 
   @@map("epics")
 }
@@ -219,6 +229,7 @@ model Epic {
 model Feature {
   id                 String              @id @default(cuid())
   name               String
+  order              Int                 @default(1000)
   description        String?
   acceptanceCriteria String?
   priority           Priority            @default(MEDIUM)
@@ -253,6 +264,7 @@ model Feature {
 model FeatureDependency {
   id                 String   @id @default(cuid())
   type               String   @default("DEPENDS_ON")
+  order              Int      @default(1000)
   description        String?
   createdAt          DateTime @default(now())
   dependentFeatureId String
@@ -267,6 +279,7 @@ model FeatureDependency {
 model UserStory {
   id                 String                @id @default(cuid())
   title              String
+  order              Int                   @default(1000)
   description        String?
   acceptanceCriteria String?
   priority           Priority              @default(MEDIUM)
@@ -294,6 +307,7 @@ model UserStory {
   dependencies       UserStoryDependency[] @relation("DependentUserStory")
   dependents         UserStoryDependency[] @relation("DependsOnUserStory")
   sprints            Sprint[]              @relation("SprintUserStories")
+  Epic               Epic[]
 
   @@map("user_stories")
 }
@@ -301,6 +315,7 @@ model UserStory {
 model UserStoryDependency {
   id                   String    @id @default(cuid())
   type                 String    @default("DEPENDS_ON")
+  order                Int       @default(1000)
   description          String?
   createdAt            DateTime  @default(now())
   dependentUserStoryId String
@@ -315,6 +330,7 @@ model UserStoryDependency {
 model Task {
   id             String           @id @default(cuid())
   title          String
+  order          Int              @default(1000)
   description    String?
   priority       Priority         @default(MEDIUM)
   status         TaskStatus       @default(TODO)
@@ -346,6 +362,7 @@ model Task {
 model TaskDependency {
   id              String   @id @default(cuid())
   type            String   @default("DEPENDS_ON")
+  order           Int      @default(1000)
   description     String?
   createdAt       DateTime @default(now())
   dependentTaskId String
@@ -360,6 +377,7 @@ model TaskDependency {
 model Sprint {
   id            String       @id @default(cuid())
   name          String
+  order         Int          @default(1000)
   goal          String?
   description   String?
   startDate     DateTime
@@ -383,43 +401,40 @@ model Sprint {
 }
 
 model File {
-  id           String        @id @default(cuid())
-  name         String
-  originalName String?
-  type         FileType
-  mimeType     String?
-  size         Int?
-  url          String
-  path         String?
-  description  String?
-  import       Json?
-  export       Json?
-  script       String?
-  version      Int           @default(1)
-  isPublic     Boolean       @default(false)
-  isFolder     Boolean       @default(false)
-  metadata     Json?         @default("{}")
-  tags         String[]      @default([])
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  uploaderId   String
-  parentId     String?
-  projectId    String?
-  featureId    String?
-  userStoryId  String?
-  taskId       String?
-  sprintId     String?
-  comments     Comment[]
-  versions     FileVersion[]
-  feature      Feature?      @relation(fields: [featureId], references: [id], onDelete: Cascade)
-  parent       File?         @relation("FileHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
-  children     File[]        @relation("FileHierarchy")
-  project      Project?      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  sprint       Sprint?       @relation(fields: [sprintId], references: [id], onDelete: Cascade)
-  task         Task?         @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  uploader     User          @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
-  userStory    UserStory?    @relation(fields: [userStoryId], references: [id], onDelete: Cascade)
-  items        Item[]        @relation("FileToItem")
+  id          String        @id @default(cuid())
+  name        String
+  order       Int           @default(1000)
+  type        FileType
+  mimeType    String?
+  path        String?
+  description String?
+  import      String?
+  use         String? //biblioteque, lib, utils, store, hook, ...
+  export      String?
+  script      String?
+  version     Int           @default(1)
+  isFolder    Boolean       @default(false)
+  metadata    Json?         @default("{}")
+  tags        String[]      @default([])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  parentId    String?
+  projectId   String
+  featureId   String?
+  userStoryId String?
+  taskId      String?
+  sprintId    String?
+  comments    Comment[]
+  versions    FileVersion[]
+  feature     Feature?      @relation(fields: [featureId], references: [id], onDelete: Cascade)
+  parent      File?         @relation("FileHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children    File[]        @relation("FileHierarchy")
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sprint      Sprint?       @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  task        Task?         @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author      User[] // ✅ AUTEURS/DÉVELOPPEURS (pas uploaders)
+  userStory   UserStory?    @relation(fields: [userStoryId], references: [id], onDelete: Cascade)
+  items       Item[]        @relation("FileToItem")
 
   @@map("files")
 }
@@ -443,6 +458,8 @@ model FileVersion {
 
 model Comment {
   id              String       @id @default(cuid())
+  title           String
+  order           Int          @default(1000)
   content         String
   mentions        String[]     @default([])
   createdAt       DateTime     @default(now())
@@ -459,12 +476,10 @@ model Comment {
   isPinned        Boolean      @default(false)
   isResolved      Boolean      @default(false)
   metadata        Json?        @default("{}")
-  order           Int          @default(0)
   publishedAt     DateTime?
   readingTime     Int?
   slug            String?      @unique
   status          String       @default("DRAFT")
-  title           String?
   visibility      Visibility   @default(PRIVATE)
   author          User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
   file            File?        @relation(fields: [fileId], references: [id], onDelete: Cascade)
@@ -482,6 +497,7 @@ model Comment {
 model Channel {
   id          String          @id @default(cuid())
   name        String
+  order       Int             @default(1000)
   description String?
   type        String          @default("TEXT")
   isPrivate   Boolean         @default(false)
@@ -498,6 +514,7 @@ model Channel {
 
 model ChannelMember {
   id        String   @id @default(cuid())
+  order     Int      @default(1000)
   role      String   @default("MEMBER")
   joinedAt  DateTime @default(now())
   channelId String
@@ -511,6 +528,7 @@ model ChannelMember {
 
 model Message {
   id        String   @id @default(cuid())
+  order     Int      @default(1000)
   content   String
   type      String   @default("TEXT")
   metadata  Json?    @default("{}")
@@ -528,6 +546,7 @@ model Message {
 model Template {
   id          String   @id @default(cuid())
   name        String
+  order       Int      @default(1000)
   description String?
   type        String
   category    String?
@@ -648,13 +667,13 @@ model Item {
 
 model Glossary {
   id          String   @id @default(cuid())
+  term        String //titre
+  order       Int      @default(1000)
   description String?
   type        String   @default("TERM")
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  order       Int      @default(1000)
-  term        String
 
   @@map("glossary")
 }
@@ -673,6 +692,7 @@ model UserStoryAssignees {
 model blog_tags {
   id           String      @id
   name         String
+  order        Int         @default(1000)
   color        String?
   isActive     Boolean     @default(true)
   createdAt    DateTime    @default(now())
@@ -685,6 +705,7 @@ model blog_tags {
 model categories {
   id               String       @id
   name             String
+  order            Int          @default(1000)
   slug             String?      @unique
   description      String?
   color            String?
@@ -806,19 +827,15 @@ enum NotificationType {
 }
 
 enum FileType {
+  DOSSIER
   PAGE
   COMPONENT
   UTILS
   LIB
   STORE
   HOOK
-  DOCUMENT
-  IMAGE
-  VIDEO
-  ARCHIVE
-  CODE
-  SPECIFICATION
-  DESIGN
+  ENV
+  SYSTEM
   TEST
   OTHER
 }

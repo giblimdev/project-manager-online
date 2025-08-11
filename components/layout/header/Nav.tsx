@@ -48,6 +48,11 @@ const toolsDropdownItems: DropdownItem[] = [
     href: "/blog",
     description: "Articles et actualités",
   },
+  {
+    label: "Glossaire",
+    href: "/glossary",
+    description: "Définitions et termes clés",
+  },
 ];
 
 export default function Nav({

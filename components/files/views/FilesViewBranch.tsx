@@ -30,20 +30,11 @@
  * - Tailwind CSS: Design responsive avec indentation et hover effects
  * - date-fns: Formatage des dates avec locale française
  * - sonner: Toast notifications pour feedback utilisateur
- *
- * PROPS reçues de FilesList :
- * - files: Liste des fichiers avec relations complètes selon types/files.ts
- * - viewMode: Mode d'affichage ("branch" pour cette vue)
- * - currentFolder: ID du dossier courant pour navigation
- * - onEdit: Callback d'édition avec type FileWithRelations unifié
- * - onRefresh: Callback de rafraîchissement après actions
- * - onFolderNavigate: Callback de navigation avec gestion isFolder
- * - Actions supplémentaires: onDelete, onDownload, onShare, etc.
  */
 
 "use client";
 
-import React, { JSX, useState, useCallback, useMemo, useEffect } from "react";
+import { JSX, useState, useCallback, useMemo, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,16 +86,19 @@ import {
   Calendar,
   Tag,
   Hash,
+  RefreshCw,
+  Folder,
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 
-// ✅ Import des types centralisés pour éviter les conflits
+// ✅ Import des types centralisés
 import type {
   FileWithRelations,
   ViewMode,
   FilesViewProps,
+  FileType,
 } from "@/types/files";
 
 // Interface pour les nœuds de l'arbre avec état d'expansion
@@ -119,7 +113,7 @@ interface TreeNode extends FileWithRelations {
 interface ViewOptions {
   searchTerm: string;
   showHiddenFiles: boolean;
-  typeFilter: string[];
+  typeFilter: FileType[];
   expandAll: boolean;
 }
 
@@ -176,38 +170,28 @@ export default function FilesViewBranch({
       }
 
       if (file.isFolder) {
-        return <FolderOpen className="h-4 w-4 text-blue-600" />;
+        return <Folder className="h-4 w-4 text-blue-500" />;
       }
 
       switch (file.type) {
         case "PAGE":
-          return <FileText className="h-4 w-4 text-purple-600" />;
+          return <FileText className="h-4 w-4 text-green-500" />;
         case "COMPONENT":
-          return <Package className="h-4 w-4 text-blue-600" />;
+          return <Package className="h-4 w-4 text-blue-500" />;
         case "UTILS":
-          return <Settings className="h-4 w-4 text-orange-600" />;
+          return <Settings className="h-4 w-4 text-gray-500" />;
         case "LIB":
-          return <Layers className="h-4 w-4 text-indigo-600" />;
+          return <Layers className="h-4 w-4 text-purple-500" />;
         case "STORE":
-          return <Database className="h-4 w-4 text-green-600" />;
+          return <Database className="h-4 w-4 text-orange-500" />;
         case "HOOK":
-          return <Code2 className="h-4 w-4 text-teal-600" />;
-        case "DOCUMENT":
-          return <FileText className="h-4 w-4 text-blue-600" />;
-        case "IMAGE":
-          return <Image className="h-4 w-4 text-pink-600" />;
-        case "VIDEO":
-          return <Video className="h-4 w-4 text-red-600" />;
-        case "ARCHIVE":
-          return <Archive className="h-4 w-4 text-yellow-600" />;
-        case "CODE":
-          return <Code2 className="h-4 w-4 text-gray-600" />;
-        case "SPECIFICATION":
-          return <FileText className="h-4 w-4 text-cyan-600" />;
-        case "DESIGN":
-          return <Paintbrush className="h-4 w-4 text-rose-600" />;
+          return <Code2 className="h-4 w-4 text-pink-500" />;
+        case "ENV":
+          return <Settings className="h-4 w-4 text-yellow-500" />;
+        case "SYSTEM":
+          return <Globe className="h-4 w-4 text-red-500" />;
         case "TEST":
-          return <TestTube className="h-4 w-4 text-emerald-600" />;
+          return <TestTube className="h-4 w-4 text-green-600" />;
         default:
           return <File className="h-4 w-4 text-gray-400" />;
       }
@@ -235,20 +219,10 @@ export default function FilesViewBranch({
           return "Store";
         case "HOOK":
           return "Hook React";
-        case "DOCUMENT":
-          return "Document";
-        case "IMAGE":
-          return "Image";
-        case "VIDEO":
-          return "Vidéo";
-        case "ARCHIVE":
-          return "Archive";
-        case "CODE":
-          return "Code";
-        case "SPECIFICATION":
-          return "Spécification";
-        case "DESIGN":
-          return "Design";
+        case "ENV":
+          return "Environment";
+        case "SYSTEM":
+          return "Système";
         case "TEST":
           return "Test";
         default:
@@ -295,7 +269,6 @@ export default function FilesViewBranch({
       // Deuxième passe : construire la hiérarchie
       files.forEach((file) => {
         const node = nodeMap.get(file.id)!;
-
         if (file.parent?.id) {
           const parentNode = nodeMap.get(file.parent.id);
           if (parentNode) {
@@ -323,7 +296,6 @@ export default function FilesViewBranch({
   // ✅ Filtrage des nœuds selon les critères
   const filteredTree = useMemo(() => {
     const tree = buildTree(files);
-
     if (!viewOptions.searchTerm && viewOptions.typeFilter.length === 0) {
       return tree;
     }
@@ -338,7 +310,6 @@ export default function FilesViewBranch({
           matches &&
           (node.name.toLowerCase().includes(searchLower) ||
             node.description?.toLowerCase().includes(searchLower) ||
-            node.originalName?.toLowerCase().includes(searchLower) ||
             node.tags.some((tag) => tag.toLowerCase().includes(searchLower)));
       }
 
@@ -460,33 +431,40 @@ export default function FilesViewBranch({
       const isExpanded = expandedNodes.has(node.id);
 
       return (
-        <div key={node.id} className="select-none">
-          <div
-            className={`flex items-center gap-2 py-1.5 px-2 rounded-md transition-all duration-200 hover:bg-gray-50 ${
-              isSelected ? "bg-blue-50 border border-blue-200" : ""
-            }`}
-            style={{ paddingLeft: `${8 + node.level * 20}px` }}
-          >
+        <div
+          key={node.id}
+          className={`
+            flex items-center justify-between p-3 rounded-lg border
+            hover:bg-gray-50 transition-colors cursor-pointer
+            ${
+              isSelected
+                ? "bg-blue-50 border-blue-200"
+                : "bg-white border-gray-200"
+            }
+          `}
+          style={{ marginLeft: `${node.level * 24}px` }}
+        >
+          <div className="flex items-center space-x-3 flex-1 min-w-0">
             {/* Toggle d'expansion pour les dossiers */}
-            <div className="w-4 h-4 flex items-center justify-center">
-              {hasChildren ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-4 h-4 p-0 hover:bg-gray-200"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleExpansion(node.id);
-                  }}
-                >
-                  {isExpanded ? (
-                    <ChevronDown className="h-3 w-3" />
-                  ) : (
-                    <ChevronRight className="h-3 w-3" />
-                  )}
-                </Button>
-              ) : null}
-            </div>
+            {hasChildren ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleExpansion(node.id);
+                }}
+                className="p-0 h-auto hover:bg-transparent"
+              >
+                {isExpanded ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </Button>
+            ) : (
+              <div className="w-4" />
+            )}
 
             {/* Checkbox de sélection */}
             {onToggleSelection && (
@@ -500,60 +478,51 @@ export default function FilesViewBranch({
             )}
 
             {/* Icône du fichier/dossier */}
-            <div className="flex-shrink-0">{getFileIcon(node)}</div>
+            {getFileIcon(node)}
 
             {/* Nom et informations principales */}
             <div
-              className="flex-1 min-w-0 cursor-pointer"
+              className="flex-1 min-w-0"
               onClick={() => handleNodeClick(node)}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center space-x-2">
                 <span className="font-medium text-gray-900 truncate">
                   {node.name}
                 </span>
 
                 {/* Badges d'état */}
-                <div className="flex items-center gap-1">
-                  {node.isPublic && (
-                    <Badge variant="secondary" className="text-xs px-1 py-0">
-                      <Globe className="h-3 w-3 mr-1" />
-                      Public
-                    </Badge>
-                  )}
-
-                  {node.version > 1 && (
-                    <Badge variant="outline" className="text-xs px-1 py-0">
-                      v{node.version}
-                    </Badge>
-                  )}
-
-                  <Badge variant="outline" className="text-xs px-1 py-0">
-                    {getLabel(node.type)}
+                {node.isPublic && (
+                  <Badge variant="secondary" className="text-xs">
+                    Public
                   </Badge>
-                </div>
+                )}
+                {node.version > 1 && (
+                  <Badge variant="outline" className="text-xs">
+                    v{node.version}
+                  </Badge>
+                )}
+                <Badge variant="default" className="text-xs">
+                  {getLabel(node.type)}
+                </Badge>
               </div>
 
               {/* Informations secondaires */}
-              <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+              <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
                 {!node.isFolder && node.size && (
                   <span>{formatSize(node.size)}</span>
                 )}
-
                 {node.isFolder && node._count?.children && (
                   <span>
                     {node._count.children} élément
                     {node._count.children > 1 ? "s" : ""}
                   </span>
                 )}
-
                 {node.mimeType && !node.isFolder && (
-                  <span className="text-blue-600">{node.mimeType}</span>
+                  <span className="text-xs">{node.mimeType}</span>
                 )}
-
                 <span>
                   {format(node.updatedAt, "dd/MM/yyyy", { locale: fr })}
                 </span>
-
                 {node.uploader && (
                   <span>par {node.uploader.name || node.uploader.email}</span>
                 )}
@@ -561,80 +530,67 @@ export default function FilesViewBranch({
 
               {/* Tags */}
               {node.tags.length > 0 && (
-                <div className="flex items-center gap-1 mt-1">
-                  <Tag className="h-3 w-3 text-gray-400" />
-                  <div className="flex gap-1">
-                    {node.tags.slice(0, 3).map((tag, i) => (
-                      <Badge
-                        key={i}
-                        variant="secondary"
-                        className="text-xs px-1 py-0"
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                    {node.tags.length > 3 && (
-                      <span className="text-xs text-gray-500">
-                        +{node.tags.length - 3}
-                      </span>
-                    )}
-                  </div>
+                <div className="flex items-center space-x-1 mt-2">
+                  {node.tags.slice(0, 3).map((tag, i) => (
+                    <Badge key={i} variant="outline" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                  {node.tags.length > 3 && (
+                    <span className="text-xs text-gray-400">
+                      +{node.tags.length - 3}
+                    </span>
+                  )}
                 </div>
               )}
             </div>
-
-            {/* Menu d'actions */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-6 h-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => onEdit(node)}>
-                  <Edit className="h-4 w-4 mr-2" />
-                  Modifier
-                </DropdownMenuItem>
-
-                {!node.isFolder && (
-                  <DropdownMenuItem onClick={() => handleDownload(node)}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Télécharger
-                  </DropdownMenuItem>
-                )}
-
-                <DropdownMenuItem onClick={() => handleShare(node)}>
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Partager
-                </DropdownMenuItem>
-
-                <DropdownMenuItem onClick={() => handleDuplicate(node)}>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Dupliquer
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem
-                  onClick={() => handleDelete(node)}
-                  className="text-red-600 focus:text-red-600"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Supprimer
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
+
+          {/* Menu d'actions */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onEdit(node)}>
+                <Edit className="h-4 w-4 mr-2" />
+                Modifier
+              </DropdownMenuItem>
+              {!node.isFolder && (
+                <DropdownMenuItem onClick={() => handleDownload(node)}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Télécharger
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={() => handleShare(node)}>
+                <Share2 className="h-4 w-4 mr-2" />
+                Partager
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleDuplicate(node)}>
+                <Copy className="h-4 w-4 mr-2" />
+                Dupliquer
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => handleDelete(node)}
+                className="text-red-600 focus:text-red-600"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Supprimer
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Enfants (si dossier expansé) */}
           {hasChildren && isExpanded && (
             <Collapsible open={isExpanded}>
-              <CollapsibleContent className="ml-4">
+              <CollapsibleContent className="mt-2">
                 {files
                   .filter((f) => f.parent?.id === node.id)
                   .map((childFile, childIndex) => {
@@ -678,16 +634,16 @@ export default function FilesViewBranch({
   );
 
   return (
-    <div className="w-full space-y-4">
-      {/* Barre d'outils */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
+    <TooltipProvider>
+      <Card className="w-full">
+        <CardContent className="p-6">
+          {/* Barre d'outils */}
+          <div className="flex items-center justify-between mb-6">
             {/* Recherche */}
-            <div className="relative flex-1">
+            <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Rechercher dans l'arborescence..."
+                placeholder="Rechercher dans l'arbre..."
                 value={viewOptions.searchTerm}
                 onChange={(e) =>
                   setViewOptions((prev) => ({
@@ -700,69 +656,55 @@ export default function FilesViewBranch({
             </div>
 
             {/* Actions globales */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExpandAll}
-                className="text-sm"
-              >
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" onClick={handleExpandAll}>
                 {viewOptions.expandAll ? "Tout replier" : "Tout déplier"}
               </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onRefresh}
-                className="text-sm"
-              >
+              <Button variant="outline" size="sm" onClick={onRefresh}>
+                <RefreshCw className="h-4 w-4 mr-2" />
                 Actualiser
               </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Arbre des fichiers */}
-      <Card>
-        <CardContent className="p-0">
-          {filteredTree.length > 0 ? (
-            <div className="p-2 space-y-1">
-              {filteredTree.map((node, index) => renderNode(node, index))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-              <FolderOpen className="h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {viewOptions.searchTerm
-                  ? "Aucun résultat trouvé"
-                  : "Aucun fichier"}
-              </h3>
-              <p className="text-gray-600 mb-4 max-w-md">
-                {viewOptions.searchTerm
-                  ? `Aucun fichier ne correspond à "${viewOptions.searchTerm}"`
-                  : "Les fichiers et dossiers apparaîtront ici"}
-              </p>
-              {(viewOptions.searchTerm ||
-                viewOptions.typeFilter.length > 0) && (
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    setViewOptions({
-                      searchTerm: "",
-                      showHiddenFiles: false,
-                      typeFilter: [],
-                      expandAll: false,
-                    })
-                  }
-                >
-                  Effacer les filtres
-                </Button>
-              )}
-            </div>
-          )}
+          {/* Arbre des fichiers */}
+          <div className="space-y-2">
+            {filteredTree.length > 0 ? (
+              filteredTree.map((node, index) => renderNode(node, index))
+            ) : (
+              <div className="text-center py-12">
+                <Folder className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  {viewOptions.searchTerm
+                    ? "Aucun résultat trouvé"
+                    : "Aucun fichier"}
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  {viewOptions.searchTerm
+                    ? `Aucun fichier ne correspond à "${viewOptions.searchTerm}"`
+                    : "Les fichiers et dossiers apparaîtront ici"}
+                </p>
+                {(viewOptions.searchTerm ||
+                  viewOptions.typeFilter.length > 0) && (
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      setViewOptions({
+                        searchTerm: "",
+                        showHiddenFiles: false,
+                        typeFilter: [],
+                        expandAll: false,
+                      })
+                    }
+                  >
+                    Effacer les filtres
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
-    </div>
+    </TooltipProvider>
   );
 }

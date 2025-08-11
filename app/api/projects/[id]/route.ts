@@ -34,7 +34,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-// ✅ CORRECTION: Interface pour les requêtes de mise à jour selon votre schéma Prisma
+// Interface pour les requêtes de mise à jour selon votre schéma Prisma
 interface UpdateProjectRequest {
   name?: string;
   description?: string | null;
@@ -50,7 +50,7 @@ interface UpdateProjectRequest {
   metadata?: any;
 }
 
-// ✅ CORRECTION: Interface pour les réponses de projet avec toutes les propriétés selon votre schéma
+// Interface pour les réponses de projet avec toutes les propriétés selon votre schéma
 interface ProjectResponse {
   id: string;
   name: string;
@@ -118,7 +118,7 @@ interface ProjectResponse {
   };
 }
 
-// ✅ CORRECTION: Interfaces pour les réponses d'erreur standardisées
+// Interfaces pour les réponses d'erreur et de succès
 interface ErrorResponse {
   success: false;
   error: string;
@@ -126,7 +126,6 @@ interface ErrorResponse {
   timestamp: string;
 }
 
-// ✅ CORRECTION: Interface pour les réponses de succès avec données
 interface SuccessDataResponse {
   success: true;
   data: ProjectResponse;
@@ -134,34 +133,23 @@ interface SuccessDataResponse {
   timestamp: string;
 }
 
-// ✅ CORRECTION: Interface pour les réponses de succès sans données (DELETE)
 interface SuccessMessageResponse {
   success: true;
   message: string;
   timestamp: string;
 }
 
-// ✅ CORRECTION PRINCIPALE: Interface pour les paramètres conforme aux contraintes TypeScript Next.js 15
-// L'interface doit avoir une signature d'index pour satisfaire la contrainte 'Params'
+// Interface pour les paramètres conforme aux contraintes TypeScript Next.js 15
 interface RouteContext {
-  params: {
-    id: string;
-    [key: string]: string | string[] | undefined;
-  };
+  params: Promise<{ id: string; [key: string]: string | string[] | undefined }>;
 }
 
-// ✅ CORRECTION: Validation d'ID améliorée pour UUID et CUID (Prisma par défaut)
+// Validation d'ID pour UUID et CUID (Prisma par défaut)
 function isValidId(id: string): boolean {
-  // Validation UUID v4
   const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-  // Validation CUID (utilisé par Prisma par défaut)
   const cuidRegex = /^c[^\s-]{8,}$/i;
-
-  // Validation CUID2 (nouvelle version)
   const cuid2Regex = /^[a-z][a-z0-9]*$/i;
-
   return uuidRegex.test(id) || cuidRegex.test(id) || cuid2Regex.test(id);
 }
 
@@ -185,15 +173,15 @@ function generateSlug(name: string): string {
   return name
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // Supprime les accents
-    .replace(/[^a-z0-9]+/g, "-") // Remplace par des tirets
-    .replace(/(^-|-$)/g, "") // Supprime les tirets en début/fin
-    .substring(0, 50); // Limite la longueur
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .substring(0, 50);
 }
 
 /**
  * GET /api/projects/[id]
- * ✅ CORRECTION: Récupère un projet spécifique avec interface corrigée
+ * Récupère un projet spécifique avec ses relations
  */
 export async function GET(
   request: NextRequest,
@@ -202,12 +190,12 @@ export async function GET(
   const timestamp = new Date().toISOString();
 
   try {
-    // ✅ CORRECTION: Extraction correcte de l'ID depuis le contexte
-    const { id } = context.params;
+    // ✅ CORRECTION: Await params to handle Next.js 15 dynamic route behavior
+    const { id } = await context.params;
 
     console.log("🔍 API GET /api/projects/[id] - ID reçu:", id);
 
-    // ✅ CORRECTION: Validation de l'ID avec support UUID/CUID
+    // Validation de l'ID avec support UUID/CUID
     if (!id || typeof id !== "string" || !isValidId(id)) {
       console.error("❌ Format ID invalide:", id);
       return NextResponse.json(
@@ -223,7 +211,7 @@ export async function GET(
 
     console.log("✅ Validation ID OK, requête Prisma...");
 
-    // ✅ CORRECTION: Requête Prisma selon votre schéma avec toutes les relations
+    // Requête Prisma selon votre schéma avec toutes les relations
     const project = await prisma.project.findUnique({
       where: { id },
       include: {
@@ -250,7 +238,7 @@ export async function GET(
             },
           },
           orderBy: { joinedAt: "asc" },
-          take: 50, // Augmenté pour plus de membres
+          take: 50,
         },
         initiatives: {
           select: {
@@ -264,7 +252,7 @@ export async function GET(
             endDate: true,
           },
           orderBy: [{ priority: "desc" }, { createdAt: "desc" }],
-          take: 20, // Augmenté pour plus d'initiatives
+          take: 20,
         },
         features: {
           select: {
@@ -278,7 +266,7 @@ export async function GET(
             position: true,
           },
           orderBy: { position: "asc" },
-          take: 30, // Augmenté pour plus de features
+          take: 30,
         },
         _count: {
           select: {
@@ -309,7 +297,7 @@ export async function GET(
 
     console.log("✅ Projet trouvé:", project.name);
 
-    // ✅ CORRECTION: Formatage de la réponse avec conversion des données
+    // Formatage de la réponse avec conversion des données
     const response: SuccessDataResponse = {
       success: true,
       data: {
@@ -332,11 +320,11 @@ export async function GET(
         members: project.members,
         initiatives: project.initiatives?.map((initiative) => ({
           ...initiative,
-          progress: Math.round((initiative.progress || 0) * 100), // Float -> pourcentage
+          progress: Math.round((initiative.progress || 0) * 100),
         })),
         features: project.features?.map((feature) => ({
           ...feature,
-          progress: Math.round((feature.progress || 0) * 100), // Float -> pourcentage
+          progress: Math.round((feature.progress || 0) * 100),
         })),
         _count: project._count,
       },
@@ -347,7 +335,7 @@ export async function GET(
   } catch (error: unknown) {
     console.error("💥 Erreur lors de la récupération du projet:", error);
 
-    // ✅ CORRECTION: Gestion spécifique des erreurs Prisma
+    // Gestion spécifique des erreurs Prisma
     if (isPrismaError(error)) {
       switch (error.code) {
         case "P2025":
@@ -390,7 +378,7 @@ export async function GET(
 
 /**
  * PUT /api/projects/[id]
- * ✅ CORRECTION: Met à jour un projet existant avec interface corrigée
+ * Met à jour un projet existant
  */
 export async function PUT(
   request: NextRequest,
@@ -399,9 +387,10 @@ export async function PUT(
   const timestamp = new Date().toISOString();
 
   try {
-    const { id } = context.params;
+    // ✅ CORRECTION: Await params to handle Next.js 15 dynamic route behavior
+    const { id } = await context.params;
 
-    // ✅ CORRECTION: Validation de l'ID améliorée
+    // Validation de l'ID
     if (!id || typeof id !== "string" || !isValidId(id)) {
       return NextResponse.json(
         {
@@ -414,7 +403,7 @@ export async function PUT(
       );
     }
 
-    // ✅ CORRECTION: Validation du JSON body
+    // Validation du JSON body
     let body: UpdateProjectRequest;
     try {
       body = await request.json();
@@ -430,7 +419,7 @@ export async function PUT(
       );
     }
 
-    // Validation et mise à jour (code identique à votre version précédente)
+    // Vérification de l'existence du projet
     const existingProject = await prisma.project.findUnique({
       where: { id },
       select: { id: true, slug: true, key: true, name: true },
@@ -448,15 +437,214 @@ export async function PUT(
       );
     }
 
-    // Suite du code de validation et mise à jour...
+    // Validation des champs
+    const updateData: UpdateProjectRequest = {};
+    if (body.name) {
+      updateData.name = body.name;
+      updateData.slug = generateSlug(body.name);
+    }
+    if (body.description !== undefined)
+      updateData.description = body.description;
+    if (body.key) updateData.key = body.key.toUpperCase().substring(0, 10);
+    if (body.order !== undefined) updateData.order = body.order;
+    if (body.startDate !== undefined)
+      updateData.startDate = body.startDate
+        ? new Date(body.startDate).toISOString()
+        : null;
+    if (body.endDate !== undefined)
+      updateData.endDate = body.endDate
+        ? new Date(body.endDate).toISOString()
+        : null;
+    if (body.status) updateData.status = body.status;
+    if (body.visibility) updateData.visibility = body.visibility;
+    if (body.isActive !== undefined) updateData.isActive = body.isActive;
+    if (body.settings) updateData.settings = body.settings;
+    if (body.metadata) updateData.metadata = body.metadata;
 
-    return NextResponse.json({
-      success: true,
-      data: {} as ProjectResponse, // Remplacer par les données réelles
-      message: "Projet mis à jour avec succès",
-      timestamp,
-    } satisfies SuccessDataResponse);
+    // Validation des contraintes
+    if (body.name && body.name.length < 3) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Nom invalide",
+          details: "Le nom du projet doit contenir au moins 3 caractères",
+          timestamp,
+        } satisfies ErrorResponse,
+        { status: 400 }
+      );
+    }
+
+    if (body.key) {
+      const keyExists = await prisma.project.findFirst({
+        where: { key: body.key.toUpperCase(), NOT: { id } },
+      });
+      if (keyExists) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Clé déjà utilisée",
+            details: `La clé '${body.key}' est déjà utilisée par un autre projet`,
+            timestamp,
+          } satisfies ErrorResponse,
+          { status: 400 }
+        );
+      }
+    }
+
+    if (body.startDate && body.endDate) {
+      const start = new Date(body.startDate);
+      const end = new Date(body.endDate);
+      if (start > end) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Dates invalides",
+            details: "La date de début doit être antérieure à la date de fin",
+            timestamp,
+          } satisfies ErrorResponse,
+          { status: 400 }
+        );
+      }
+    }
+
+    // Mise à jour du projet
+    const updatedProject = await prisma.project.update({
+      where: { id },
+      data: updateData,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            username: true,
+            isActive: true,
+          },
+        },
+        members: {
+          where: { isActive: true },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
+          },
+          orderBy: { joinedAt: "asc" },
+          take: 50,
+        },
+        initiatives: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            priority: true,
+            status: true,
+            progress: true,
+            startDate: true,
+            endDate: true,
+          },
+          orderBy: [{ priority: "desc" }, { createdAt: "desc" }],
+          take: 20,
+        },
+        features: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            priority: true,
+            status: true,
+            progress: true,
+            storyPoints: true,
+            position: true,
+          },
+          orderBy: { position: "asc" },
+          take: 30,
+        },
+        _count: {
+          select: {
+            initiatives: true,
+            features: true,
+            sprints: true,
+            files: true,
+            channels: true,
+            templates: true,
+            members: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          id: updatedProject.id,
+          name: updatedProject.name,
+          description: updatedProject.description,
+          slug: updatedProject.slug,
+          key: updatedProject.key,
+          order: updatedProject.order,
+          startDate: updatedProject.startDate,
+          endDate: updatedProject.endDate,
+          status: updatedProject.status,
+          visibility: updatedProject.visibility,
+          settings: updatedProject.settings,
+          metadata: updatedProject.metadata,
+          isActive: updatedProject.isActive,
+          createdAt: updatedProject.createdAt,
+          updatedAt: updatedProject.updatedAt,
+          user: updatedProject.user,
+          members: updatedProject.members,
+          initiatives: updatedProject.initiatives?.map((initiative) => ({
+            ...initiative,
+            progress: Math.round((initiative.progress || 0) * 100),
+          })),
+          features: updatedProject.features?.map((feature) => ({
+            ...feature,
+            progress: Math.round((feature.progress || 0) * 100),
+          })),
+          _count: updatedProject._count,
+        },
+        message: "Projet mis à jour avec succès",
+        timestamp,
+      } satisfies SuccessDataResponse,
+      { status: 200 }
+    );
   } catch (error: unknown) {
+    console.error("💥 Erreur lors de la mise à jour du projet:", error);
+
+    if (isPrismaError(error)) {
+      switch (error.code) {
+        case "P2025":
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Projet non trouvé",
+              details: "Le projet demandé n'existe pas en base de données",
+              timestamp,
+            } satisfies ErrorResponse,
+            { status: 404 }
+          );
+        case "P2002":
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Conflit de données",
+              details: "Une contrainte unique a été violée (slug ou clé)",
+              timestamp,
+            } satisfies ErrorResponse,
+            { status: 400 }
+          );
+        default:
+          console.error("Erreur Prisma non gérée:", error.code, error.message);
+      }
+    }
+
     return NextResponse.json(
       {
         success: false,
@@ -471,7 +659,7 @@ export async function PUT(
 
 /**
  * DELETE /api/projects/[id]
- * ✅ CORRECTION: Supprime un projet avec interface corrigée
+ * Supprime un projet avec vérification des dépendances
  */
 export async function DELETE(
   request: NextRequest,
@@ -480,8 +668,10 @@ export async function DELETE(
   const timestamp = new Date().toISOString();
 
   try {
-    const { id } = context.params;
+    // ✅ CORRECTION: Await params to handle Next.js 15 dynamic route behavior
+    const { id } = await context.params;
 
+    // Validation de l'ID
     if (!id || typeof id !== "string" || !isValidId(id)) {
       return NextResponse.json(
         {
@@ -494,7 +684,59 @@ export async function DELETE(
       );
     }
 
-    // Logique de suppression...
+    // Vérification des dépendances
+    const project = await prisma.project.findUnique({
+      where: { id },
+      select: {
+        _count: {
+          select: {
+            initiatives: true,
+            features: true,
+            sprints: true,
+            files: true,
+            channels: true,
+            templates: true,
+            members: true,
+          },
+        },
+      },
+    });
+
+    if (!project) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Projet non trouvé",
+          details: `Aucun projet trouvé avec l'ID: ${id}`,
+          timestamp,
+        } satisfies ErrorResponse,
+        { status: 404 }
+      );
+    }
+
+    // Vérification des dépendances actives
+    if (
+      project._count.initiatives > 0 ||
+      project._count.features > 0 ||
+      project._count.sprints > 0 ||
+      project._count.members > 0
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Dépendances actives",
+          details:
+            "Le projet ne peut pas être supprimé car il contient des initiatives, features, sprints ou membres actifs",
+          timestamp,
+        } satisfies ErrorResponse,
+        { status: 400 }
+      );
+    }
+
+    // Suppression du projet
+    await prisma.project.delete({
+      where: { id },
+    });
 
     return NextResponse.json(
       {
@@ -505,6 +747,36 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error: unknown) {
+    console.error("💥 Erreur lors de la suppression du projet:", error);
+
+    if (isPrismaError(error)) {
+      switch (error.code) {
+        case "P2025":
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Projet non trouvé",
+              details: "Le projet demandé n'existe pas en base de données",
+              timestamp,
+            } satisfies ErrorResponse,
+            { status: 404 }
+          );
+        case "P2003":
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Contrainte de dépendance",
+              details:
+                "Le projet ne peut pas être supprimé en raison de dépendances existantes",
+              timestamp,
+            } satisfies ErrorResponse,
+            { status: 400 }
+          );
+        default:
+          console.error("Erreur Prisma non gérée:", error.code, error.message);
+      }
+    }
+
     return NextResponse.json(
       {
         success: false,
@@ -516,18 +788,3 @@ export async function DELETE(
     );
   }
 }
-/*
-.next/types/app/api/projects/[id]/route.ts:49:7
-Type error: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: RouteContext; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
-  The types of '__param_type__.params' are incompatible between these types.
-    Type '{ [key: string]: string | string[] | undefined; id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
-
-  47 |     Diff<
-  48 |       ParamCheck<RouteContext>,
-> 49 |       {
-     |       ^
-  50 |         __tag__: 'GET'
-  51 |         __param_position__: 'second'
-  52 |         __param_type__: SecondArg<MaybeField<TEntry, 'GET'>>
-Next.js build worker exited with code: 1 and signal: null
-*/

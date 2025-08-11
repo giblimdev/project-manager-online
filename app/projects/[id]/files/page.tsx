@@ -1,187 +1,230 @@
 // app/projects/[id]/files/page.tsx
 
 /**
- * RÔLE : Page de gestion du référentiel de métadonnées de fichiers d'un projet
+ * RÔLE : Page principale de gestion des métadonnées de fichiers par projet
  * RESPONSABILITÉS :
- * - Utilise correctement l'ID de l'URL via params (route dynamique Next.js 15)
- * - Affichage des métadonnées de fichiers avec mode vue liste simplifié
- * - Gestion des filtres par nom et type de fichier via interface simple
- * - FilesList pour affichage avec toutes les actions CRUD
- * - FilesForm en modal avec Dialog géré par isOpen pour création/édition
- * - Gestion des permissions et authentification Better Auth
- * - Interface responsive moderne avec design épuré
- * - API avec projectId dans les paramètres d'URL selon nouvelle spécification
- * - Types simplifiés via fichier central types/files.ts
+ * - Interface complète de gestion des fichiers avec sélecteur de vue (list/card/branch)
+ * - Filtrage avancé par type FileType selon schéma Prisma EXACT
+ * - Navigation hiérarchique dans les dossiers virtuels
+ * - Actions CRUD complètes avec formulaire modal
+ * - Gestion des états loading, error et empty avec feedback utilisateur
+ * - Intégration API sécurisée avec validation côté client et serveur
+ * - Design responsive moderne avec Tailwind CSS et composants shadcn/ui
+ * - Support des métadonnées de développement (import, export, use, script)
  *
  * COMPOSANTS UTILISÉS :
- * - FilesForm: Formulaire en Dialog modal avec prop isOpen et callbacks
- * - Card, CardContent, Button: Composants UI shadcn/ui
- * - Skeleton: Composant de loading state
- * - Table: Composant d'affichage des données
+ * - FilesDisplay: Sélecteur de mode d'affichage avec persistance d'état
+ * - FilesFilter: Filtrage avancé avec recherche et tri multi-colonnes
+ * - FileList: Liste principale avec boutons d'action et vues multiples
+ * - FilesForm: Formulaire modal pour création/édition avec validation Zod
+ * - Button, Card, CardContent: Composants UI shadcn/ui modernes
+ * - Breadcrumb: Navigation de fil d'Ariane pour hiérarchie
  *
  * LIBS UTILISÉS :
  * - React 19 hooks: useState, useEffect, useCallback, useMemo, JSX
- * - Next.js 15 avec route dynamique et nouvelles API routes
- * - Better Auth: Authentification et gestion des sessions utilisateur
- * - TypeScript strict mode avec interfaces selon types/files.ts
- * - Tailwind CSS: Design moderne responsive
- * - lucide-react: Icons modernes
- * - sonner: Toast notifications pour les actions utilisateur
- *
- * API :
- * - GET /api/files?projectId=xxx : Récupération des métadonnées de fichiers
- * - POST /api/files : Création d'une nouvelle entrée de métadonnées
- * - PUT /api/files/[id] : Mise à jour des métadonnées d'un fichier
- * - DELETE /api/files/[id] : Suppression d'une entrée de métadonnées
+ * - Next.js 15 avec TypeScript strict mode et App Router
+ * - API Routes Next.js 15 avec gestion des paramètres mise à jour
+ * - shadcn/ui: Button, Card, Breadcrumb, Separator components
+ * - lucide-react: Icons modernes pour navigation et actions
+ * - sonner: Toast notifications pour feedback temps réel
+ * - Tailwind CSS: Design responsive mobile-first avec animations
  */
 
 "use client";
 
 import React, { JSX, useState, useEffect, useCallback, useMemo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import {
-  RefreshCw,
-  AlertTriangle,
-  Database,
   Plus,
+  RefreshCw,
+  FolderOpen,
+  Home,
+  ChevronRight,
+  Loader2,
+  AlertTriangle,
+  FileText,
   Search,
   Filter,
-  FileText,
-  Package,
-  Settings,
-  Layers,
-  Code2,
-  Image,
-  Video,
-  Archive,
-  Paintbrush,
-  TestTube,
-  File,
-  Folder,
-  Edit,
-  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useSession } from "@/lib/auth/auth-client";
-import FilesForm from "@/components/files/FilesForm";
-import type { FileMetadata, FilterType, FilesApiResponse } from "@/types/files";
 
-// Props de la page Next.js 15 avec params Promise-based
-interface PageProps {
-  params: Promise<{ id: string }>;
+// ✅ Import des composants Files
+import FilesDisplay from "@/components/files/FilesDisplay";
+import FilesFilter from "@/components/files/FilesFilter";
+import FileList from "@/components/files/FilesList";
+import FilesForm from "@/components/files/FilesForm";
+
+// ✅ Import des types centralisés
+import type {
+  FileWithRelations,
+  ViewMode,
+  FilterType,
+  SortBy,
+  SortOrder,
+  ApiResponse,
+  FileSearchParams,
+} from "@/types/files";
+
+// Interface pour l'état de navigation
+interface NavigationState {
+  currentFolder: string | null;
+  breadcrumb: Array<{ id: string | null; name: string }>;
 }
 
-export default function FilesPage({ params }: PageProps): JSX.Element {
-  // États de la page
-  const [projectId, setProjectId] = useState<string | null>(null);
-  const [files, setFiles] = useState<FileMetadata[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+// Interface pour l'état de filtrage
+interface FilterState {
+  search: string;
+  type: FilterType;
+  sortBy: SortBy;
+  sortOrder: SortOrder;
+}
+
+export default function ProjectFilesPage(): JSX.Element {
+  const params = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // ✅ ID du projet depuis les paramètres de route
+  const projectId = params.id as string;
+
+  // ✅ États principaux
+  const [files, setFiles] = useState<FileWithRelations[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedType, setSelectedType] = useState<FilterType>("ALL");
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingFile, setEditingFile] = useState<FileMetadata | null>(null);
+  const [editingFile, setEditingFile] = useState<FileWithRelations | null>(
+    null
+  );
+  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
 
-  // Session Better Auth
-  const { data: session, isPending: isPendingSession } = useSession();
+  // ✅ État de navigation hiérarchique
+  const [navigation, setNavigation] = useState<NavigationState>({
+    currentFolder: null,
+    breadcrumb: [{ id: null, name: "Racine" }],
+  });
 
-  // ✅ Résolution des paramètres Next.js 15
-  useEffect(() => {
-    params.then((resolvedParams) => {
-      console.log("📋 FilesPage - ID du projet depuis URL:", resolvedParams.id);
-      setProjectId(resolvedParams.id);
-    });
-  }, [params]);
+  // ✅ État de filtrage
+  const [filters, setFilters] = useState<FilterState>({
+    search: "",
+    type: "ALL",
+    sortBy: "name",
+    sortOrder: "asc",
+  });
 
-  // ✅ Fonction de chargement des fichiers
-  const loadFiles = useCallback(async (projectId: string) => {
+  // ✅ Récupération des fichiers avec paramètres de recherche
+  const fetchFiles = useCallback(async () => {
+    if (!projectId) return;
+
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/files?projectId=${projectId}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      const searchParams = new URLSearchParams();
+      searchParams.set("projectId", projectId);
+
+      if (navigation.currentFolder) {
+        searchParams.set("parentId", navigation.currentFolder);
+      }
+
+      if (filters.search) {
+        searchParams.set("search", filters.search);
+      }
+
+      if (filters.type !== "ALL") {
+        searchParams.set("type", filters.type);
+      }
+
+      searchParams.set("sortBy", filters.sortBy);
+      searchParams.set("sortOrder", filters.sortOrder);
+
+      const response = await fetch(`/api/files?${searchParams.toString()}`);
 
       if (!response.ok) {
         throw new Error(`Erreur ${response.status}: ${response.statusText}`);
       }
 
-      const result: FilesApiResponse = await response.json();
+      const result: ApiResponse<FileWithRelations[]> = await response.json();
 
       if (!result.success) {
         throw new Error(result.error || "Erreur lors du chargement");
       }
 
       setFiles(result.data || []);
-      toast.success(`${result.data?.length || 0} fichier(s) chargé(s)`);
     } catch (error) {
-      console.error("💥 Erreur chargement fichiers:", error);
+      console.error("💥 Erreur lors du chargement des fichiers:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Erreur inconnue";
       setError(errorMessage);
-      toast.error(`Erreur: ${errorMessage}`);
+      toast.error("Erreur de chargement", {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [projectId, navigation.currentFolder, filters]);
 
-  // Chargement automatique
+  // ✅ Chargement initial et mise à jour automatique
   useEffect(() => {
-    if (projectId && !isLoading) {
-      loadFiles(projectId);
-    }
-  }, [projectId, loadFiles, isLoading]);
+    fetchFiles();
+  }, [fetchFiles]);
 
-  // ✅ Filtrage des fichiers
-  const filteredFiles = useMemo(() => {
-    let filtered = files;
+  // ✅ Navigation dans l'arborescence
+  const handleFolderNavigate = useCallback(
+    (folderId: string | null, folderName?: string) => {
+      setNavigation((prev) => {
+        if (folderId === null) {
+          // Retour à la racine
+          return {
+            currentFolder: null,
+            breadcrumb: [{ id: null, name: "Racine" }],
+          };
+        }
 
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (file) =>
-          file.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          file.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+        // Navigation vers un sous-dossier
+        const newBreadcrumb = [
+          ...prev.breadcrumb,
+          { id: folderId, name: folderName || "Dossier" },
+        ];
 
-    if (selectedType !== "ALL") {
-      filtered = filtered.filter((file) => file.type === selectedType);
-    }
+        return {
+          currentFolder: folderId,
+          breadcrumb: newBreadcrumb,
+        };
+      });
+    },
+    []
+  );
 
-    return filtered.sort((a, b) => {
-      if (a.isFolder && !b.isFolder) return -1;
-      if (!a.isFolder && b.isFolder) return 1;
-      return a.name.localeCompare(b.name);
-    });
-  }, [files, searchTerm, selectedType]);
+  // ✅ Navigation breadcrumb
+  const handleBreadcrumbClick = useCallback(
+    (targetId: string | null, index: number) => {
+      setNavigation((prev) => ({
+        currentFolder: targetId,
+        breadcrumb: prev.breadcrumb.slice(0, index + 1),
+      }));
+    },
+    []
+  );
 
-  // ✅ Handlers
-  const handleCreateFile = useCallback(() => {
+  // ✅ Gestion de la création/édition
+  const handleCreateNew = useCallback(() => {
     setEditingFile(null);
     setIsFormOpen(true);
   }, []);
 
-  const handleEditFile = useCallback((file: FileMetadata) => {
+  const handleEdit = useCallback((file: FileWithRelations) => {
     setEditingFile(file);
     setIsFormOpen(true);
   }, []);
@@ -189,265 +232,299 @@ export default function FilesPage({ params }: PageProps): JSX.Element {
   const handleFormSuccess = useCallback(() => {
     setIsFormOpen(false);
     setEditingFile(null);
-    if (projectId) {
-      loadFiles(projectId);
-    }
-  }, [projectId, loadFiles]);
+    fetchFiles();
+    toast.success(editingFile ? "Référence mise à jour" : "Référence créée", {
+      description: "Les modifications ont été enregistrées avec succès",
+    });
+  }, [editingFile, fetchFiles]);
 
   const handleFormCancel = useCallback(() => {
     setIsFormOpen(false);
     setEditingFile(null);
   }, []);
 
-  // ✅ Fonction pour obtenir l'icône selon le type
-  const getTypeIcon = useCallback(
-    (type: string, isFolder: boolean): JSX.Element => {
-      if (isFolder) return <Folder className="h-4 w-4 text-blue-600" />;
+  // ✅ Gestion de la suppression
+  const handleDelete = useCallback(
+    async (file: FileWithRelations) => {
+      if (!confirm(`Êtes-vous sûr de vouloir supprimer "${file.name}" ?`)) {
+        return;
+      }
 
-      const iconMap: Record<string, JSX.Element> = {
-        PAGE: <FileText className="h-4 w-4 text-purple-600" />,
-        COMPONENT: <Package className="h-4 w-4 text-blue-600" />,
-        UTILS: <Settings className="h-4 w-4 text-orange-600" />,
-        LIB: <Layers className="h-4 w-4 text-indigo-600" />,
-        STORE: <Database className="h-4 w-4 text-green-600" />,
-        HOOK: <Code2 className="h-4 w-4 text-teal-600" />,
-        DOCUMENT: <FileText className="h-4 w-4 text-blue-600" />,
-        IMAGE: <Image className="h-4 w-4 text-pink-600" />,
-        VIDEO: <Video className="h-4 w-4 text-red-600" />,
-        ARCHIVE: <Archive className="h-4 w-4 text-yellow-600" />,
-        CODE: <Code2 className="h-4 w-4 text-gray-600" />,
-        DESIGN: <Paintbrush className="h-4 w-4 text-rose-600" />,
-        TEST: <TestTube className="h-4 w-4 text-emerald-600" />,
-        OTHER: <File className="h-4 w-4 text-gray-400" />,
-      };
-      return iconMap[type] || <File className="h-4 w-4 text-gray-400" />;
+      try {
+        const response = await fetch(`/api/files/${file.id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+        }
+
+        const result: ApiResponse<void> = await response.json();
+
+        if (!result.success) {
+          throw new Error(result.error || "Erreur lors de la suppression");
+        }
+
+        toast.success("Référence supprimée", {
+          description: `"${file.name}" a été supprimé avec succès`,
+        });
+
+        fetchFiles();
+      } catch (error) {
+        console.error("💥 Erreur lors de la suppression:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "Erreur inconnue";
+        toast.error("Erreur de suppression", {
+          description: errorMessage,
+        });
+      }
     },
-    []
+    [fetchFiles]
   );
 
-  // Gestion des états de chargement et d'erreur
-  if (isPendingSession || !projectId) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] p-8">
-        <RefreshCw className="h-8 w-8 animate-spin text-blue-600 mb-4" />
-        <h2 className="text-xl font-semibold text-gray-900">Chargement...</h2>
-      </div>
+  // ✅ Gestion de la sélection multiple
+  const handleToggleSelection = useCallback((fileId: string) => {
+    setSelectedFiles((prev) =>
+      prev.includes(fileId)
+        ? prev.filter((id) => id !== fileId)
+        : [...prev, fileId]
     );
-  }
+  }, []);
 
-  if (!session) {
+  const handleClearSelection = useCallback(() => {
+    setSelectedFiles([]);
+  }, []);
+
+  // ✅ Handlers pour les filtres
+  const handleSearchChange = useCallback((search: string) => {
+    setFilters((prev) => ({ ...prev, search }));
+  }, []);
+
+  const handleTypeChange = useCallback((type: FilterType) => {
+    setFilters((prev) => ({ ...prev, type }));
+  }, []);
+
+  const handleSortByChange = useCallback((sortBy: SortBy) => {
+    setFilters((prev) => ({ ...prev, sortBy }));
+  }, []);
+
+  const handleSortOrderChange = useCallback((sortOrder: SortOrder) => {
+    setFilters((prev) => ({ ...prev, sortOrder }));
+  }, []);
+
+  // ✅ Statistiques des fichiers
+  const stats = useMemo(() => {
+    const totalFiles = files.length;
+    const folders = files.filter((f) => f.isFolder).length;
+    const filesCount = totalFiles - folders;
+    const selectedCount = selectedFiles.length;
+
+    return {
+      totalFiles,
+      folders,
+      files: filesCount,
+      selected: selectedCount,
+    };
+  }, [files, selectedFiles]);
+
+  // ✅ Gestion des erreurs et états vides
+  if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] p-8">
-        <AlertTriangle className="h-12 w-12 text-amber-500 mb-4" />
-        <h2 className="text-xl font-semibold text-gray-900">
-          Authentification requise
-        </h2>
-        <p className="text-gray-600 text-center mt-2">
-          Veuillez vous connecter pour accéder au référentiel de fichiers.
-        </p>
+      <div className="container mx-auto px-4 py-8">
+        <Card className="max-w-md mx-auto">
+          <CardContent className="pt-6 text-center">
+            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Erreur de chargement
+            </h3>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <Button onClick={fetchFiles} className="w-full">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Réessayer
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 p-4 sm:p-6 min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg shadow-lg">
-              <Database className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                Référentiel de fichiers
-                <span className="ml-3 text-base sm:text-lg font-normal text-gray-500">
-                  {filteredFiles.length} / {files.length}
-                </span>
-              </h1>
-              <p className="text-sm text-gray-600">
-                Métadonnées et références des fichiers du projet
-              </p>
-            </div>
+    <div className="container mx-auto px-4 py-6 space-y-6">
+      {/* ✅ En-tête avec titre et navigation */}
+      <div className="flex flex-col space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Références de fichiers
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Gérez les métadonnées et références de votre projet
+            </p>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              onClick={fetchFiles}
+              disabled={isLoading}
+              className="hidden sm:flex"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-2" />
+              )}
+              Actualiser
+            </Button>
+
+            <Button onClick={handleCreateNew} className="shadow-sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Ajouter une référence
+            </Button>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-          <Button
-            onClick={() => projectId && loadFiles(projectId)}
-            variant="outline"
-            disabled={isLoading}
-          >
-            <RefreshCw
-              className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-            />
-            Actualiser
-          </Button>
+        {/* ✅ Fil d'Ariane */}
+        <Card className="p-4">
+          <Breadcrumb>
+            <BreadcrumbList>
+              {navigation.breadcrumb.map((item, index) => (
+                <React.Fragment key={item.id || "root"}>
+                  {index > 0 && <BreadcrumbSeparator />}
+                  <BreadcrumbItem>
+                    {index === navigation.breadcrumb.length - 1 ? (
+                      <BreadcrumbPage className="flex items-center">
+                        {index === 0 ? (
+                          <Home className="h-4 w-4 mr-1" />
+                        ) : (
+                          <FolderOpen className="h-4 w-4 mr-1" />
+                        )}
+                        {item.name}
+                      </BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink
+                        onClick={() => handleBreadcrumbClick(item.id, index)}
+                        className="flex items-center cursor-pointer hover:text-blue-600"
+                      >
+                        {index === 0 ? (
+                          <Home className="h-4 w-4 mr-1" />
+                        ) : (
+                          <FolderOpen className="h-4 w-4 mr-1" />
+                        )}
+                        {item.name}
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                </React.Fragment>
+              ))}
+            </BreadcrumbList>
+          </Breadcrumb>
+        </Card>
 
-          <Button
-            onClick={handleCreateFile}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Référencer un fichier
-          </Button>
+        {/* ✅ Statistiques */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <Card className="p-4">
+            <div className="text-2xl font-bold text-blue-600">
+              {stats.totalFiles}
+            </div>
+            <div className="text-sm text-gray-600">Total</div>
+          </Card>
+          <Card className="p-4">
+            <div className="text-2xl font-bold text-green-600">
+              {stats.folders}
+            </div>
+            <div className="text-sm text-gray-600">Dossiers</div>
+          </Card>
+          <Card className="p-4">
+            <div className="text-2xl font-bold text-purple-600">
+              {stats.files}
+            </div>
+            <div className="text-sm text-gray-600">Fichiers</div>
+          </Card>
+          <Card className="p-4">
+            <div className="text-2xl font-bold text-orange-600">
+              {stats.selected}
+            </div>
+            <div className="text-sm text-gray-600">Sélectionnés</div>
+          </Card>
         </div>
       </div>
 
-      {/* Filtres */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Rechercher par nom ou description..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
+      {/* ✅ Contrôles d'affichage et filtrage */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Mode d'affichage */}
+        <div className="lg:col-span-1">
+          <FilesDisplay viewMode={viewMode} onViewModeChange={setViewMode} />
+        </div>
 
-            <div className="sm:w-48">
-              <Select
-                value={selectedType}
-                onValueChange={(value) => setSelectedType(value as FilterType)}
+        {/* Filtres */}
+        <div className="lg:col-span-2">
+          <FilesFilter
+            value={filters.search}
+            onChange={handleSearchChange}
+            selectedType={filters.type}
+            onTypeChange={handleTypeChange}
+            sortBy={filters.sortBy}
+            onSortByChange={handleSortByChange}
+            sortOrder={filters.sortOrder}
+            onSortOrderChange={handleSortOrderChange}
+            placeholder="Rechercher par nom, description, import, export, use, script, tags..."
+          />
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* ✅ Liste principale des fichiers */}
+      <FileList
+        files={files}
+        viewMode={viewMode}
+        currentFolder={navigation.currentFolder}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onRefresh={fetchFiles}
+        onFolderNavigate={handleFolderNavigate}
+        selectedFiles={selectedFiles}
+        onToggleSelection={handleToggleSelection}
+        isLoading={isLoading}
+      />
+
+      {/* ✅ Actions en lot pour sélection multiple */}
+      {selectedFiles.length > 0 && (
+        <Card className="p-4 bg-blue-50 border-blue-200">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-blue-700">
+              {selectedFiles.length} élément
+              {selectedFiles.length > 1 ? "s" : ""} sélectionné
+              {selectedFiles.length > 1 ? "s" : ""}
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleClearSelection}
               >
-                <SelectTrigger>
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Type de fichier" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">Tous les types</SelectItem>
-                  <SelectItem value="PAGE">Pages</SelectItem>
-                  <SelectItem value="COMPONENT">Composants</SelectItem>
-                  <SelectItem value="UTILS">Utilitaires</SelectItem>
-                  <SelectItem value="LIB">Librairies</SelectItem>
-                  <SelectItem value="STORE">Stores</SelectItem>
-                  <SelectItem value="HOOK">Hooks</SelectItem>
-                  <SelectItem value="DOCUMENT">Documents</SelectItem>
-                  <SelectItem value="CODE">Code</SelectItem>
-                  <SelectItem value="TEST">Tests</SelectItem>
-                  <SelectItem value="OTHER">Autres</SelectItem>
-                </SelectContent>
-              </Select>
+                Désélectionner
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => {
+                  // TODO: Implémenter la suppression en lot
+                  toast.info("Suppression en lot - À implémenter");
+                }}
+              >
+                Supprimer la sélection
+              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Contenu principal */}
-      {error ? (
-        <Card className="border-red-200 bg-red-50">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
-              <div>
-                <h3 className="font-medium text-red-800">
-                  Erreur de chargement
-                </h3>
-                <p className="text-red-600 text-sm">{error}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ) : isLoading ? (
-        <Card>
-          <CardContent className="p-6">
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center space-x-4">
-                  <div className="h-8 w-8 bg-gray-200 rounded animate-pulse" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                    <div className="h-3 bg-gray-100 rounded animate-pulse w-2/3" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12"></TableHead>
-                  <TableHead>Nom</TableHead>
-                  <TableHead className="hidden sm:table-cell">Type</TableHead>
-                  <TableHead className="hidden md:table-cell">
-                    Description
-                  </TableHead>
-                  <TableHead className="w-24">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredFiles.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      <Database className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-500">Aucun fichier référencé</p>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredFiles.map((file) => (
-                    <TableRow key={file.id}>
-                      <TableCell>
-                        {getTypeIcon(file.type, file.isFolder)}
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{file.name}</div>
-                          {file.originalName &&
-                            file.originalName !== file.name && (
-                              <div className="text-sm text-gray-500">
-                                Origine: {file.originalName}
-                              </div>
-                            )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        <Badge variant="secondary">{file.type}</Badge>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        <div className="max-w-xs truncate text-sm text-gray-600">
-                          {file.description || "Aucune description"}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleEditFile(file)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => window.open(file.url, "_blank")}
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
         </Card>
       )}
 
-      {/* Formulaire modal */}
+      {/* ✅ Formulaire modal */}
       <FilesForm
         file={editingFile}
-        currentFolder={null}
+        currentFolder={navigation.currentFolder}
         onSuccess={handleFormSuccess}
         onCancel={handleFormCancel}
         isOpen={isFormOpen}

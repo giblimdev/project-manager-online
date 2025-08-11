@@ -1,4 +1,4 @@
-//@/app/sprint/page.tsx
+//@/app/projects/[id]/sprint/page.tsx
 /**
  * RÔLE : Page de gestion des sprint d'un projet sélectionné avec architecture séparée
  * RESPONSABILITÉS :

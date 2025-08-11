@@ -274,19 +274,15 @@ export type NotificationType = (typeof NotificationType)[keyof typeof Notificati
 
 
 export const FileType: {
+  DOSSIER: 'DOSSIER',
   PAGE: 'PAGE',
   COMPONENT: 'COMPONENT',
   UTILS: 'UTILS',
   LIB: 'LIB',
   STORE: 'STORE',
   HOOK: 'HOOK',
-  DOCUMENT: 'DOCUMENT',
-  IMAGE: 'IMAGE',
-  VIDEO: 'VIDEO',
-  ARCHIVE: 'ARCHIVE',
-  CODE: 'CODE',
-  SPECIFICATION: 'SPECIFICATION',
-  DESIGN: 'DESIGN',
+  ENV: 'ENV',
+  SYSTEM: 'SYSTEM',
   TEST: 'TEST',
   OTHER: 'OTHER'
 };
@@ -4355,10 +4351,12 @@ export namespace Prisma {
 
   export type EpicCountOutputType = {
     features: number
+    userstories: number
   }
 
   export type EpicCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     features?: boolean | EpicCountOutputTypeCountFeaturesArgs
+    userstories?: boolean | EpicCountOutputTypeCountUserstoriesArgs
   }
 
   // Custom InputTypes
@@ -4377,6 +4375,13 @@ export namespace Prisma {
    */
   export type EpicCountOutputTypeCountFeaturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FeatureWhereInput
+  }
+
+  /**
+   * EpicCountOutputType without action
+   */
+  export type EpicCountOutputTypeCountUserstoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserStoryWhereInput
   }
 
 
@@ -4460,6 +4465,7 @@ export namespace Prisma {
     dependencies: number
     dependents: number
     sprints: number
+    Epic: number
   }
 
   export type UserStoryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4471,6 +4477,7 @@ export namespace Prisma {
     dependencies?: boolean | UserStoryCountOutputTypeCountDependenciesArgs
     dependents?: boolean | UserStoryCountOutputTypeCountDependentsArgs
     sprints?: boolean | UserStoryCountOutputTypeCountSprintsArgs
+    Epic?: boolean | UserStoryCountOutputTypeCountEpicArgs
   }
 
   // Custom InputTypes
@@ -4538,6 +4545,13 @@ export namespace Prisma {
    */
   export type UserStoryCountOutputTypeCountSprintsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SprintWhereInput
+  }
+
+  /**
+   * UserStoryCountOutputType without action
+   */
+  export type UserStoryCountOutputTypeCountEpicArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EpicWhereInput
   }
 
 
@@ -4692,6 +4706,7 @@ export namespace Prisma {
     comments: number
     versions: number
     children: number
+    author: number
     items: number
   }
 
@@ -4699,6 +4714,7 @@ export namespace Prisma {
     comments?: boolean | FileCountOutputTypeCountCommentsArgs
     versions?: boolean | FileCountOutputTypeCountVersionsArgs
     children?: boolean | FileCountOutputTypeCountChildrenArgs
+    author?: boolean | FileCountOutputTypeCountAuthorArgs
     items?: boolean | FileCountOutputTypeCountItemsArgs
   }
 
@@ -4732,6 +4748,13 @@ export namespace Prisma {
    */
   export type FileCountOutputTypeCountChildrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FileWhereInput
+  }
+
+  /**
+   * FileCountOutputType without action
+   */
+  export type FileCountOutputTypeCountAuthorArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
   }
 
   /**
@@ -10111,13 +10134,24 @@ export namespace Prisma {
 
   export type AggregateTeam = {
     _count: TeamCountAggregateOutputType | null
+    _avg: TeamAvgAggregateOutputType | null
+    _sum: TeamSumAggregateOutputType | null
     _min: TeamMinAggregateOutputType | null
     _max: TeamMaxAggregateOutputType | null
+  }
+
+  export type TeamAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type TeamSumAggregateOutputType = {
+    order: number | null
   }
 
   export type TeamMinAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     description: string | null
     slug: string | null
     logoUrl: string | null
@@ -10130,6 +10164,7 @@ export namespace Prisma {
   export type TeamMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     description: string | null
     slug: string | null
     logoUrl: string | null
@@ -10142,6 +10177,7 @@ export namespace Prisma {
   export type TeamCountAggregateOutputType = {
     id: number
     name: number
+    order: number
     description: number
     slug: number
     logoUrl: number
@@ -10153,9 +10189,18 @@ export namespace Prisma {
   }
 
 
+  export type TeamAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type TeamSumAggregateInputType = {
+    order?: true
+  }
+
   export type TeamMinAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     slug?: true
     logoUrl?: true
@@ -10168,6 +10213,7 @@ export namespace Prisma {
   export type TeamMaxAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     slug?: true
     logoUrl?: true
@@ -10180,6 +10226,7 @@ export namespace Prisma {
   export type TeamCountAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     slug?: true
     logoUrl?: true
@@ -10228,6 +10275,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: TeamAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TeamSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: TeamMinAggregateInputType
@@ -10258,6 +10317,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: TeamCountAggregateInputType | true
+    _avg?: TeamAvgAggregateInputType
+    _sum?: TeamSumAggregateInputType
     _min?: TeamMinAggregateInputType
     _max?: TeamMaxAggregateInputType
   }
@@ -10265,6 +10326,7 @@ export namespace Prisma {
   export type TeamGroupByOutputType = {
     id: string
     name: string
+    order: number
     description: string | null
     slug: string
     logoUrl: string | null
@@ -10273,6 +10335,8 @@ export namespace Prisma {
     updatedAt: Date
     parentTeamId: string | null
     _count: TeamCountAggregateOutputType | null
+    _avg: TeamAvgAggregateOutputType | null
+    _sum: TeamSumAggregateOutputType | null
     _min: TeamMinAggregateOutputType | null
     _max: TeamMaxAggregateOutputType | null
   }
@@ -10294,6 +10358,7 @@ export namespace Prisma {
   export type TeamSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     slug?: boolean
     logoUrl?: boolean
@@ -10312,6 +10377,7 @@ export namespace Prisma {
   export type TeamSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     slug?: boolean
     logoUrl?: boolean
@@ -10325,6 +10391,7 @@ export namespace Prisma {
   export type TeamSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     slug?: boolean
     logoUrl?: boolean
@@ -10338,6 +10405,7 @@ export namespace Prisma {
   export type TeamSelectScalar = {
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     slug?: boolean
     logoUrl?: boolean
@@ -10347,7 +10415,7 @@ export namespace Prisma {
     parentTeamId?: boolean
   }
 
-  export type TeamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "slug" | "logoUrl" | "isActive" | "createdAt" | "updatedAt" | "parentTeamId", ExtArgs["result"]["team"]>
+  export type TeamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "description" | "slug" | "logoUrl" | "isActive" | "createdAt" | "updatedAt" | "parentTeamId", ExtArgs["result"]["team"]>
   export type TeamInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     fields?: boolean | Team$fieldsArgs<ExtArgs>
     members?: boolean | Team$membersArgs<ExtArgs>
@@ -10375,6 +10443,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      order: number
       description: string | null
       slug: string
       logoUrl: string | null
@@ -10812,6 +10881,7 @@ export namespace Prisma {
   interface TeamFieldRefs {
     readonly id: FieldRef<"Team", 'String'>
     readonly name: FieldRef<"Team", 'String'>
+    readonly order: FieldRef<"Team", 'Int'>
     readonly description: FieldRef<"Team", 'String'>
     readonly slug: FieldRef<"Team", 'String'>
     readonly logoUrl: FieldRef<"Team", 'String'>
@@ -11354,13 +11424,24 @@ export namespace Prisma {
 
   export type AggregateTeamMember = {
     _count: TeamMemberCountAggregateOutputType | null
+    _avg: TeamMemberAvgAggregateOutputType | null
+    _sum: TeamMemberSumAggregateOutputType | null
     _min: TeamMemberMinAggregateOutputType | null
     _max: TeamMemberMaxAggregateOutputType | null
+  }
+
+  export type TeamMemberAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type TeamMemberSumAggregateOutputType = {
+    order: number | null
   }
 
   export type TeamMemberMinAggregateOutputType = {
     id: string | null
     role: $Enums.UserRole | null
+    order: number | null
     joinedAt: Date | null
     isActive: boolean | null
     teamId: string | null
@@ -11370,6 +11451,7 @@ export namespace Prisma {
   export type TeamMemberMaxAggregateOutputType = {
     id: string | null
     role: $Enums.UserRole | null
+    order: number | null
     joinedAt: Date | null
     isActive: boolean | null
     teamId: string | null
@@ -11379,6 +11461,7 @@ export namespace Prisma {
   export type TeamMemberCountAggregateOutputType = {
     id: number
     role: number
+    order: number
     joinedAt: number
     isActive: number
     teamId: number
@@ -11387,9 +11470,18 @@ export namespace Prisma {
   }
 
 
+  export type TeamMemberAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type TeamMemberSumAggregateInputType = {
+    order?: true
+  }
+
   export type TeamMemberMinAggregateInputType = {
     id?: true
     role?: true
+    order?: true
     joinedAt?: true
     isActive?: true
     teamId?: true
@@ -11399,6 +11491,7 @@ export namespace Prisma {
   export type TeamMemberMaxAggregateInputType = {
     id?: true
     role?: true
+    order?: true
     joinedAt?: true
     isActive?: true
     teamId?: true
@@ -11408,6 +11501,7 @@ export namespace Prisma {
   export type TeamMemberCountAggregateInputType = {
     id?: true
     role?: true
+    order?: true
     joinedAt?: true
     isActive?: true
     teamId?: true
@@ -11453,6 +11547,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: TeamMemberAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TeamMemberSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: TeamMemberMinAggregateInputType
@@ -11483,6 +11589,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: TeamMemberCountAggregateInputType | true
+    _avg?: TeamMemberAvgAggregateInputType
+    _sum?: TeamMemberSumAggregateInputType
     _min?: TeamMemberMinAggregateInputType
     _max?: TeamMemberMaxAggregateInputType
   }
@@ -11490,11 +11598,14 @@ export namespace Prisma {
   export type TeamMemberGroupByOutputType = {
     id: string
     role: $Enums.UserRole
+    order: number
     joinedAt: Date
     isActive: boolean
     teamId: string
     userId: string
     _count: TeamMemberCountAggregateOutputType | null
+    _avg: TeamMemberAvgAggregateOutputType | null
+    _sum: TeamMemberSumAggregateOutputType | null
     _min: TeamMemberMinAggregateOutputType | null
     _max: TeamMemberMaxAggregateOutputType | null
   }
@@ -11516,6 +11627,7 @@ export namespace Prisma {
   export type TeamMemberSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     role?: boolean
+    order?: boolean
     joinedAt?: boolean
     isActive?: boolean
     teamId?: boolean
@@ -11527,6 +11639,7 @@ export namespace Prisma {
   export type TeamMemberSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     role?: boolean
+    order?: boolean
     joinedAt?: boolean
     isActive?: boolean
     teamId?: boolean
@@ -11538,6 +11651,7 @@ export namespace Prisma {
   export type TeamMemberSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     role?: boolean
+    order?: boolean
     joinedAt?: boolean
     isActive?: boolean
     teamId?: boolean
@@ -11549,13 +11663,14 @@ export namespace Prisma {
   export type TeamMemberSelectScalar = {
     id?: boolean
     role?: boolean
+    order?: boolean
     joinedAt?: boolean
     isActive?: boolean
     teamId?: boolean
     userId?: boolean
   }
 
-  export type TeamMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role" | "joinedAt" | "isActive" | "teamId" | "userId", ExtArgs["result"]["teamMember"]>
+  export type TeamMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role" | "order" | "joinedAt" | "isActive" | "teamId" | "userId", ExtArgs["result"]["teamMember"]>
   export type TeamMemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     team?: boolean | TeamDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -11578,6 +11693,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       role: $Enums.UserRole
+      order: number
       joinedAt: Date
       isActive: boolean
       teamId: string
@@ -12009,6 +12125,7 @@ export namespace Prisma {
   interface TeamMemberFieldRefs {
     readonly id: FieldRef<"TeamMember", 'String'>
     readonly role: FieldRef<"TeamMember", 'UserRole'>
+    readonly order: FieldRef<"TeamMember", 'Int'>
     readonly joinedAt: FieldRef<"TeamMember", 'DateTime'>
     readonly isActive: FieldRef<"TeamMember", 'Boolean'>
     readonly teamId: FieldRef<"TeamMember", 'String'>
@@ -13883,13 +14000,24 @@ export namespace Prisma {
 
   export type AggregateProjectMember = {
     _count: ProjectMemberCountAggregateOutputType | null
+    _avg: ProjectMemberAvgAggregateOutputType | null
+    _sum: ProjectMemberSumAggregateOutputType | null
     _min: ProjectMemberMinAggregateOutputType | null
     _max: ProjectMemberMaxAggregateOutputType | null
+  }
+
+  export type ProjectMemberAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type ProjectMemberSumAggregateOutputType = {
+    order: number | null
   }
 
   export type ProjectMemberMinAggregateOutputType = {
     id: string | null
     role: $Enums.UserRole | null
+    order: number | null
     joinedAt: Date | null
     isActive: boolean | null
     projectId: string | null
@@ -13899,6 +14027,7 @@ export namespace Prisma {
   export type ProjectMemberMaxAggregateOutputType = {
     id: string | null
     role: $Enums.UserRole | null
+    order: number | null
     joinedAt: Date | null
     isActive: boolean | null
     projectId: string | null
@@ -13908,6 +14037,7 @@ export namespace Prisma {
   export type ProjectMemberCountAggregateOutputType = {
     id: number
     role: number
+    order: number
     joinedAt: number
     isActive: number
     projectId: number
@@ -13916,9 +14046,18 @@ export namespace Prisma {
   }
 
 
+  export type ProjectMemberAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type ProjectMemberSumAggregateInputType = {
+    order?: true
+  }
+
   export type ProjectMemberMinAggregateInputType = {
     id?: true
     role?: true
+    order?: true
     joinedAt?: true
     isActive?: true
     projectId?: true
@@ -13928,6 +14067,7 @@ export namespace Prisma {
   export type ProjectMemberMaxAggregateInputType = {
     id?: true
     role?: true
+    order?: true
     joinedAt?: true
     isActive?: true
     projectId?: true
@@ -13937,6 +14077,7 @@ export namespace Prisma {
   export type ProjectMemberCountAggregateInputType = {
     id?: true
     role?: true
+    order?: true
     joinedAt?: true
     isActive?: true
     projectId?: true
@@ -13982,6 +14123,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: ProjectMemberAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ProjectMemberSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ProjectMemberMinAggregateInputType
@@ -14012,6 +14165,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: ProjectMemberCountAggregateInputType | true
+    _avg?: ProjectMemberAvgAggregateInputType
+    _sum?: ProjectMemberSumAggregateInputType
     _min?: ProjectMemberMinAggregateInputType
     _max?: ProjectMemberMaxAggregateInputType
   }
@@ -14019,11 +14174,14 @@ export namespace Prisma {
   export type ProjectMemberGroupByOutputType = {
     id: string
     role: $Enums.UserRole
+    order: number
     joinedAt: Date
     isActive: boolean
     projectId: string
     userId: string
     _count: ProjectMemberCountAggregateOutputType | null
+    _avg: ProjectMemberAvgAggregateOutputType | null
+    _sum: ProjectMemberSumAggregateOutputType | null
     _min: ProjectMemberMinAggregateOutputType | null
     _max: ProjectMemberMaxAggregateOutputType | null
   }
@@ -14045,6 +14203,7 @@ export namespace Prisma {
   export type ProjectMemberSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     role?: boolean
+    order?: boolean
     joinedAt?: boolean
     isActive?: boolean
     projectId?: boolean
@@ -14056,6 +14215,7 @@ export namespace Prisma {
   export type ProjectMemberSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     role?: boolean
+    order?: boolean
     joinedAt?: boolean
     isActive?: boolean
     projectId?: boolean
@@ -14067,6 +14227,7 @@ export namespace Prisma {
   export type ProjectMemberSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     role?: boolean
+    order?: boolean
     joinedAt?: boolean
     isActive?: boolean
     projectId?: boolean
@@ -14078,13 +14239,14 @@ export namespace Prisma {
   export type ProjectMemberSelectScalar = {
     id?: boolean
     role?: boolean
+    order?: boolean
     joinedAt?: boolean
     isActive?: boolean
     projectId?: boolean
     userId?: boolean
   }
 
-  export type ProjectMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role" | "joinedAt" | "isActive" | "projectId" | "userId", ExtArgs["result"]["projectMember"]>
+  export type ProjectMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role" | "order" | "joinedAt" | "isActive" | "projectId" | "userId", ExtArgs["result"]["projectMember"]>
   export type ProjectMemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -14107,6 +14269,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       role: $Enums.UserRole
+      order: number
       joinedAt: Date
       isActive: boolean
       projectId: string
@@ -14538,6 +14701,7 @@ export namespace Prisma {
   interface ProjectMemberFieldRefs {
     readonly id: FieldRef<"ProjectMember", 'String'>
     readonly role: FieldRef<"ProjectMember", 'UserRole'>
+    readonly order: FieldRef<"ProjectMember", 'Int'>
     readonly joinedAt: FieldRef<"ProjectMember", 'DateTime'>
     readonly isActive: FieldRef<"ProjectMember", 'Boolean'>
     readonly projectId: FieldRef<"ProjectMember", 'String'>
@@ -14969,12 +15133,14 @@ export namespace Prisma {
   }
 
   export type InitiativeAvgAggregateOutputType = {
+    order: number | null
     progress: number | null
     budget: number | null
     roi: number | null
   }
 
   export type InitiativeSumAggregateOutputType = {
+    order: number | null
     progress: number | null
     budget: number | null
     roi: number | null
@@ -14983,6 +15149,7 @@ export namespace Prisma {
   export type InitiativeMinAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     description: string | null
     objective: string | null
     priority: $Enums.Priority | null
@@ -15001,6 +15168,7 @@ export namespace Prisma {
   export type InitiativeMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     description: string | null
     objective: string | null
     priority: $Enums.Priority | null
@@ -15019,6 +15187,7 @@ export namespace Prisma {
   export type InitiativeCountAggregateOutputType = {
     id: number
     name: number
+    order: number
     description: number
     objective: number
     priority: number
@@ -15037,12 +15206,14 @@ export namespace Prisma {
 
 
   export type InitiativeAvgAggregateInputType = {
+    order?: true
     progress?: true
     budget?: true
     roi?: true
   }
 
   export type InitiativeSumAggregateInputType = {
+    order?: true
     progress?: true
     budget?: true
     roi?: true
@@ -15051,6 +15222,7 @@ export namespace Prisma {
   export type InitiativeMinAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     objective?: true
     priority?: true
@@ -15069,6 +15241,7 @@ export namespace Prisma {
   export type InitiativeMaxAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     objective?: true
     priority?: true
@@ -15087,6 +15260,7 @@ export namespace Prisma {
   export type InitiativeCountAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     objective?: true
     priority?: true
@@ -15192,6 +15366,7 @@ export namespace Prisma {
   export type InitiativeGroupByOutputType = {
     id: string
     name: string
+    order: number
     description: string | null
     objective: string | null
     priority: $Enums.Priority
@@ -15229,6 +15404,7 @@ export namespace Prisma {
   export type InitiativeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     objective?: boolean
     priority?: boolean
@@ -15251,6 +15427,7 @@ export namespace Prisma {
   export type InitiativeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     objective?: boolean
     priority?: boolean
@@ -15271,6 +15448,7 @@ export namespace Prisma {
   export type InitiativeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     objective?: boolean
     priority?: boolean
@@ -15291,6 +15469,7 @@ export namespace Prisma {
   export type InitiativeSelectScalar = {
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     objective?: boolean
     priority?: boolean
@@ -15306,7 +15485,7 @@ export namespace Prisma {
     userId?: boolean
   }
 
-  export type InitiativeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "objective" | "priority" | "status" | "startDate" | "endDate" | "progress" | "budget" | "roi" | "createdAt" | "updatedAt" | "projectId" | "userId", ExtArgs["result"]["initiative"]>
+  export type InitiativeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "description" | "objective" | "priority" | "status" | "startDate" | "endDate" | "progress" | "budget" | "roi" | "createdAt" | "updatedAt" | "projectId" | "userId", ExtArgs["result"]["initiative"]>
   export type InitiativeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     epics?: boolean | Initiative$epicsArgs<ExtArgs>
     project?: boolean | ProjectDefaultArgs<ExtArgs>
@@ -15332,6 +15511,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      order: number
       description: string | null
       objective: string | null
       priority: $Enums.Priority
@@ -15773,6 +15953,7 @@ export namespace Prisma {
   interface InitiativeFieldRefs {
     readonly id: FieldRef<"Initiative", 'String'>
     readonly name: FieldRef<"Initiative", 'String'>
+    readonly order: FieldRef<"Initiative", 'Int'>
     readonly description: FieldRef<"Initiative", 'String'>
     readonly objective: FieldRef<"Initiative", 'String'>
     readonly priority: FieldRef<"Initiative", 'Priority'>
@@ -16256,16 +16437,19 @@ export namespace Prisma {
   }
 
   export type EpicAvgAggregateOutputType = {
+    order: number | null
     progress: number | null
   }
 
   export type EpicSumAggregateOutputType = {
+    order: number | null
     progress: number | null
   }
 
   export type EpicMinAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     description: string | null
     priority: $Enums.Priority | null
     status: string | null
@@ -16280,6 +16464,7 @@ export namespace Prisma {
   export type EpicMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     description: string | null
     priority: $Enums.Priority | null
     status: string | null
@@ -16294,6 +16479,7 @@ export namespace Prisma {
   export type EpicCountAggregateOutputType = {
     id: number
     name: number
+    order: number
     description: number
     priority: number
     status: number
@@ -16308,16 +16494,19 @@ export namespace Prisma {
 
 
   export type EpicAvgAggregateInputType = {
+    order?: true
     progress?: true
   }
 
   export type EpicSumAggregateInputType = {
+    order?: true
     progress?: true
   }
 
   export type EpicMinAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     priority?: true
     status?: true
@@ -16332,6 +16521,7 @@ export namespace Prisma {
   export type EpicMaxAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     priority?: true
     status?: true
@@ -16346,6 +16536,7 @@ export namespace Prisma {
   export type EpicCountAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     priority?: true
     status?: true
@@ -16447,6 +16638,7 @@ export namespace Prisma {
   export type EpicGroupByOutputType = {
     id: string
     name: string
+    order: number
     description: string | null
     priority: $Enums.Priority
     status: string
@@ -16480,6 +16672,7 @@ export namespace Prisma {
   export type EpicSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     priority?: boolean
     status?: boolean
@@ -16491,12 +16684,14 @@ export namespace Prisma {
     initiativeId?: boolean
     initiative?: boolean | InitiativeDefaultArgs<ExtArgs>
     features?: boolean | Epic$featuresArgs<ExtArgs>
+    userstories?: boolean | Epic$userstoriesArgs<ExtArgs>
     _count?: boolean | EpicCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["epic"]>
 
   export type EpicSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     priority?: boolean
     status?: boolean
@@ -16512,6 +16707,7 @@ export namespace Prisma {
   export type EpicSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     priority?: boolean
     status?: boolean
@@ -16527,6 +16723,7 @@ export namespace Prisma {
   export type EpicSelectScalar = {
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     priority?: boolean
     status?: boolean
@@ -16538,10 +16735,11 @@ export namespace Prisma {
     initiativeId?: boolean
   }
 
-  export type EpicOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "priority" | "status" | "startDate" | "endDate" | "progress" | "createdAt" | "updatedAt" | "initiativeId", ExtArgs["result"]["epic"]>
+  export type EpicOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "description" | "priority" | "status" | "startDate" | "endDate" | "progress" | "createdAt" | "updatedAt" | "initiativeId", ExtArgs["result"]["epic"]>
   export type EpicInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     initiative?: boolean | InitiativeDefaultArgs<ExtArgs>
     features?: boolean | Epic$featuresArgs<ExtArgs>
+    userstories?: boolean | Epic$userstoriesArgs<ExtArgs>
     _count?: boolean | EpicCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EpicIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16556,10 +16754,12 @@ export namespace Prisma {
     objects: {
       initiative: Prisma.$InitiativePayload<ExtArgs>
       features: Prisma.$FeaturePayload<ExtArgs>[]
+      userstories: Prisma.$UserStoryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      order: number
       description: string | null
       priority: $Enums.Priority
       status: string
@@ -16965,6 +17165,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     initiative<T extends InitiativeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, InitiativeDefaultArgs<ExtArgs>>): Prisma__InitiativeClient<$Result.GetResult<Prisma.$InitiativePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     features<T extends Epic$featuresArgs<ExtArgs> = {}>(args?: Subset<T, Epic$featuresArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    userstories<T extends Epic$userstoriesArgs<ExtArgs> = {}>(args?: Subset<T, Epic$userstoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserStoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16996,6 +17197,7 @@ export namespace Prisma {
   interface EpicFieldRefs {
     readonly id: FieldRef<"Epic", 'String'>
     readonly name: FieldRef<"Epic", 'String'>
+    readonly order: FieldRef<"Epic", 'Int'>
     readonly description: FieldRef<"Epic", 'String'>
     readonly priority: FieldRef<"Epic", 'Priority'>
     readonly status: FieldRef<"Epic", 'String'>
@@ -17425,6 +17627,30 @@ export namespace Prisma {
   }
 
   /**
+   * Epic.userstories
+   */
+  export type Epic$userstoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserStory
+     */
+    select?: UserStorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserStory
+     */
+    omit?: UserStoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserStoryInclude<ExtArgs> | null
+    where?: UserStoryWhereInput
+    orderBy?: UserStoryOrderByWithRelationInput | UserStoryOrderByWithRelationInput[]
+    cursor?: UserStoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserStoryScalarFieldEnum | UserStoryScalarFieldEnum[]
+  }
+
+  /**
    * Epic without action
    */
   export type EpicDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -17456,6 +17682,7 @@ export namespace Prisma {
   }
 
   export type FeatureAvgAggregateOutputType = {
+    order: number | null
     storyPoints: number | null
     businessValue: number | null
     technicalRisk: number | null
@@ -17465,6 +17692,7 @@ export namespace Prisma {
   }
 
   export type FeatureSumAggregateOutputType = {
+    order: number | null
     storyPoints: number | null
     businessValue: number | null
     technicalRisk: number | null
@@ -17476,6 +17704,7 @@ export namespace Prisma {
   export type FeatureMinAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     description: string | null
     acceptanceCriteria: string | null
     priority: $Enums.Priority | null
@@ -17499,6 +17728,7 @@ export namespace Prisma {
   export type FeatureMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     description: string | null
     acceptanceCriteria: string | null
     priority: $Enums.Priority | null
@@ -17522,6 +17752,7 @@ export namespace Prisma {
   export type FeatureCountAggregateOutputType = {
     id: number
     name: number
+    order: number
     description: number
     acceptanceCriteria: number
     priority: number
@@ -17545,6 +17776,7 @@ export namespace Prisma {
 
 
   export type FeatureAvgAggregateInputType = {
+    order?: true
     storyPoints?: true
     businessValue?: true
     technicalRisk?: true
@@ -17554,6 +17786,7 @@ export namespace Prisma {
   }
 
   export type FeatureSumAggregateInputType = {
+    order?: true
     storyPoints?: true
     businessValue?: true
     technicalRisk?: true
@@ -17565,6 +17798,7 @@ export namespace Prisma {
   export type FeatureMinAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     acceptanceCriteria?: true
     priority?: true
@@ -17588,6 +17822,7 @@ export namespace Prisma {
   export type FeatureMaxAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     acceptanceCriteria?: true
     priority?: true
@@ -17611,6 +17846,7 @@ export namespace Prisma {
   export type FeatureCountAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     acceptanceCriteria?: true
     priority?: true
@@ -17721,6 +17957,7 @@ export namespace Prisma {
   export type FeatureGroupByOutputType = {
     id: string
     name: string
+    order: number
     description: string | null
     acceptanceCriteria: string | null
     priority: $Enums.Priority
@@ -17763,6 +18000,7 @@ export namespace Prisma {
   export type FeatureSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     acceptanceCriteria?: boolean
     priority?: boolean
@@ -17796,6 +18034,7 @@ export namespace Prisma {
   export type FeatureSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     acceptanceCriteria?: boolean
     priority?: boolean
@@ -17823,6 +18062,7 @@ export namespace Prisma {
   export type FeatureSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     acceptanceCriteria?: boolean
     priority?: boolean
@@ -17850,6 +18090,7 @@ export namespace Prisma {
   export type FeatureSelectScalar = {
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     acceptanceCriteria?: boolean
     priority?: boolean
@@ -17870,7 +18111,7 @@ export namespace Prisma {
     userId?: boolean
   }
 
-  export type FeatureOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "acceptanceCriteria" | "priority" | "status" | "storyPoints" | "businessValue" | "technicalRisk" | "effort" | "startDate" | "endDate" | "progress" | "position" | "createdAt" | "updatedAt" | "epicId" | "parentId" | "projectId" | "userId", ExtArgs["result"]["feature"]>
+  export type FeatureOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "description" | "acceptanceCriteria" | "priority" | "status" | "storyPoints" | "businessValue" | "technicalRisk" | "effort" | "startDate" | "endDate" | "progress" | "position" | "createdAt" | "updatedAt" | "epicId" | "parentId" | "projectId" | "userId", ExtArgs["result"]["feature"]>
   export type FeatureInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dependencies?: boolean | Feature$dependenciesArgs<ExtArgs>
     dependents?: boolean | Feature$dependentsArgs<ExtArgs>
@@ -17912,6 +18153,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      order: number
       description: string | null
       acceptanceCriteria: string | null
       priority: $Enums.Priority
@@ -18364,6 +18606,7 @@ export namespace Prisma {
   interface FeatureFieldRefs {
     readonly id: FieldRef<"Feature", 'String'>
     readonly name: FieldRef<"Feature", 'String'>
+    readonly order: FieldRef<"Feature", 'Int'>
     readonly description: FieldRef<"Feature", 'String'>
     readonly acceptanceCriteria: FieldRef<"Feature", 'String'>
     readonly priority: FieldRef<"Feature", 'Priority'>
@@ -18979,13 +19222,24 @@ export namespace Prisma {
 
   export type AggregateFeatureDependency = {
     _count: FeatureDependencyCountAggregateOutputType | null
+    _avg: FeatureDependencyAvgAggregateOutputType | null
+    _sum: FeatureDependencySumAggregateOutputType | null
     _min: FeatureDependencyMinAggregateOutputType | null
     _max: FeatureDependencyMaxAggregateOutputType | null
+  }
+
+  export type FeatureDependencyAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type FeatureDependencySumAggregateOutputType = {
+    order: number | null
   }
 
   export type FeatureDependencyMinAggregateOutputType = {
     id: string | null
     type: string | null
+    order: number | null
     description: string | null
     createdAt: Date | null
     dependentFeatureId: string | null
@@ -18995,6 +19249,7 @@ export namespace Prisma {
   export type FeatureDependencyMaxAggregateOutputType = {
     id: string | null
     type: string | null
+    order: number | null
     description: string | null
     createdAt: Date | null
     dependentFeatureId: string | null
@@ -19004,6 +19259,7 @@ export namespace Prisma {
   export type FeatureDependencyCountAggregateOutputType = {
     id: number
     type: number
+    order: number
     description: number
     createdAt: number
     dependentFeatureId: number
@@ -19012,9 +19268,18 @@ export namespace Prisma {
   }
 
 
+  export type FeatureDependencyAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type FeatureDependencySumAggregateInputType = {
+    order?: true
+  }
+
   export type FeatureDependencyMinAggregateInputType = {
     id?: true
     type?: true
+    order?: true
     description?: true
     createdAt?: true
     dependentFeatureId?: true
@@ -19024,6 +19289,7 @@ export namespace Prisma {
   export type FeatureDependencyMaxAggregateInputType = {
     id?: true
     type?: true
+    order?: true
     description?: true
     createdAt?: true
     dependentFeatureId?: true
@@ -19033,6 +19299,7 @@ export namespace Prisma {
   export type FeatureDependencyCountAggregateInputType = {
     id?: true
     type?: true
+    order?: true
     description?: true
     createdAt?: true
     dependentFeatureId?: true
@@ -19078,6 +19345,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: FeatureDependencyAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FeatureDependencySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: FeatureDependencyMinAggregateInputType
@@ -19108,6 +19387,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: FeatureDependencyCountAggregateInputType | true
+    _avg?: FeatureDependencyAvgAggregateInputType
+    _sum?: FeatureDependencySumAggregateInputType
     _min?: FeatureDependencyMinAggregateInputType
     _max?: FeatureDependencyMaxAggregateInputType
   }
@@ -19115,11 +19396,14 @@ export namespace Prisma {
   export type FeatureDependencyGroupByOutputType = {
     id: string
     type: string
+    order: number
     description: string | null
     createdAt: Date
     dependentFeatureId: string
     dependsOnFeatureId: string
     _count: FeatureDependencyCountAggregateOutputType | null
+    _avg: FeatureDependencyAvgAggregateOutputType | null
+    _sum: FeatureDependencySumAggregateOutputType | null
     _min: FeatureDependencyMinAggregateOutputType | null
     _max: FeatureDependencyMaxAggregateOutputType | null
   }
@@ -19141,6 +19425,7 @@ export namespace Prisma {
   export type FeatureDependencySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     type?: boolean
+    order?: boolean
     description?: boolean
     createdAt?: boolean
     dependentFeatureId?: boolean
@@ -19152,6 +19437,7 @@ export namespace Prisma {
   export type FeatureDependencySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     type?: boolean
+    order?: boolean
     description?: boolean
     createdAt?: boolean
     dependentFeatureId?: boolean
@@ -19163,6 +19449,7 @@ export namespace Prisma {
   export type FeatureDependencySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     type?: boolean
+    order?: boolean
     description?: boolean
     createdAt?: boolean
     dependentFeatureId?: boolean
@@ -19174,13 +19461,14 @@ export namespace Prisma {
   export type FeatureDependencySelectScalar = {
     id?: boolean
     type?: boolean
+    order?: boolean
     description?: boolean
     createdAt?: boolean
     dependentFeatureId?: boolean
     dependsOnFeatureId?: boolean
   }
 
-  export type FeatureDependencyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "description" | "createdAt" | "dependentFeatureId" | "dependsOnFeatureId", ExtArgs["result"]["featureDependency"]>
+  export type FeatureDependencyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "order" | "description" | "createdAt" | "dependentFeatureId" | "dependsOnFeatureId", ExtArgs["result"]["featureDependency"]>
   export type FeatureDependencyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dependentFeature?: boolean | FeatureDefaultArgs<ExtArgs>
     dependsOnFeature?: boolean | FeatureDefaultArgs<ExtArgs>
@@ -19203,6 +19491,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       type: string
+      order: number
       description: string | null
       createdAt: Date
       dependentFeatureId: string
@@ -19634,6 +19923,7 @@ export namespace Prisma {
   interface FeatureDependencyFieldRefs {
     readonly id: FieldRef<"FeatureDependency", 'String'>
     readonly type: FieldRef<"FeatureDependency", 'String'>
+    readonly order: FieldRef<"FeatureDependency", 'Int'>
     readonly description: FieldRef<"FeatureDependency", 'String'>
     readonly createdAt: FieldRef<"FeatureDependency", 'DateTime'>
     readonly dependentFeatureId: FieldRef<"FeatureDependency", 'String'>
@@ -20065,6 +20355,7 @@ export namespace Prisma {
   }
 
   export type UserStoryAvgAggregateOutputType = {
+    order: number | null
     storyPoints: number | null
     businessValue: number | null
     technicalRisk: number | null
@@ -20075,6 +20366,7 @@ export namespace Prisma {
   }
 
   export type UserStorySumAggregateOutputType = {
+    order: number | null
     storyPoints: number | null
     businessValue: number | null
     technicalRisk: number | null
@@ -20087,6 +20379,7 @@ export namespace Prisma {
   export type UserStoryMinAggregateOutputType = {
     id: string | null
     title: string | null
+    order: number | null
     description: string | null
     acceptanceCriteria: string | null
     priority: $Enums.Priority | null
@@ -20107,6 +20400,7 @@ export namespace Prisma {
   export type UserStoryMaxAggregateOutputType = {
     id: string | null
     title: string | null
+    order: number | null
     description: string | null
     acceptanceCriteria: string | null
     priority: $Enums.Priority | null
@@ -20127,6 +20421,7 @@ export namespace Prisma {
   export type UserStoryCountAggregateOutputType = {
     id: number
     title: number
+    order: number
     description: number
     acceptanceCriteria: number
     priority: number
@@ -20149,6 +20444,7 @@ export namespace Prisma {
 
 
   export type UserStoryAvgAggregateInputType = {
+    order?: true
     storyPoints?: true
     businessValue?: true
     technicalRisk?: true
@@ -20159,6 +20455,7 @@ export namespace Prisma {
   }
 
   export type UserStorySumAggregateInputType = {
+    order?: true
     storyPoints?: true
     businessValue?: true
     technicalRisk?: true
@@ -20171,6 +20468,7 @@ export namespace Prisma {
   export type UserStoryMinAggregateInputType = {
     id?: true
     title?: true
+    order?: true
     description?: true
     acceptanceCriteria?: true
     priority?: true
@@ -20191,6 +20489,7 @@ export namespace Prisma {
   export type UserStoryMaxAggregateInputType = {
     id?: true
     title?: true
+    order?: true
     description?: true
     acceptanceCriteria?: true
     priority?: true
@@ -20211,6 +20510,7 @@ export namespace Prisma {
   export type UserStoryCountAggregateInputType = {
     id?: true
     title?: true
+    order?: true
     description?: true
     acceptanceCriteria?: true
     priority?: true
@@ -20320,6 +20620,7 @@ export namespace Prisma {
   export type UserStoryGroupByOutputType = {
     id: string
     title: string
+    order: number
     description: string | null
     acceptanceCriteria: string | null
     priority: $Enums.Priority
@@ -20361,6 +20662,7 @@ export namespace Prisma {
   export type UserStorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
+    order?: boolean
     description?: boolean
     acceptanceCriteria?: boolean
     priority?: boolean
@@ -20388,12 +20690,14 @@ export namespace Prisma {
     dependencies?: boolean | UserStory$dependenciesArgs<ExtArgs>
     dependents?: boolean | UserStory$dependentsArgs<ExtArgs>
     sprints?: boolean | UserStory$sprintsArgs<ExtArgs>
+    Epic?: boolean | UserStory$EpicArgs<ExtArgs>
     _count?: boolean | UserStoryCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userStory"]>
 
   export type UserStorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
+    order?: boolean
     description?: boolean
     acceptanceCriteria?: boolean
     priority?: boolean
@@ -20418,6 +20722,7 @@ export namespace Prisma {
   export type UserStorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
+    order?: boolean
     description?: boolean
     acceptanceCriteria?: boolean
     priority?: boolean
@@ -20442,6 +20747,7 @@ export namespace Prisma {
   export type UserStorySelectScalar = {
     id?: boolean
     title?: boolean
+    order?: boolean
     description?: boolean
     acceptanceCriteria?: boolean
     priority?: boolean
@@ -20461,7 +20767,7 @@ export namespace Prisma {
     creatorId?: boolean
   }
 
-  export type UserStoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "acceptanceCriteria" | "priority" | "status" | "storyPoints" | "businessValue" | "technicalRisk" | "effort" | "position" | "labels" | "tags" | "estimatedHours" | "actualHours" | "createdAt" | "updatedAt" | "featureId" | "creatorId", ExtArgs["result"]["userStory"]>
+  export type UserStoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "order" | "description" | "acceptanceCriteria" | "priority" | "status" | "storyPoints" | "businessValue" | "technicalRisk" | "effort" | "position" | "labels" | "tags" | "estimatedHours" | "actualHours" | "createdAt" | "updatedAt" | "featureId" | "creatorId", ExtArgs["result"]["userStory"]>
   export type UserStoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     UserStoryAssignees?: boolean | UserStory$UserStoryAssigneesArgs<ExtArgs>
     comments?: boolean | UserStory$commentsArgs<ExtArgs>
@@ -20473,6 +20779,7 @@ export namespace Prisma {
     dependencies?: boolean | UserStory$dependenciesArgs<ExtArgs>
     dependents?: boolean | UserStory$dependentsArgs<ExtArgs>
     sprints?: boolean | UserStory$sprintsArgs<ExtArgs>
+    Epic?: boolean | UserStory$EpicArgs<ExtArgs>
     _count?: boolean | UserStoryCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserStoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -20497,10 +20804,12 @@ export namespace Prisma {
       dependencies: Prisma.$UserStoryDependencyPayload<ExtArgs>[]
       dependents: Prisma.$UserStoryDependencyPayload<ExtArgs>[]
       sprints: Prisma.$SprintPayload<ExtArgs>[]
+      Epic: Prisma.$EpicPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       title: string
+      order: number
       description: string | null
       acceptanceCriteria: string | null
       priority: $Enums.Priority
@@ -20922,6 +21231,7 @@ export namespace Prisma {
     dependencies<T extends UserStory$dependenciesArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$dependenciesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserStoryDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     dependents<T extends UserStory$dependentsArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$dependentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserStoryDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sprints<T extends UserStory$sprintsArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$sprintsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SprintPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Epic<T extends UserStory$EpicArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$EpicArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EpicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -20953,6 +21263,7 @@ export namespace Prisma {
   interface UserStoryFieldRefs {
     readonly id: FieldRef<"UserStory", 'String'>
     readonly title: FieldRef<"UserStory", 'String'>
+    readonly order: FieldRef<"UserStory", 'Int'>
     readonly description: FieldRef<"UserStory", 'String'>
     readonly acceptanceCriteria: FieldRef<"UserStory", 'String'>
     readonly priority: FieldRef<"UserStory", 'Priority'>
@@ -21558,6 +21869,30 @@ export namespace Prisma {
   }
 
   /**
+   * UserStory.Epic
+   */
+  export type UserStory$EpicArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Epic
+     */
+    select?: EpicSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Epic
+     */
+    omit?: EpicOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EpicInclude<ExtArgs> | null
+    where?: EpicWhereInput
+    orderBy?: EpicOrderByWithRelationInput | EpicOrderByWithRelationInput[]
+    cursor?: EpicWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EpicScalarFieldEnum | EpicScalarFieldEnum[]
+  }
+
+  /**
    * UserStory without action
    */
   export type UserStoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21582,13 +21917,24 @@ export namespace Prisma {
 
   export type AggregateUserStoryDependency = {
     _count: UserStoryDependencyCountAggregateOutputType | null
+    _avg: UserStoryDependencyAvgAggregateOutputType | null
+    _sum: UserStoryDependencySumAggregateOutputType | null
     _min: UserStoryDependencyMinAggregateOutputType | null
     _max: UserStoryDependencyMaxAggregateOutputType | null
+  }
+
+  export type UserStoryDependencyAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type UserStoryDependencySumAggregateOutputType = {
+    order: number | null
   }
 
   export type UserStoryDependencyMinAggregateOutputType = {
     id: string | null
     type: string | null
+    order: number | null
     description: string | null
     createdAt: Date | null
     dependentUserStoryId: string | null
@@ -21598,6 +21944,7 @@ export namespace Prisma {
   export type UserStoryDependencyMaxAggregateOutputType = {
     id: string | null
     type: string | null
+    order: number | null
     description: string | null
     createdAt: Date | null
     dependentUserStoryId: string | null
@@ -21607,6 +21954,7 @@ export namespace Prisma {
   export type UserStoryDependencyCountAggregateOutputType = {
     id: number
     type: number
+    order: number
     description: number
     createdAt: number
     dependentUserStoryId: number
@@ -21615,9 +21963,18 @@ export namespace Prisma {
   }
 
 
+  export type UserStoryDependencyAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type UserStoryDependencySumAggregateInputType = {
+    order?: true
+  }
+
   export type UserStoryDependencyMinAggregateInputType = {
     id?: true
     type?: true
+    order?: true
     description?: true
     createdAt?: true
     dependentUserStoryId?: true
@@ -21627,6 +21984,7 @@ export namespace Prisma {
   export type UserStoryDependencyMaxAggregateInputType = {
     id?: true
     type?: true
+    order?: true
     description?: true
     createdAt?: true
     dependentUserStoryId?: true
@@ -21636,6 +21994,7 @@ export namespace Prisma {
   export type UserStoryDependencyCountAggregateInputType = {
     id?: true
     type?: true
+    order?: true
     description?: true
     createdAt?: true
     dependentUserStoryId?: true
@@ -21681,6 +22040,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: UserStoryDependencyAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserStoryDependencySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: UserStoryDependencyMinAggregateInputType
@@ -21711,6 +22082,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: UserStoryDependencyCountAggregateInputType | true
+    _avg?: UserStoryDependencyAvgAggregateInputType
+    _sum?: UserStoryDependencySumAggregateInputType
     _min?: UserStoryDependencyMinAggregateInputType
     _max?: UserStoryDependencyMaxAggregateInputType
   }
@@ -21718,11 +22091,14 @@ export namespace Prisma {
   export type UserStoryDependencyGroupByOutputType = {
     id: string
     type: string
+    order: number
     description: string | null
     createdAt: Date
     dependentUserStoryId: string
     dependsOnUserStoryId: string
     _count: UserStoryDependencyCountAggregateOutputType | null
+    _avg: UserStoryDependencyAvgAggregateOutputType | null
+    _sum: UserStoryDependencySumAggregateOutputType | null
     _min: UserStoryDependencyMinAggregateOutputType | null
     _max: UserStoryDependencyMaxAggregateOutputType | null
   }
@@ -21744,6 +22120,7 @@ export namespace Prisma {
   export type UserStoryDependencySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     type?: boolean
+    order?: boolean
     description?: boolean
     createdAt?: boolean
     dependentUserStoryId?: boolean
@@ -21755,6 +22132,7 @@ export namespace Prisma {
   export type UserStoryDependencySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     type?: boolean
+    order?: boolean
     description?: boolean
     createdAt?: boolean
     dependentUserStoryId?: boolean
@@ -21766,6 +22144,7 @@ export namespace Prisma {
   export type UserStoryDependencySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     type?: boolean
+    order?: boolean
     description?: boolean
     createdAt?: boolean
     dependentUserStoryId?: boolean
@@ -21777,13 +22156,14 @@ export namespace Prisma {
   export type UserStoryDependencySelectScalar = {
     id?: boolean
     type?: boolean
+    order?: boolean
     description?: boolean
     createdAt?: boolean
     dependentUserStoryId?: boolean
     dependsOnUserStoryId?: boolean
   }
 
-  export type UserStoryDependencyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "description" | "createdAt" | "dependentUserStoryId" | "dependsOnUserStoryId", ExtArgs["result"]["userStoryDependency"]>
+  export type UserStoryDependencyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "order" | "description" | "createdAt" | "dependentUserStoryId" | "dependsOnUserStoryId", ExtArgs["result"]["userStoryDependency"]>
   export type UserStoryDependencyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dependentUserStory?: boolean | UserStoryDefaultArgs<ExtArgs>
     dependsOnUserStory?: boolean | UserStoryDefaultArgs<ExtArgs>
@@ -21806,6 +22186,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       type: string
+      order: number
       description: string | null
       createdAt: Date
       dependentUserStoryId: string
@@ -22237,6 +22618,7 @@ export namespace Prisma {
   interface UserStoryDependencyFieldRefs {
     readonly id: FieldRef<"UserStoryDependency", 'String'>
     readonly type: FieldRef<"UserStoryDependency", 'String'>
+    readonly order: FieldRef<"UserStoryDependency", 'Int'>
     readonly description: FieldRef<"UserStoryDependency", 'String'>
     readonly createdAt: FieldRef<"UserStoryDependency", 'DateTime'>
     readonly dependentUserStoryId: FieldRef<"UserStoryDependency", 'String'>
@@ -22668,12 +23050,14 @@ export namespace Prisma {
   }
 
   export type TaskAvgAggregateOutputType = {
+    order: number | null
     position: number | null
     estimatedHours: number | null
     actualHours: number | null
   }
 
   export type TaskSumAggregateOutputType = {
+    order: number | null
     position: number | null
     estimatedHours: number | null
     actualHours: number | null
@@ -22682,6 +23066,7 @@ export namespace Prisma {
   export type TaskMinAggregateOutputType = {
     id: string | null
     title: string | null
+    order: number | null
     description: string | null
     priority: $Enums.Priority | null
     status: $Enums.TaskStatus | null
@@ -22701,6 +23086,7 @@ export namespace Prisma {
   export type TaskMaxAggregateOutputType = {
     id: string | null
     title: string | null
+    order: number | null
     description: string | null
     priority: $Enums.Priority | null
     status: $Enums.TaskStatus | null
@@ -22720,6 +23106,7 @@ export namespace Prisma {
   export type TaskCountAggregateOutputType = {
     id: number
     title: number
+    order: number
     description: number
     priority: number
     status: number
@@ -22741,12 +23128,14 @@ export namespace Prisma {
 
 
   export type TaskAvgAggregateInputType = {
+    order?: true
     position?: true
     estimatedHours?: true
     actualHours?: true
   }
 
   export type TaskSumAggregateInputType = {
+    order?: true
     position?: true
     estimatedHours?: true
     actualHours?: true
@@ -22755,6 +23144,7 @@ export namespace Prisma {
   export type TaskMinAggregateInputType = {
     id?: true
     title?: true
+    order?: true
     description?: true
     priority?: true
     status?: true
@@ -22774,6 +23164,7 @@ export namespace Prisma {
   export type TaskMaxAggregateInputType = {
     id?: true
     title?: true
+    order?: true
     description?: true
     priority?: true
     status?: true
@@ -22793,6 +23184,7 @@ export namespace Prisma {
   export type TaskCountAggregateInputType = {
     id?: true
     title?: true
+    order?: true
     description?: true
     priority?: true
     status?: true
@@ -22901,6 +23293,7 @@ export namespace Prisma {
   export type TaskGroupByOutputType = {
     id: string
     title: string
+    order: number
     description: string | null
     priority: $Enums.Priority
     status: $Enums.TaskStatus
@@ -22941,6 +23334,7 @@ export namespace Prisma {
   export type TaskSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
+    order?: boolean
     description?: boolean
     priority?: boolean
     status?: boolean
@@ -22971,6 +23365,7 @@ export namespace Prisma {
   export type TaskSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
+    order?: boolean
     description?: boolean
     priority?: boolean
     status?: boolean
@@ -22994,6 +23389,7 @@ export namespace Prisma {
   export type TaskSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
+    order?: boolean
     description?: boolean
     priority?: boolean
     status?: boolean
@@ -23017,6 +23413,7 @@ export namespace Prisma {
   export type TaskSelectScalar = {
     id?: boolean
     title?: boolean
+    order?: boolean
     description?: boolean
     priority?: boolean
     status?: boolean
@@ -23035,7 +23432,7 @@ export namespace Prisma {
     creatorId?: boolean
   }
 
-  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "priority" | "status" | "type" | "position" | "labels" | "tags" | "estimatedHours" | "actualHours" | "dueDate" | "startDate" | "completedAt" | "createdAt" | "updatedAt" | "userStoryId" | "creatorId", ExtArgs["result"]["task"]>
+  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "order" | "description" | "priority" | "status" | "type" | "position" | "labels" | "tags" | "estimatedHours" | "actualHours" | "dueDate" | "startDate" | "completedAt" | "createdAt" | "updatedAt" | "userStoryId" | "creatorId", ExtArgs["result"]["task"]>
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     comments?: boolean | Task$commentsArgs<ExtArgs>
     files?: boolean | Task$filesArgs<ExtArgs>
@@ -23071,6 +23468,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       title: string
+      order: number
       description: string | null
       priority: $Enums.Priority
       status: $Enums.TaskStatus
@@ -23520,6 +23918,7 @@ export namespace Prisma {
   interface TaskFieldRefs {
     readonly id: FieldRef<"Task", 'String'>
     readonly title: FieldRef<"Task", 'String'>
+    readonly order: FieldRef<"Task", 'Int'>
     readonly description: FieldRef<"Task", 'String'>
     readonly priority: FieldRef<"Task", 'Priority'>
     readonly status: FieldRef<"Task", 'TaskStatus'>
@@ -24100,13 +24499,24 @@ export namespace Prisma {
 
   export type AggregateTaskDependency = {
     _count: TaskDependencyCountAggregateOutputType | null
+    _avg: TaskDependencyAvgAggregateOutputType | null
+    _sum: TaskDependencySumAggregateOutputType | null
     _min: TaskDependencyMinAggregateOutputType | null
     _max: TaskDependencyMaxAggregateOutputType | null
+  }
+
+  export type TaskDependencyAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type TaskDependencySumAggregateOutputType = {
+    order: number | null
   }
 
   export type TaskDependencyMinAggregateOutputType = {
     id: string | null
     type: string | null
+    order: number | null
     description: string | null
     createdAt: Date | null
     dependentTaskId: string | null
@@ -24116,6 +24526,7 @@ export namespace Prisma {
   export type TaskDependencyMaxAggregateOutputType = {
     id: string | null
     type: string | null
+    order: number | null
     description: string | null
     createdAt: Date | null
     dependentTaskId: string | null
@@ -24125,6 +24536,7 @@ export namespace Prisma {
   export type TaskDependencyCountAggregateOutputType = {
     id: number
     type: number
+    order: number
     description: number
     createdAt: number
     dependentTaskId: number
@@ -24133,9 +24545,18 @@ export namespace Prisma {
   }
 
 
+  export type TaskDependencyAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type TaskDependencySumAggregateInputType = {
+    order?: true
+  }
+
   export type TaskDependencyMinAggregateInputType = {
     id?: true
     type?: true
+    order?: true
     description?: true
     createdAt?: true
     dependentTaskId?: true
@@ -24145,6 +24566,7 @@ export namespace Prisma {
   export type TaskDependencyMaxAggregateInputType = {
     id?: true
     type?: true
+    order?: true
     description?: true
     createdAt?: true
     dependentTaskId?: true
@@ -24154,6 +24576,7 @@ export namespace Prisma {
   export type TaskDependencyCountAggregateInputType = {
     id?: true
     type?: true
+    order?: true
     description?: true
     createdAt?: true
     dependentTaskId?: true
@@ -24199,6 +24622,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: TaskDependencyAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TaskDependencySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: TaskDependencyMinAggregateInputType
@@ -24229,6 +24664,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: TaskDependencyCountAggregateInputType | true
+    _avg?: TaskDependencyAvgAggregateInputType
+    _sum?: TaskDependencySumAggregateInputType
     _min?: TaskDependencyMinAggregateInputType
     _max?: TaskDependencyMaxAggregateInputType
   }
@@ -24236,11 +24673,14 @@ export namespace Prisma {
   export type TaskDependencyGroupByOutputType = {
     id: string
     type: string
+    order: number
     description: string | null
     createdAt: Date
     dependentTaskId: string
     dependsOnTaskId: string
     _count: TaskDependencyCountAggregateOutputType | null
+    _avg: TaskDependencyAvgAggregateOutputType | null
+    _sum: TaskDependencySumAggregateOutputType | null
     _min: TaskDependencyMinAggregateOutputType | null
     _max: TaskDependencyMaxAggregateOutputType | null
   }
@@ -24262,6 +24702,7 @@ export namespace Prisma {
   export type TaskDependencySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     type?: boolean
+    order?: boolean
     description?: boolean
     createdAt?: boolean
     dependentTaskId?: boolean
@@ -24273,6 +24714,7 @@ export namespace Prisma {
   export type TaskDependencySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     type?: boolean
+    order?: boolean
     description?: boolean
     createdAt?: boolean
     dependentTaskId?: boolean
@@ -24284,6 +24726,7 @@ export namespace Prisma {
   export type TaskDependencySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     type?: boolean
+    order?: boolean
     description?: boolean
     createdAt?: boolean
     dependentTaskId?: boolean
@@ -24295,13 +24738,14 @@ export namespace Prisma {
   export type TaskDependencySelectScalar = {
     id?: boolean
     type?: boolean
+    order?: boolean
     description?: boolean
     createdAt?: boolean
     dependentTaskId?: boolean
     dependsOnTaskId?: boolean
   }
 
-  export type TaskDependencyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "description" | "createdAt" | "dependentTaskId" | "dependsOnTaskId", ExtArgs["result"]["taskDependency"]>
+  export type TaskDependencyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "order" | "description" | "createdAt" | "dependentTaskId" | "dependsOnTaskId", ExtArgs["result"]["taskDependency"]>
   export type TaskDependencyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dependentTask?: boolean | TaskDefaultArgs<ExtArgs>
     dependsOnTask?: boolean | TaskDefaultArgs<ExtArgs>
@@ -24324,6 +24768,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       type: string
+      order: number
       description: string | null
       createdAt: Date
       dependentTaskId: string
@@ -24755,6 +25200,7 @@ export namespace Prisma {
   interface TaskDependencyFieldRefs {
     readonly id: FieldRef<"TaskDependency", 'String'>
     readonly type: FieldRef<"TaskDependency", 'String'>
+    readonly order: FieldRef<"TaskDependency", 'Int'>
     readonly description: FieldRef<"TaskDependency", 'String'>
     readonly createdAt: FieldRef<"TaskDependency", 'DateTime'>
     readonly dependentTaskId: FieldRef<"TaskDependency", 'String'>
@@ -25186,11 +25632,13 @@ export namespace Prisma {
   }
 
   export type SprintAvgAggregateOutputType = {
+    order: number | null
     capacity: number | null
     velocity: number | null
   }
 
   export type SprintSumAggregateOutputType = {
+    order: number | null
     capacity: number | null
     velocity: number | null
   }
@@ -25198,6 +25646,7 @@ export namespace Prisma {
   export type SprintMinAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     goal: string | null
     description: string | null
     startDate: Date | null
@@ -25213,6 +25662,7 @@ export namespace Prisma {
   export type SprintMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     goal: string | null
     description: string | null
     startDate: Date | null
@@ -25228,6 +25678,7 @@ export namespace Prisma {
   export type SprintCountAggregateOutputType = {
     id: number
     name: number
+    order: number
     goal: number
     description: number
     startDate: number
@@ -25245,11 +25696,13 @@ export namespace Prisma {
 
 
   export type SprintAvgAggregateInputType = {
+    order?: true
     capacity?: true
     velocity?: true
   }
 
   export type SprintSumAggregateInputType = {
+    order?: true
     capacity?: true
     velocity?: true
   }
@@ -25257,6 +25710,7 @@ export namespace Prisma {
   export type SprintMinAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     goal?: true
     description?: true
     startDate?: true
@@ -25272,6 +25726,7 @@ export namespace Prisma {
   export type SprintMaxAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     goal?: true
     description?: true
     startDate?: true
@@ -25287,6 +25742,7 @@ export namespace Prisma {
   export type SprintCountAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     goal?: true
     description?: true
     startDate?: true
@@ -25391,6 +25847,7 @@ export namespace Prisma {
   export type SprintGroupByOutputType = {
     id: string
     name: string
+    order: number
     goal: string | null
     description: string | null
     startDate: Date
@@ -25427,6 +25884,7 @@ export namespace Prisma {
   export type SprintSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     goal?: boolean
     description?: boolean
     startDate?: boolean
@@ -25451,6 +25909,7 @@ export namespace Prisma {
   export type SprintSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     goal?: boolean
     description?: boolean
     startDate?: boolean
@@ -25469,6 +25928,7 @@ export namespace Prisma {
   export type SprintSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     goal?: boolean
     description?: boolean
     startDate?: boolean
@@ -25487,6 +25947,7 @@ export namespace Prisma {
   export type SprintSelectScalar = {
     id?: boolean
     name?: boolean
+    order?: boolean
     goal?: boolean
     description?: boolean
     startDate?: boolean
@@ -25501,7 +25962,7 @@ export namespace Prisma {
     projectId?: boolean
   }
 
-  export type SprintOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "goal" | "description" | "startDate" | "endDate" | "status" | "capacity" | "velocity" | "burndownData" | "retrospective" | "createdAt" | "updatedAt" | "projectId", ExtArgs["result"]["sprint"]>
+  export type SprintOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "goal" | "description" | "startDate" | "endDate" | "status" | "capacity" | "velocity" | "burndownData" | "retrospective" | "createdAt" | "updatedAt" | "projectId", ExtArgs["result"]["sprint"]>
   export type SprintInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     files?: boolean | Sprint$filesArgs<ExtArgs>
     items?: boolean | Sprint$itemsArgs<ExtArgs>
@@ -25531,6 +25992,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      order: number
       goal: string | null
       description: string | null
       startDate: Date
@@ -25974,6 +26436,7 @@ export namespace Prisma {
   interface SprintFieldRefs {
     readonly id: FieldRef<"Sprint", 'String'>
     readonly name: FieldRef<"Sprint", 'String'>
+    readonly order: FieldRef<"Sprint", 'Int'>
     readonly goal: FieldRef<"Sprint", 'String'>
     readonly description: FieldRef<"Sprint", 'String'>
     readonly startDate: FieldRef<"Sprint", 'DateTime'>
@@ -26533,32 +26996,31 @@ export namespace Prisma {
   }
 
   export type FileAvgAggregateOutputType = {
-    size: number | null
+    order: number | null
     version: number | null
   }
 
   export type FileSumAggregateOutputType = {
-    size: number | null
+    order: number | null
     version: number | null
   }
 
   export type FileMinAggregateOutputType = {
     id: string | null
     name: string | null
-    originalName: string | null
+    order: number | null
     type: $Enums.FileType | null
     mimeType: string | null
-    size: number | null
-    url: string | null
     path: string | null
     description: string | null
+    import: string | null
+    use: string | null
+    export: string | null
     script: string | null
     version: number | null
-    isPublic: boolean | null
     isFolder: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
-    uploaderId: string | null
     parentId: string | null
     projectId: string | null
     featureId: string | null
@@ -26570,20 +27032,19 @@ export namespace Prisma {
   export type FileMaxAggregateOutputType = {
     id: string | null
     name: string | null
-    originalName: string | null
+    order: number | null
     type: $Enums.FileType | null
     mimeType: string | null
-    size: number | null
-    url: string | null
     path: string | null
     description: string | null
+    import: string | null
+    use: string | null
+    export: string | null
     script: string | null
     version: number | null
-    isPublic: boolean | null
     isFolder: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
-    uploaderId: string | null
     parentId: string | null
     projectId: string | null
     featureId: string | null
@@ -26595,24 +27056,21 @@ export namespace Prisma {
   export type FileCountAggregateOutputType = {
     id: number
     name: number
-    originalName: number
+    order: number
     type: number
     mimeType: number
-    size: number
-    url: number
     path: number
     description: number
     import: number
+    use: number
     export: number
     script: number
     version: number
-    isPublic: number
     isFolder: number
     metadata: number
     tags: number
     createdAt: number
     updatedAt: number
-    uploaderId: number
     parentId: number
     projectId: number
     featureId: number
@@ -26624,32 +27082,31 @@ export namespace Prisma {
 
 
   export type FileAvgAggregateInputType = {
-    size?: true
+    order?: true
     version?: true
   }
 
   export type FileSumAggregateInputType = {
-    size?: true
+    order?: true
     version?: true
   }
 
   export type FileMinAggregateInputType = {
     id?: true
     name?: true
-    originalName?: true
+    order?: true
     type?: true
     mimeType?: true
-    size?: true
-    url?: true
     path?: true
     description?: true
+    import?: true
+    use?: true
+    export?: true
     script?: true
     version?: true
-    isPublic?: true
     isFolder?: true
     createdAt?: true
     updatedAt?: true
-    uploaderId?: true
     parentId?: true
     projectId?: true
     featureId?: true
@@ -26661,20 +27118,19 @@ export namespace Prisma {
   export type FileMaxAggregateInputType = {
     id?: true
     name?: true
-    originalName?: true
+    order?: true
     type?: true
     mimeType?: true
-    size?: true
-    url?: true
     path?: true
     description?: true
+    import?: true
+    use?: true
+    export?: true
     script?: true
     version?: true
-    isPublic?: true
     isFolder?: true
     createdAt?: true
     updatedAt?: true
-    uploaderId?: true
     parentId?: true
     projectId?: true
     featureId?: true
@@ -26686,24 +27142,21 @@ export namespace Prisma {
   export type FileCountAggregateInputType = {
     id?: true
     name?: true
-    originalName?: true
+    order?: true
     type?: true
     mimeType?: true
-    size?: true
-    url?: true
     path?: true
     description?: true
     import?: true
+    use?: true
     export?: true
     script?: true
     version?: true
-    isPublic?: true
     isFolder?: true
     metadata?: true
     tags?: true
     createdAt?: true
     updatedAt?: true
-    uploaderId?: true
     parentId?: true
     projectId?: true
     featureId?: true
@@ -26802,26 +27255,23 @@ export namespace Prisma {
   export type FileGroupByOutputType = {
     id: string
     name: string
-    originalName: string | null
+    order: number
     type: $Enums.FileType
     mimeType: string | null
-    size: number | null
-    url: string
     path: string | null
     description: string | null
-    import: JsonValue | null
-    export: JsonValue | null
+    import: string | null
+    use: string | null
+    export: string | null
     script: string | null
     version: number
-    isPublic: boolean
     isFolder: boolean
     metadata: JsonValue | null
     tags: string[]
     createdAt: Date
     updatedAt: Date
-    uploaderId: string
     parentId: string | null
-    projectId: string | null
+    projectId: string
     featureId: string | null
     userStoryId: string | null
     taskId: string | null
@@ -26850,24 +27300,21 @@ export namespace Prisma {
   export type FileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    originalName?: boolean
+    order?: boolean
     type?: boolean
     mimeType?: boolean
-    size?: boolean
-    url?: boolean
     path?: boolean
     description?: boolean
     import?: boolean
+    use?: boolean
     export?: boolean
     script?: boolean
     version?: boolean
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: boolean
     tags?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    uploaderId?: boolean
     parentId?: boolean
     projectId?: boolean
     featureId?: boolean
@@ -26879,10 +27326,10 @@ export namespace Prisma {
     feature?: boolean | File$featureArgs<ExtArgs>
     parent?: boolean | File$parentArgs<ExtArgs>
     children?: boolean | File$childrenArgs<ExtArgs>
-    project?: boolean | File$projectArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     sprint?: boolean | File$sprintArgs<ExtArgs>
     task?: boolean | File$taskArgs<ExtArgs>
-    uploader?: boolean | UserDefaultArgs<ExtArgs>
+    author?: boolean | File$authorArgs<ExtArgs>
     userStory?: boolean | File$userStoryArgs<ExtArgs>
     items?: boolean | File$itemsArgs<ExtArgs>
     _count?: boolean | FileCountOutputTypeDefaultArgs<ExtArgs>
@@ -26891,24 +27338,21 @@ export namespace Prisma {
   export type FileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    originalName?: boolean
+    order?: boolean
     type?: boolean
     mimeType?: boolean
-    size?: boolean
-    url?: boolean
     path?: boolean
     description?: boolean
     import?: boolean
+    use?: boolean
     export?: boolean
     script?: boolean
     version?: boolean
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: boolean
     tags?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    uploaderId?: boolean
     parentId?: boolean
     projectId?: boolean
     featureId?: boolean
@@ -26917,34 +27361,30 @@ export namespace Prisma {
     sprintId?: boolean
     feature?: boolean | File$featureArgs<ExtArgs>
     parent?: boolean | File$parentArgs<ExtArgs>
-    project?: boolean | File$projectArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     sprint?: boolean | File$sprintArgs<ExtArgs>
     task?: boolean | File$taskArgs<ExtArgs>
-    uploader?: boolean | UserDefaultArgs<ExtArgs>
     userStory?: boolean | File$userStoryArgs<ExtArgs>
   }, ExtArgs["result"]["file"]>
 
   export type FileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    originalName?: boolean
+    order?: boolean
     type?: boolean
     mimeType?: boolean
-    size?: boolean
-    url?: boolean
     path?: boolean
     description?: boolean
     import?: boolean
+    use?: boolean
     export?: boolean
     script?: boolean
     version?: boolean
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: boolean
     tags?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    uploaderId?: boolean
     parentId?: boolean
     projectId?: boolean
     featureId?: boolean
@@ -26953,34 +27393,30 @@ export namespace Prisma {
     sprintId?: boolean
     feature?: boolean | File$featureArgs<ExtArgs>
     parent?: boolean | File$parentArgs<ExtArgs>
-    project?: boolean | File$projectArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     sprint?: boolean | File$sprintArgs<ExtArgs>
     task?: boolean | File$taskArgs<ExtArgs>
-    uploader?: boolean | UserDefaultArgs<ExtArgs>
     userStory?: boolean | File$userStoryArgs<ExtArgs>
   }, ExtArgs["result"]["file"]>
 
   export type FileSelectScalar = {
     id?: boolean
     name?: boolean
-    originalName?: boolean
+    order?: boolean
     type?: boolean
     mimeType?: boolean
-    size?: boolean
-    url?: boolean
     path?: boolean
     description?: boolean
     import?: boolean
+    use?: boolean
     export?: boolean
     script?: boolean
     version?: boolean
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: boolean
     tags?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    uploaderId?: boolean
     parentId?: boolean
     projectId?: boolean
     featureId?: boolean
@@ -26989,17 +27425,17 @@ export namespace Prisma {
     sprintId?: boolean
   }
 
-  export type FileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "originalName" | "type" | "mimeType" | "size" | "url" | "path" | "description" | "import" | "export" | "script" | "version" | "isPublic" | "isFolder" | "metadata" | "tags" | "createdAt" | "updatedAt" | "uploaderId" | "parentId" | "projectId" | "featureId" | "userStoryId" | "taskId" | "sprintId", ExtArgs["result"]["file"]>
+  export type FileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "type" | "mimeType" | "path" | "description" | "import" | "use" | "export" | "script" | "version" | "isFolder" | "metadata" | "tags" | "createdAt" | "updatedAt" | "parentId" | "projectId" | "featureId" | "userStoryId" | "taskId" | "sprintId", ExtArgs["result"]["file"]>
   export type FileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     comments?: boolean | File$commentsArgs<ExtArgs>
     versions?: boolean | File$versionsArgs<ExtArgs>
     feature?: boolean | File$featureArgs<ExtArgs>
     parent?: boolean | File$parentArgs<ExtArgs>
     children?: boolean | File$childrenArgs<ExtArgs>
-    project?: boolean | File$projectArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     sprint?: boolean | File$sprintArgs<ExtArgs>
     task?: boolean | File$taskArgs<ExtArgs>
-    uploader?: boolean | UserDefaultArgs<ExtArgs>
+    author?: boolean | File$authorArgs<ExtArgs>
     userStory?: boolean | File$userStoryArgs<ExtArgs>
     items?: boolean | File$itemsArgs<ExtArgs>
     _count?: boolean | FileCountOutputTypeDefaultArgs<ExtArgs>
@@ -27007,19 +27443,17 @@ export namespace Prisma {
   export type FileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     feature?: boolean | File$featureArgs<ExtArgs>
     parent?: boolean | File$parentArgs<ExtArgs>
-    project?: boolean | File$projectArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     sprint?: boolean | File$sprintArgs<ExtArgs>
     task?: boolean | File$taskArgs<ExtArgs>
-    uploader?: boolean | UserDefaultArgs<ExtArgs>
     userStory?: boolean | File$userStoryArgs<ExtArgs>
   }
   export type FileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     feature?: boolean | File$featureArgs<ExtArgs>
     parent?: boolean | File$parentArgs<ExtArgs>
-    project?: boolean | File$projectArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     sprint?: boolean | File$sprintArgs<ExtArgs>
     task?: boolean | File$taskArgs<ExtArgs>
-    uploader?: boolean | UserDefaultArgs<ExtArgs>
     userStory?: boolean | File$userStoryArgs<ExtArgs>
   }
 
@@ -27031,36 +27465,33 @@ export namespace Prisma {
       feature: Prisma.$FeaturePayload<ExtArgs> | null
       parent: Prisma.$FilePayload<ExtArgs> | null
       children: Prisma.$FilePayload<ExtArgs>[]
-      project: Prisma.$ProjectPayload<ExtArgs> | null
+      project: Prisma.$ProjectPayload<ExtArgs>
       sprint: Prisma.$SprintPayload<ExtArgs> | null
       task: Prisma.$TaskPayload<ExtArgs> | null
-      uploader: Prisma.$UserPayload<ExtArgs>
+      author: Prisma.$UserPayload<ExtArgs>[]
       userStory: Prisma.$UserStoryPayload<ExtArgs> | null
       items: Prisma.$ItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
-      originalName: string | null
+      order: number
       type: $Enums.FileType
       mimeType: string | null
-      size: number | null
-      url: string
       path: string | null
       description: string | null
-      import: Prisma.JsonValue | null
-      export: Prisma.JsonValue | null
+      import: string | null
+      use: string | null
+      export: string | null
       script: string | null
       version: number
-      isPublic: boolean
       isFolder: boolean
       metadata: Prisma.JsonValue | null
       tags: string[]
       createdAt: Date
       updatedAt: Date
-      uploaderId: string
       parentId: string | null
-      projectId: string | null
+      projectId: string
       featureId: string | null
       userStoryId: string | null
       taskId: string | null
@@ -27464,10 +27895,10 @@ export namespace Prisma {
     feature<T extends File$featureArgs<ExtArgs> = {}>(args?: Subset<T, File$featureArgs<ExtArgs>>): Prisma__FeatureClient<$Result.GetResult<Prisma.$FeaturePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     parent<T extends File$parentArgs<ExtArgs> = {}>(args?: Subset<T, File$parentArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     children<T extends File$childrenArgs<ExtArgs> = {}>(args?: Subset<T, File$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    project<T extends File$projectArgs<ExtArgs> = {}>(args?: Subset<T, File$projectArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     sprint<T extends File$sprintArgs<ExtArgs> = {}>(args?: Subset<T, File$sprintArgs<ExtArgs>>): Prisma__SprintClient<$Result.GetResult<Prisma.$SprintPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     task<T extends File$taskArgs<ExtArgs> = {}>(args?: Subset<T, File$taskArgs<ExtArgs>>): Prisma__TaskClient<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    uploader<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    author<T extends File$authorArgs<ExtArgs> = {}>(args?: Subset<T, File$authorArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userStory<T extends File$userStoryArgs<ExtArgs> = {}>(args?: Subset<T, File$userStoryArgs<ExtArgs>>): Prisma__UserStoryClient<$Result.GetResult<Prisma.$UserStoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     items<T extends File$itemsArgs<ExtArgs> = {}>(args?: Subset<T, File$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -27501,24 +27932,21 @@ export namespace Prisma {
   interface FileFieldRefs {
     readonly id: FieldRef<"File", 'String'>
     readonly name: FieldRef<"File", 'String'>
-    readonly originalName: FieldRef<"File", 'String'>
+    readonly order: FieldRef<"File", 'Int'>
     readonly type: FieldRef<"File", 'FileType'>
     readonly mimeType: FieldRef<"File", 'String'>
-    readonly size: FieldRef<"File", 'Int'>
-    readonly url: FieldRef<"File", 'String'>
     readonly path: FieldRef<"File", 'String'>
     readonly description: FieldRef<"File", 'String'>
-    readonly import: FieldRef<"File", 'Json'>
-    readonly export: FieldRef<"File", 'Json'>
+    readonly import: FieldRef<"File", 'String'>
+    readonly use: FieldRef<"File", 'String'>
+    readonly export: FieldRef<"File", 'String'>
     readonly script: FieldRef<"File", 'String'>
     readonly version: FieldRef<"File", 'Int'>
-    readonly isPublic: FieldRef<"File", 'Boolean'>
     readonly isFolder: FieldRef<"File", 'Boolean'>
     readonly metadata: FieldRef<"File", 'Json'>
     readonly tags: FieldRef<"File", 'String[]'>
     readonly createdAt: FieldRef<"File", 'DateTime'>
     readonly updatedAt: FieldRef<"File", 'DateTime'>
-    readonly uploaderId: FieldRef<"File", 'String'>
     readonly parentId: FieldRef<"File", 'String'>
     readonly projectId: FieldRef<"File", 'String'>
     readonly featureId: FieldRef<"File", 'String'>
@@ -28031,25 +28459,6 @@ export namespace Prisma {
   }
 
   /**
-   * File.project
-   */
-  export type File$projectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Project
-     */
-    select?: ProjectSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Project
-     */
-    omit?: ProjectOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProjectInclude<ExtArgs> | null
-    where?: ProjectWhereInput
-  }
-
-  /**
    * File.sprint
    */
   export type File$sprintArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -28085,6 +28494,30 @@ export namespace Prisma {
      */
     include?: TaskInclude<ExtArgs> | null
     where?: TaskWhereInput
+  }
+
+  /**
+   * File.author
+   */
+  export type File$authorArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
 
   /**
@@ -29329,6 +29762,8 @@ export namespace Prisma {
 
   export type CommentMinAggregateOutputType = {
     id: string | null
+    title: string | null
+    order: number | null
     content: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -29343,17 +29778,17 @@ export namespace Prisma {
     isActive: boolean | null
     isPinned: boolean | null
     isResolved: boolean | null
-    order: number | null
     publishedAt: Date | null
     readingTime: number | null
     slug: string | null
     status: string | null
-    title: string | null
     visibility: $Enums.Visibility | null
   }
 
   export type CommentMaxAggregateOutputType = {
     id: string | null
+    title: string | null
+    order: number | null
     content: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -29368,17 +29803,17 @@ export namespace Prisma {
     isActive: boolean | null
     isPinned: boolean | null
     isResolved: boolean | null
-    order: number | null
     publishedAt: Date | null
     readingTime: number | null
     slug: string | null
     status: string | null
-    title: string | null
     visibility: $Enums.Visibility | null
   }
 
   export type CommentCountAggregateOutputType = {
     id: number
+    title: number
+    order: number
     content: number
     mentions: number
     createdAt: number
@@ -29395,12 +29830,10 @@ export namespace Prisma {
     isPinned: number
     isResolved: number
     metadata: number
-    order: number
     publishedAt: number
     readingTime: number
     slug: number
     status: number
-    title: number
     visibility: number
     _all: number
   }
@@ -29418,6 +29851,8 @@ export namespace Prisma {
 
   export type CommentMinAggregateInputType = {
     id?: true
+    title?: true
+    order?: true
     content?: true
     createdAt?: true
     updatedAt?: true
@@ -29432,17 +29867,17 @@ export namespace Prisma {
     isActive?: true
     isPinned?: true
     isResolved?: true
-    order?: true
     publishedAt?: true
     readingTime?: true
     slug?: true
     status?: true
-    title?: true
     visibility?: true
   }
 
   export type CommentMaxAggregateInputType = {
     id?: true
+    title?: true
+    order?: true
     content?: true
     createdAt?: true
     updatedAt?: true
@@ -29457,17 +29892,17 @@ export namespace Prisma {
     isActive?: true
     isPinned?: true
     isResolved?: true
-    order?: true
     publishedAt?: true
     readingTime?: true
     slug?: true
     status?: true
-    title?: true
     visibility?: true
   }
 
   export type CommentCountAggregateInputType = {
     id?: true
+    title?: true
+    order?: true
     content?: true
     mentions?: true
     createdAt?: true
@@ -29484,12 +29919,10 @@ export namespace Prisma {
     isPinned?: true
     isResolved?: true
     metadata?: true
-    order?: true
     publishedAt?: true
     readingTime?: true
     slug?: true
     status?: true
-    title?: true
     visibility?: true
     _all?: true
   }
@@ -29582,6 +30015,8 @@ export namespace Prisma {
 
   export type CommentGroupByOutputType = {
     id: string
+    title: string
+    order: number
     content: string
     mentions: string[]
     createdAt: Date
@@ -29598,12 +30033,10 @@ export namespace Prisma {
     isPinned: boolean
     isResolved: boolean
     metadata: JsonValue | null
-    order: number
     publishedAt: Date | null
     readingTime: number | null
     slug: string | null
     status: string
-    title: string | null
     visibility: $Enums.Visibility
     _count: CommentCountAggregateOutputType | null
     _avg: CommentAvgAggregateOutputType | null
@@ -29628,6 +30061,8 @@ export namespace Prisma {
 
   export type CommentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    title?: boolean
+    order?: boolean
     content?: boolean
     mentions?: boolean
     createdAt?: boolean
@@ -29644,12 +30079,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: boolean
-    order?: boolean
     publishedAt?: boolean
     readingTime?: boolean
     slug?: boolean
     status?: boolean
-    title?: boolean
     visibility?: boolean
     author?: boolean | UserDefaultArgs<ExtArgs>
     file?: boolean | Comment$fileArgs<ExtArgs>
@@ -29665,6 +30098,8 @@ export namespace Prisma {
 
   export type CommentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    title?: boolean
+    order?: boolean
     content?: boolean
     mentions?: boolean
     createdAt?: boolean
@@ -29681,12 +30116,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: boolean
-    order?: boolean
     publishedAt?: boolean
     readingTime?: boolean
     slug?: boolean
     status?: boolean
-    title?: boolean
     visibility?: boolean
     author?: boolean | UserDefaultArgs<ExtArgs>
     file?: boolean | Comment$fileArgs<ExtArgs>
@@ -29698,6 +30131,8 @@ export namespace Prisma {
 
   export type CommentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    title?: boolean
+    order?: boolean
     content?: boolean
     mentions?: boolean
     createdAt?: boolean
@@ -29714,12 +30149,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: boolean
-    order?: boolean
     publishedAt?: boolean
     readingTime?: boolean
     slug?: boolean
     status?: boolean
-    title?: boolean
     visibility?: boolean
     author?: boolean | UserDefaultArgs<ExtArgs>
     file?: boolean | Comment$fileArgs<ExtArgs>
@@ -29731,6 +30164,8 @@ export namespace Prisma {
 
   export type CommentSelectScalar = {
     id?: boolean
+    title?: boolean
+    order?: boolean
     content?: boolean
     mentions?: boolean
     createdAt?: boolean
@@ -29747,16 +30182,14 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: boolean
-    order?: boolean
     publishedAt?: boolean
     readingTime?: boolean
     slug?: boolean
     status?: boolean
-    title?: boolean
     visibility?: boolean
   }
 
-  export type CommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "content" | "mentions" | "createdAt" | "updatedAt" | "authorId" | "taskId" | "userStoryId" | "fileId" | "itemId" | "parentCommentId" | "blogImage" | "excerpt" | "isActive" | "isPinned" | "isResolved" | "metadata" | "order" | "publishedAt" | "readingTime" | "slug" | "status" | "title" | "visibility", ExtArgs["result"]["comment"]>
+  export type CommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "order" | "content" | "mentions" | "createdAt" | "updatedAt" | "authorId" | "taskId" | "userStoryId" | "fileId" | "itemId" | "parentCommentId" | "blogImage" | "excerpt" | "isActive" | "isPinned" | "isResolved" | "metadata" | "publishedAt" | "readingTime" | "slug" | "status" | "visibility", ExtArgs["result"]["comment"]>
   export type CommentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     author?: boolean | UserDefaultArgs<ExtArgs>
     file?: boolean | Comment$fileArgs<ExtArgs>
@@ -29801,6 +30234,8 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      title: string
+      order: number
       content: string
       mentions: string[]
       createdAt: Date
@@ -29817,12 +30252,10 @@ export namespace Prisma {
       isPinned: boolean
       isResolved: boolean
       metadata: Prisma.JsonValue | null
-      order: number
       publishedAt: Date | null
       readingTime: number | null
       slug: string | null
       status: string
-      title: string | null
       visibility: $Enums.Visibility
     }, ExtArgs["result"]["comment"]>
     composites: {}
@@ -30257,6 +30690,8 @@ export namespace Prisma {
    */
   interface CommentFieldRefs {
     readonly id: FieldRef<"Comment", 'String'>
+    readonly title: FieldRef<"Comment", 'String'>
+    readonly order: FieldRef<"Comment", 'Int'>
     readonly content: FieldRef<"Comment", 'String'>
     readonly mentions: FieldRef<"Comment", 'String[]'>
     readonly createdAt: FieldRef<"Comment", 'DateTime'>
@@ -30273,12 +30708,10 @@ export namespace Prisma {
     readonly isPinned: FieldRef<"Comment", 'Boolean'>
     readonly isResolved: FieldRef<"Comment", 'Boolean'>
     readonly metadata: FieldRef<"Comment", 'Json'>
-    readonly order: FieldRef<"Comment", 'Int'>
     readonly publishedAt: FieldRef<"Comment", 'DateTime'>
     readonly readingTime: FieldRef<"Comment", 'Int'>
     readonly slug: FieldRef<"Comment", 'String'>
     readonly status: FieldRef<"Comment", 'String'>
-    readonly title: FieldRef<"Comment", 'String'>
     readonly visibility: FieldRef<"Comment", 'Visibility'>
   }
     
@@ -30867,13 +31300,24 @@ export namespace Prisma {
 
   export type AggregateChannel = {
     _count: ChannelCountAggregateOutputType | null
+    _avg: ChannelAvgAggregateOutputType | null
+    _sum: ChannelSumAggregateOutputType | null
     _min: ChannelMinAggregateOutputType | null
     _max: ChannelMaxAggregateOutputType | null
+  }
+
+  export type ChannelAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type ChannelSumAggregateOutputType = {
+    order: number | null
   }
 
   export type ChannelMinAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     description: string | null
     type: string | null
     isPrivate: boolean | null
@@ -30886,6 +31330,7 @@ export namespace Prisma {
   export type ChannelMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     description: string | null
     type: string | null
     isPrivate: boolean | null
@@ -30898,6 +31343,7 @@ export namespace Prisma {
   export type ChannelCountAggregateOutputType = {
     id: number
     name: number
+    order: number
     description: number
     type: number
     isPrivate: number
@@ -30909,9 +31355,18 @@ export namespace Prisma {
   }
 
 
+  export type ChannelAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type ChannelSumAggregateInputType = {
+    order?: true
+  }
+
   export type ChannelMinAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     type?: true
     isPrivate?: true
@@ -30924,6 +31379,7 @@ export namespace Prisma {
   export type ChannelMaxAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     type?: true
     isPrivate?: true
@@ -30936,6 +31392,7 @@ export namespace Prisma {
   export type ChannelCountAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     type?: true
     isPrivate?: true
@@ -30984,6 +31441,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: ChannelAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ChannelSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ChannelMinAggregateInputType
@@ -31014,6 +31483,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: ChannelCountAggregateInputType | true
+    _avg?: ChannelAvgAggregateInputType
+    _sum?: ChannelSumAggregateInputType
     _min?: ChannelMinAggregateInputType
     _max?: ChannelMaxAggregateInputType
   }
@@ -31021,6 +31492,7 @@ export namespace Prisma {
   export type ChannelGroupByOutputType = {
     id: string
     name: string
+    order: number
     description: string | null
     type: string
     isPrivate: boolean
@@ -31029,6 +31501,8 @@ export namespace Prisma {
     updatedAt: Date
     projectId: string
     _count: ChannelCountAggregateOutputType | null
+    _avg: ChannelAvgAggregateOutputType | null
+    _sum: ChannelSumAggregateOutputType | null
     _min: ChannelMinAggregateOutputType | null
     _max: ChannelMaxAggregateOutputType | null
   }
@@ -31050,6 +31524,7 @@ export namespace Prisma {
   export type ChannelSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     type?: boolean
     isPrivate?: boolean
@@ -31066,6 +31541,7 @@ export namespace Prisma {
   export type ChannelSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     type?: boolean
     isPrivate?: boolean
@@ -31079,6 +31555,7 @@ export namespace Prisma {
   export type ChannelSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     type?: boolean
     isPrivate?: boolean
@@ -31092,6 +31569,7 @@ export namespace Prisma {
   export type ChannelSelectScalar = {
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     type?: boolean
     isPrivate?: boolean
@@ -31101,7 +31579,7 @@ export namespace Prisma {
     projectId?: boolean
   }
 
-  export type ChannelOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "type" | "isPrivate" | "isArchived" | "createdAt" | "updatedAt" | "projectId", ExtArgs["result"]["channel"]>
+  export type ChannelOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "description" | "type" | "isPrivate" | "isArchived" | "createdAt" | "updatedAt" | "projectId", ExtArgs["result"]["channel"]>
   export type ChannelInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | Channel$membersArgs<ExtArgs>
     project?: boolean | ProjectDefaultArgs<ExtArgs>
@@ -31125,6 +31603,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      order: number
       description: string | null
       type: string
       isPrivate: boolean
@@ -31560,6 +32039,7 @@ export namespace Prisma {
   interface ChannelFieldRefs {
     readonly id: FieldRef<"Channel", 'String'>
     readonly name: FieldRef<"Channel", 'String'>
+    readonly order: FieldRef<"Channel", 'Int'>
     readonly description: FieldRef<"Channel", 'String'>
     readonly type: FieldRef<"Channel", 'String'>
     readonly isPrivate: FieldRef<"Channel", 'Boolean'>
@@ -32035,12 +32515,23 @@ export namespace Prisma {
 
   export type AggregateChannelMember = {
     _count: ChannelMemberCountAggregateOutputType | null
+    _avg: ChannelMemberAvgAggregateOutputType | null
+    _sum: ChannelMemberSumAggregateOutputType | null
     _min: ChannelMemberMinAggregateOutputType | null
     _max: ChannelMemberMaxAggregateOutputType | null
   }
 
+  export type ChannelMemberAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type ChannelMemberSumAggregateOutputType = {
+    order: number | null
+  }
+
   export type ChannelMemberMinAggregateOutputType = {
     id: string | null
+    order: number | null
     role: string | null
     joinedAt: Date | null
     channelId: string | null
@@ -32049,6 +32540,7 @@ export namespace Prisma {
 
   export type ChannelMemberMaxAggregateOutputType = {
     id: string | null
+    order: number | null
     role: string | null
     joinedAt: Date | null
     channelId: string | null
@@ -32057,6 +32549,7 @@ export namespace Prisma {
 
   export type ChannelMemberCountAggregateOutputType = {
     id: number
+    order: number
     role: number
     joinedAt: number
     channelId: number
@@ -32065,8 +32558,17 @@ export namespace Prisma {
   }
 
 
+  export type ChannelMemberAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type ChannelMemberSumAggregateInputType = {
+    order?: true
+  }
+
   export type ChannelMemberMinAggregateInputType = {
     id?: true
+    order?: true
     role?: true
     joinedAt?: true
     channelId?: true
@@ -32075,6 +32577,7 @@ export namespace Prisma {
 
   export type ChannelMemberMaxAggregateInputType = {
     id?: true
+    order?: true
     role?: true
     joinedAt?: true
     channelId?: true
@@ -32083,6 +32586,7 @@ export namespace Prisma {
 
   export type ChannelMemberCountAggregateInputType = {
     id?: true
+    order?: true
     role?: true
     joinedAt?: true
     channelId?: true
@@ -32128,6 +32632,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: ChannelMemberAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ChannelMemberSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ChannelMemberMinAggregateInputType
@@ -32158,17 +32674,22 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: ChannelMemberCountAggregateInputType | true
+    _avg?: ChannelMemberAvgAggregateInputType
+    _sum?: ChannelMemberSumAggregateInputType
     _min?: ChannelMemberMinAggregateInputType
     _max?: ChannelMemberMaxAggregateInputType
   }
 
   export type ChannelMemberGroupByOutputType = {
     id: string
+    order: number
     role: string
     joinedAt: Date
     channelId: string
     userId: string
     _count: ChannelMemberCountAggregateOutputType | null
+    _avg: ChannelMemberAvgAggregateOutputType | null
+    _sum: ChannelMemberSumAggregateOutputType | null
     _min: ChannelMemberMinAggregateOutputType | null
     _max: ChannelMemberMaxAggregateOutputType | null
   }
@@ -32189,6 +32710,7 @@ export namespace Prisma {
 
   export type ChannelMemberSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    order?: boolean
     role?: boolean
     joinedAt?: boolean
     channelId?: boolean
@@ -32199,6 +32721,7 @@ export namespace Prisma {
 
   export type ChannelMemberSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    order?: boolean
     role?: boolean
     joinedAt?: boolean
     channelId?: boolean
@@ -32209,6 +32732,7 @@ export namespace Prisma {
 
   export type ChannelMemberSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    order?: boolean
     role?: boolean
     joinedAt?: boolean
     channelId?: boolean
@@ -32219,13 +32743,14 @@ export namespace Prisma {
 
   export type ChannelMemberSelectScalar = {
     id?: boolean
+    order?: boolean
     role?: boolean
     joinedAt?: boolean
     channelId?: boolean
     userId?: boolean
   }
 
-  export type ChannelMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role" | "joinedAt" | "channelId" | "userId", ExtArgs["result"]["channelMember"]>
+  export type ChannelMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "order" | "role" | "joinedAt" | "channelId" | "userId", ExtArgs["result"]["channelMember"]>
   export type ChannelMemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     channel?: boolean | ChannelDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -32247,6 +32772,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      order: number
       role: string
       joinedAt: Date
       channelId: string
@@ -32677,6 +33203,7 @@ export namespace Prisma {
    */
   interface ChannelMemberFieldRefs {
     readonly id: FieldRef<"ChannelMember", 'String'>
+    readonly order: FieldRef<"ChannelMember", 'Int'>
     readonly role: FieldRef<"ChannelMember", 'String'>
     readonly joinedAt: FieldRef<"ChannelMember", 'DateTime'>
     readonly channelId: FieldRef<"ChannelMember", 'String'>
@@ -33101,12 +33628,23 @@ export namespace Prisma {
 
   export type AggregateMessage = {
     _count: MessageCountAggregateOutputType | null
+    _avg: MessageAvgAggregateOutputType | null
+    _sum: MessageSumAggregateOutputType | null
     _min: MessageMinAggregateOutputType | null
     _max: MessageMaxAggregateOutputType | null
   }
 
+  export type MessageAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type MessageSumAggregateOutputType = {
+    order: number | null
+  }
+
   export type MessageMinAggregateOutputType = {
     id: string | null
+    order: number | null
     content: string | null
     type: string | null
     createdAt: Date | null
@@ -33117,6 +33655,7 @@ export namespace Prisma {
 
   export type MessageMaxAggregateOutputType = {
     id: string | null
+    order: number | null
     content: string | null
     type: string | null
     createdAt: Date | null
@@ -33127,6 +33666,7 @@ export namespace Prisma {
 
   export type MessageCountAggregateOutputType = {
     id: number
+    order: number
     content: number
     type: number
     metadata: number
@@ -33139,8 +33679,17 @@ export namespace Prisma {
   }
 
 
+  export type MessageAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type MessageSumAggregateInputType = {
+    order?: true
+  }
+
   export type MessageMinAggregateInputType = {
     id?: true
+    order?: true
     content?: true
     type?: true
     createdAt?: true
@@ -33151,6 +33700,7 @@ export namespace Prisma {
 
   export type MessageMaxAggregateInputType = {
     id?: true
+    order?: true
     content?: true
     type?: true
     createdAt?: true
@@ -33161,6 +33711,7 @@ export namespace Prisma {
 
   export type MessageCountAggregateInputType = {
     id?: true
+    order?: true
     content?: true
     type?: true
     metadata?: true
@@ -33210,6 +33761,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: MessageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MessageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: MessageMinAggregateInputType
@@ -33240,12 +33803,15 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: MessageCountAggregateInputType | true
+    _avg?: MessageAvgAggregateInputType
+    _sum?: MessageSumAggregateInputType
     _min?: MessageMinAggregateInputType
     _max?: MessageMaxAggregateInputType
   }
 
   export type MessageGroupByOutputType = {
     id: string
+    order: number
     content: string
     type: string
     metadata: JsonValue | null
@@ -33255,6 +33821,8 @@ export namespace Prisma {
     channelId: string
     authorId: string
     _count: MessageCountAggregateOutputType | null
+    _avg: MessageAvgAggregateOutputType | null
+    _sum: MessageSumAggregateOutputType | null
     _min: MessageMinAggregateOutputType | null
     _max: MessageMaxAggregateOutputType | null
   }
@@ -33275,6 +33843,7 @@ export namespace Prisma {
 
   export type MessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    order?: boolean
     content?: boolean
     type?: boolean
     metadata?: boolean
@@ -33289,6 +33858,7 @@ export namespace Prisma {
 
   export type MessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    order?: boolean
     content?: boolean
     type?: boolean
     metadata?: boolean
@@ -33303,6 +33873,7 @@ export namespace Prisma {
 
   export type MessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    order?: boolean
     content?: boolean
     type?: boolean
     metadata?: boolean
@@ -33317,6 +33888,7 @@ export namespace Prisma {
 
   export type MessageSelectScalar = {
     id?: boolean
+    order?: boolean
     content?: boolean
     type?: boolean
     metadata?: boolean
@@ -33327,7 +33899,7 @@ export namespace Prisma {
     authorId?: boolean
   }
 
-  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "content" | "type" | "metadata" | "mentions" | "createdAt" | "updatedAt" | "channelId" | "authorId", ExtArgs["result"]["message"]>
+  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "order" | "content" | "type" | "metadata" | "mentions" | "createdAt" | "updatedAt" | "channelId" | "authorId", ExtArgs["result"]["message"]>
   export type MessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     author?: boolean | UserDefaultArgs<ExtArgs>
     channel?: boolean | ChannelDefaultArgs<ExtArgs>
@@ -33349,6 +33921,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      order: number
       content: string
       type: string
       metadata: Prisma.JsonValue | null
@@ -33783,6 +34356,7 @@ export namespace Prisma {
    */
   interface MessageFieldRefs {
     readonly id: FieldRef<"Message", 'String'>
+    readonly order: FieldRef<"Message", 'Int'>
     readonly content: FieldRef<"Message", 'String'>
     readonly type: FieldRef<"Message", 'String'>
     readonly metadata: FieldRef<"Message", 'Json'>
@@ -34211,13 +34785,24 @@ export namespace Prisma {
 
   export type AggregateTemplate = {
     _count: TemplateCountAggregateOutputType | null
+    _avg: TemplateAvgAggregateOutputType | null
+    _sum: TemplateSumAggregateOutputType | null
     _min: TemplateMinAggregateOutputType | null
     _max: TemplateMaxAggregateOutputType | null
+  }
+
+  export type TemplateAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type TemplateSumAggregateOutputType = {
+    order: number | null
   }
 
   export type TemplateMinAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     description: string | null
     type: string | null
     category: string | null
@@ -34233,6 +34818,7 @@ export namespace Prisma {
   export type TemplateMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     description: string | null
     type: string | null
     category: string | null
@@ -34248,6 +34834,7 @@ export namespace Prisma {
   export type TemplateCountAggregateOutputType = {
     id: number
     name: number
+    order: number
     description: number
     type: number
     category: number
@@ -34263,9 +34850,18 @@ export namespace Prisma {
   }
 
 
+  export type TemplateAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type TemplateSumAggregateInputType = {
+    order?: true
+  }
+
   export type TemplateMinAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     type?: true
     category?: true
@@ -34281,6 +34877,7 @@ export namespace Prisma {
   export type TemplateMaxAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     type?: true
     category?: true
@@ -34296,6 +34893,7 @@ export namespace Prisma {
   export type TemplateCountAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     description?: true
     type?: true
     category?: true
@@ -34348,6 +34946,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: TemplateAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TemplateSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: TemplateMinAggregateInputType
@@ -34378,6 +34988,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: TemplateCountAggregateInputType | true
+    _avg?: TemplateAvgAggregateInputType
+    _sum?: TemplateSumAggregateInputType
     _min?: TemplateMinAggregateInputType
     _max?: TemplateMaxAggregateInputType
   }
@@ -34385,6 +34997,7 @@ export namespace Prisma {
   export type TemplateGroupByOutputType = {
     id: string
     name: string
+    order: number
     description: string | null
     type: string
     category: string | null
@@ -34397,6 +35010,8 @@ export namespace Prisma {
     teamId: string
     projectId: string | null
     _count: TemplateCountAggregateOutputType | null
+    _avg: TemplateAvgAggregateOutputType | null
+    _sum: TemplateSumAggregateOutputType | null
     _min: TemplateMinAggregateOutputType | null
     _max: TemplateMaxAggregateOutputType | null
   }
@@ -34418,6 +35033,7 @@ export namespace Prisma {
   export type TemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     type?: boolean
     category?: boolean
@@ -34436,6 +35052,7 @@ export namespace Prisma {
   export type TemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     type?: boolean
     category?: boolean
@@ -34454,6 +35071,7 @@ export namespace Prisma {
   export type TemplateSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     type?: boolean
     category?: boolean
@@ -34472,6 +35090,7 @@ export namespace Prisma {
   export type TemplateSelectScalar = {
     id?: boolean
     name?: boolean
+    order?: boolean
     description?: boolean
     type?: boolean
     category?: boolean
@@ -34485,7 +35104,7 @@ export namespace Prisma {
     projectId?: boolean
   }
 
-  export type TemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "type" | "category" | "content" | "isPublic" | "isSystem" | "version" | "createdAt" | "updatedAt" | "teamId" | "projectId", ExtArgs["result"]["template"]>
+  export type TemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "description" | "type" | "category" | "content" | "isPublic" | "isSystem" | "version" | "createdAt" | "updatedAt" | "teamId" | "projectId", ExtArgs["result"]["template"]>
   export type TemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | Template$projectArgs<ExtArgs>
     team?: boolean | TeamDefaultArgs<ExtArgs>
@@ -34508,6 +35127,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      order: number
       description: string | null
       type: string
       category: string | null
@@ -34946,6 +35566,7 @@ export namespace Prisma {
   interface TemplateFieldRefs {
     readonly id: FieldRef<"Template", 'String'>
     readonly name: FieldRef<"Template", 'String'>
+    readonly order: FieldRef<"Template", 'Int'>
     readonly description: FieldRef<"Template", 'String'>
     readonly type: FieldRef<"Template", 'String'>
     readonly category: FieldRef<"Template", 'String'>
@@ -40614,35 +41235,35 @@ export namespace Prisma {
 
   export type GlossaryMinAggregateOutputType = {
     id: string | null
+    term: string | null
+    order: number | null
     description: string | null
     type: string | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
-    order: number | null
-    term: string | null
   }
 
   export type GlossaryMaxAggregateOutputType = {
     id: string | null
+    term: string | null
+    order: number | null
     description: string | null
     type: string | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
-    order: number | null
-    term: string | null
   }
 
   export type GlossaryCountAggregateOutputType = {
     id: number
+    term: number
+    order: number
     description: number
     type: number
     isActive: number
     createdAt: number
     updatedAt: number
-    order: number
-    term: number
     _all: number
   }
 
@@ -40657,35 +41278,35 @@ export namespace Prisma {
 
   export type GlossaryMinAggregateInputType = {
     id?: true
+    term?: true
+    order?: true
     description?: true
     type?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
-    order?: true
-    term?: true
   }
 
   export type GlossaryMaxAggregateInputType = {
     id?: true
+    term?: true
+    order?: true
     description?: true
     type?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
-    order?: true
-    term?: true
   }
 
   export type GlossaryCountAggregateInputType = {
     id?: true
+    term?: true
+    order?: true
     description?: true
     type?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
-    order?: true
-    term?: true
     _all?: true
   }
 
@@ -40777,13 +41398,13 @@ export namespace Prisma {
 
   export type GlossaryGroupByOutputType = {
     id: string
+    term: string
+    order: number
     description: string | null
     type: string
     isActive: boolean
     createdAt: Date
     updatedAt: Date
-    order: number
-    term: string
     _count: GlossaryCountAggregateOutputType | null
     _avg: GlossaryAvgAggregateOutputType | null
     _sum: GlossarySumAggregateOutputType | null
@@ -40807,62 +41428,62 @@ export namespace Prisma {
 
   export type GlossarySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    term?: boolean
+    order?: boolean
     description?: boolean
     type?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    order?: boolean
-    term?: boolean
   }, ExtArgs["result"]["glossary"]>
 
   export type GlossarySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    term?: boolean
+    order?: boolean
     description?: boolean
     type?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    order?: boolean
-    term?: boolean
   }, ExtArgs["result"]["glossary"]>
 
   export type GlossarySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    term?: boolean
+    order?: boolean
     description?: boolean
     type?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    order?: boolean
-    term?: boolean
   }, ExtArgs["result"]["glossary"]>
 
   export type GlossarySelectScalar = {
     id?: boolean
+    term?: boolean
+    order?: boolean
     description?: boolean
     type?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    order?: boolean
-    term?: boolean
   }
 
-  export type GlossaryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "type" | "isActive" | "createdAt" | "updatedAt" | "order" | "term", ExtArgs["result"]["glossary"]>
+  export type GlossaryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "term" | "order" | "description" | "type" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["glossary"]>
 
   export type $GlossaryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Glossary"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      term: string
+      order: number
       description: string | null
       type: string
       isActive: boolean
       createdAt: Date
       updatedAt: Date
-      order: number
-      term: string
     }, ExtArgs["result"]["glossary"]>
     composites: {}
   }
@@ -41287,13 +41908,13 @@ export namespace Prisma {
    */
   interface GlossaryFieldRefs {
     readonly id: FieldRef<"Glossary", 'String'>
+    readonly term: FieldRef<"Glossary", 'String'>
+    readonly order: FieldRef<"Glossary", 'Int'>
     readonly description: FieldRef<"Glossary", 'String'>
     readonly type: FieldRef<"Glossary", 'String'>
     readonly isActive: FieldRef<"Glossary", 'Boolean'>
     readonly createdAt: FieldRef<"Glossary", 'DateTime'>
     readonly updatedAt: FieldRef<"Glossary", 'DateTime'>
-    readonly order: FieldRef<"Glossary", 'Int'>
-    readonly term: FieldRef<"Glossary", 'String'>
   }
     
 
@@ -42693,13 +43314,24 @@ export namespace Prisma {
 
   export type AggregateBlog_tags = {
     _count: Blog_tagsCountAggregateOutputType | null
+    _avg: Blog_tagsAvgAggregateOutputType | null
+    _sum: Blog_tagsSumAggregateOutputType | null
     _min: Blog_tagsMinAggregateOutputType | null
     _max: Blog_tagsMaxAggregateOutputType | null
+  }
+
+  export type Blog_tagsAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type Blog_tagsSumAggregateOutputType = {
+    order: number | null
   }
 
   export type Blog_tagsMinAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     color: string | null
     isActive: boolean | null
     createdAt: Date | null
@@ -42710,6 +43342,7 @@ export namespace Prisma {
   export type Blog_tagsMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     color: string | null
     isActive: boolean | null
     createdAt: Date | null
@@ -42720,6 +43353,7 @@ export namespace Prisma {
   export type Blog_tagsCountAggregateOutputType = {
     id: number
     name: number
+    order: number
     color: number
     isActive: number
     createdAt: number
@@ -42729,9 +43363,18 @@ export namespace Prisma {
   }
 
 
+  export type Blog_tagsAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type Blog_tagsSumAggregateInputType = {
+    order?: true
+  }
+
   export type Blog_tagsMinAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     color?: true
     isActive?: true
     createdAt?: true
@@ -42742,6 +43385,7 @@ export namespace Prisma {
   export type Blog_tagsMaxAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     color?: true
     isActive?: true
     createdAt?: true
@@ -42752,6 +43396,7 @@ export namespace Prisma {
   export type Blog_tagsCountAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     color?: true
     isActive?: true
     createdAt?: true
@@ -42798,6 +43443,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: Blog_tagsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Blog_tagsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: Blog_tagsMinAggregateInputType
@@ -42828,6 +43485,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: Blog_tagsCountAggregateInputType | true
+    _avg?: Blog_tagsAvgAggregateInputType
+    _sum?: Blog_tagsSumAggregateInputType
     _min?: Blog_tagsMinAggregateInputType
     _max?: Blog_tagsMaxAggregateInputType
   }
@@ -42835,12 +43494,15 @@ export namespace Prisma {
   export type Blog_tagsGroupByOutputType = {
     id: string
     name: string
+    order: number
     color: string | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
     categoriesId: string | null
     _count: Blog_tagsCountAggregateOutputType | null
+    _avg: Blog_tagsAvgAggregateOutputType | null
+    _sum: Blog_tagsSumAggregateOutputType | null
     _min: Blog_tagsMinAggregateOutputType | null
     _max: Blog_tagsMaxAggregateOutputType | null
   }
@@ -42862,6 +43524,7 @@ export namespace Prisma {
   export type blog_tagsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     color?: boolean
     isActive?: boolean
     createdAt?: boolean
@@ -42875,6 +43538,7 @@ export namespace Prisma {
   export type blog_tagsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     color?: boolean
     isActive?: boolean
     createdAt?: boolean
@@ -42886,6 +43550,7 @@ export namespace Prisma {
   export type blog_tagsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     color?: boolean
     isActive?: boolean
     createdAt?: boolean
@@ -42897,6 +43562,7 @@ export namespace Prisma {
   export type blog_tagsSelectScalar = {
     id?: boolean
     name?: boolean
+    order?: boolean
     color?: boolean
     isActive?: boolean
     createdAt?: boolean
@@ -42904,7 +43570,7 @@ export namespace Prisma {
     categoriesId?: boolean
   }
 
-  export type blog_tagsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "color" | "isActive" | "createdAt" | "updatedAt" | "categoriesId", ExtArgs["result"]["blog_tags"]>
+  export type blog_tagsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "color" | "isActive" | "createdAt" | "updatedAt" | "categoriesId", ExtArgs["result"]["blog_tags"]>
   export type blog_tagsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     categories?: boolean | blog_tags$categoriesArgs<ExtArgs>
     comments?: boolean | blog_tags$commentsArgs<ExtArgs>
@@ -42926,6 +43592,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      order: number
       color: string | null
       isActive: boolean
       createdAt: Date
@@ -43358,6 +44025,7 @@ export namespace Prisma {
   interface blog_tagsFieldRefs {
     readonly id: FieldRef<"blog_tags", 'String'>
     readonly name: FieldRef<"blog_tags", 'String'>
+    readonly order: FieldRef<"blog_tags", 'Int'>
     readonly color: FieldRef<"blog_tags", 'String'>
     readonly isActive: FieldRef<"blog_tags", 'Boolean'>
     readonly createdAt: FieldRef<"blog_tags", 'DateTime'>
@@ -43826,13 +44494,24 @@ export namespace Prisma {
 
   export type AggregateCategories = {
     _count: CategoriesCountAggregateOutputType | null
+    _avg: CategoriesAvgAggregateOutputType | null
+    _sum: CategoriesSumAggregateOutputType | null
     _min: CategoriesMinAggregateOutputType | null
     _max: CategoriesMaxAggregateOutputType | null
+  }
+
+  export type CategoriesAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type CategoriesSumAggregateOutputType = {
+    order: number | null
   }
 
   export type CategoriesMinAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     slug: string | null
     description: string | null
     color: string | null
@@ -43845,6 +44524,7 @@ export namespace Prisma {
   export type CategoriesMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    order: number | null
     slug: string | null
     description: string | null
     color: string | null
@@ -43857,6 +44537,7 @@ export namespace Prisma {
   export type CategoriesCountAggregateOutputType = {
     id: number
     name: number
+    order: number
     slug: number
     description: number
     color: number
@@ -43868,9 +44549,18 @@ export namespace Prisma {
   }
 
 
+  export type CategoriesAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type CategoriesSumAggregateInputType = {
+    order?: true
+  }
+
   export type CategoriesMinAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     slug?: true
     description?: true
     color?: true
@@ -43883,6 +44573,7 @@ export namespace Prisma {
   export type CategoriesMaxAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     slug?: true
     description?: true
     color?: true
@@ -43895,6 +44586,7 @@ export namespace Prisma {
   export type CategoriesCountAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     slug?: true
     description?: true
     color?: true
@@ -43943,6 +44635,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: CategoriesAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CategoriesSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: CategoriesMinAggregateInputType
@@ -43973,6 +44677,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: CategoriesCountAggregateInputType | true
+    _avg?: CategoriesAvgAggregateInputType
+    _sum?: CategoriesSumAggregateInputType
     _min?: CategoriesMinAggregateInputType
     _max?: CategoriesMaxAggregateInputType
   }
@@ -43980,6 +44686,7 @@ export namespace Prisma {
   export type CategoriesGroupByOutputType = {
     id: string
     name: string
+    order: number
     slug: string | null
     description: string | null
     color: string | null
@@ -43988,6 +44695,8 @@ export namespace Prisma {
     updatedAt: Date
     parentId: string | null
     _count: CategoriesCountAggregateOutputType | null
+    _avg: CategoriesAvgAggregateOutputType | null
+    _sum: CategoriesSumAggregateOutputType | null
     _min: CategoriesMinAggregateOutputType | null
     _max: CategoriesMaxAggregateOutputType | null
   }
@@ -44009,6 +44718,7 @@ export namespace Prisma {
   export type categoriesSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     slug?: boolean
     description?: boolean
     color?: boolean
@@ -44026,6 +44736,7 @@ export namespace Prisma {
   export type categoriesSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     slug?: boolean
     description?: boolean
     color?: boolean
@@ -44039,6 +44750,7 @@ export namespace Prisma {
   export type categoriesSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     slug?: boolean
     description?: boolean
     color?: boolean
@@ -44052,6 +44764,7 @@ export namespace Prisma {
   export type categoriesSelectScalar = {
     id?: boolean
     name?: boolean
+    order?: boolean
     slug?: boolean
     description?: boolean
     color?: boolean
@@ -44061,7 +44774,7 @@ export namespace Prisma {
     parentId?: boolean
   }
 
-  export type categoriesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "description" | "color" | "isActive" | "createdAt" | "updatedAt" | "parentId", ExtArgs["result"]["categories"]>
+  export type categoriesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "slug" | "description" | "color" | "isActive" | "createdAt" | "updatedAt" | "parentId", ExtArgs["result"]["categories"]>
   export type categoriesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     blog_tags?: boolean | categories$blog_tagsArgs<ExtArgs>
     categories?: boolean | categories$categoriesArgs<ExtArgs>
@@ -44087,6 +44800,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      order: number
       slug: string | null
       description: string | null
       color: string | null
@@ -44523,6 +45237,7 @@ export namespace Prisma {
   interface categoriesFieldRefs {
     readonly id: FieldRef<"categories", 'String'>
     readonly name: FieldRef<"categories", 'String'>
+    readonly order: FieldRef<"categories", 'Int'>
     readonly slug: FieldRef<"categories", 'String'>
     readonly description: FieldRef<"categories", 'String'>
     readonly color: FieldRef<"categories", 'String'>
@@ -46694,6 +47409,7 @@ export namespace Prisma {
   export const TeamScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    order: 'order',
     description: 'description',
     slug: 'slug',
     logoUrl: 'logoUrl',
@@ -46709,6 +47425,7 @@ export namespace Prisma {
   export const TeamMemberScalarFieldEnum: {
     id: 'id',
     role: 'role',
+    order: 'order',
     joinedAt: 'joinedAt',
     isActive: 'isActive',
     teamId: 'teamId',
@@ -46742,6 +47459,7 @@ export namespace Prisma {
   export const ProjectMemberScalarFieldEnum: {
     id: 'id',
     role: 'role',
+    order: 'order',
     joinedAt: 'joinedAt',
     isActive: 'isActive',
     projectId: 'projectId',
@@ -46754,6 +47472,7 @@ export namespace Prisma {
   export const InitiativeScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    order: 'order',
     description: 'description',
     objective: 'objective',
     priority: 'priority',
@@ -46775,6 +47494,7 @@ export namespace Prisma {
   export const EpicScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    order: 'order',
     description: 'description',
     priority: 'priority',
     status: 'status',
@@ -46792,6 +47512,7 @@ export namespace Prisma {
   export const FeatureScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    order: 'order',
     description: 'description',
     acceptanceCriteria: 'acceptanceCriteria',
     priority: 'priority',
@@ -46818,6 +47539,7 @@ export namespace Prisma {
   export const FeatureDependencyScalarFieldEnum: {
     id: 'id',
     type: 'type',
+    order: 'order',
     description: 'description',
     createdAt: 'createdAt',
     dependentFeatureId: 'dependentFeatureId',
@@ -46830,6 +47552,7 @@ export namespace Prisma {
   export const UserStoryScalarFieldEnum: {
     id: 'id',
     title: 'title',
+    order: 'order',
     description: 'description',
     acceptanceCriteria: 'acceptanceCriteria',
     priority: 'priority',
@@ -46855,6 +47578,7 @@ export namespace Prisma {
   export const UserStoryDependencyScalarFieldEnum: {
     id: 'id',
     type: 'type',
+    order: 'order',
     description: 'description',
     createdAt: 'createdAt',
     dependentUserStoryId: 'dependentUserStoryId',
@@ -46867,6 +47591,7 @@ export namespace Prisma {
   export const TaskScalarFieldEnum: {
     id: 'id',
     title: 'title',
+    order: 'order',
     description: 'description',
     priority: 'priority',
     status: 'status',
@@ -46891,6 +47616,7 @@ export namespace Prisma {
   export const TaskDependencyScalarFieldEnum: {
     id: 'id',
     type: 'type',
+    order: 'order',
     description: 'description',
     createdAt: 'createdAt',
     dependentTaskId: 'dependentTaskId',
@@ -46903,6 +47629,7 @@ export namespace Prisma {
   export const SprintScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    order: 'order',
     goal: 'goal',
     description: 'description',
     startDate: 'startDate',
@@ -46923,24 +47650,21 @@ export namespace Prisma {
   export const FileScalarFieldEnum: {
     id: 'id',
     name: 'name',
-    originalName: 'originalName',
+    order: 'order',
     type: 'type',
     mimeType: 'mimeType',
-    size: 'size',
-    url: 'url',
     path: 'path',
     description: 'description',
     import: 'import',
+    use: 'use',
     export: 'export',
     script: 'script',
     version: 'version',
-    isPublic: 'isPublic',
     isFolder: 'isFolder',
     metadata: 'metadata',
     tags: 'tags',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    uploaderId: 'uploaderId',
     parentId: 'parentId',
     projectId: 'projectId',
     featureId: 'featureId',
@@ -46969,6 +47693,8 @@ export namespace Prisma {
 
   export const CommentScalarFieldEnum: {
     id: 'id',
+    title: 'title',
+    order: 'order',
     content: 'content',
     mentions: 'mentions',
     createdAt: 'createdAt',
@@ -46985,12 +47711,10 @@ export namespace Prisma {
     isPinned: 'isPinned',
     isResolved: 'isResolved',
     metadata: 'metadata',
-    order: 'order',
     publishedAt: 'publishedAt',
     readingTime: 'readingTime',
     slug: 'slug',
     status: 'status',
-    title: 'title',
     visibility: 'visibility'
   };
 
@@ -47000,6 +47724,7 @@ export namespace Prisma {
   export const ChannelScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    order: 'order',
     description: 'description',
     type: 'type',
     isPrivate: 'isPrivate',
@@ -47014,6 +47739,7 @@ export namespace Prisma {
 
   export const ChannelMemberScalarFieldEnum: {
     id: 'id',
+    order: 'order',
     role: 'role',
     joinedAt: 'joinedAt',
     channelId: 'channelId',
@@ -47025,6 +47751,7 @@ export namespace Prisma {
 
   export const MessageScalarFieldEnum: {
     id: 'id',
+    order: 'order',
     content: 'content',
     type: 'type',
     metadata: 'metadata',
@@ -47041,6 +47768,7 @@ export namespace Prisma {
   export const TemplateScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    order: 'order',
     description: 'description',
     type: 'type',
     category: 'category',
@@ -47149,13 +47877,13 @@ export namespace Prisma {
 
   export const GlossaryScalarFieldEnum: {
     id: 'id',
+    term: 'term',
+    order: 'order',
     description: 'description',
     type: 'type',
     isActive: 'isActive',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    order: 'order',
-    term: 'term'
+    updatedAt: 'updatedAt'
   };
 
   export type GlossaryScalarFieldEnum = (typeof GlossaryScalarFieldEnum)[keyof typeof GlossaryScalarFieldEnum]
@@ -47172,6 +47900,7 @@ export namespace Prisma {
   export const Blog_tagsScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    order: 'order',
     color: 'color',
     isActive: 'isActive',
     createdAt: 'createdAt',
@@ -47185,6 +47914,7 @@ export namespace Prisma {
   export const CategoriesScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    order: 'order',
     slug: 'slug',
     description: 'description',
     color: 'color',
@@ -47339,20 +48069,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'UserRole'
-   */
-  export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
-    
-
-
-  /**
-   * Reference to a field of type 'UserRole[]'
-   */
-  export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -47363,6 +48079,20 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'UserRole'
+   */
+  export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+    
+
+
+  /**
+   * Reference to a field of type 'UserRole[]'
+   */
+  export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
     
 
 
@@ -47887,6 +48617,7 @@ export namespace Prisma {
     NOT?: TeamWhereInput | TeamWhereInput[]
     id?: StringFilter<"Team"> | string
     name?: StringFilter<"Team"> | string
+    order?: IntFilter<"Team"> | number
     description?: StringNullableFilter<"Team"> | string | null
     slug?: StringFilter<"Team"> | string
     logoUrl?: StringNullableFilter<"Team"> | string | null
@@ -47904,6 +48635,7 @@ export namespace Prisma {
   export type TeamOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     slug?: SortOrder
     logoUrl?: SortOrderInput | SortOrder
@@ -47925,6 +48657,7 @@ export namespace Prisma {
     OR?: TeamWhereInput[]
     NOT?: TeamWhereInput | TeamWhereInput[]
     name?: StringFilter<"Team"> | string
+    order?: IntFilter<"Team"> | number
     description?: StringNullableFilter<"Team"> | string | null
     logoUrl?: StringNullableFilter<"Team"> | string | null
     isActive?: BoolFilter<"Team"> | boolean
@@ -47941,6 +48674,7 @@ export namespace Prisma {
   export type TeamOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     slug?: SortOrder
     logoUrl?: SortOrderInput | SortOrder
@@ -47949,8 +48683,10 @@ export namespace Prisma {
     updatedAt?: SortOrder
     parentTeamId?: SortOrderInput | SortOrder
     _count?: TeamCountOrderByAggregateInput
+    _avg?: TeamAvgOrderByAggregateInput
     _max?: TeamMaxOrderByAggregateInput
     _min?: TeamMinOrderByAggregateInput
+    _sum?: TeamSumOrderByAggregateInput
   }
 
   export type TeamScalarWhereWithAggregatesInput = {
@@ -47959,6 +48695,7 @@ export namespace Prisma {
     NOT?: TeamScalarWhereWithAggregatesInput | TeamScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Team"> | string
     name?: StringWithAggregatesFilter<"Team"> | string
+    order?: IntWithAggregatesFilter<"Team"> | number
     description?: StringNullableWithAggregatesFilter<"Team"> | string | null
     slug?: StringWithAggregatesFilter<"Team"> | string
     logoUrl?: StringNullableWithAggregatesFilter<"Team"> | string | null
@@ -47974,6 +48711,7 @@ export namespace Prisma {
     NOT?: TeamMemberWhereInput | TeamMemberWhereInput[]
     id?: StringFilter<"TeamMember"> | string
     role?: EnumUserRoleFilter<"TeamMember"> | $Enums.UserRole
+    order?: IntFilter<"TeamMember"> | number
     joinedAt?: DateTimeFilter<"TeamMember"> | Date | string
     isActive?: BoolFilter<"TeamMember"> | boolean
     teamId?: StringFilter<"TeamMember"> | string
@@ -47985,6 +48723,7 @@ export namespace Prisma {
   export type TeamMemberOrderByWithRelationInput = {
     id?: SortOrder
     role?: SortOrder
+    order?: SortOrder
     joinedAt?: SortOrder
     isActive?: SortOrder
     teamId?: SortOrder
@@ -48000,6 +48739,7 @@ export namespace Prisma {
     OR?: TeamMemberWhereInput[]
     NOT?: TeamMemberWhereInput | TeamMemberWhereInput[]
     role?: EnumUserRoleFilter<"TeamMember"> | $Enums.UserRole
+    order?: IntFilter<"TeamMember"> | number
     joinedAt?: DateTimeFilter<"TeamMember"> | Date | string
     isActive?: BoolFilter<"TeamMember"> | boolean
     teamId?: StringFilter<"TeamMember"> | string
@@ -48011,13 +48751,16 @@ export namespace Prisma {
   export type TeamMemberOrderByWithAggregationInput = {
     id?: SortOrder
     role?: SortOrder
+    order?: SortOrder
     joinedAt?: SortOrder
     isActive?: SortOrder
     teamId?: SortOrder
     userId?: SortOrder
     _count?: TeamMemberCountOrderByAggregateInput
+    _avg?: TeamMemberAvgOrderByAggregateInput
     _max?: TeamMemberMaxOrderByAggregateInput
     _min?: TeamMemberMinOrderByAggregateInput
+    _sum?: TeamMemberSumOrderByAggregateInput
   }
 
   export type TeamMemberScalarWhereWithAggregatesInput = {
@@ -48026,6 +48769,7 @@ export namespace Prisma {
     NOT?: TeamMemberScalarWhereWithAggregatesInput | TeamMemberScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"TeamMember"> | string
     role?: EnumUserRoleWithAggregatesFilter<"TeamMember"> | $Enums.UserRole
+    order?: IntWithAggregatesFilter<"TeamMember"> | number
     joinedAt?: DateTimeWithAggregatesFilter<"TeamMember"> | Date | string
     isActive?: BoolWithAggregatesFilter<"TeamMember"> | boolean
     teamId?: StringWithAggregatesFilter<"TeamMember"> | string
@@ -48169,6 +48913,7 @@ export namespace Prisma {
     NOT?: ProjectMemberWhereInput | ProjectMemberWhereInput[]
     id?: StringFilter<"ProjectMember"> | string
     role?: EnumUserRoleFilter<"ProjectMember"> | $Enums.UserRole
+    order?: IntFilter<"ProjectMember"> | number
     joinedAt?: DateTimeFilter<"ProjectMember"> | Date | string
     isActive?: BoolFilter<"ProjectMember"> | boolean
     projectId?: StringFilter<"ProjectMember"> | string
@@ -48180,6 +48925,7 @@ export namespace Prisma {
   export type ProjectMemberOrderByWithRelationInput = {
     id?: SortOrder
     role?: SortOrder
+    order?: SortOrder
     joinedAt?: SortOrder
     isActive?: SortOrder
     projectId?: SortOrder
@@ -48195,6 +48941,7 @@ export namespace Prisma {
     OR?: ProjectMemberWhereInput[]
     NOT?: ProjectMemberWhereInput | ProjectMemberWhereInput[]
     role?: EnumUserRoleFilter<"ProjectMember"> | $Enums.UserRole
+    order?: IntFilter<"ProjectMember"> | number
     joinedAt?: DateTimeFilter<"ProjectMember"> | Date | string
     isActive?: BoolFilter<"ProjectMember"> | boolean
     projectId?: StringFilter<"ProjectMember"> | string
@@ -48206,13 +48953,16 @@ export namespace Prisma {
   export type ProjectMemberOrderByWithAggregationInput = {
     id?: SortOrder
     role?: SortOrder
+    order?: SortOrder
     joinedAt?: SortOrder
     isActive?: SortOrder
     projectId?: SortOrder
     userId?: SortOrder
     _count?: ProjectMemberCountOrderByAggregateInput
+    _avg?: ProjectMemberAvgOrderByAggregateInput
     _max?: ProjectMemberMaxOrderByAggregateInput
     _min?: ProjectMemberMinOrderByAggregateInput
+    _sum?: ProjectMemberSumOrderByAggregateInput
   }
 
   export type ProjectMemberScalarWhereWithAggregatesInput = {
@@ -48221,6 +48971,7 @@ export namespace Prisma {
     NOT?: ProjectMemberScalarWhereWithAggregatesInput | ProjectMemberScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"ProjectMember"> | string
     role?: EnumUserRoleWithAggregatesFilter<"ProjectMember"> | $Enums.UserRole
+    order?: IntWithAggregatesFilter<"ProjectMember"> | number
     joinedAt?: DateTimeWithAggregatesFilter<"ProjectMember"> | Date | string
     isActive?: BoolWithAggregatesFilter<"ProjectMember"> | boolean
     projectId?: StringWithAggregatesFilter<"ProjectMember"> | string
@@ -48233,6 +48984,7 @@ export namespace Prisma {
     NOT?: InitiativeWhereInput | InitiativeWhereInput[]
     id?: StringFilter<"Initiative"> | string
     name?: StringFilter<"Initiative"> | string
+    order?: IntFilter<"Initiative"> | number
     description?: StringNullableFilter<"Initiative"> | string | null
     objective?: StringNullableFilter<"Initiative"> | string | null
     priority?: EnumPriorityFilter<"Initiative"> | $Enums.Priority
@@ -48254,6 +49006,7 @@ export namespace Prisma {
   export type InitiativeOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     objective?: SortOrderInput | SortOrder
     priority?: SortOrder
@@ -48278,6 +49031,7 @@ export namespace Prisma {
     OR?: InitiativeWhereInput[]
     NOT?: InitiativeWhereInput | InitiativeWhereInput[]
     name?: StringFilter<"Initiative"> | string
+    order?: IntFilter<"Initiative"> | number
     description?: StringNullableFilter<"Initiative"> | string | null
     objective?: StringNullableFilter<"Initiative"> | string | null
     priority?: EnumPriorityFilter<"Initiative"> | $Enums.Priority
@@ -48299,6 +49053,7 @@ export namespace Prisma {
   export type InitiativeOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     objective?: SortOrderInput | SortOrder
     priority?: SortOrder
@@ -48325,6 +49080,7 @@ export namespace Prisma {
     NOT?: InitiativeScalarWhereWithAggregatesInput | InitiativeScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Initiative"> | string
     name?: StringWithAggregatesFilter<"Initiative"> | string
+    order?: IntWithAggregatesFilter<"Initiative"> | number
     description?: StringNullableWithAggregatesFilter<"Initiative"> | string | null
     objective?: StringNullableWithAggregatesFilter<"Initiative"> | string | null
     priority?: EnumPriorityWithAggregatesFilter<"Initiative"> | $Enums.Priority
@@ -48346,6 +49102,7 @@ export namespace Prisma {
     NOT?: EpicWhereInput | EpicWhereInput[]
     id?: StringFilter<"Epic"> | string
     name?: StringFilter<"Epic"> | string
+    order?: IntFilter<"Epic"> | number
     description?: StringNullableFilter<"Epic"> | string | null
     priority?: EnumPriorityFilter<"Epic"> | $Enums.Priority
     status?: StringFilter<"Epic"> | string
@@ -48357,11 +49114,13 @@ export namespace Prisma {
     initiativeId?: StringFilter<"Epic"> | string
     initiative?: XOR<InitiativeScalarRelationFilter, InitiativeWhereInput>
     features?: FeatureListRelationFilter
+    userstories?: UserStoryListRelationFilter
   }
 
   export type EpicOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -48373,6 +49132,7 @@ export namespace Prisma {
     initiativeId?: SortOrder
     initiative?: InitiativeOrderByWithRelationInput
     features?: FeatureOrderByRelationAggregateInput
+    userstories?: UserStoryOrderByRelationAggregateInput
   }
 
   export type EpicWhereUniqueInput = Prisma.AtLeast<{
@@ -48381,6 +49141,7 @@ export namespace Prisma {
     OR?: EpicWhereInput[]
     NOT?: EpicWhereInput | EpicWhereInput[]
     name?: StringFilter<"Epic"> | string
+    order?: IntFilter<"Epic"> | number
     description?: StringNullableFilter<"Epic"> | string | null
     priority?: EnumPriorityFilter<"Epic"> | $Enums.Priority
     status?: StringFilter<"Epic"> | string
@@ -48392,11 +49153,13 @@ export namespace Prisma {
     initiativeId?: StringFilter<"Epic"> | string
     initiative?: XOR<InitiativeScalarRelationFilter, InitiativeWhereInput>
     features?: FeatureListRelationFilter
+    userstories?: UserStoryListRelationFilter
   }, "id">
 
   export type EpicOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -48419,6 +49182,7 @@ export namespace Prisma {
     NOT?: EpicScalarWhereWithAggregatesInput | EpicScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Epic"> | string
     name?: StringWithAggregatesFilter<"Epic"> | string
+    order?: IntWithAggregatesFilter<"Epic"> | number
     description?: StringNullableWithAggregatesFilter<"Epic"> | string | null
     priority?: EnumPriorityWithAggregatesFilter<"Epic"> | $Enums.Priority
     status?: StringWithAggregatesFilter<"Epic"> | string
@@ -48436,6 +49200,7 @@ export namespace Prisma {
     NOT?: FeatureWhereInput | FeatureWhereInput[]
     id?: StringFilter<"Feature"> | string
     name?: StringFilter<"Feature"> | string
+    order?: IntFilter<"Feature"> | number
     description?: StringNullableFilter<"Feature"> | string | null
     acceptanceCriteria?: StringNullableFilter<"Feature"> | string | null
     priority?: EnumPriorityFilter<"Feature"> | $Enums.Priority
@@ -48468,6 +49233,7 @@ export namespace Prisma {
   export type FeatureOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     acceptanceCriteria?: SortOrderInput | SortOrder
     priority?: SortOrder
@@ -48503,6 +49269,7 @@ export namespace Prisma {
     OR?: FeatureWhereInput[]
     NOT?: FeatureWhereInput | FeatureWhereInput[]
     name?: StringFilter<"Feature"> | string
+    order?: IntFilter<"Feature"> | number
     description?: StringNullableFilter<"Feature"> | string | null
     acceptanceCriteria?: StringNullableFilter<"Feature"> | string | null
     priority?: EnumPriorityFilter<"Feature"> | $Enums.Priority
@@ -48535,6 +49302,7 @@ export namespace Prisma {
   export type FeatureOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     acceptanceCriteria?: SortOrderInput | SortOrder
     priority?: SortOrder
@@ -48566,6 +49334,7 @@ export namespace Prisma {
     NOT?: FeatureScalarWhereWithAggregatesInput | FeatureScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Feature"> | string
     name?: StringWithAggregatesFilter<"Feature"> | string
+    order?: IntWithAggregatesFilter<"Feature"> | number
     description?: StringNullableWithAggregatesFilter<"Feature"> | string | null
     acceptanceCriteria?: StringNullableWithAggregatesFilter<"Feature"> | string | null
     priority?: EnumPriorityWithAggregatesFilter<"Feature"> | $Enums.Priority
@@ -48592,6 +49361,7 @@ export namespace Prisma {
     NOT?: FeatureDependencyWhereInput | FeatureDependencyWhereInput[]
     id?: StringFilter<"FeatureDependency"> | string
     type?: StringFilter<"FeatureDependency"> | string
+    order?: IntFilter<"FeatureDependency"> | number
     description?: StringNullableFilter<"FeatureDependency"> | string | null
     createdAt?: DateTimeFilter<"FeatureDependency"> | Date | string
     dependentFeatureId?: StringFilter<"FeatureDependency"> | string
@@ -48603,6 +49373,7 @@ export namespace Prisma {
   export type FeatureDependencyOrderByWithRelationInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     dependentFeatureId?: SortOrder
@@ -48618,6 +49389,7 @@ export namespace Prisma {
     OR?: FeatureDependencyWhereInput[]
     NOT?: FeatureDependencyWhereInput | FeatureDependencyWhereInput[]
     type?: StringFilter<"FeatureDependency"> | string
+    order?: IntFilter<"FeatureDependency"> | number
     description?: StringNullableFilter<"FeatureDependency"> | string | null
     createdAt?: DateTimeFilter<"FeatureDependency"> | Date | string
     dependentFeatureId?: StringFilter<"FeatureDependency"> | string
@@ -48629,13 +49401,16 @@ export namespace Prisma {
   export type FeatureDependencyOrderByWithAggregationInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     dependentFeatureId?: SortOrder
     dependsOnFeatureId?: SortOrder
     _count?: FeatureDependencyCountOrderByAggregateInput
+    _avg?: FeatureDependencyAvgOrderByAggregateInput
     _max?: FeatureDependencyMaxOrderByAggregateInput
     _min?: FeatureDependencyMinOrderByAggregateInput
+    _sum?: FeatureDependencySumOrderByAggregateInput
   }
 
   export type FeatureDependencyScalarWhereWithAggregatesInput = {
@@ -48644,6 +49419,7 @@ export namespace Prisma {
     NOT?: FeatureDependencyScalarWhereWithAggregatesInput | FeatureDependencyScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"FeatureDependency"> | string
     type?: StringWithAggregatesFilter<"FeatureDependency"> | string
+    order?: IntWithAggregatesFilter<"FeatureDependency"> | number
     description?: StringNullableWithAggregatesFilter<"FeatureDependency"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"FeatureDependency"> | Date | string
     dependentFeatureId?: StringWithAggregatesFilter<"FeatureDependency"> | string
@@ -48656,6 +49432,7 @@ export namespace Prisma {
     NOT?: UserStoryWhereInput | UserStoryWhereInput[]
     id?: StringFilter<"UserStory"> | string
     title?: StringFilter<"UserStory"> | string
+    order?: IntFilter<"UserStory"> | number
     description?: StringNullableFilter<"UserStory"> | string | null
     acceptanceCriteria?: StringNullableFilter<"UserStory"> | string | null
     priority?: EnumPriorityFilter<"UserStory"> | $Enums.Priority
@@ -48683,11 +49460,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyListRelationFilter
     dependents?: UserStoryDependencyListRelationFilter
     sprints?: SprintListRelationFilter
+    Epic?: EpicListRelationFilter
   }
 
   export type UserStoryOrderByWithRelationInput = {
     id?: SortOrder
     title?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     acceptanceCriteria?: SortOrderInput | SortOrder
     priority?: SortOrder
@@ -48715,6 +49494,7 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyOrderByRelationAggregateInput
     dependents?: UserStoryDependencyOrderByRelationAggregateInput
     sprints?: SprintOrderByRelationAggregateInput
+    Epic?: EpicOrderByRelationAggregateInput
   }
 
   export type UserStoryWhereUniqueInput = Prisma.AtLeast<{
@@ -48723,6 +49503,7 @@ export namespace Prisma {
     OR?: UserStoryWhereInput[]
     NOT?: UserStoryWhereInput | UserStoryWhereInput[]
     title?: StringFilter<"UserStory"> | string
+    order?: IntFilter<"UserStory"> | number
     description?: StringNullableFilter<"UserStory"> | string | null
     acceptanceCriteria?: StringNullableFilter<"UserStory"> | string | null
     priority?: EnumPriorityFilter<"UserStory"> | $Enums.Priority
@@ -48750,11 +49531,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyListRelationFilter
     dependents?: UserStoryDependencyListRelationFilter
     sprints?: SprintListRelationFilter
+    Epic?: EpicListRelationFilter
   }, "id">
 
   export type UserStoryOrderByWithAggregationInput = {
     id?: SortOrder
     title?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     acceptanceCriteria?: SortOrderInput | SortOrder
     priority?: SortOrder
@@ -48785,6 +49568,7 @@ export namespace Prisma {
     NOT?: UserStoryScalarWhereWithAggregatesInput | UserStoryScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"UserStory"> | string
     title?: StringWithAggregatesFilter<"UserStory"> | string
+    order?: IntWithAggregatesFilter<"UserStory"> | number
     description?: StringNullableWithAggregatesFilter<"UserStory"> | string | null
     acceptanceCriteria?: StringNullableWithAggregatesFilter<"UserStory"> | string | null
     priority?: EnumPriorityWithAggregatesFilter<"UserStory"> | $Enums.Priority
@@ -48810,6 +49594,7 @@ export namespace Prisma {
     NOT?: UserStoryDependencyWhereInput | UserStoryDependencyWhereInput[]
     id?: StringFilter<"UserStoryDependency"> | string
     type?: StringFilter<"UserStoryDependency"> | string
+    order?: IntFilter<"UserStoryDependency"> | number
     description?: StringNullableFilter<"UserStoryDependency"> | string | null
     createdAt?: DateTimeFilter<"UserStoryDependency"> | Date | string
     dependentUserStoryId?: StringFilter<"UserStoryDependency"> | string
@@ -48821,6 +49606,7 @@ export namespace Prisma {
   export type UserStoryDependencyOrderByWithRelationInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     dependentUserStoryId?: SortOrder
@@ -48836,6 +49622,7 @@ export namespace Prisma {
     OR?: UserStoryDependencyWhereInput[]
     NOT?: UserStoryDependencyWhereInput | UserStoryDependencyWhereInput[]
     type?: StringFilter<"UserStoryDependency"> | string
+    order?: IntFilter<"UserStoryDependency"> | number
     description?: StringNullableFilter<"UserStoryDependency"> | string | null
     createdAt?: DateTimeFilter<"UserStoryDependency"> | Date | string
     dependentUserStoryId?: StringFilter<"UserStoryDependency"> | string
@@ -48847,13 +49634,16 @@ export namespace Prisma {
   export type UserStoryDependencyOrderByWithAggregationInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     dependentUserStoryId?: SortOrder
     dependsOnUserStoryId?: SortOrder
     _count?: UserStoryDependencyCountOrderByAggregateInput
+    _avg?: UserStoryDependencyAvgOrderByAggregateInput
     _max?: UserStoryDependencyMaxOrderByAggregateInput
     _min?: UserStoryDependencyMinOrderByAggregateInput
+    _sum?: UserStoryDependencySumOrderByAggregateInput
   }
 
   export type UserStoryDependencyScalarWhereWithAggregatesInput = {
@@ -48862,6 +49652,7 @@ export namespace Prisma {
     NOT?: UserStoryDependencyScalarWhereWithAggregatesInput | UserStoryDependencyScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"UserStoryDependency"> | string
     type?: StringWithAggregatesFilter<"UserStoryDependency"> | string
+    order?: IntWithAggregatesFilter<"UserStoryDependency"> | number
     description?: StringNullableWithAggregatesFilter<"UserStoryDependency"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"UserStoryDependency"> | Date | string
     dependentUserStoryId?: StringWithAggregatesFilter<"UserStoryDependency"> | string
@@ -48874,6 +49665,7 @@ export namespace Prisma {
     NOT?: TaskWhereInput | TaskWhereInput[]
     id?: StringFilter<"Task"> | string
     title?: StringFilter<"Task"> | string
+    order?: IntFilter<"Task"> | number
     description?: StringNullableFilter<"Task"> | string | null
     priority?: EnumPriorityFilter<"Task"> | $Enums.Priority
     status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
@@ -48903,6 +49695,7 @@ export namespace Prisma {
   export type TaskOrderByWithRelationInput = {
     id?: SortOrder
     title?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -48935,6 +49728,7 @@ export namespace Prisma {
     OR?: TaskWhereInput[]
     NOT?: TaskWhereInput | TaskWhereInput[]
     title?: StringFilter<"Task"> | string
+    order?: IntFilter<"Task"> | number
     description?: StringNullableFilter<"Task"> | string | null
     priority?: EnumPriorityFilter<"Task"> | $Enums.Priority
     status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
@@ -48964,6 +49758,7 @@ export namespace Prisma {
   export type TaskOrderByWithAggregationInput = {
     id?: SortOrder
     title?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -48993,6 +49788,7 @@ export namespace Prisma {
     NOT?: TaskScalarWhereWithAggregatesInput | TaskScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Task"> | string
     title?: StringWithAggregatesFilter<"Task"> | string
+    order?: IntWithAggregatesFilter<"Task"> | number
     description?: StringNullableWithAggregatesFilter<"Task"> | string | null
     priority?: EnumPriorityWithAggregatesFilter<"Task"> | $Enums.Priority
     status?: EnumTaskStatusWithAggregatesFilter<"Task"> | $Enums.TaskStatus
@@ -49017,6 +49813,7 @@ export namespace Prisma {
     NOT?: TaskDependencyWhereInput | TaskDependencyWhereInput[]
     id?: StringFilter<"TaskDependency"> | string
     type?: StringFilter<"TaskDependency"> | string
+    order?: IntFilter<"TaskDependency"> | number
     description?: StringNullableFilter<"TaskDependency"> | string | null
     createdAt?: DateTimeFilter<"TaskDependency"> | Date | string
     dependentTaskId?: StringFilter<"TaskDependency"> | string
@@ -49028,6 +49825,7 @@ export namespace Prisma {
   export type TaskDependencyOrderByWithRelationInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     dependentTaskId?: SortOrder
@@ -49043,6 +49841,7 @@ export namespace Prisma {
     OR?: TaskDependencyWhereInput[]
     NOT?: TaskDependencyWhereInput | TaskDependencyWhereInput[]
     type?: StringFilter<"TaskDependency"> | string
+    order?: IntFilter<"TaskDependency"> | number
     description?: StringNullableFilter<"TaskDependency"> | string | null
     createdAt?: DateTimeFilter<"TaskDependency"> | Date | string
     dependentTaskId?: StringFilter<"TaskDependency"> | string
@@ -49054,13 +49853,16 @@ export namespace Prisma {
   export type TaskDependencyOrderByWithAggregationInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     dependentTaskId?: SortOrder
     dependsOnTaskId?: SortOrder
     _count?: TaskDependencyCountOrderByAggregateInput
+    _avg?: TaskDependencyAvgOrderByAggregateInput
     _max?: TaskDependencyMaxOrderByAggregateInput
     _min?: TaskDependencyMinOrderByAggregateInput
+    _sum?: TaskDependencySumOrderByAggregateInput
   }
 
   export type TaskDependencyScalarWhereWithAggregatesInput = {
@@ -49069,6 +49871,7 @@ export namespace Prisma {
     NOT?: TaskDependencyScalarWhereWithAggregatesInput | TaskDependencyScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"TaskDependency"> | string
     type?: StringWithAggregatesFilter<"TaskDependency"> | string
+    order?: IntWithAggregatesFilter<"TaskDependency"> | number
     description?: StringNullableWithAggregatesFilter<"TaskDependency"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"TaskDependency"> | Date | string
     dependentTaskId?: StringWithAggregatesFilter<"TaskDependency"> | string
@@ -49081,6 +49884,7 @@ export namespace Prisma {
     NOT?: SprintWhereInput | SprintWhereInput[]
     id?: StringFilter<"Sprint"> | string
     name?: StringFilter<"Sprint"> | string
+    order?: IntFilter<"Sprint"> | number
     goal?: StringNullableFilter<"Sprint"> | string | null
     description?: StringNullableFilter<"Sprint"> | string | null
     startDate?: DateTimeFilter<"Sprint"> | Date | string
@@ -49104,6 +49908,7 @@ export namespace Prisma {
   export type SprintOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     goal?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     startDate?: SortOrder
@@ -49130,6 +49935,7 @@ export namespace Prisma {
     OR?: SprintWhereInput[]
     NOT?: SprintWhereInput | SprintWhereInput[]
     name?: StringFilter<"Sprint"> | string
+    order?: IntFilter<"Sprint"> | number
     goal?: StringNullableFilter<"Sprint"> | string | null
     description?: StringNullableFilter<"Sprint"> | string | null
     startDate?: DateTimeFilter<"Sprint"> | Date | string
@@ -49153,6 +49959,7 @@ export namespace Prisma {
   export type SprintOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     goal?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     startDate?: SortOrder
@@ -49178,6 +49985,7 @@ export namespace Prisma {
     NOT?: SprintScalarWhereWithAggregatesInput | SprintScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Sprint"> | string
     name?: StringWithAggregatesFilter<"Sprint"> | string
+    order?: IntWithAggregatesFilter<"Sprint"> | number
     goal?: StringNullableWithAggregatesFilter<"Sprint"> | string | null
     description?: StringNullableWithAggregatesFilter<"Sprint"> | string | null
     startDate?: DateTimeWithAggregatesFilter<"Sprint"> | Date | string
@@ -49198,26 +50006,23 @@ export namespace Prisma {
     NOT?: FileWhereInput | FileWhereInput[]
     id?: StringFilter<"File"> | string
     name?: StringFilter<"File"> | string
-    originalName?: StringNullableFilter<"File"> | string | null
+    order?: IntFilter<"File"> | number
     type?: EnumFileTypeFilter<"File"> | $Enums.FileType
     mimeType?: StringNullableFilter<"File"> | string | null
-    size?: IntNullableFilter<"File"> | number | null
-    url?: StringFilter<"File"> | string
     path?: StringNullableFilter<"File"> | string | null
     description?: StringNullableFilter<"File"> | string | null
-    import?: JsonNullableFilter<"File">
-    export?: JsonNullableFilter<"File">
+    import?: StringNullableFilter<"File"> | string | null
+    use?: StringNullableFilter<"File"> | string | null
+    export?: StringNullableFilter<"File"> | string | null
     script?: StringNullableFilter<"File"> | string | null
     version?: IntFilter<"File"> | number
-    isPublic?: BoolFilter<"File"> | boolean
     isFolder?: BoolFilter<"File"> | boolean
     metadata?: JsonNullableFilter<"File">
     tags?: StringNullableListFilter<"File">
     createdAt?: DateTimeFilter<"File"> | Date | string
     updatedAt?: DateTimeFilter<"File"> | Date | string
-    uploaderId?: StringFilter<"File"> | string
     parentId?: StringNullableFilter<"File"> | string | null
-    projectId?: StringNullableFilter<"File"> | string | null
+    projectId?: StringFilter<"File"> | string
     featureId?: StringNullableFilter<"File"> | string | null
     userStoryId?: StringNullableFilter<"File"> | string | null
     taskId?: StringNullableFilter<"File"> | string | null
@@ -49227,10 +50032,10 @@ export namespace Prisma {
     feature?: XOR<FeatureNullableScalarRelationFilter, FeatureWhereInput> | null
     parent?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
     children?: FileListRelationFilter
-    project?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     sprint?: XOR<SprintNullableScalarRelationFilter, SprintWhereInput> | null
     task?: XOR<TaskNullableScalarRelationFilter, TaskWhereInput> | null
-    uploader?: XOR<UserScalarRelationFilter, UserWhereInput>
+    author?: UserListRelationFilter
     userStory?: XOR<UserStoryNullableScalarRelationFilter, UserStoryWhereInput> | null
     items?: ItemListRelationFilter
   }
@@ -49238,26 +50043,23 @@ export namespace Prisma {
   export type FileOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
-    originalName?: SortOrderInput | SortOrder
+    order?: SortOrder
     type?: SortOrder
     mimeType?: SortOrderInput | SortOrder
-    size?: SortOrderInput | SortOrder
-    url?: SortOrder
     path?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     import?: SortOrderInput | SortOrder
+    use?: SortOrderInput | SortOrder
     export?: SortOrderInput | SortOrder
     script?: SortOrderInput | SortOrder
     version?: SortOrder
-    isPublic?: SortOrder
     isFolder?: SortOrder
     metadata?: SortOrderInput | SortOrder
     tags?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    uploaderId?: SortOrder
     parentId?: SortOrderInput | SortOrder
-    projectId?: SortOrderInput | SortOrder
+    projectId?: SortOrder
     featureId?: SortOrderInput | SortOrder
     userStoryId?: SortOrderInput | SortOrder
     taskId?: SortOrderInput | SortOrder
@@ -49270,7 +50072,7 @@ export namespace Prisma {
     project?: ProjectOrderByWithRelationInput
     sprint?: SprintOrderByWithRelationInput
     task?: TaskOrderByWithRelationInput
-    uploader?: UserOrderByWithRelationInput
+    author?: UserOrderByRelationAggregateInput
     userStory?: UserStoryOrderByWithRelationInput
     items?: ItemOrderByRelationAggregateInput
   }
@@ -49281,26 +50083,23 @@ export namespace Prisma {
     OR?: FileWhereInput[]
     NOT?: FileWhereInput | FileWhereInput[]
     name?: StringFilter<"File"> | string
-    originalName?: StringNullableFilter<"File"> | string | null
+    order?: IntFilter<"File"> | number
     type?: EnumFileTypeFilter<"File"> | $Enums.FileType
     mimeType?: StringNullableFilter<"File"> | string | null
-    size?: IntNullableFilter<"File"> | number | null
-    url?: StringFilter<"File"> | string
     path?: StringNullableFilter<"File"> | string | null
     description?: StringNullableFilter<"File"> | string | null
-    import?: JsonNullableFilter<"File">
-    export?: JsonNullableFilter<"File">
+    import?: StringNullableFilter<"File"> | string | null
+    use?: StringNullableFilter<"File"> | string | null
+    export?: StringNullableFilter<"File"> | string | null
     script?: StringNullableFilter<"File"> | string | null
     version?: IntFilter<"File"> | number
-    isPublic?: BoolFilter<"File"> | boolean
     isFolder?: BoolFilter<"File"> | boolean
     metadata?: JsonNullableFilter<"File">
     tags?: StringNullableListFilter<"File">
     createdAt?: DateTimeFilter<"File"> | Date | string
     updatedAt?: DateTimeFilter<"File"> | Date | string
-    uploaderId?: StringFilter<"File"> | string
     parentId?: StringNullableFilter<"File"> | string | null
-    projectId?: StringNullableFilter<"File"> | string | null
+    projectId?: StringFilter<"File"> | string
     featureId?: StringNullableFilter<"File"> | string | null
     userStoryId?: StringNullableFilter<"File"> | string | null
     taskId?: StringNullableFilter<"File"> | string | null
@@ -49310,10 +50109,10 @@ export namespace Prisma {
     feature?: XOR<FeatureNullableScalarRelationFilter, FeatureWhereInput> | null
     parent?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
     children?: FileListRelationFilter
-    project?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     sprint?: XOR<SprintNullableScalarRelationFilter, SprintWhereInput> | null
     task?: XOR<TaskNullableScalarRelationFilter, TaskWhereInput> | null
-    uploader?: XOR<UserScalarRelationFilter, UserWhereInput>
+    author?: UserListRelationFilter
     userStory?: XOR<UserStoryNullableScalarRelationFilter, UserStoryWhereInput> | null
     items?: ItemListRelationFilter
   }, "id">
@@ -49321,26 +50120,23 @@ export namespace Prisma {
   export type FileOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
-    originalName?: SortOrderInput | SortOrder
+    order?: SortOrder
     type?: SortOrder
     mimeType?: SortOrderInput | SortOrder
-    size?: SortOrderInput | SortOrder
-    url?: SortOrder
     path?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     import?: SortOrderInput | SortOrder
+    use?: SortOrderInput | SortOrder
     export?: SortOrderInput | SortOrder
     script?: SortOrderInput | SortOrder
     version?: SortOrder
-    isPublic?: SortOrder
     isFolder?: SortOrder
     metadata?: SortOrderInput | SortOrder
     tags?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    uploaderId?: SortOrder
     parentId?: SortOrderInput | SortOrder
-    projectId?: SortOrderInput | SortOrder
+    projectId?: SortOrder
     featureId?: SortOrderInput | SortOrder
     userStoryId?: SortOrderInput | SortOrder
     taskId?: SortOrderInput | SortOrder
@@ -49358,26 +50154,23 @@ export namespace Prisma {
     NOT?: FileScalarWhereWithAggregatesInput | FileScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"File"> | string
     name?: StringWithAggregatesFilter<"File"> | string
-    originalName?: StringNullableWithAggregatesFilter<"File"> | string | null
+    order?: IntWithAggregatesFilter<"File"> | number
     type?: EnumFileTypeWithAggregatesFilter<"File"> | $Enums.FileType
     mimeType?: StringNullableWithAggregatesFilter<"File"> | string | null
-    size?: IntNullableWithAggregatesFilter<"File"> | number | null
-    url?: StringWithAggregatesFilter<"File"> | string
     path?: StringNullableWithAggregatesFilter<"File"> | string | null
     description?: StringNullableWithAggregatesFilter<"File"> | string | null
-    import?: JsonNullableWithAggregatesFilter<"File">
-    export?: JsonNullableWithAggregatesFilter<"File">
+    import?: StringNullableWithAggregatesFilter<"File"> | string | null
+    use?: StringNullableWithAggregatesFilter<"File"> | string | null
+    export?: StringNullableWithAggregatesFilter<"File"> | string | null
     script?: StringNullableWithAggregatesFilter<"File"> | string | null
     version?: IntWithAggregatesFilter<"File"> | number
-    isPublic?: BoolWithAggregatesFilter<"File"> | boolean
     isFolder?: BoolWithAggregatesFilter<"File"> | boolean
     metadata?: JsonNullableWithAggregatesFilter<"File">
     tags?: StringNullableListFilter<"File">
     createdAt?: DateTimeWithAggregatesFilter<"File"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"File"> | Date | string
-    uploaderId?: StringWithAggregatesFilter<"File"> | string
     parentId?: StringNullableWithAggregatesFilter<"File"> | string | null
-    projectId?: StringNullableWithAggregatesFilter<"File"> | string | null
+    projectId?: StringWithAggregatesFilter<"File"> | string
     featureId?: StringNullableWithAggregatesFilter<"File"> | string | null
     userStoryId?: StringNullableWithAggregatesFilter<"File"> | string | null
     taskId?: StringNullableWithAggregatesFilter<"File"> | string | null
@@ -49470,6 +50263,8 @@ export namespace Prisma {
     OR?: CommentWhereInput[]
     NOT?: CommentWhereInput | CommentWhereInput[]
     id?: StringFilter<"Comment"> | string
+    title?: StringFilter<"Comment"> | string
+    order?: IntFilter<"Comment"> | number
     content?: StringFilter<"Comment"> | string
     mentions?: StringNullableListFilter<"Comment">
     createdAt?: DateTimeFilter<"Comment"> | Date | string
@@ -49486,12 +50281,10 @@ export namespace Prisma {
     isPinned?: BoolFilter<"Comment"> | boolean
     isResolved?: BoolFilter<"Comment"> | boolean
     metadata?: JsonNullableFilter<"Comment">
-    order?: IntFilter<"Comment"> | number
     publishedAt?: DateTimeNullableFilter<"Comment"> | Date | string | null
     readingTime?: IntNullableFilter<"Comment"> | number | null
     slug?: StringNullableFilter<"Comment"> | string | null
     status?: StringFilter<"Comment"> | string
-    title?: StringNullableFilter<"Comment"> | string | null
     visibility?: EnumVisibilityFilter<"Comment"> | $Enums.Visibility
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
     file?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
@@ -49506,6 +50299,8 @@ export namespace Prisma {
 
   export type CommentOrderByWithRelationInput = {
     id?: SortOrder
+    title?: SortOrder
+    order?: SortOrder
     content?: SortOrder
     mentions?: SortOrder
     createdAt?: SortOrder
@@ -49522,12 +50317,10 @@ export namespace Prisma {
     isPinned?: SortOrder
     isResolved?: SortOrder
     metadata?: SortOrderInput | SortOrder
-    order?: SortOrder
     publishedAt?: SortOrderInput | SortOrder
     readingTime?: SortOrderInput | SortOrder
     slug?: SortOrderInput | SortOrder
     status?: SortOrder
-    title?: SortOrderInput | SortOrder
     visibility?: SortOrder
     author?: UserOrderByWithRelationInput
     file?: FileOrderByWithRelationInput
@@ -49546,6 +50339,8 @@ export namespace Prisma {
     AND?: CommentWhereInput | CommentWhereInput[]
     OR?: CommentWhereInput[]
     NOT?: CommentWhereInput | CommentWhereInput[]
+    title?: StringFilter<"Comment"> | string
+    order?: IntFilter<"Comment"> | number
     content?: StringFilter<"Comment"> | string
     mentions?: StringNullableListFilter<"Comment">
     createdAt?: DateTimeFilter<"Comment"> | Date | string
@@ -49562,11 +50357,9 @@ export namespace Prisma {
     isPinned?: BoolFilter<"Comment"> | boolean
     isResolved?: BoolFilter<"Comment"> | boolean
     metadata?: JsonNullableFilter<"Comment">
-    order?: IntFilter<"Comment"> | number
     publishedAt?: DateTimeNullableFilter<"Comment"> | Date | string | null
     readingTime?: IntNullableFilter<"Comment"> | number | null
     status?: StringFilter<"Comment"> | string
-    title?: StringNullableFilter<"Comment"> | string | null
     visibility?: EnumVisibilityFilter<"Comment"> | $Enums.Visibility
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
     file?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
@@ -49581,6 +50374,8 @@ export namespace Prisma {
 
   export type CommentOrderByWithAggregationInput = {
     id?: SortOrder
+    title?: SortOrder
+    order?: SortOrder
     content?: SortOrder
     mentions?: SortOrder
     createdAt?: SortOrder
@@ -49597,12 +50392,10 @@ export namespace Prisma {
     isPinned?: SortOrder
     isResolved?: SortOrder
     metadata?: SortOrderInput | SortOrder
-    order?: SortOrder
     publishedAt?: SortOrderInput | SortOrder
     readingTime?: SortOrderInput | SortOrder
     slug?: SortOrderInput | SortOrder
     status?: SortOrder
-    title?: SortOrderInput | SortOrder
     visibility?: SortOrder
     _count?: CommentCountOrderByAggregateInput
     _avg?: CommentAvgOrderByAggregateInput
@@ -49616,6 +50409,8 @@ export namespace Prisma {
     OR?: CommentScalarWhereWithAggregatesInput[]
     NOT?: CommentScalarWhereWithAggregatesInput | CommentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Comment"> | string
+    title?: StringWithAggregatesFilter<"Comment"> | string
+    order?: IntWithAggregatesFilter<"Comment"> | number
     content?: StringWithAggregatesFilter<"Comment"> | string
     mentions?: StringNullableListFilter<"Comment">
     createdAt?: DateTimeWithAggregatesFilter<"Comment"> | Date | string
@@ -49632,12 +50427,10 @@ export namespace Prisma {
     isPinned?: BoolWithAggregatesFilter<"Comment"> | boolean
     isResolved?: BoolWithAggregatesFilter<"Comment"> | boolean
     metadata?: JsonNullableWithAggregatesFilter<"Comment">
-    order?: IntWithAggregatesFilter<"Comment"> | number
     publishedAt?: DateTimeNullableWithAggregatesFilter<"Comment"> | Date | string | null
     readingTime?: IntNullableWithAggregatesFilter<"Comment"> | number | null
     slug?: StringNullableWithAggregatesFilter<"Comment"> | string | null
     status?: StringWithAggregatesFilter<"Comment"> | string
-    title?: StringNullableWithAggregatesFilter<"Comment"> | string | null
     visibility?: EnumVisibilityWithAggregatesFilter<"Comment"> | $Enums.Visibility
   }
 
@@ -49647,6 +50440,7 @@ export namespace Prisma {
     NOT?: ChannelWhereInput | ChannelWhereInput[]
     id?: StringFilter<"Channel"> | string
     name?: StringFilter<"Channel"> | string
+    order?: IntFilter<"Channel"> | number
     description?: StringNullableFilter<"Channel"> | string | null
     type?: StringFilter<"Channel"> | string
     isPrivate?: BoolFilter<"Channel"> | boolean
@@ -49662,6 +50456,7 @@ export namespace Prisma {
   export type ChannelOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     type?: SortOrder
     isPrivate?: SortOrder
@@ -49680,6 +50475,7 @@ export namespace Prisma {
     OR?: ChannelWhereInput[]
     NOT?: ChannelWhereInput | ChannelWhereInput[]
     name?: StringFilter<"Channel"> | string
+    order?: IntFilter<"Channel"> | number
     description?: StringNullableFilter<"Channel"> | string | null
     type?: StringFilter<"Channel"> | string
     isPrivate?: BoolFilter<"Channel"> | boolean
@@ -49695,6 +50491,7 @@ export namespace Prisma {
   export type ChannelOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     type?: SortOrder
     isPrivate?: SortOrder
@@ -49703,8 +50500,10 @@ export namespace Prisma {
     updatedAt?: SortOrder
     projectId?: SortOrder
     _count?: ChannelCountOrderByAggregateInput
+    _avg?: ChannelAvgOrderByAggregateInput
     _max?: ChannelMaxOrderByAggregateInput
     _min?: ChannelMinOrderByAggregateInput
+    _sum?: ChannelSumOrderByAggregateInput
   }
 
   export type ChannelScalarWhereWithAggregatesInput = {
@@ -49713,6 +50512,7 @@ export namespace Prisma {
     NOT?: ChannelScalarWhereWithAggregatesInput | ChannelScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Channel"> | string
     name?: StringWithAggregatesFilter<"Channel"> | string
+    order?: IntWithAggregatesFilter<"Channel"> | number
     description?: StringNullableWithAggregatesFilter<"Channel"> | string | null
     type?: StringWithAggregatesFilter<"Channel"> | string
     isPrivate?: BoolWithAggregatesFilter<"Channel"> | boolean
@@ -49727,6 +50527,7 @@ export namespace Prisma {
     OR?: ChannelMemberWhereInput[]
     NOT?: ChannelMemberWhereInput | ChannelMemberWhereInput[]
     id?: StringFilter<"ChannelMember"> | string
+    order?: IntFilter<"ChannelMember"> | number
     role?: StringFilter<"ChannelMember"> | string
     joinedAt?: DateTimeFilter<"ChannelMember"> | Date | string
     channelId?: StringFilter<"ChannelMember"> | string
@@ -49737,6 +50538,7 @@ export namespace Prisma {
 
   export type ChannelMemberOrderByWithRelationInput = {
     id?: SortOrder
+    order?: SortOrder
     role?: SortOrder
     joinedAt?: SortOrder
     channelId?: SortOrder
@@ -49751,6 +50553,7 @@ export namespace Prisma {
     AND?: ChannelMemberWhereInput | ChannelMemberWhereInput[]
     OR?: ChannelMemberWhereInput[]
     NOT?: ChannelMemberWhereInput | ChannelMemberWhereInput[]
+    order?: IntFilter<"ChannelMember"> | number
     role?: StringFilter<"ChannelMember"> | string
     joinedAt?: DateTimeFilter<"ChannelMember"> | Date | string
     channelId?: StringFilter<"ChannelMember"> | string
@@ -49761,13 +50564,16 @@ export namespace Prisma {
 
   export type ChannelMemberOrderByWithAggregationInput = {
     id?: SortOrder
+    order?: SortOrder
     role?: SortOrder
     joinedAt?: SortOrder
     channelId?: SortOrder
     userId?: SortOrder
     _count?: ChannelMemberCountOrderByAggregateInput
+    _avg?: ChannelMemberAvgOrderByAggregateInput
     _max?: ChannelMemberMaxOrderByAggregateInput
     _min?: ChannelMemberMinOrderByAggregateInput
+    _sum?: ChannelMemberSumOrderByAggregateInput
   }
 
   export type ChannelMemberScalarWhereWithAggregatesInput = {
@@ -49775,6 +50581,7 @@ export namespace Prisma {
     OR?: ChannelMemberScalarWhereWithAggregatesInput[]
     NOT?: ChannelMemberScalarWhereWithAggregatesInput | ChannelMemberScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"ChannelMember"> | string
+    order?: IntWithAggregatesFilter<"ChannelMember"> | number
     role?: StringWithAggregatesFilter<"ChannelMember"> | string
     joinedAt?: DateTimeWithAggregatesFilter<"ChannelMember"> | Date | string
     channelId?: StringWithAggregatesFilter<"ChannelMember"> | string
@@ -49786,6 +50593,7 @@ export namespace Prisma {
     OR?: MessageWhereInput[]
     NOT?: MessageWhereInput | MessageWhereInput[]
     id?: StringFilter<"Message"> | string
+    order?: IntFilter<"Message"> | number
     content?: StringFilter<"Message"> | string
     type?: StringFilter<"Message"> | string
     metadata?: JsonNullableFilter<"Message">
@@ -49800,6 +50608,7 @@ export namespace Prisma {
 
   export type MessageOrderByWithRelationInput = {
     id?: SortOrder
+    order?: SortOrder
     content?: SortOrder
     type?: SortOrder
     metadata?: SortOrderInput | SortOrder
@@ -49817,6 +50626,7 @@ export namespace Prisma {
     AND?: MessageWhereInput | MessageWhereInput[]
     OR?: MessageWhereInput[]
     NOT?: MessageWhereInput | MessageWhereInput[]
+    order?: IntFilter<"Message"> | number
     content?: StringFilter<"Message"> | string
     type?: StringFilter<"Message"> | string
     metadata?: JsonNullableFilter<"Message">
@@ -49831,6 +50641,7 @@ export namespace Prisma {
 
   export type MessageOrderByWithAggregationInput = {
     id?: SortOrder
+    order?: SortOrder
     content?: SortOrder
     type?: SortOrder
     metadata?: SortOrderInput | SortOrder
@@ -49840,8 +50651,10 @@ export namespace Prisma {
     channelId?: SortOrder
     authorId?: SortOrder
     _count?: MessageCountOrderByAggregateInput
+    _avg?: MessageAvgOrderByAggregateInput
     _max?: MessageMaxOrderByAggregateInput
     _min?: MessageMinOrderByAggregateInput
+    _sum?: MessageSumOrderByAggregateInput
   }
 
   export type MessageScalarWhereWithAggregatesInput = {
@@ -49849,6 +50662,7 @@ export namespace Prisma {
     OR?: MessageScalarWhereWithAggregatesInput[]
     NOT?: MessageScalarWhereWithAggregatesInput | MessageScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Message"> | string
+    order?: IntWithAggregatesFilter<"Message"> | number
     content?: StringWithAggregatesFilter<"Message"> | string
     type?: StringWithAggregatesFilter<"Message"> | string
     metadata?: JsonNullableWithAggregatesFilter<"Message">
@@ -49865,6 +50679,7 @@ export namespace Prisma {
     NOT?: TemplateWhereInput | TemplateWhereInput[]
     id?: StringFilter<"Template"> | string
     name?: StringFilter<"Template"> | string
+    order?: IntFilter<"Template"> | number
     description?: StringNullableFilter<"Template"> | string | null
     type?: StringFilter<"Template"> | string
     category?: StringNullableFilter<"Template"> | string | null
@@ -49883,6 +50698,7 @@ export namespace Prisma {
   export type TemplateOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     type?: SortOrder
     category?: SortOrderInput | SortOrder
@@ -49904,6 +50720,7 @@ export namespace Prisma {
     OR?: TemplateWhereInput[]
     NOT?: TemplateWhereInput | TemplateWhereInput[]
     name?: StringFilter<"Template"> | string
+    order?: IntFilter<"Template"> | number
     description?: StringNullableFilter<"Template"> | string | null
     type?: StringFilter<"Template"> | string
     category?: StringNullableFilter<"Template"> | string | null
@@ -49922,6 +50739,7 @@ export namespace Prisma {
   export type TemplateOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     type?: SortOrder
     category?: SortOrderInput | SortOrder
@@ -49934,8 +50752,10 @@ export namespace Prisma {
     teamId?: SortOrder
     projectId?: SortOrderInput | SortOrder
     _count?: TemplateCountOrderByAggregateInput
+    _avg?: TemplateAvgOrderByAggregateInput
     _max?: TemplateMaxOrderByAggregateInput
     _min?: TemplateMinOrderByAggregateInput
+    _sum?: TemplateSumOrderByAggregateInput
   }
 
   export type TemplateScalarWhereWithAggregatesInput = {
@@ -49944,6 +50764,7 @@ export namespace Prisma {
     NOT?: TemplateScalarWhereWithAggregatesInput | TemplateScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Template"> | string
     name?: StringWithAggregatesFilter<"Template"> | string
+    order?: IntWithAggregatesFilter<"Template"> | number
     description?: StringNullableWithAggregatesFilter<"Template"> | string | null
     type?: StringWithAggregatesFilter<"Template"> | string
     category?: StringNullableWithAggregatesFilter<"Template"> | string | null
@@ -50449,24 +51270,24 @@ export namespace Prisma {
     OR?: GlossaryWhereInput[]
     NOT?: GlossaryWhereInput | GlossaryWhereInput[]
     id?: StringFilter<"Glossary"> | string
+    term?: StringFilter<"Glossary"> | string
+    order?: IntFilter<"Glossary"> | number
     description?: StringNullableFilter<"Glossary"> | string | null
     type?: StringFilter<"Glossary"> | string
     isActive?: BoolFilter<"Glossary"> | boolean
     createdAt?: DateTimeFilter<"Glossary"> | Date | string
     updatedAt?: DateTimeFilter<"Glossary"> | Date | string
-    order?: IntFilter<"Glossary"> | number
-    term?: StringFilter<"Glossary"> | string
   }
 
   export type GlossaryOrderByWithRelationInput = {
     id?: SortOrder
+    term?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     type?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    order?: SortOrder
-    term?: SortOrder
   }
 
   export type GlossaryWhereUniqueInput = Prisma.AtLeast<{
@@ -50474,24 +51295,24 @@ export namespace Prisma {
     AND?: GlossaryWhereInput | GlossaryWhereInput[]
     OR?: GlossaryWhereInput[]
     NOT?: GlossaryWhereInput | GlossaryWhereInput[]
+    term?: StringFilter<"Glossary"> | string
+    order?: IntFilter<"Glossary"> | number
     description?: StringNullableFilter<"Glossary"> | string | null
     type?: StringFilter<"Glossary"> | string
     isActive?: BoolFilter<"Glossary"> | boolean
     createdAt?: DateTimeFilter<"Glossary"> | Date | string
     updatedAt?: DateTimeFilter<"Glossary"> | Date | string
-    order?: IntFilter<"Glossary"> | number
-    term?: StringFilter<"Glossary"> | string
   }, "id">
 
   export type GlossaryOrderByWithAggregationInput = {
     id?: SortOrder
+    term?: SortOrder
+    order?: SortOrder
     description?: SortOrderInput | SortOrder
     type?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    order?: SortOrder
-    term?: SortOrder
     _count?: GlossaryCountOrderByAggregateInput
     _avg?: GlossaryAvgOrderByAggregateInput
     _max?: GlossaryMaxOrderByAggregateInput
@@ -50504,13 +51325,13 @@ export namespace Prisma {
     OR?: GlossaryScalarWhereWithAggregatesInput[]
     NOT?: GlossaryScalarWhereWithAggregatesInput | GlossaryScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Glossary"> | string
+    term?: StringWithAggregatesFilter<"Glossary"> | string
+    order?: IntWithAggregatesFilter<"Glossary"> | number
     description?: StringNullableWithAggregatesFilter<"Glossary"> | string | null
     type?: StringWithAggregatesFilter<"Glossary"> | string
     isActive?: BoolWithAggregatesFilter<"Glossary"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Glossary"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Glossary"> | Date | string
-    order?: IntWithAggregatesFilter<"Glossary"> | number
-    term?: StringWithAggregatesFilter<"Glossary"> | string
   }
 
   export type UserStoryAssigneesWhereInput = {
@@ -50563,6 +51384,7 @@ export namespace Prisma {
     NOT?: blog_tagsWhereInput | blog_tagsWhereInput[]
     id?: StringFilter<"blog_tags"> | string
     name?: StringFilter<"blog_tags"> | string
+    order?: IntFilter<"blog_tags"> | number
     color?: StringNullableFilter<"blog_tags"> | string | null
     isActive?: BoolFilter<"blog_tags"> | boolean
     createdAt?: DateTimeFilter<"blog_tags"> | Date | string
@@ -50575,6 +51397,7 @@ export namespace Prisma {
   export type blog_tagsOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     color?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
@@ -50590,6 +51413,7 @@ export namespace Prisma {
     OR?: blog_tagsWhereInput[]
     NOT?: blog_tagsWhereInput | blog_tagsWhereInput[]
     name?: StringFilter<"blog_tags"> | string
+    order?: IntFilter<"blog_tags"> | number
     color?: StringNullableFilter<"blog_tags"> | string | null
     isActive?: BoolFilter<"blog_tags"> | boolean
     createdAt?: DateTimeFilter<"blog_tags"> | Date | string
@@ -50602,14 +51426,17 @@ export namespace Prisma {
   export type blog_tagsOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     color?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     categoriesId?: SortOrderInput | SortOrder
     _count?: blog_tagsCountOrderByAggregateInput
+    _avg?: blog_tagsAvgOrderByAggregateInput
     _max?: blog_tagsMaxOrderByAggregateInput
     _min?: blog_tagsMinOrderByAggregateInput
+    _sum?: blog_tagsSumOrderByAggregateInput
   }
 
   export type blog_tagsScalarWhereWithAggregatesInput = {
@@ -50618,6 +51445,7 @@ export namespace Prisma {
     NOT?: blog_tagsScalarWhereWithAggregatesInput | blog_tagsScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"blog_tags"> | string
     name?: StringWithAggregatesFilter<"blog_tags"> | string
+    order?: IntWithAggregatesFilter<"blog_tags"> | number
     color?: StringNullableWithAggregatesFilter<"blog_tags"> | string | null
     isActive?: BoolWithAggregatesFilter<"blog_tags"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"blog_tags"> | Date | string
@@ -50631,6 +51459,7 @@ export namespace Prisma {
     NOT?: categoriesWhereInput | categoriesWhereInput[]
     id?: StringFilter<"categories"> | string
     name?: StringFilter<"categories"> | string
+    order?: IntFilter<"categories"> | number
     slug?: StringNullableFilter<"categories"> | string | null
     description?: StringNullableFilter<"categories"> | string | null
     color?: StringNullableFilter<"categories"> | string | null
@@ -50647,6 +51476,7 @@ export namespace Prisma {
   export type categoriesOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     slug?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     color?: SortOrderInput | SortOrder
@@ -50667,6 +51497,7 @@ export namespace Prisma {
     OR?: categoriesWhereInput[]
     NOT?: categoriesWhereInput | categoriesWhereInput[]
     name?: StringFilter<"categories"> | string
+    order?: IntFilter<"categories"> | number
     description?: StringNullableFilter<"categories"> | string | null
     color?: StringNullableFilter<"categories"> | string | null
     isActive?: BoolFilter<"categories"> | boolean
@@ -50682,6 +51513,7 @@ export namespace Prisma {
   export type categoriesOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     slug?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     color?: SortOrderInput | SortOrder
@@ -50690,8 +51522,10 @@ export namespace Prisma {
     updatedAt?: SortOrder
     parentId?: SortOrderInput | SortOrder
     _count?: categoriesCountOrderByAggregateInput
+    _avg?: categoriesAvgOrderByAggregateInput
     _max?: categoriesMaxOrderByAggregateInput
     _min?: categoriesMinOrderByAggregateInput
+    _sum?: categoriesSumOrderByAggregateInput
   }
 
   export type categoriesScalarWhereWithAggregatesInput = {
@@ -50700,6 +51534,7 @@ export namespace Prisma {
     NOT?: categoriesScalarWhereWithAggregatesInput | categoriesScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"categories"> | string
     name?: StringWithAggregatesFilter<"categories"> | string
+    order?: IntWithAggregatesFilter<"categories"> | number
     slug?: StringNullableWithAggregatesFilter<"categories"> | string | null
     description?: StringNullableWithAggregatesFilter<"categories"> | string | null
     color?: StringNullableWithAggregatesFilter<"categories"> | string | null
@@ -50943,7 +51778,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -50985,7 +51820,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -51027,7 +51862,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -51069,7 +51904,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -51396,6 +52231,7 @@ export namespace Prisma {
   export type TeamCreateInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -51412,6 +52248,7 @@ export namespace Prisma {
   export type TeamUncheckedCreateInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -51428,6 +52265,7 @@ export namespace Prisma {
   export type TeamUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51444,6 +52282,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51460,6 +52299,7 @@ export namespace Prisma {
   export type TeamCreateManyInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -51472,6 +52312,7 @@ export namespace Prisma {
   export type TeamUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51483,6 +52324,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51495,6 +52337,7 @@ export namespace Prisma {
   export type TeamMemberCreateInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     team: TeamCreateNestedOneWithoutMembersInput
@@ -51504,6 +52347,7 @@ export namespace Prisma {
   export type TeamMemberUncheckedCreateInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     teamId: string
@@ -51513,6 +52357,7 @@ export namespace Prisma {
   export type TeamMemberUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     team?: TeamUpdateOneRequiredWithoutMembersNestedInput
@@ -51522,6 +52367,7 @@ export namespace Prisma {
   export type TeamMemberUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     teamId?: StringFieldUpdateOperationsInput | string
@@ -51531,6 +52377,7 @@ export namespace Prisma {
   export type TeamMemberCreateManyInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     teamId: string
@@ -51540,6 +52387,7 @@ export namespace Prisma {
   export type TeamMemberUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
@@ -51547,6 +52395,7 @@ export namespace Prisma {
   export type TeamMemberUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     teamId?: StringFieldUpdateOperationsInput | string
@@ -51718,6 +52567,7 @@ export namespace Prisma {
   export type ProjectMemberCreateInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     project: ProjectCreateNestedOneWithoutMembersInput
@@ -51727,6 +52577,7 @@ export namespace Prisma {
   export type ProjectMemberUncheckedCreateInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     projectId: string
@@ -51736,6 +52587,7 @@ export namespace Prisma {
   export type ProjectMemberUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     project?: ProjectUpdateOneRequiredWithoutMembersNestedInput
@@ -51745,6 +52597,7 @@ export namespace Prisma {
   export type ProjectMemberUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     projectId?: StringFieldUpdateOperationsInput | string
@@ -51754,6 +52607,7 @@ export namespace Prisma {
   export type ProjectMemberCreateManyInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     projectId: string
@@ -51763,6 +52617,7 @@ export namespace Prisma {
   export type ProjectMemberUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
@@ -51770,6 +52625,7 @@ export namespace Prisma {
   export type ProjectMemberUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     projectId?: StringFieldUpdateOperationsInput | string
@@ -51779,6 +52635,7 @@ export namespace Prisma {
   export type InitiativeCreateInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     objective?: string | null
     priority?: $Enums.Priority
@@ -51798,6 +52655,7 @@ export namespace Prisma {
   export type InitiativeUncheckedCreateInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     objective?: string | null
     priority?: $Enums.Priority
@@ -51817,6 +52675,7 @@ export namespace Prisma {
   export type InitiativeUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     objective?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -51836,6 +52695,7 @@ export namespace Prisma {
   export type InitiativeUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     objective?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -51855,6 +52715,7 @@ export namespace Prisma {
   export type InitiativeCreateManyInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     objective?: string | null
     priority?: $Enums.Priority
@@ -51873,6 +52734,7 @@ export namespace Prisma {
   export type InitiativeUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     objective?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -51889,6 +52751,7 @@ export namespace Prisma {
   export type InitiativeUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     objective?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -51907,6 +52770,7 @@ export namespace Prisma {
   export type EpicCreateInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: string
@@ -51917,11 +52781,13 @@ export namespace Prisma {
     updatedAt?: Date | string
     initiative: InitiativeCreateNestedOneWithoutEpicsInput
     features?: FeatureCreateNestedManyWithoutEpicInput
+    userstories?: UserStoryCreateNestedManyWithoutEpicInput
   }
 
   export type EpicUncheckedCreateInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: string
@@ -51932,11 +52798,13 @@ export namespace Prisma {
     updatedAt?: Date | string
     initiativeId: string
     features?: FeatureUncheckedCreateNestedManyWithoutEpicInput
+    userstories?: UserStoryUncheckedCreateNestedManyWithoutEpicInput
   }
 
   export type EpicUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: StringFieldUpdateOperationsInput | string
@@ -51947,11 +52815,13 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     initiative?: InitiativeUpdateOneRequiredWithoutEpicsNestedInput
     features?: FeatureUpdateManyWithoutEpicNestedInput
+    userstories?: UserStoryUpdateManyWithoutEpicNestedInput
   }
 
   export type EpicUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: StringFieldUpdateOperationsInput | string
@@ -51962,11 +52832,13 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     initiativeId?: StringFieldUpdateOperationsInput | string
     features?: FeatureUncheckedUpdateManyWithoutEpicNestedInput
+    userstories?: UserStoryUncheckedUpdateManyWithoutEpicNestedInput
   }
 
   export type EpicCreateManyInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: string
@@ -51981,6 +52853,7 @@ export namespace Prisma {
   export type EpicUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: StringFieldUpdateOperationsInput | string
@@ -51994,6 +52867,7 @@ export namespace Prisma {
   export type EpicUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: StringFieldUpdateOperationsInput | string
@@ -52008,6 +52882,7 @@ export namespace Prisma {
   export type FeatureCreateInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -52036,6 +52911,7 @@ export namespace Prisma {
   export type FeatureUncheckedCreateInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -52064,6 +52940,7 @@ export namespace Prisma {
   export type FeatureUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -52092,6 +52969,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -52120,6 +52998,7 @@ export namespace Prisma {
   export type FeatureCreateManyInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -52143,6 +53022,7 @@ export namespace Prisma {
   export type FeatureUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -52162,6 +53042,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -52185,6 +53066,7 @@ export namespace Prisma {
   export type FeatureDependencyCreateInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentFeature: FeatureCreateNestedOneWithoutDependenciesInput
@@ -52194,6 +53076,7 @@ export namespace Prisma {
   export type FeatureDependencyUncheckedCreateInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentFeatureId: string
@@ -52203,6 +53086,7 @@ export namespace Prisma {
   export type FeatureDependencyUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentFeature?: FeatureUpdateOneRequiredWithoutDependenciesNestedInput
@@ -52212,6 +53096,7 @@ export namespace Prisma {
   export type FeatureDependencyUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentFeatureId?: StringFieldUpdateOperationsInput | string
@@ -52221,6 +53106,7 @@ export namespace Prisma {
   export type FeatureDependencyCreateManyInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentFeatureId: string
@@ -52230,6 +53116,7 @@ export namespace Prisma {
   export type FeatureDependencyUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -52237,6 +53124,7 @@ export namespace Prisma {
   export type FeatureDependencyUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentFeatureId?: StringFieldUpdateOperationsInput | string
@@ -52246,6 +53134,7 @@ export namespace Prisma {
   export type UserStoryCreateInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -52271,11 +53160,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryUncheckedCreateInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -52301,11 +53192,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -52331,11 +53224,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -52361,11 +53256,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryCreateManyInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -52388,6 +53285,7 @@ export namespace Prisma {
   export type UserStoryUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -52408,6 +53306,7 @@ export namespace Prisma {
   export type UserStoryUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -52430,6 +53329,7 @@ export namespace Prisma {
   export type UserStoryDependencyCreateInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentUserStory: UserStoryCreateNestedOneWithoutDependenciesInput
@@ -52439,6 +53339,7 @@ export namespace Prisma {
   export type UserStoryDependencyUncheckedCreateInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentUserStoryId: string
@@ -52448,6 +53349,7 @@ export namespace Prisma {
   export type UserStoryDependencyUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentUserStory?: UserStoryUpdateOneRequiredWithoutDependenciesNestedInput
@@ -52457,6 +53359,7 @@ export namespace Prisma {
   export type UserStoryDependencyUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentUserStoryId?: StringFieldUpdateOperationsInput | string
@@ -52466,6 +53369,7 @@ export namespace Prisma {
   export type UserStoryDependencyCreateManyInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentUserStoryId: string
@@ -52475,6 +53379,7 @@ export namespace Prisma {
   export type UserStoryDependencyUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -52482,6 +53387,7 @@ export namespace Prisma {
   export type UserStoryDependencyUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentUserStoryId?: StringFieldUpdateOperationsInput | string
@@ -52491,6 +53397,7 @@ export namespace Prisma {
   export type TaskCreateInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -52518,6 +53425,7 @@ export namespace Prisma {
   export type TaskUncheckedCreateInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -52545,6 +53453,7 @@ export namespace Prisma {
   export type TaskUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -52572,6 +53481,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -52599,6 +53509,7 @@ export namespace Prisma {
   export type TaskCreateManyInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -52620,6 +53531,7 @@ export namespace Prisma {
   export type TaskUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -52639,6 +53551,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -52660,6 +53573,7 @@ export namespace Prisma {
   export type TaskDependencyCreateInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentTask: TaskCreateNestedOneWithoutDependenciesInput
@@ -52669,6 +53583,7 @@ export namespace Prisma {
   export type TaskDependencyUncheckedCreateInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentTaskId: string
@@ -52678,6 +53593,7 @@ export namespace Prisma {
   export type TaskDependencyUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentTask?: TaskUpdateOneRequiredWithoutDependenciesNestedInput
@@ -52687,6 +53603,7 @@ export namespace Prisma {
   export type TaskDependencyUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentTaskId?: StringFieldUpdateOperationsInput | string
@@ -52696,6 +53613,7 @@ export namespace Prisma {
   export type TaskDependencyCreateManyInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentTaskId: string
@@ -52705,6 +53623,7 @@ export namespace Prisma {
   export type TaskDependencyUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -52712,6 +53631,7 @@ export namespace Prisma {
   export type TaskDependencyUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentTaskId?: StringFieldUpdateOperationsInput | string
@@ -52721,6 +53641,7 @@ export namespace Prisma {
   export type SprintCreateInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -52743,6 +53664,7 @@ export namespace Prisma {
   export type SprintUncheckedCreateInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -52765,6 +53687,7 @@ export namespace Prisma {
   export type SprintUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -52787,6 +53710,7 @@ export namespace Prisma {
   export type SprintUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -52809,6 +53733,7 @@ export namespace Prisma {
   export type SprintCreateManyInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -52826,6 +53751,7 @@ export namespace Prisma {
   export type SprintUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -52842,6 +53768,7 @@ export namespace Prisma {
   export type SprintUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -52859,18 +53786,16 @@ export namespace Prisma {
   export type FileCreateInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
@@ -52881,10 +53806,10 @@ export namespace Prisma {
     feature?: FeatureCreateNestedOneWithoutFilesInput
     parent?: FileCreateNestedOneWithoutChildrenInput
     children?: FileCreateNestedManyWithoutParentInput
-    project?: ProjectCreateNestedOneWithoutFilesInput
+    project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
     task?: TaskCreateNestedOneWithoutFilesInput
-    uploader: UserCreateNestedOneWithoutFileUploadsInput
+    author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
@@ -52892,26 +53817,23 @@ export namespace Prisma {
   export type FileUncheckedCreateInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     taskId?: string | null
@@ -52919,24 +53841,23 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
   export type FileUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -52947,10 +53868,10 @@ export namespace Prisma {
     feature?: FeatureUpdateOneWithoutFilesNestedInput
     parent?: FileUpdateOneWithoutChildrenNestedInput
     children?: FileUpdateManyWithoutParentNestedInput
-    project?: ProjectUpdateOneWithoutFilesNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
     task?: TaskUpdateOneWithoutFilesNestedInput
-    uploader?: UserUpdateOneRequiredWithoutFileUploadsNestedInput
+    author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
@@ -52958,26 +53879,23 @@ export namespace Prisma {
   export type FileUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -52985,32 +53903,30 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
   export type FileCreateManyInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     taskId?: string | null
@@ -53020,18 +53936,16 @@ export namespace Prisma {
   export type FileUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -53042,26 +53956,23 @@ export namespace Prisma {
   export type FileUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53152,6 +54063,8 @@ export namespace Prisma {
 
   export type CommentCreateInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -53162,12 +54075,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
     file?: FileCreateNestedOneWithoutCommentsInput
@@ -53182,6 +54093,8 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -53198,12 +54111,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
     blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
@@ -53212,6 +54123,8 @@ export namespace Prisma {
 
   export type CommentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53222,12 +54135,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
     file?: FileUpdateOneWithoutCommentsNestedInput
@@ -53242,6 +54153,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53258,12 +54171,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
     blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
@@ -53272,6 +54183,8 @@ export namespace Prisma {
 
   export type CommentCreateManyInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -53288,17 +54201,17 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
   }
 
   export type CommentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53309,17 +54222,17 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
   }
 
   export type CommentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53336,18 +54249,17 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
   }
 
   export type ChannelCreateInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type?: string
     isPrivate?: boolean
@@ -53362,6 +54274,7 @@ export namespace Prisma {
   export type ChannelUncheckedCreateInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type?: string
     isPrivate?: boolean
@@ -53376,6 +54289,7 @@ export namespace Prisma {
   export type ChannelUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
@@ -53390,6 +54304,7 @@ export namespace Prisma {
   export type ChannelUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
@@ -53404,6 +54319,7 @@ export namespace Prisma {
   export type ChannelCreateManyInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type?: string
     isPrivate?: boolean
@@ -53416,6 +54332,7 @@ export namespace Prisma {
   export type ChannelUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
@@ -53427,6 +54344,7 @@ export namespace Prisma {
   export type ChannelUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
@@ -53438,6 +54356,7 @@ export namespace Prisma {
 
   export type ChannelMemberCreateInput = {
     id?: string
+    order?: number
     role?: string
     joinedAt?: Date | string
     channel: ChannelCreateNestedOneWithoutMembersInput
@@ -53446,6 +54365,7 @@ export namespace Prisma {
 
   export type ChannelMemberUncheckedCreateInput = {
     id?: string
+    order?: number
     role?: string
     joinedAt?: Date | string
     channelId: string
@@ -53454,6 +54374,7 @@ export namespace Prisma {
 
   export type ChannelMemberUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     role?: StringFieldUpdateOperationsInput | string
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channel?: ChannelUpdateOneRequiredWithoutMembersNestedInput
@@ -53462,6 +54383,7 @@ export namespace Prisma {
 
   export type ChannelMemberUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     role?: StringFieldUpdateOperationsInput | string
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channelId?: StringFieldUpdateOperationsInput | string
@@ -53470,6 +54392,7 @@ export namespace Prisma {
 
   export type ChannelMemberCreateManyInput = {
     id?: string
+    order?: number
     role?: string
     joinedAt?: Date | string
     channelId: string
@@ -53478,12 +54401,14 @@ export namespace Prisma {
 
   export type ChannelMemberUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     role?: StringFieldUpdateOperationsInput | string
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ChannelMemberUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     role?: StringFieldUpdateOperationsInput | string
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channelId?: StringFieldUpdateOperationsInput | string
@@ -53492,6 +54417,7 @@ export namespace Prisma {
 
   export type MessageCreateInput = {
     id?: string
+    order?: number
     content: string
     type?: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -53504,6 +54430,7 @@ export namespace Prisma {
 
   export type MessageUncheckedCreateInput = {
     id?: string
+    order?: number
     content: string
     type?: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -53516,6 +54443,7 @@ export namespace Prisma {
 
   export type MessageUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -53528,6 +54456,7 @@ export namespace Prisma {
 
   export type MessageUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -53540,6 +54469,7 @@ export namespace Prisma {
 
   export type MessageCreateManyInput = {
     id?: string
+    order?: number
     content: string
     type?: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -53552,6 +54482,7 @@ export namespace Prisma {
 
   export type MessageUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -53562,6 +54493,7 @@ export namespace Prisma {
 
   export type MessageUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -53575,6 +54507,7 @@ export namespace Prisma {
   export type TemplateCreateInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type: string
     category?: string | null
@@ -53591,6 +54524,7 @@ export namespace Prisma {
   export type TemplateUncheckedCreateInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type: string
     category?: string | null
@@ -53607,6 +54541,7 @@ export namespace Prisma {
   export type TemplateUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53623,6 +54558,7 @@ export namespace Prisma {
   export type TemplateUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53639,6 +54575,7 @@ export namespace Prisma {
   export type TemplateCreateManyInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type: string
     category?: string | null
@@ -53655,6 +54592,7 @@ export namespace Prisma {
   export type TemplateUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53669,6 +54607,7 @@ export namespace Prisma {
   export type TemplateUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54240,79 +55179,79 @@ export namespace Prisma {
 
   export type GlossaryCreateInput = {
     id?: string
+    term: string
+    order?: number
     description?: string | null
     type?: string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    order?: number
-    term: string
   }
 
   export type GlossaryUncheckedCreateInput = {
     id?: string
+    term: string
+    order?: number
     description?: string | null
     type?: string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    order?: number
-    term: string
   }
 
   export type GlossaryUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    term?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    order?: IntFieldUpdateOperationsInput | number
-    term?: StringFieldUpdateOperationsInput | string
   }
 
   export type GlossaryUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    term?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    order?: IntFieldUpdateOperationsInput | number
-    term?: StringFieldUpdateOperationsInput | string
   }
 
   export type GlossaryCreateManyInput = {
     id?: string
+    term: string
+    order?: number
     description?: string | null
     type?: string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    order?: number
-    term: string
   }
 
   export type GlossaryUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    term?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    order?: IntFieldUpdateOperationsInput | number
-    term?: StringFieldUpdateOperationsInput | string
   }
 
   export type GlossaryUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    term?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    order?: IntFieldUpdateOperationsInput | number
-    term?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserStoryAssigneesCreateInput = {
@@ -54352,6 +55291,7 @@ export namespace Prisma {
   export type blog_tagsCreateInput = {
     id: string
     name: string
+    order?: number
     color?: string | null
     isActive?: boolean
     createdAt?: Date | string
@@ -54363,6 +55303,7 @@ export namespace Prisma {
   export type blog_tagsUncheckedCreateInput = {
     id: string
     name: string
+    order?: number
     color?: string | null
     isActive?: boolean
     createdAt?: Date | string
@@ -54374,6 +55315,7 @@ export namespace Prisma {
   export type blog_tagsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     color?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54385,6 +55327,7 @@ export namespace Prisma {
   export type blog_tagsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     color?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54396,6 +55339,7 @@ export namespace Prisma {
   export type blog_tagsCreateManyInput = {
     id: string
     name: string
+    order?: number
     color?: string | null
     isActive?: boolean
     createdAt?: Date | string
@@ -54406,6 +55350,7 @@ export namespace Prisma {
   export type blog_tagsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     color?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54415,6 +55360,7 @@ export namespace Prisma {
   export type blog_tagsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     color?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54425,6 +55371,7 @@ export namespace Prisma {
   export type categoriesCreateInput = {
     id: string
     name: string
+    order?: number
     slug?: string | null
     description?: string | null
     color?: string | null
@@ -54440,6 +55387,7 @@ export namespace Prisma {
   export type categoriesUncheckedCreateInput = {
     id: string
     name: string
+    order?: number
     slug?: string | null
     description?: string | null
     color?: string | null
@@ -54455,6 +55403,7 @@ export namespace Prisma {
   export type categoriesUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54470,6 +55419,7 @@ export namespace Prisma {
   export type categoriesUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54485,6 +55435,7 @@ export namespace Prisma {
   export type categoriesCreateManyInput = {
     id: string
     name: string
+    order?: number
     slug?: string | null
     description?: string | null
     color?: string | null
@@ -54497,6 +55448,7 @@ export namespace Prisma {
   export type categoriesUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54508,6 +55460,7 @@ export namespace Prisma {
   export type categoriesUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55340,6 +56293,17 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type TeamNullableScalarRelationFilter = {
     is?: TeamWhereInput | null
     isNot?: TeamWhereInput | null
@@ -55368,6 +56332,7 @@ export namespace Prisma {
   export type TeamCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     slug?: SortOrder
     logoUrl?: SortOrder
@@ -55377,9 +56342,14 @@ export namespace Prisma {
     parentTeamId?: SortOrder
   }
 
+  export type TeamAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type TeamMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     slug?: SortOrder
     logoUrl?: SortOrder
@@ -55392,6 +56362,7 @@ export namespace Prisma {
   export type TeamMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     slug?: SortOrder
     logoUrl?: SortOrder
@@ -55399,6 +56370,26 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     parentTeamId?: SortOrder
+  }
+
+  export type TeamSumOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type EnumUserRoleFilter<$PrismaModel = never> = {
@@ -55421,15 +56412,21 @@ export namespace Prisma {
   export type TeamMemberCountOrderByAggregateInput = {
     id?: SortOrder
     role?: SortOrder
+    order?: SortOrder
     joinedAt?: SortOrder
     isActive?: SortOrder
     teamId?: SortOrder
     userId?: SortOrder
   }
 
+  export type TeamMemberAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type TeamMemberMaxOrderByAggregateInput = {
     id?: SortOrder
     role?: SortOrder
+    order?: SortOrder
     joinedAt?: SortOrder
     isActive?: SortOrder
     teamId?: SortOrder
@@ -55439,10 +56436,15 @@ export namespace Prisma {
   export type TeamMemberMinOrderByAggregateInput = {
     id?: SortOrder
     role?: SortOrder
+    order?: SortOrder
     joinedAt?: SortOrder
     isActive?: SortOrder
     teamId?: SortOrder
     userId?: SortOrder
+  }
+
+  export type TeamMemberSumOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
@@ -55453,17 +56455,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumUserRoleFilter<$PrismaModel>
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
-  }
-
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type ChannelListRelationFilter = {
@@ -55544,22 +56535,6 @@ export namespace Prisma {
     order?: SortOrder
   }
 
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
   export type ProjectScalarRelationFilter = {
     is?: ProjectWhereInput
     isNot?: ProjectWhereInput
@@ -55573,15 +56548,21 @@ export namespace Prisma {
   export type ProjectMemberCountOrderByAggregateInput = {
     id?: SortOrder
     role?: SortOrder
+    order?: SortOrder
     joinedAt?: SortOrder
     isActive?: SortOrder
     projectId?: SortOrder
     userId?: SortOrder
   }
 
+  export type ProjectMemberAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type ProjectMemberMaxOrderByAggregateInput = {
     id?: SortOrder
     role?: SortOrder
+    order?: SortOrder
     joinedAt?: SortOrder
     isActive?: SortOrder
     projectId?: SortOrder
@@ -55591,10 +56572,15 @@ export namespace Prisma {
   export type ProjectMemberMinOrderByAggregateInput = {
     id?: SortOrder
     role?: SortOrder
+    order?: SortOrder
     joinedAt?: SortOrder
     isActive?: SortOrder
     projectId?: SortOrder
     userId?: SortOrder
+  }
+
+  export type ProjectMemberSumOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type EnumPriorityFilter<$PrismaModel = never> = {
@@ -55644,6 +56630,7 @@ export namespace Prisma {
   export type InitiativeCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     objective?: SortOrder
     priority?: SortOrder
@@ -55660,6 +56647,7 @@ export namespace Prisma {
   }
 
   export type InitiativeAvgOrderByAggregateInput = {
+    order?: SortOrder
     progress?: SortOrder
     budget?: SortOrder
     roi?: SortOrder
@@ -55668,6 +56656,7 @@ export namespace Prisma {
   export type InitiativeMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     objective?: SortOrder
     priority?: SortOrder
@@ -55686,6 +56675,7 @@ export namespace Prisma {
   export type InitiativeMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     objective?: SortOrder
     priority?: SortOrder
@@ -55702,6 +56692,7 @@ export namespace Prisma {
   }
 
   export type InitiativeSumOrderByAggregateInput = {
+    order?: SortOrder
     progress?: SortOrder
     budget?: SortOrder
     roi?: SortOrder
@@ -55757,6 +56748,7 @@ export namespace Prisma {
   export type EpicCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -55769,12 +56761,14 @@ export namespace Prisma {
   }
 
   export type EpicAvgOrderByAggregateInput = {
+    order?: SortOrder
     progress?: SortOrder
   }
 
   export type EpicMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -55789,6 +56783,7 @@ export namespace Prisma {
   export type EpicMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -55801,6 +56796,7 @@ export namespace Prisma {
   }
 
   export type EpicSumOrderByAggregateInput = {
+    order?: SortOrder
     progress?: SortOrder
   }
 
@@ -55843,6 +56839,7 @@ export namespace Prisma {
   export type FeatureCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     acceptanceCriteria?: SortOrder
     priority?: SortOrder
@@ -55864,6 +56861,7 @@ export namespace Prisma {
   }
 
   export type FeatureAvgOrderByAggregateInput = {
+    order?: SortOrder
     storyPoints?: SortOrder
     businessValue?: SortOrder
     technicalRisk?: SortOrder
@@ -55875,6 +56873,7 @@ export namespace Prisma {
   export type FeatureMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     acceptanceCriteria?: SortOrder
     priority?: SortOrder
@@ -55898,6 +56897,7 @@ export namespace Prisma {
   export type FeatureMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     acceptanceCriteria?: SortOrder
     priority?: SortOrder
@@ -55919,6 +56919,7 @@ export namespace Prisma {
   }
 
   export type FeatureSumOrderByAggregateInput = {
+    order?: SortOrder
     storyPoints?: SortOrder
     businessValue?: SortOrder
     technicalRisk?: SortOrder
@@ -55956,15 +56957,21 @@ export namespace Prisma {
   export type FeatureDependencyCountOrderByAggregateInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
     dependentFeatureId?: SortOrder
     dependsOnFeatureId?: SortOrder
   }
 
+  export type FeatureDependencyAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type FeatureDependencyMaxOrderByAggregateInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
     dependentFeatureId?: SortOrder
@@ -55974,10 +56981,15 @@ export namespace Prisma {
   export type FeatureDependencyMinOrderByAggregateInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
     dependentFeatureId?: SortOrder
     dependsOnFeatureId?: SortOrder
+  }
+
+  export type FeatureDependencySumOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type EnumTaskStatusFilter<$PrismaModel = never> = {
@@ -56008,6 +57020,7 @@ export namespace Prisma {
   export type UserStoryCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     acceptanceCriteria?: SortOrder
     priority?: SortOrder
@@ -56028,6 +57041,7 @@ export namespace Prisma {
   }
 
   export type UserStoryAvgOrderByAggregateInput = {
+    order?: SortOrder
     storyPoints?: SortOrder
     businessValue?: SortOrder
     technicalRisk?: SortOrder
@@ -56040,6 +57054,7 @@ export namespace Prisma {
   export type UserStoryMaxOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     acceptanceCriteria?: SortOrder
     priority?: SortOrder
@@ -56060,6 +57075,7 @@ export namespace Prisma {
   export type UserStoryMinOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     acceptanceCriteria?: SortOrder
     priority?: SortOrder
@@ -56078,6 +57094,7 @@ export namespace Prisma {
   }
 
   export type UserStorySumOrderByAggregateInput = {
+    order?: SortOrder
     storyPoints?: SortOrder
     businessValue?: SortOrder
     technicalRisk?: SortOrder
@@ -56110,15 +57127,21 @@ export namespace Prisma {
   export type UserStoryDependencyCountOrderByAggregateInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
     dependentUserStoryId?: SortOrder
     dependsOnUserStoryId?: SortOrder
   }
 
+  export type UserStoryDependencyAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type UserStoryDependencyMaxOrderByAggregateInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
     dependentUserStoryId?: SortOrder
@@ -56128,10 +57151,15 @@ export namespace Prisma {
   export type UserStoryDependencyMinOrderByAggregateInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
     dependentUserStoryId?: SortOrder
     dependsOnUserStoryId?: SortOrder
+  }
+
+  export type UserStoryDependencySumOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type TaskDependencyListRelationFilter = {
@@ -56147,6 +57175,7 @@ export namespace Prisma {
   export type TaskCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -56166,6 +57195,7 @@ export namespace Prisma {
   }
 
   export type TaskAvgOrderByAggregateInput = {
+    order?: SortOrder
     position?: SortOrder
     estimatedHours?: SortOrder
     actualHours?: SortOrder
@@ -56174,6 +57204,7 @@ export namespace Prisma {
   export type TaskMaxOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -56193,6 +57224,7 @@ export namespace Prisma {
   export type TaskMinOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     priority?: SortOrder
     status?: SortOrder
@@ -56210,6 +57242,7 @@ export namespace Prisma {
   }
 
   export type TaskSumOrderByAggregateInput = {
+    order?: SortOrder
     position?: SortOrder
     estimatedHours?: SortOrder
     actualHours?: SortOrder
@@ -56228,15 +57261,21 @@ export namespace Prisma {
   export type TaskDependencyCountOrderByAggregateInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
     dependentTaskId?: SortOrder
     dependsOnTaskId?: SortOrder
   }
 
+  export type TaskDependencyAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type TaskDependencyMaxOrderByAggregateInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
     dependentTaskId?: SortOrder
@@ -56246,10 +57285,15 @@ export namespace Prisma {
   export type TaskDependencyMinOrderByAggregateInput = {
     id?: SortOrder
     type?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
     dependentTaskId?: SortOrder
     dependsOnTaskId?: SortOrder
+  }
+
+  export type TaskDependencySumOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type EnumSprintStatusFilter<$PrismaModel = never> = {
@@ -56262,6 +57306,7 @@ export namespace Prisma {
   export type SprintCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     goal?: SortOrder
     description?: SortOrder
     startDate?: SortOrder
@@ -56277,6 +57322,7 @@ export namespace Prisma {
   }
 
   export type SprintAvgOrderByAggregateInput = {
+    order?: SortOrder
     capacity?: SortOrder
     velocity?: SortOrder
   }
@@ -56284,6 +57330,7 @@ export namespace Prisma {
   export type SprintMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     goal?: SortOrder
     description?: SortOrder
     startDate?: SortOrder
@@ -56299,6 +57346,7 @@ export namespace Prisma {
   export type SprintMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     goal?: SortOrder
     description?: SortOrder
     startDate?: SortOrder
@@ -56312,6 +57360,7 @@ export namespace Prisma {
   }
 
   export type SprintSumOrderByAggregateInput = {
+    order?: SortOrder
     capacity?: SortOrder
     velocity?: SortOrder
   }
@@ -56356,24 +57405,21 @@ export namespace Prisma {
   export type FileCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    originalName?: SortOrder
+    order?: SortOrder
     type?: SortOrder
     mimeType?: SortOrder
-    size?: SortOrder
-    url?: SortOrder
     path?: SortOrder
     description?: SortOrder
     import?: SortOrder
+    use?: SortOrder
     export?: SortOrder
     script?: SortOrder
     version?: SortOrder
-    isPublic?: SortOrder
     isFolder?: SortOrder
     metadata?: SortOrder
     tags?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    uploaderId?: SortOrder
     parentId?: SortOrder
     projectId?: SortOrder
     featureId?: SortOrder
@@ -56383,27 +57429,26 @@ export namespace Prisma {
   }
 
   export type FileAvgOrderByAggregateInput = {
-    size?: SortOrder
+    order?: SortOrder
     version?: SortOrder
   }
 
   export type FileMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    originalName?: SortOrder
+    order?: SortOrder
     type?: SortOrder
     mimeType?: SortOrder
-    size?: SortOrder
-    url?: SortOrder
     path?: SortOrder
     description?: SortOrder
+    import?: SortOrder
+    use?: SortOrder
+    export?: SortOrder
     script?: SortOrder
     version?: SortOrder
-    isPublic?: SortOrder
     isFolder?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    uploaderId?: SortOrder
     parentId?: SortOrder
     projectId?: SortOrder
     featureId?: SortOrder
@@ -56415,20 +57460,19 @@ export namespace Prisma {
   export type FileMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    originalName?: SortOrder
+    order?: SortOrder
     type?: SortOrder
     mimeType?: SortOrder
-    size?: SortOrder
-    url?: SortOrder
     path?: SortOrder
     description?: SortOrder
+    import?: SortOrder
+    use?: SortOrder
+    export?: SortOrder
     script?: SortOrder
     version?: SortOrder
-    isPublic?: SortOrder
     isFolder?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    uploaderId?: SortOrder
     parentId?: SortOrder
     projectId?: SortOrder
     featureId?: SortOrder
@@ -56438,7 +57482,7 @@ export namespace Prisma {
   }
 
   export type FileSumOrderByAggregateInput = {
-    size?: SortOrder
+    order?: SortOrder
     version?: SortOrder
   }
 
@@ -56547,6 +57591,8 @@ export namespace Prisma {
 
   export type CommentCountOrderByAggregateInput = {
     id?: SortOrder
+    title?: SortOrder
+    order?: SortOrder
     content?: SortOrder
     mentions?: SortOrder
     createdAt?: SortOrder
@@ -56563,12 +57609,10 @@ export namespace Prisma {
     isPinned?: SortOrder
     isResolved?: SortOrder
     metadata?: SortOrder
-    order?: SortOrder
     publishedAt?: SortOrder
     readingTime?: SortOrder
     slug?: SortOrder
     status?: SortOrder
-    title?: SortOrder
     visibility?: SortOrder
   }
 
@@ -56579,6 +57623,8 @@ export namespace Prisma {
 
   export type CommentMaxOrderByAggregateInput = {
     id?: SortOrder
+    title?: SortOrder
+    order?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -56593,17 +57639,17 @@ export namespace Prisma {
     isActive?: SortOrder
     isPinned?: SortOrder
     isResolved?: SortOrder
-    order?: SortOrder
     publishedAt?: SortOrder
     readingTime?: SortOrder
     slug?: SortOrder
     status?: SortOrder
-    title?: SortOrder
     visibility?: SortOrder
   }
 
   export type CommentMinOrderByAggregateInput = {
     id?: SortOrder
+    title?: SortOrder
+    order?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -56618,12 +57664,10 @@ export namespace Prisma {
     isActive?: SortOrder
     isPinned?: SortOrder
     isResolved?: SortOrder
-    order?: SortOrder
     publishedAt?: SortOrder
     readingTime?: SortOrder
     slug?: SortOrder
     status?: SortOrder
-    title?: SortOrder
     visibility?: SortOrder
   }
 
@@ -56645,6 +57689,7 @@ export namespace Prisma {
   export type ChannelCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     type?: SortOrder
     isPrivate?: SortOrder
@@ -56654,9 +57699,14 @@ export namespace Prisma {
     projectId?: SortOrder
   }
 
+  export type ChannelAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type ChannelMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     type?: SortOrder
     isPrivate?: SortOrder
@@ -56669,6 +57719,7 @@ export namespace Prisma {
   export type ChannelMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     type?: SortOrder
     isPrivate?: SortOrder
@@ -56676,6 +57727,10 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
+  }
+
+  export type ChannelSumOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type ChannelScalarRelationFilter = {
@@ -56690,14 +57745,20 @@ export namespace Prisma {
 
   export type ChannelMemberCountOrderByAggregateInput = {
     id?: SortOrder
+    order?: SortOrder
     role?: SortOrder
     joinedAt?: SortOrder
     channelId?: SortOrder
     userId?: SortOrder
   }
 
+  export type ChannelMemberAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type ChannelMemberMaxOrderByAggregateInput = {
     id?: SortOrder
+    order?: SortOrder
     role?: SortOrder
     joinedAt?: SortOrder
     channelId?: SortOrder
@@ -56706,14 +57767,20 @@ export namespace Prisma {
 
   export type ChannelMemberMinOrderByAggregateInput = {
     id?: SortOrder
+    order?: SortOrder
     role?: SortOrder
     joinedAt?: SortOrder
     channelId?: SortOrder
     userId?: SortOrder
   }
 
+  export type ChannelMemberSumOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type MessageCountOrderByAggregateInput = {
     id?: SortOrder
+    order?: SortOrder
     content?: SortOrder
     type?: SortOrder
     metadata?: SortOrder
@@ -56724,8 +57791,13 @@ export namespace Prisma {
     authorId?: SortOrder
   }
 
+  export type MessageAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type MessageMaxOrderByAggregateInput = {
     id?: SortOrder
+    order?: SortOrder
     content?: SortOrder
     type?: SortOrder
     createdAt?: SortOrder
@@ -56736,12 +57808,17 @@ export namespace Prisma {
 
   export type MessageMinOrderByAggregateInput = {
     id?: SortOrder
+    order?: SortOrder
     content?: SortOrder
     type?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     channelId?: SortOrder
     authorId?: SortOrder
+  }
+
+  export type MessageSumOrderByAggregateInput = {
+    order?: SortOrder
   }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -56770,6 +57847,7 @@ export namespace Prisma {
   export type TemplateCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     type?: SortOrder
     category?: SortOrder
@@ -56783,9 +57861,14 @@ export namespace Prisma {
     projectId?: SortOrder
   }
 
+  export type TemplateAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type TemplateMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     type?: SortOrder
     category?: SortOrder
@@ -56801,6 +57884,7 @@ export namespace Prisma {
   export type TemplateMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     type?: SortOrder
     category?: SortOrder
@@ -56811,6 +57895,10 @@ export namespace Prisma {
     updatedAt?: SortOrder
     teamId?: SortOrder
     projectId?: SortOrder
+  }
+
+  export type TemplateSumOrderByAggregateInput = {
+    order?: SortOrder
   }
   export type JsonWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -57142,13 +58230,13 @@ export namespace Prisma {
 
   export type GlossaryCountOrderByAggregateInput = {
     id?: SortOrder
+    term?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     type?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    order?: SortOrder
-    term?: SortOrder
   }
 
   export type GlossaryAvgOrderByAggregateInput = {
@@ -57157,24 +58245,24 @@ export namespace Prisma {
 
   export type GlossaryMaxOrderByAggregateInput = {
     id?: SortOrder
+    term?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     type?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    order?: SortOrder
-    term?: SortOrder
   }
 
   export type GlossaryMinOrderByAggregateInput = {
     id?: SortOrder
+    term?: SortOrder
+    order?: SortOrder
     description?: SortOrder
     type?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    order?: SortOrder
-    term?: SortOrder
   }
 
   export type GlossarySumOrderByAggregateInput = {
@@ -57209,6 +58297,7 @@ export namespace Prisma {
   export type blog_tagsCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     color?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
@@ -57216,9 +58305,14 @@ export namespace Prisma {
     categoriesId?: SortOrder
   }
 
+  export type blog_tagsAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type blog_tagsMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     color?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
@@ -57229,6 +58323,7 @@ export namespace Prisma {
   export type blog_tagsMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     color?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
@@ -57236,9 +58331,14 @@ export namespace Prisma {
     categoriesId?: SortOrder
   }
 
+  export type blog_tagsSumOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type categoriesCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     slug?: SortOrder
     description?: SortOrder
     color?: SortOrder
@@ -57248,9 +58348,14 @@ export namespace Prisma {
     parentId?: SortOrder
   }
 
+  export type categoriesAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
   export type categoriesMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     slug?: SortOrder
     description?: SortOrder
     color?: SortOrder
@@ -57263,6 +58368,7 @@ export namespace Prisma {
   export type categoriesMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     slug?: SortOrder
     description?: SortOrder
     color?: SortOrder
@@ -57270,6 +58376,10 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     parentId?: SortOrder
+  }
+
+  export type categoriesSumOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type FieldsNullableScalarRelationFilter = {
@@ -57453,10 +58563,9 @@ export namespace Prisma {
     connect?: FileVersionWhereUniqueInput | FileVersionWhereUniqueInput[]
   }
 
-  export type FileCreateNestedManyWithoutUploaderInput = {
-    create?: XOR<FileCreateWithoutUploaderInput, FileUncheckedCreateWithoutUploaderInput> | FileCreateWithoutUploaderInput[] | FileUncheckedCreateWithoutUploaderInput[]
-    connectOrCreate?: FileCreateOrConnectWithoutUploaderInput | FileCreateOrConnectWithoutUploaderInput[]
-    createMany?: FileCreateManyUploaderInputEnvelope
+  export type FileCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<FileCreateWithoutAuthorInput, FileUncheckedCreateWithoutAuthorInput> | FileCreateWithoutAuthorInput[] | FileUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutAuthorInput | FileCreateOrConnectWithoutAuthorInput[]
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
@@ -57610,10 +58719,9 @@ export namespace Prisma {
     connect?: FileVersionWhereUniqueInput | FileVersionWhereUniqueInput[]
   }
 
-  export type FileUncheckedCreateNestedManyWithoutUploaderInput = {
-    create?: XOR<FileCreateWithoutUploaderInput, FileUncheckedCreateWithoutUploaderInput> | FileCreateWithoutUploaderInput[] | FileUncheckedCreateWithoutUploaderInput[]
-    connectOrCreate?: FileCreateOrConnectWithoutUploaderInput | FileCreateOrConnectWithoutUploaderInput[]
-    createMany?: FileCreateManyUploaderInputEnvelope
+  export type FileUncheckedCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<FileCreateWithoutAuthorInput, FileUncheckedCreateWithoutAuthorInput> | FileCreateWithoutAuthorInput[] | FileUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutAuthorInput | FileCreateOrConnectWithoutAuthorInput[]
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
@@ -57843,17 +58951,16 @@ export namespace Prisma {
     deleteMany?: FileVersionScalarWhereInput | FileVersionScalarWhereInput[]
   }
 
-  export type FileUpdateManyWithoutUploaderNestedInput = {
-    create?: XOR<FileCreateWithoutUploaderInput, FileUncheckedCreateWithoutUploaderInput> | FileCreateWithoutUploaderInput[] | FileUncheckedCreateWithoutUploaderInput[]
-    connectOrCreate?: FileCreateOrConnectWithoutUploaderInput | FileCreateOrConnectWithoutUploaderInput[]
-    upsert?: FileUpsertWithWhereUniqueWithoutUploaderInput | FileUpsertWithWhereUniqueWithoutUploaderInput[]
-    createMany?: FileCreateManyUploaderInputEnvelope
+  export type FileUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<FileCreateWithoutAuthorInput, FileUncheckedCreateWithoutAuthorInput> | FileCreateWithoutAuthorInput[] | FileUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutAuthorInput | FileCreateOrConnectWithoutAuthorInput[]
+    upsert?: FileUpsertWithWhereUniqueWithoutAuthorInput | FileUpsertWithWhereUniqueWithoutAuthorInput[]
     set?: FileWhereUniqueInput | FileWhereUniqueInput[]
     disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
     delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
-    update?: FileUpdateWithWhereUniqueWithoutUploaderInput | FileUpdateWithWhereUniqueWithoutUploaderInput[]
-    updateMany?: FileUpdateManyWithWhereWithoutUploaderInput | FileUpdateManyWithWhereWithoutUploaderInput[]
+    update?: FileUpdateWithWhereUniqueWithoutAuthorInput | FileUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: FileUpdateManyWithWhereWithoutAuthorInput | FileUpdateManyWithWhereWithoutAuthorInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
   }
 
@@ -58161,17 +59268,16 @@ export namespace Prisma {
     deleteMany?: FileVersionScalarWhereInput | FileVersionScalarWhereInput[]
   }
 
-  export type FileUncheckedUpdateManyWithoutUploaderNestedInput = {
-    create?: XOR<FileCreateWithoutUploaderInput, FileUncheckedCreateWithoutUploaderInput> | FileCreateWithoutUploaderInput[] | FileUncheckedCreateWithoutUploaderInput[]
-    connectOrCreate?: FileCreateOrConnectWithoutUploaderInput | FileCreateOrConnectWithoutUploaderInput[]
-    upsert?: FileUpsertWithWhereUniqueWithoutUploaderInput | FileUpsertWithWhereUniqueWithoutUploaderInput[]
-    createMany?: FileCreateManyUploaderInputEnvelope
+  export type FileUncheckedUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<FileCreateWithoutAuthorInput, FileUncheckedCreateWithoutAuthorInput> | FileCreateWithoutAuthorInput[] | FileUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutAuthorInput | FileCreateOrConnectWithoutAuthorInput[]
+    upsert?: FileUpsertWithWhereUniqueWithoutAuthorInput | FileUpsertWithWhereUniqueWithoutAuthorInput[]
     set?: FileWhereUniqueInput | FileWhereUniqueInput[]
     disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
     delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
-    update?: FileUpdateWithWhereUniqueWithoutUploaderInput | FileUpdateWithWhereUniqueWithoutUploaderInput[]
-    updateMany?: FileUpdateManyWithWhereWithoutUploaderInput | FileUpdateManyWithWhereWithoutUploaderInput[]
+    update?: FileUpdateWithWhereUniqueWithoutAuthorInput | FileUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: FileUpdateManyWithWhereWithoutAuthorInput | FileUpdateManyWithWhereWithoutAuthorInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
   }
 
@@ -58457,6 +59563,14 @@ export namespace Prisma {
     connect?: TemplateWhereUniqueInput | TemplateWhereUniqueInput[]
   }
 
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type fieldsUpdateManyWithoutTeamsNestedInput = {
     create?: XOR<fieldsCreateWithoutTeamsInput, fieldsUncheckedCreateWithoutTeamsInput> | fieldsCreateWithoutTeamsInput[] | fieldsUncheckedCreateWithoutTeamsInput[]
     connectOrCreate?: fieldsCreateOrConnectWithoutTeamsInput | fieldsCreateOrConnectWithoutTeamsInput[]
@@ -58733,14 +59847,6 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput> | UserCreateWithoutProjectsInput[] | UserUncheckedCreateWithoutProjectsInput[]
     connectOrCreate?: UserCreateOrConnectWithoutProjectsInput | UserCreateOrConnectWithoutProjectsInput[]
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type ChannelUpdateManyWithoutProjectNestedInput = {
@@ -59126,11 +60232,23 @@ export namespace Prisma {
     connect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
   }
 
+  export type UserStoryCreateNestedManyWithoutEpicInput = {
+    create?: XOR<UserStoryCreateWithoutEpicInput, UserStoryUncheckedCreateWithoutEpicInput> | UserStoryCreateWithoutEpicInput[] | UserStoryUncheckedCreateWithoutEpicInput[]
+    connectOrCreate?: UserStoryCreateOrConnectWithoutEpicInput | UserStoryCreateOrConnectWithoutEpicInput[]
+    connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+  }
+
   export type FeatureUncheckedCreateNestedManyWithoutEpicInput = {
     create?: XOR<FeatureCreateWithoutEpicInput, FeatureUncheckedCreateWithoutEpicInput> | FeatureCreateWithoutEpicInput[] | FeatureUncheckedCreateWithoutEpicInput[]
     connectOrCreate?: FeatureCreateOrConnectWithoutEpicInput | FeatureCreateOrConnectWithoutEpicInput[]
     createMany?: FeatureCreateManyEpicInputEnvelope
     connect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+  }
+
+  export type UserStoryUncheckedCreateNestedManyWithoutEpicInput = {
+    create?: XOR<UserStoryCreateWithoutEpicInput, UserStoryUncheckedCreateWithoutEpicInput> | UserStoryCreateWithoutEpicInput[] | UserStoryUncheckedCreateWithoutEpicInput[]
+    connectOrCreate?: UserStoryCreateOrConnectWithoutEpicInput | UserStoryCreateOrConnectWithoutEpicInput[]
+    connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
   }
 
   export type InitiativeUpdateOneRequiredWithoutEpicsNestedInput = {
@@ -59155,6 +60273,19 @@ export namespace Prisma {
     deleteMany?: FeatureScalarWhereInput | FeatureScalarWhereInput[]
   }
 
+  export type UserStoryUpdateManyWithoutEpicNestedInput = {
+    create?: XOR<UserStoryCreateWithoutEpicInput, UserStoryUncheckedCreateWithoutEpicInput> | UserStoryCreateWithoutEpicInput[] | UserStoryUncheckedCreateWithoutEpicInput[]
+    connectOrCreate?: UserStoryCreateOrConnectWithoutEpicInput | UserStoryCreateOrConnectWithoutEpicInput[]
+    upsert?: UserStoryUpsertWithWhereUniqueWithoutEpicInput | UserStoryUpsertWithWhereUniqueWithoutEpicInput[]
+    set?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    disconnect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    delete?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    update?: UserStoryUpdateWithWhereUniqueWithoutEpicInput | UserStoryUpdateWithWhereUniqueWithoutEpicInput[]
+    updateMany?: UserStoryUpdateManyWithWhereWithoutEpicInput | UserStoryUpdateManyWithWhereWithoutEpicInput[]
+    deleteMany?: UserStoryScalarWhereInput | UserStoryScalarWhereInput[]
+  }
+
   export type FeatureUncheckedUpdateManyWithoutEpicNestedInput = {
     create?: XOR<FeatureCreateWithoutEpicInput, FeatureUncheckedCreateWithoutEpicInput> | FeatureCreateWithoutEpicInput[] | FeatureUncheckedCreateWithoutEpicInput[]
     connectOrCreate?: FeatureCreateOrConnectWithoutEpicInput | FeatureCreateOrConnectWithoutEpicInput[]
@@ -59167,6 +60298,19 @@ export namespace Prisma {
     update?: FeatureUpdateWithWhereUniqueWithoutEpicInput | FeatureUpdateWithWhereUniqueWithoutEpicInput[]
     updateMany?: FeatureUpdateManyWithWhereWithoutEpicInput | FeatureUpdateManyWithWhereWithoutEpicInput[]
     deleteMany?: FeatureScalarWhereInput | FeatureScalarWhereInput[]
+  }
+
+  export type UserStoryUncheckedUpdateManyWithoutEpicNestedInput = {
+    create?: XOR<UserStoryCreateWithoutEpicInput, UserStoryUncheckedCreateWithoutEpicInput> | UserStoryCreateWithoutEpicInput[] | UserStoryUncheckedCreateWithoutEpicInput[]
+    connectOrCreate?: UserStoryCreateOrConnectWithoutEpicInput | UserStoryCreateOrConnectWithoutEpicInput[]
+    upsert?: UserStoryUpsertWithWhereUniqueWithoutEpicInput | UserStoryUpsertWithWhereUniqueWithoutEpicInput[]
+    set?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    disconnect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    delete?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    update?: UserStoryUpdateWithWhereUniqueWithoutEpicInput | UserStoryUpdateWithWhereUniqueWithoutEpicInput[]
+    updateMany?: UserStoryUpdateManyWithWhereWithoutEpicInput | UserStoryUpdateManyWithWhereWithoutEpicInput[]
+    deleteMany?: UserStoryScalarWhereInput | UserStoryScalarWhereInput[]
   }
 
   export type FeatureDependencyCreateNestedManyWithoutDependentFeatureInput = {
@@ -59552,6 +60696,12 @@ export namespace Prisma {
     connect?: SprintWhereUniqueInput | SprintWhereUniqueInput[]
   }
 
+  export type EpicCreateNestedManyWithoutUserstoriesInput = {
+    create?: XOR<EpicCreateWithoutUserstoriesInput, EpicUncheckedCreateWithoutUserstoriesInput> | EpicCreateWithoutUserstoriesInput[] | EpicUncheckedCreateWithoutUserstoriesInput[]
+    connectOrCreate?: EpicCreateOrConnectWithoutUserstoriesInput | EpicCreateOrConnectWithoutUserstoriesInput[]
+    connect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+  }
+
   export type UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput = {
     create?: XOR<UserStoryAssigneesCreateWithoutUser_storiesInput, UserStoryAssigneesUncheckedCreateWithoutUser_storiesInput> | UserStoryAssigneesCreateWithoutUser_storiesInput[] | UserStoryAssigneesUncheckedCreateWithoutUser_storiesInput[]
     connectOrCreate?: UserStoryAssigneesCreateOrConnectWithoutUser_storiesInput | UserStoryAssigneesCreateOrConnectWithoutUser_storiesInput[]
@@ -59605,6 +60755,12 @@ export namespace Prisma {
     create?: XOR<SprintCreateWithoutUserStoriesInput, SprintUncheckedCreateWithoutUserStoriesInput> | SprintCreateWithoutUserStoriesInput[] | SprintUncheckedCreateWithoutUserStoriesInput[]
     connectOrCreate?: SprintCreateOrConnectWithoutUserStoriesInput | SprintCreateOrConnectWithoutUserStoriesInput[]
     connect?: SprintWhereUniqueInput | SprintWhereUniqueInput[]
+  }
+
+  export type EpicUncheckedCreateNestedManyWithoutUserstoriesInput = {
+    create?: XOR<EpicCreateWithoutUserstoriesInput, EpicUncheckedCreateWithoutUserstoriesInput> | EpicCreateWithoutUserstoriesInput[] | EpicUncheckedCreateWithoutUserstoriesInput[]
+    connectOrCreate?: EpicCreateOrConnectWithoutUserstoriesInput | EpicCreateOrConnectWithoutUserstoriesInput[]
+    connect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
   }
 
   export type EnumTaskStatusFieldUpdateOperationsInput = {
@@ -59748,6 +60904,19 @@ export namespace Prisma {
     deleteMany?: SprintScalarWhereInput | SprintScalarWhereInput[]
   }
 
+  export type EpicUpdateManyWithoutUserstoriesNestedInput = {
+    create?: XOR<EpicCreateWithoutUserstoriesInput, EpicUncheckedCreateWithoutUserstoriesInput> | EpicCreateWithoutUserstoriesInput[] | EpicUncheckedCreateWithoutUserstoriesInput[]
+    connectOrCreate?: EpicCreateOrConnectWithoutUserstoriesInput | EpicCreateOrConnectWithoutUserstoriesInput[]
+    upsert?: EpicUpsertWithWhereUniqueWithoutUserstoriesInput | EpicUpsertWithWhereUniqueWithoutUserstoriesInput[]
+    set?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    disconnect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    delete?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    connect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    update?: EpicUpdateWithWhereUniqueWithoutUserstoriesInput | EpicUpdateWithWhereUniqueWithoutUserstoriesInput[]
+    updateMany?: EpicUpdateManyWithWhereWithoutUserstoriesInput | EpicUpdateManyWithWhereWithoutUserstoriesInput[]
+    deleteMany?: EpicScalarWhereInput | EpicScalarWhereInput[]
+  }
+
   export type UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput = {
     create?: XOR<UserStoryAssigneesCreateWithoutUser_storiesInput, UserStoryAssigneesUncheckedCreateWithoutUser_storiesInput> | UserStoryAssigneesCreateWithoutUser_storiesInput[] | UserStoryAssigneesUncheckedCreateWithoutUser_storiesInput[]
     connectOrCreate?: UserStoryAssigneesCreateOrConnectWithoutUser_storiesInput | UserStoryAssigneesCreateOrConnectWithoutUser_storiesInput[]
@@ -59857,6 +61026,19 @@ export namespace Prisma {
     update?: SprintUpdateWithWhereUniqueWithoutUserStoriesInput | SprintUpdateWithWhereUniqueWithoutUserStoriesInput[]
     updateMany?: SprintUpdateManyWithWhereWithoutUserStoriesInput | SprintUpdateManyWithWhereWithoutUserStoriesInput[]
     deleteMany?: SprintScalarWhereInput | SprintScalarWhereInput[]
+  }
+
+  export type EpicUncheckedUpdateManyWithoutUserstoriesNestedInput = {
+    create?: XOR<EpicCreateWithoutUserstoriesInput, EpicUncheckedCreateWithoutUserstoriesInput> | EpicCreateWithoutUserstoriesInput[] | EpicUncheckedCreateWithoutUserstoriesInput[]
+    connectOrCreate?: EpicCreateOrConnectWithoutUserstoriesInput | EpicCreateOrConnectWithoutUserstoriesInput[]
+    upsert?: EpicUpsertWithWhereUniqueWithoutUserstoriesInput | EpicUpsertWithWhereUniqueWithoutUserstoriesInput[]
+    set?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    disconnect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    delete?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    connect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    update?: EpicUpdateWithWhereUniqueWithoutUserstoriesInput | EpicUpdateWithWhereUniqueWithoutUserstoriesInput[]
+    updateMany?: EpicUpdateManyWithWhereWithoutUserstoriesInput | EpicUpdateManyWithWhereWithoutUserstoriesInput[]
+    deleteMany?: EpicScalarWhereInput | EpicScalarWhereInput[]
   }
 
   export type UserStoryCreateNestedOneWithoutDependenciesInput = {
@@ -60484,10 +61666,10 @@ export namespace Prisma {
     connect?: TaskWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutFileUploadsInput = {
-    create?: XOR<UserCreateWithoutFileUploadsInput, UserUncheckedCreateWithoutFileUploadsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutFileUploadsInput
-    connect?: UserWhereUniqueInput
+  export type UserCreateNestedManyWithoutFileUploadsInput = {
+    create?: XOR<UserCreateWithoutFileUploadsInput, UserUncheckedCreateWithoutFileUploadsInput> | UserCreateWithoutFileUploadsInput[] | UserUncheckedCreateWithoutFileUploadsInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutFileUploadsInput | UserCreateOrConnectWithoutFileUploadsInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
   export type UserStoryCreateNestedOneWithoutFilesInput = {
@@ -60521,6 +61703,12 @@ export namespace Prisma {
     connectOrCreate?: FileCreateOrConnectWithoutParentInput | FileCreateOrConnectWithoutParentInput[]
     createMany?: FileCreateManyParentInputEnvelope
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutFileUploadsInput = {
+    create?: XOR<UserCreateWithoutFileUploadsInput, UserUncheckedCreateWithoutFileUploadsInput> | UserCreateWithoutFileUploadsInput[] | UserUncheckedCreateWithoutFileUploadsInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutFileUploadsInput | UserCreateOrConnectWithoutFileUploadsInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
   export type ItemUncheckedCreateNestedManyWithoutFilesInput = {
@@ -60600,12 +61788,10 @@ export namespace Prisma {
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
   }
 
-  export type ProjectUpdateOneWithoutFilesNestedInput = {
+  export type ProjectUpdateOneRequiredWithoutFilesNestedInput = {
     create?: XOR<ProjectCreateWithoutFilesInput, ProjectUncheckedCreateWithoutFilesInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutFilesInput
     upsert?: ProjectUpsertWithoutFilesInput
-    disconnect?: ProjectWhereInput | boolean
-    delete?: ProjectWhereInput | boolean
     connect?: ProjectWhereUniqueInput
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutFilesInput, ProjectUpdateWithoutFilesInput>, ProjectUncheckedUpdateWithoutFilesInput>
   }
@@ -60630,12 +61816,17 @@ export namespace Prisma {
     update?: XOR<XOR<TaskUpdateToOneWithWhereWithoutFilesInput, TaskUpdateWithoutFilesInput>, TaskUncheckedUpdateWithoutFilesInput>
   }
 
-  export type UserUpdateOneRequiredWithoutFileUploadsNestedInput = {
-    create?: XOR<UserCreateWithoutFileUploadsInput, UserUncheckedCreateWithoutFileUploadsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutFileUploadsInput
-    upsert?: UserUpsertWithoutFileUploadsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFileUploadsInput, UserUpdateWithoutFileUploadsInput>, UserUncheckedUpdateWithoutFileUploadsInput>
+  export type UserUpdateManyWithoutFileUploadsNestedInput = {
+    create?: XOR<UserCreateWithoutFileUploadsInput, UserUncheckedCreateWithoutFileUploadsInput> | UserCreateWithoutFileUploadsInput[] | UserUncheckedCreateWithoutFileUploadsInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutFileUploadsInput | UserCreateOrConnectWithoutFileUploadsInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutFileUploadsInput | UserUpsertWithWhereUniqueWithoutFileUploadsInput[]
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutFileUploadsInput | UserUpdateWithWhereUniqueWithoutFileUploadsInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutFileUploadsInput | UserUpdateManyWithWhereWithoutFileUploadsInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
   export type UserStoryUpdateOneWithoutFilesNestedInput = {
@@ -60701,6 +61892,19 @@ export namespace Prisma {
     update?: FileUpdateWithWhereUniqueWithoutParentInput | FileUpdateWithWhereUniqueWithoutParentInput[]
     updateMany?: FileUpdateManyWithWhereWithoutParentInput | FileUpdateManyWithWhereWithoutParentInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
+  }
+
+  export type UserUncheckedUpdateManyWithoutFileUploadsNestedInput = {
+    create?: XOR<UserCreateWithoutFileUploadsInput, UserUncheckedCreateWithoutFileUploadsInput> | UserCreateWithoutFileUploadsInput[] | UserUncheckedCreateWithoutFileUploadsInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutFileUploadsInput | UserCreateOrConnectWithoutFileUploadsInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutFileUploadsInput | UserUpsertWithWhereUniqueWithoutFileUploadsInput[]
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutFileUploadsInput | UserUpdateWithWhereUniqueWithoutFileUploadsInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutFileUploadsInput | UserUpdateManyWithWhereWithoutFileUploadsInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
   export type ItemUncheckedUpdateManyWithoutFilesNestedInput = {
@@ -62040,23 +63244,6 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
-  }
-
-  export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumUserRoleFilter<$PrismaModel>
-    _max?: NestedEnumUserRoleFilter<$PrismaModel>
-  }
-
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -62082,6 +63269,23 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
+  }
+
+  export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
   export type NestedEnumPriorityFilter<$PrismaModel = never> = {
@@ -62398,6 +63602,7 @@ export namespace Prisma {
 
   export type ChannelMemberCreateWithoutUserInput = {
     id?: string
+    order?: number
     role?: string
     joinedAt?: Date | string
     channel: ChannelCreateNestedOneWithoutMembersInput
@@ -62405,6 +63610,7 @@ export namespace Prisma {
 
   export type ChannelMemberUncheckedCreateWithoutUserInput = {
     id?: string
+    order?: number
     role?: string
     joinedAt?: Date | string
     channelId: string
@@ -62422,6 +63628,8 @@ export namespace Prisma {
 
   export type CommentCreateWithoutAuthorInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -62432,12 +63640,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     file?: FileCreateNestedOneWithoutCommentsInput
     item?: ItemCreateNestedOneWithoutCommentsInput
@@ -62451,6 +63657,8 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutAuthorInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -62466,12 +63674,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
     blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
@@ -62491,6 +63697,7 @@ export namespace Prisma {
   export type FeatureCreateWithoutUsersInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -62518,6 +63725,7 @@ export namespace Prisma {
   export type FeatureUncheckedCreateWithoutUsersInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -62666,21 +63874,19 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type FileCreateWithoutUploaderInput = {
+  export type FileCreateWithoutAuthorInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
@@ -62691,35 +63897,33 @@ export namespace Prisma {
     feature?: FeatureCreateNestedOneWithoutFilesInput
     parent?: FileCreateNestedOneWithoutChildrenInput
     children?: FileCreateNestedManyWithoutParentInput
-    project?: ProjectCreateNestedOneWithoutFilesInput
+    project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
     task?: TaskCreateNestedOneWithoutFilesInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
 
-  export type FileUncheckedCreateWithoutUploaderInput = {
+  export type FileUncheckedCreateWithoutAuthorInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     taskId?: string | null
@@ -62730,19 +63934,15 @@ export namespace Prisma {
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
-  export type FileCreateOrConnectWithoutUploaderInput = {
+  export type FileCreateOrConnectWithoutAuthorInput = {
     where: FileWhereUniqueInput
-    create: XOR<FileCreateWithoutUploaderInput, FileUncheckedCreateWithoutUploaderInput>
-  }
-
-  export type FileCreateManyUploaderInputEnvelope = {
-    data: FileCreateManyUploaderInput | FileCreateManyUploaderInput[]
-    skipDuplicates?: boolean
+    create: XOR<FileCreateWithoutAuthorInput, FileUncheckedCreateWithoutAuthorInput>
   }
 
   export type InitiativeCreateWithoutUserInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     objective?: string | null
     priority?: $Enums.Priority
@@ -62761,6 +63961,7 @@ export namespace Prisma {
   export type InitiativeUncheckedCreateWithoutUserInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     objective?: string | null
     priority?: $Enums.Priority
@@ -62876,6 +64077,7 @@ export namespace Prisma {
 
   export type MessageCreateWithoutAuthorInput = {
     id?: string
+    order?: number
     content: string
     type?: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -62887,6 +64089,7 @@ export namespace Prisma {
 
   export type MessageUncheckedCreateWithoutAuthorInput = {
     id?: string
+    order?: number
     content: string
     type?: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -62941,6 +64144,7 @@ export namespace Prisma {
   export type ProjectMemberCreateWithoutUserInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     project: ProjectCreateNestedOneWithoutMembersInput
@@ -62949,6 +64153,7 @@ export namespace Prisma {
   export type ProjectMemberUncheckedCreateWithoutUserInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     projectId: string
@@ -62997,6 +64202,7 @@ export namespace Prisma {
   export type TaskCreateWithoutCreatorInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -63023,6 +64229,7 @@ export namespace Prisma {
   export type TaskUncheckedCreateWithoutCreatorInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -63059,6 +64266,7 @@ export namespace Prisma {
   export type TeamMemberCreateWithoutUserInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     team: TeamCreateNestedOneWithoutMembersInput
@@ -63067,6 +64275,7 @@ export namespace Prisma {
   export type TeamMemberUncheckedCreateWithoutUserInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     teamId: string
@@ -63127,6 +64336,7 @@ export namespace Prisma {
   export type UserStoryCreateWithoutCreatorInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -63151,11 +64361,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryUncheckedCreateWithoutCreatorInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -63180,6 +64392,7 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryCreateOrConnectWithoutCreatorInput = {
@@ -63335,6 +64548,7 @@ export namespace Prisma {
   export type SprintCreateWithoutUsersInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -63356,6 +64570,7 @@ export namespace Prisma {
   export type SprintUncheckedCreateWithoutUsersInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -63382,6 +64597,7 @@ export namespace Prisma {
   export type TaskCreateWithoutAssigneesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -63408,6 +64624,7 @@ export namespace Prisma {
   export type TaskUncheckedCreateWithoutAssigneesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -63549,6 +64766,7 @@ export namespace Prisma {
     OR?: ChannelMemberScalarWhereInput[]
     NOT?: ChannelMemberScalarWhereInput | ChannelMemberScalarWhereInput[]
     id?: StringFilter<"ChannelMember"> | string
+    order?: IntFilter<"ChannelMember"> | number
     role?: StringFilter<"ChannelMember"> | string
     joinedAt?: DateTimeFilter<"ChannelMember"> | Date | string
     channelId?: StringFilter<"ChannelMember"> | string
@@ -63576,6 +64794,8 @@ export namespace Prisma {
     OR?: CommentScalarWhereInput[]
     NOT?: CommentScalarWhereInput | CommentScalarWhereInput[]
     id?: StringFilter<"Comment"> | string
+    title?: StringFilter<"Comment"> | string
+    order?: IntFilter<"Comment"> | number
     content?: StringFilter<"Comment"> | string
     mentions?: StringNullableListFilter<"Comment">
     createdAt?: DateTimeFilter<"Comment"> | Date | string
@@ -63592,12 +64812,10 @@ export namespace Prisma {
     isPinned?: BoolFilter<"Comment"> | boolean
     isResolved?: BoolFilter<"Comment"> | boolean
     metadata?: JsonNullableFilter<"Comment">
-    order?: IntFilter<"Comment"> | number
     publishedAt?: DateTimeNullableFilter<"Comment"> | Date | string | null
     readingTime?: IntNullableFilter<"Comment"> | number | null
     slug?: StringNullableFilter<"Comment"> | string | null
     status?: StringFilter<"Comment"> | string
-    title?: StringNullableFilter<"Comment"> | string | null
     visibility?: EnumVisibilityFilter<"Comment"> | $Enums.Visibility
   }
 
@@ -63623,6 +64841,7 @@ export namespace Prisma {
     NOT?: FeatureScalarWhereInput | FeatureScalarWhereInput[]
     id?: StringFilter<"Feature"> | string
     name?: StringFilter<"Feature"> | string
+    order?: IntFilter<"Feature"> | number
     description?: StringNullableFilter<"Feature"> | string | null
     acceptanceCriteria?: StringNullableFilter<"Feature"> | string | null
     priority?: EnumPriorityFilter<"Feature"> | $Enums.Priority
@@ -63729,20 +64948,20 @@ export namespace Prisma {
     authorId?: StringFilter<"FileVersion"> | string
   }
 
-  export type FileUpsertWithWhereUniqueWithoutUploaderInput = {
+  export type FileUpsertWithWhereUniqueWithoutAuthorInput = {
     where: FileWhereUniqueInput
-    update: XOR<FileUpdateWithoutUploaderInput, FileUncheckedUpdateWithoutUploaderInput>
-    create: XOR<FileCreateWithoutUploaderInput, FileUncheckedCreateWithoutUploaderInput>
+    update: XOR<FileUpdateWithoutAuthorInput, FileUncheckedUpdateWithoutAuthorInput>
+    create: XOR<FileCreateWithoutAuthorInput, FileUncheckedCreateWithoutAuthorInput>
   }
 
-  export type FileUpdateWithWhereUniqueWithoutUploaderInput = {
+  export type FileUpdateWithWhereUniqueWithoutAuthorInput = {
     where: FileWhereUniqueInput
-    data: XOR<FileUpdateWithoutUploaderInput, FileUncheckedUpdateWithoutUploaderInput>
+    data: XOR<FileUpdateWithoutAuthorInput, FileUncheckedUpdateWithoutAuthorInput>
   }
 
-  export type FileUpdateManyWithWhereWithoutUploaderInput = {
+  export type FileUpdateManyWithWhereWithoutAuthorInput = {
     where: FileScalarWhereInput
-    data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutUploaderInput>
+    data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutAuthorInput>
   }
 
   export type FileScalarWhereInput = {
@@ -63751,26 +64970,23 @@ export namespace Prisma {
     NOT?: FileScalarWhereInput | FileScalarWhereInput[]
     id?: StringFilter<"File"> | string
     name?: StringFilter<"File"> | string
-    originalName?: StringNullableFilter<"File"> | string | null
+    order?: IntFilter<"File"> | number
     type?: EnumFileTypeFilter<"File"> | $Enums.FileType
     mimeType?: StringNullableFilter<"File"> | string | null
-    size?: IntNullableFilter<"File"> | number | null
-    url?: StringFilter<"File"> | string
     path?: StringNullableFilter<"File"> | string | null
     description?: StringNullableFilter<"File"> | string | null
-    import?: JsonNullableFilter<"File">
-    export?: JsonNullableFilter<"File">
+    import?: StringNullableFilter<"File"> | string | null
+    use?: StringNullableFilter<"File"> | string | null
+    export?: StringNullableFilter<"File"> | string | null
     script?: StringNullableFilter<"File"> | string | null
     version?: IntFilter<"File"> | number
-    isPublic?: BoolFilter<"File"> | boolean
     isFolder?: BoolFilter<"File"> | boolean
     metadata?: JsonNullableFilter<"File">
     tags?: StringNullableListFilter<"File">
     createdAt?: DateTimeFilter<"File"> | Date | string
     updatedAt?: DateTimeFilter<"File"> | Date | string
-    uploaderId?: StringFilter<"File"> | string
     parentId?: StringNullableFilter<"File"> | string | null
-    projectId?: StringNullableFilter<"File"> | string | null
+    projectId?: StringFilter<"File"> | string
     featureId?: StringNullableFilter<"File"> | string | null
     userStoryId?: StringNullableFilter<"File"> | string | null
     taskId?: StringNullableFilter<"File"> | string | null
@@ -63799,6 +65015,7 @@ export namespace Prisma {
     NOT?: InitiativeScalarWhereInput | InitiativeScalarWhereInput[]
     id?: StringFilter<"Initiative"> | string
     name?: StringFilter<"Initiative"> | string
+    order?: IntFilter<"Initiative"> | number
     description?: StringNullableFilter<"Initiative"> | string | null
     objective?: StringNullableFilter<"Initiative"> | string | null
     priority?: EnumPriorityFilter<"Initiative"> | $Enums.Priority
@@ -63889,6 +65106,7 @@ export namespace Prisma {
     OR?: MessageScalarWhereInput[]
     NOT?: MessageScalarWhereInput | MessageScalarWhereInput[]
     id?: StringFilter<"Message"> | string
+    order?: IntFilter<"Message"> | number
     content?: StringFilter<"Message"> | string
     type?: StringFilter<"Message"> | string
     metadata?: JsonNullableFilter<"Message">
@@ -63952,6 +65170,7 @@ export namespace Prisma {
     NOT?: ProjectMemberScalarWhereInput | ProjectMemberScalarWhereInput[]
     id?: StringFilter<"ProjectMember"> | string
     role?: EnumUserRoleFilter<"ProjectMember"> | $Enums.UserRole
+    order?: IntFilter<"ProjectMember"> | number
     joinedAt?: DateTimeFilter<"ProjectMember"> | Date | string
     isActive?: BoolFilter<"ProjectMember"> | boolean
     projectId?: StringFilter<"ProjectMember"> | string
@@ -64010,6 +65229,7 @@ export namespace Prisma {
     NOT?: TaskScalarWhereInput | TaskScalarWhereInput[]
     id?: StringFilter<"Task"> | string
     title?: StringFilter<"Task"> | string
+    order?: IntFilter<"Task"> | number
     description?: StringNullableFilter<"Task"> | string | null
     priority?: EnumPriorityFilter<"Task"> | $Enums.Priority
     status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
@@ -64050,6 +65270,7 @@ export namespace Prisma {
     NOT?: TeamMemberScalarWhereInput | TeamMemberScalarWhereInput[]
     id?: StringFilter<"TeamMember"> | string
     role?: EnumUserRoleFilter<"TeamMember"> | $Enums.UserRole
+    order?: IntFilter<"TeamMember"> | number
     joinedAt?: DateTimeFilter<"TeamMember"> | Date | string
     isActive?: BoolFilter<"TeamMember"> | boolean
     teamId?: StringFilter<"TeamMember"> | string
@@ -64114,6 +65335,7 @@ export namespace Prisma {
     NOT?: UserStoryScalarWhereInput | UserStoryScalarWhereInput[]
     id?: StringFilter<"UserStory"> | string
     title?: StringFilter<"UserStory"> | string
+    order?: IntFilter<"UserStory"> | number
     description?: StringNullableFilter<"UserStory"> | string | null
     acceptanceCriteria?: StringNullableFilter<"UserStory"> | string | null
     priority?: EnumPriorityFilter<"UserStory"> | $Enums.Priority
@@ -64208,6 +65430,7 @@ export namespace Prisma {
     NOT?: SprintScalarWhereInput | SprintScalarWhereInput[]
     id?: StringFilter<"Sprint"> | string
     name?: StringFilter<"Sprint"> | string
+    order?: IntFilter<"Sprint"> | number
     goal?: StringNullableFilter<"Sprint"> | string | null
     description?: StringNullableFilter<"Sprint"> | string | null
     startDate?: DateTimeFilter<"Sprint"> | Date | string
@@ -64262,7 +65485,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -64303,7 +65526,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -64360,7 +65583,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -64401,7 +65624,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -64443,7 +65666,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -64484,7 +65707,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -64541,7 +65764,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -64582,7 +65805,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -64683,6 +65906,7 @@ export namespace Prisma {
   export type TeamMemberCreateWithoutTeamInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     user: UserCreateNestedOneWithoutOrganizationMembershipsInput
@@ -64691,6 +65915,7 @@ export namespace Prisma {
   export type TeamMemberUncheckedCreateWithoutTeamInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     userId: string
@@ -64709,6 +65934,7 @@ export namespace Prisma {
   export type TeamCreateWithoutChildrenInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -64724,6 +65950,7 @@ export namespace Prisma {
   export type TeamUncheckedCreateWithoutChildrenInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -64744,6 +65971,7 @@ export namespace Prisma {
   export type TeamCreateWithoutParentTeamInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -64759,6 +65987,7 @@ export namespace Prisma {
   export type TeamUncheckedCreateWithoutParentTeamInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -64784,6 +66013,7 @@ export namespace Prisma {
   export type TemplateCreateWithoutTeamInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type: string
     category?: string | null
@@ -64799,6 +66029,7 @@ export namespace Prisma {
   export type TemplateUncheckedCreateWithoutTeamInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type: string
     category?: string | null
@@ -64867,6 +66098,7 @@ export namespace Prisma {
   export type TeamUpdateWithoutChildrenInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64882,6 +66114,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateWithoutChildrenInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64916,6 +66149,7 @@ export namespace Prisma {
     NOT?: TeamScalarWhereInput | TeamScalarWhereInput[]
     id?: StringFilter<"Team"> | string
     name?: StringFilter<"Team"> | string
+    order?: IntFilter<"Team"> | number
     description?: StringNullableFilter<"Team"> | string | null
     slug?: StringFilter<"Team"> | string
     logoUrl?: StringNullableFilter<"Team"> | string | null
@@ -64947,6 +66181,7 @@ export namespace Prisma {
     NOT?: TemplateScalarWhereInput | TemplateScalarWhereInput[]
     id?: StringFilter<"Template"> | string
     name?: StringFilter<"Template"> | string
+    order?: IntFilter<"Template"> | number
     description?: StringNullableFilter<"Template"> | string | null
     type?: StringFilter<"Template"> | string
     category?: StringNullableFilter<"Template"> | string | null
@@ -64963,6 +66198,7 @@ export namespace Prisma {
   export type TeamCreateWithoutMembersInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -64978,6 +66214,7 @@ export namespace Prisma {
   export type TeamUncheckedCreateWithoutMembersInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -65020,7 +66257,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -65061,7 +66298,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -65096,6 +66333,7 @@ export namespace Prisma {
   export type TeamUpdateWithoutMembersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65111,6 +66349,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateWithoutMembersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65159,7 +66398,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -65200,7 +66439,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -65219,6 +66458,7 @@ export namespace Prisma {
   export type ChannelCreateWithoutProjectInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type?: string
     isPrivate?: boolean
@@ -65232,6 +66472,7 @@ export namespace Prisma {
   export type ChannelUncheckedCreateWithoutProjectInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type?: string
     isPrivate?: boolean
@@ -65255,6 +66496,7 @@ export namespace Prisma {
   export type FeatureCreateWithoutProjectInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -65282,6 +66524,7 @@ export namespace Prisma {
   export type FeatureUncheckedCreateWithoutProjectInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -65401,18 +66644,16 @@ export namespace Prisma {
   export type FileCreateWithoutProjectInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
@@ -65425,7 +66666,7 @@ export namespace Prisma {
     children?: FileCreateNestedManyWithoutParentInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
     task?: TaskCreateNestedOneWithoutFilesInput
-    uploader: UserCreateNestedOneWithoutFileUploadsInput
+    author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
@@ -65433,24 +66674,21 @@ export namespace Prisma {
   export type FileUncheckedCreateWithoutProjectInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
     featureId?: string | null
     userStoryId?: string | null
@@ -65459,6 +66697,7 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
@@ -65475,6 +66714,7 @@ export namespace Prisma {
   export type InitiativeCreateWithoutProjectInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     objective?: string | null
     priority?: $Enums.Priority
@@ -65493,6 +66733,7 @@ export namespace Prisma {
   export type InitiativeUncheckedCreateWithoutProjectInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     objective?: string | null
     priority?: $Enums.Priority
@@ -65521,6 +66762,7 @@ export namespace Prisma {
   export type ProjectMemberCreateWithoutProjectInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     user: UserCreateNestedOneWithoutProjectMembershipsInput
@@ -65529,6 +66771,7 @@ export namespace Prisma {
   export type ProjectMemberUncheckedCreateWithoutProjectInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     userId: string
@@ -65547,6 +66790,7 @@ export namespace Prisma {
   export type SprintCreateWithoutProjectInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -65568,6 +66812,7 @@ export namespace Prisma {
   export type SprintUncheckedCreateWithoutProjectInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -65599,6 +66844,7 @@ export namespace Prisma {
   export type TemplateCreateWithoutProjectInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type: string
     category?: string | null
@@ -65614,6 +66860,7 @@ export namespace Prisma {
   export type TemplateUncheckedCreateWithoutProjectInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type: string
     category?: string | null
@@ -65661,7 +66908,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -65702,7 +66949,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -65745,6 +66992,7 @@ export namespace Prisma {
     NOT?: ChannelScalarWhereInput | ChannelScalarWhereInput[]
     id?: StringFilter<"Channel"> | string
     name?: StringFilter<"Channel"> | string
+    order?: IntFilter<"Channel"> | number
     description?: StringNullableFilter<"Channel"> | string | null
     type?: StringFilter<"Channel"> | string
     isPrivate?: BoolFilter<"Channel"> | boolean
@@ -65986,7 +67234,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -66027,7 +67275,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -66147,7 +67395,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -66188,7 +67436,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -66207,6 +67455,7 @@ export namespace Prisma {
   export type EpicCreateWithoutInitiativeInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: string
@@ -66216,11 +67465,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     features?: FeatureCreateNestedManyWithoutEpicInput
+    userstories?: UserStoryCreateNestedManyWithoutEpicInput
   }
 
   export type EpicUncheckedCreateWithoutInitiativeInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: string
@@ -66230,6 +67481,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     features?: FeatureUncheckedCreateNestedManyWithoutEpicInput
+    userstories?: UserStoryUncheckedCreateNestedManyWithoutEpicInput
   }
 
   export type EpicCreateOrConnectWithoutInitiativeInput = {
@@ -66324,7 +67576,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -66365,7 +67617,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -66408,6 +67660,7 @@ export namespace Prisma {
     NOT?: EpicScalarWhereInput | EpicScalarWhereInput[]
     id?: StringFilter<"Epic"> | string
     name?: StringFilter<"Epic"> | string
+    order?: IntFilter<"Epic"> | number
     description?: StringNullableFilter<"Epic"> | string | null
     priority?: EnumPriorityFilter<"Epic"> | $Enums.Priority
     status?: StringFilter<"Epic"> | string
@@ -66518,7 +67771,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -66559,7 +67812,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -66578,6 +67831,7 @@ export namespace Prisma {
   export type InitiativeCreateWithoutEpicsInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     objective?: string | null
     priority?: $Enums.Priority
@@ -66596,6 +67850,7 @@ export namespace Prisma {
   export type InitiativeUncheckedCreateWithoutEpicsInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     objective?: string | null
     priority?: $Enums.Priority
@@ -66619,6 +67874,7 @@ export namespace Prisma {
   export type FeatureCreateWithoutEpicInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -66646,6 +67902,7 @@ export namespace Prisma {
   export type FeatureUncheckedCreateWithoutEpicInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -66680,6 +67937,73 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserStoryCreateWithoutEpicInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    acceptanceCriteria?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    storyPoints?: number | null
+    businessValue?: number | null
+    technicalRisk?: number | null
+    effort?: number | null
+    position?: number
+    labels?: UserStoryCreatelabelsInput | string[]
+    tags?: UserStoryCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
+    comments?: CommentCreateNestedManyWithoutUserStoryInput
+    files?: FileCreateNestedManyWithoutUserStoryInput
+    tasks?: TaskCreateNestedManyWithoutUserStoryInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
+    creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
+    feature: FeatureCreateNestedOneWithoutUserStoriesInput
+    dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
+    dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
+    sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+  }
+
+  export type UserStoryUncheckedCreateWithoutEpicInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    acceptanceCriteria?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    storyPoints?: number | null
+    businessValue?: number | null
+    technicalRisk?: number | null
+    effort?: number | null
+    position?: number
+    labels?: UserStoryCreatelabelsInput | string[]
+    tags?: UserStoryCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    featureId: string
+    creatorId: string
+    UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
+    comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
+    files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
+    dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
+    dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+  }
+
+  export type UserStoryCreateOrConnectWithoutEpicInput = {
+    where: UserStoryWhereUniqueInput
+    create: XOR<UserStoryCreateWithoutEpicInput, UserStoryUncheckedCreateWithoutEpicInput>
+  }
+
   export type InitiativeUpsertWithoutEpicsInput = {
     update: XOR<InitiativeUpdateWithoutEpicsInput, InitiativeUncheckedUpdateWithoutEpicsInput>
     create: XOR<InitiativeCreateWithoutEpicsInput, InitiativeUncheckedCreateWithoutEpicsInput>
@@ -66694,6 +68018,7 @@ export namespace Prisma {
   export type InitiativeUpdateWithoutEpicsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     objective?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -66712,6 +68037,7 @@ export namespace Prisma {
   export type InitiativeUncheckedUpdateWithoutEpicsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     objective?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -66743,9 +68069,26 @@ export namespace Prisma {
     data: XOR<FeatureUpdateManyMutationInput, FeatureUncheckedUpdateManyWithoutEpicInput>
   }
 
+  export type UserStoryUpsertWithWhereUniqueWithoutEpicInput = {
+    where: UserStoryWhereUniqueInput
+    update: XOR<UserStoryUpdateWithoutEpicInput, UserStoryUncheckedUpdateWithoutEpicInput>
+    create: XOR<UserStoryCreateWithoutEpicInput, UserStoryUncheckedCreateWithoutEpicInput>
+  }
+
+  export type UserStoryUpdateWithWhereUniqueWithoutEpicInput = {
+    where: UserStoryWhereUniqueInput
+    data: XOR<UserStoryUpdateWithoutEpicInput, UserStoryUncheckedUpdateWithoutEpicInput>
+  }
+
+  export type UserStoryUpdateManyWithWhereWithoutEpicInput = {
+    where: UserStoryScalarWhereInput
+    data: XOR<UserStoryUpdateManyMutationInput, UserStoryUncheckedUpdateManyWithoutEpicInput>
+  }
+
   export type FeatureDependencyCreateWithoutDependentFeatureInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependsOnFeature: FeatureCreateNestedOneWithoutDependentsInput
@@ -66754,6 +68097,7 @@ export namespace Prisma {
   export type FeatureDependencyUncheckedCreateWithoutDependentFeatureInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependsOnFeatureId: string
@@ -66772,6 +68116,7 @@ export namespace Prisma {
   export type FeatureDependencyCreateWithoutDependsOnFeatureInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentFeature: FeatureCreateNestedOneWithoutDependenciesInput
@@ -66780,6 +68125,7 @@ export namespace Prisma {
   export type FeatureDependencyUncheckedCreateWithoutDependsOnFeatureInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentFeatureId: string
@@ -66798,6 +68144,7 @@ export namespace Prisma {
   export type EpicCreateWithoutFeaturesInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: string
@@ -66807,11 +68154,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     initiative: InitiativeCreateNestedOneWithoutEpicsInput
+    userstories?: UserStoryCreateNestedManyWithoutEpicInput
   }
 
   export type EpicUncheckedCreateWithoutFeaturesInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: string
@@ -66821,6 +68170,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     initiativeId: string
+    userstories?: UserStoryUncheckedCreateNestedManyWithoutEpicInput
   }
 
   export type EpicCreateOrConnectWithoutFeaturesInput = {
@@ -66831,6 +68181,7 @@ export namespace Prisma {
   export type FeatureCreateWithoutChildrenInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -66858,6 +68209,7 @@ export namespace Prisma {
   export type FeatureUncheckedCreateWithoutChildrenInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -66890,6 +68242,7 @@ export namespace Prisma {
   export type FeatureCreateWithoutParentInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -66917,6 +68270,7 @@ export namespace Prisma {
   export type FeatureUncheckedCreateWithoutParentInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -67032,7 +68386,7 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -67073,7 +68427,7 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -67098,18 +68452,16 @@ export namespace Prisma {
   export type FileCreateWithoutFeatureInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
@@ -67119,10 +68471,10 @@ export namespace Prisma {
     versions?: FileVersionCreateNestedManyWithoutFileInput
     parent?: FileCreateNestedOneWithoutChildrenInput
     children?: FileCreateNestedManyWithoutParentInput
-    project?: ProjectCreateNestedOneWithoutFilesInput
+    project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
     task?: TaskCreateNestedOneWithoutFilesInput
-    uploader: UserCreateNestedOneWithoutFileUploadsInput
+    author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
@@ -67130,32 +68482,30 @@ export namespace Prisma {
   export type FileUncheckedCreateWithoutFeatureInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     userStoryId?: string | null
     taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
@@ -67172,6 +68522,7 @@ export namespace Prisma {
   export type UserStoryCreateWithoutFeatureInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -67196,11 +68547,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryUncheckedCreateWithoutFeatureInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -67225,6 +68578,7 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryCreateOrConnectWithoutFeatureInput = {
@@ -67259,6 +68613,7 @@ export namespace Prisma {
     NOT?: FeatureDependencyScalarWhereInput | FeatureDependencyScalarWhereInput[]
     id?: StringFilter<"FeatureDependency"> | string
     type?: StringFilter<"FeatureDependency"> | string
+    order?: IntFilter<"FeatureDependency"> | number
     description?: StringNullableFilter<"FeatureDependency"> | string | null
     createdAt?: DateTimeFilter<"FeatureDependency"> | Date | string
     dependentFeatureId?: StringFilter<"FeatureDependency"> | string
@@ -67295,6 +68650,7 @@ export namespace Prisma {
   export type EpicUpdateWithoutFeaturesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: StringFieldUpdateOperationsInput | string
@@ -67304,11 +68660,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     initiative?: InitiativeUpdateOneRequiredWithoutEpicsNestedInput
+    userstories?: UserStoryUpdateManyWithoutEpicNestedInput
   }
 
   export type EpicUncheckedUpdateWithoutFeaturesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: StringFieldUpdateOperationsInput | string
@@ -67318,6 +68676,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     initiativeId?: StringFieldUpdateOperationsInput | string
+    userstories?: UserStoryUncheckedUpdateManyWithoutEpicNestedInput
   }
 
   export type FeatureUpsertWithoutChildrenInput = {
@@ -67334,6 +68693,7 @@ export namespace Prisma {
   export type FeatureUpdateWithoutChildrenInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -67361,6 +68721,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateWithoutChildrenInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -67499,7 +68860,7 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -67540,7 +68901,7 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -67592,6 +68953,7 @@ export namespace Prisma {
   export type FeatureCreateWithoutDependenciesInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -67619,6 +68981,7 @@ export namespace Prisma {
   export type FeatureUncheckedCreateWithoutDependenciesInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -67651,6 +69014,7 @@ export namespace Prisma {
   export type FeatureCreateWithoutDependentsInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -67678,6 +69042,7 @@ export namespace Prisma {
   export type FeatureUncheckedCreateWithoutDependentsInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -67721,6 +69086,7 @@ export namespace Prisma {
   export type FeatureUpdateWithoutDependenciesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -67748,6 +69114,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateWithoutDependenciesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -67786,6 +69153,7 @@ export namespace Prisma {
   export type FeatureUpdateWithoutDependentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -67813,6 +69181,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateWithoutDependentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -67857,6 +69226,8 @@ export namespace Prisma {
 
   export type CommentCreateWithoutUserStoryInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -67867,12 +69238,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
     file?: FileCreateNestedOneWithoutCommentsInput
@@ -67886,6 +69255,8 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutUserStoryInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -67901,12 +69272,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
     blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
@@ -67926,18 +69295,16 @@ export namespace Prisma {
   export type FileCreateWithoutUserStoryInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
@@ -67948,42 +69315,40 @@ export namespace Prisma {
     feature?: FeatureCreateNestedOneWithoutFilesInput
     parent?: FileCreateNestedOneWithoutChildrenInput
     children?: FileCreateNestedManyWithoutParentInput
-    project?: ProjectCreateNestedOneWithoutFilesInput
+    project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
     task?: TaskCreateNestedOneWithoutFilesInput
-    uploader: UserCreateNestedOneWithoutFileUploadsInput
+    author?: UserCreateNestedManyWithoutFileUploadsInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
 
   export type FileUncheckedCreateWithoutUserStoryInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
@@ -68000,6 +69365,7 @@ export namespace Prisma {
   export type TaskCreateWithoutUserStoryInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -68026,6 +69392,7 @@ export namespace Prisma {
   export type TaskUncheckedCreateWithoutUserStoryInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -68126,7 +69493,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -68167,7 +69534,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -68191,6 +69558,7 @@ export namespace Prisma {
   export type FeatureCreateWithoutUserStoriesInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -68218,6 +69586,7 @@ export namespace Prisma {
   export type FeatureUncheckedCreateWithoutUserStoriesInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -68250,6 +69619,7 @@ export namespace Prisma {
   export type UserStoryDependencyCreateWithoutDependentUserStoryInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependsOnUserStory: UserStoryCreateNestedOneWithoutDependentsInput
@@ -68258,6 +69628,7 @@ export namespace Prisma {
   export type UserStoryDependencyUncheckedCreateWithoutDependentUserStoryInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependsOnUserStoryId: string
@@ -68276,6 +69647,7 @@ export namespace Prisma {
   export type UserStoryDependencyCreateWithoutDependsOnUserStoryInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentUserStory: UserStoryCreateNestedOneWithoutDependenciesInput
@@ -68284,6 +69656,7 @@ export namespace Prisma {
   export type UserStoryDependencyUncheckedCreateWithoutDependsOnUserStoryInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentUserStoryId: string
@@ -68302,6 +69675,7 @@ export namespace Prisma {
   export type SprintCreateWithoutUserStoriesInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -68323,6 +69697,7 @@ export namespace Prisma {
   export type SprintUncheckedCreateWithoutUserStoriesInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -68344,6 +69719,43 @@ export namespace Prisma {
   export type SprintCreateOrConnectWithoutUserStoriesInput = {
     where: SprintWhereUniqueInput
     create: XOR<SprintCreateWithoutUserStoriesInput, SprintUncheckedCreateWithoutUserStoriesInput>
+  }
+
+  export type EpicCreateWithoutUserstoriesInput = {
+    id?: string
+    name: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    progress?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiative: InitiativeCreateNestedOneWithoutEpicsInput
+    features?: FeatureCreateNestedManyWithoutEpicInput
+  }
+
+  export type EpicUncheckedCreateWithoutUserstoriesInput = {
+    id?: string
+    name: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    progress?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiativeId: string
+    features?: FeatureUncheckedCreateNestedManyWithoutEpicInput
+  }
+
+  export type EpicCreateOrConnectWithoutUserstoriesInput = {
+    where: EpicWhereUniqueInput
+    create: XOR<EpicCreateWithoutUserstoriesInput, EpicUncheckedCreateWithoutUserstoriesInput>
   }
 
   export type UserStoryAssigneesUpsertWithWhereUniqueWithoutUser_storiesInput = {
@@ -68462,7 +69874,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -68503,7 +69915,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -68533,6 +69945,7 @@ export namespace Prisma {
   export type FeatureUpdateWithoutUserStoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -68560,6 +69973,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateWithoutUserStoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -68606,6 +70020,7 @@ export namespace Prisma {
     NOT?: UserStoryDependencyScalarWhereInput | UserStoryDependencyScalarWhereInput[]
     id?: StringFilter<"UserStoryDependency"> | string
     type?: StringFilter<"UserStoryDependency"> | string
+    order?: IntFilter<"UserStoryDependency"> | number
     description?: StringNullableFilter<"UserStoryDependency"> | string | null
     createdAt?: DateTimeFilter<"UserStoryDependency"> | Date | string
     dependentUserStoryId?: StringFilter<"UserStoryDependency"> | string
@@ -68644,9 +70059,26 @@ export namespace Prisma {
     data: XOR<SprintUpdateManyMutationInput, SprintUncheckedUpdateManyWithoutUserStoriesInput>
   }
 
+  export type EpicUpsertWithWhereUniqueWithoutUserstoriesInput = {
+    where: EpicWhereUniqueInput
+    update: XOR<EpicUpdateWithoutUserstoriesInput, EpicUncheckedUpdateWithoutUserstoriesInput>
+    create: XOR<EpicCreateWithoutUserstoriesInput, EpicUncheckedCreateWithoutUserstoriesInput>
+  }
+
+  export type EpicUpdateWithWhereUniqueWithoutUserstoriesInput = {
+    where: EpicWhereUniqueInput
+    data: XOR<EpicUpdateWithoutUserstoriesInput, EpicUncheckedUpdateWithoutUserstoriesInput>
+  }
+
+  export type EpicUpdateManyWithWhereWithoutUserstoriesInput = {
+    where: EpicScalarWhereInput
+    data: XOR<EpicUpdateManyMutationInput, EpicUncheckedUpdateManyWithoutUserstoriesInput>
+  }
+
   export type UserStoryCreateWithoutDependenciesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -68671,11 +70103,13 @@ export namespace Prisma {
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryUncheckedCreateWithoutDependenciesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -68700,6 +70134,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryCreateOrConnectWithoutDependenciesInput = {
@@ -68710,6 +70145,7 @@ export namespace Prisma {
   export type UserStoryCreateWithoutDependentsInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -68734,11 +70170,13 @@ export namespace Prisma {
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryUncheckedCreateWithoutDependentsInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -68763,6 +70201,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryCreateOrConnectWithoutDependentsInput = {
@@ -68784,6 +70223,7 @@ export namespace Prisma {
   export type UserStoryUpdateWithoutDependenciesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -68808,11 +70248,13 @@ export namespace Prisma {
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutDependenciesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -68837,6 +70279,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUpsertWithoutDependentsInput = {
@@ -68853,6 +70296,7 @@ export namespace Prisma {
   export type UserStoryUpdateWithoutDependentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -68877,11 +70321,13 @@ export namespace Prisma {
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutDependentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -68906,10 +70352,13 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type CommentCreateWithoutTaskInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -68920,12 +70369,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
     file?: FileCreateNestedOneWithoutCommentsInput
@@ -68939,6 +70386,8 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutTaskInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -68954,12 +70403,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
     blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
@@ -68979,18 +70426,16 @@ export namespace Prisma {
   export type FileCreateWithoutTaskInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
@@ -69001,9 +70446,9 @@ export namespace Prisma {
     feature?: FeatureCreateNestedOneWithoutFilesInput
     parent?: FileCreateNestedOneWithoutChildrenInput
     children?: FileCreateNestedManyWithoutParentInput
-    project?: ProjectCreateNestedOneWithoutFilesInput
+    project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
-    uploader: UserCreateNestedOneWithoutFileUploadsInput
+    author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
@@ -69011,32 +70456,30 @@ export namespace Prisma {
   export type FileUncheckedCreateWithoutTaskInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
@@ -69053,6 +70496,7 @@ export namespace Prisma {
   export type TaskDependencyCreateWithoutDependentTaskInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependsOnTask: TaskCreateNestedOneWithoutDependentsInput
@@ -69061,6 +70505,7 @@ export namespace Prisma {
   export type TaskDependencyUncheckedCreateWithoutDependentTaskInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependsOnTaskId: string
@@ -69079,6 +70524,7 @@ export namespace Prisma {
   export type TaskDependencyCreateWithoutDependsOnTaskInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentTask: TaskCreateNestedOneWithoutDependenciesInput
@@ -69087,6 +70533,7 @@ export namespace Prisma {
   export type TaskDependencyUncheckedCreateWithoutDependsOnTaskInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentTaskId: string
@@ -69127,7 +70574,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -69168,7 +70615,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -69192,6 +70639,7 @@ export namespace Prisma {
   export type UserStoryCreateWithoutTasksInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -69216,11 +70664,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryUncheckedCreateWithoutTasksInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -69245,6 +70695,7 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryCreateOrConnectWithoutTasksInput = {
@@ -69319,7 +70770,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -69360,7 +70811,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -69435,6 +70886,7 @@ export namespace Prisma {
     NOT?: TaskDependencyScalarWhereInput | TaskDependencyScalarWhereInput[]
     id?: StringFilter<"TaskDependency"> | string
     type?: StringFilter<"TaskDependency"> | string
+    order?: IntFilter<"TaskDependency"> | number
     description?: StringNullableFilter<"TaskDependency"> | string | null
     createdAt?: DateTimeFilter<"TaskDependency"> | Date | string
     dependentTaskId?: StringFilter<"TaskDependency"> | string
@@ -69493,7 +70945,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -69534,7 +70986,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -69564,6 +71016,7 @@ export namespace Prisma {
   export type UserStoryUpdateWithoutTasksInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -69588,11 +71041,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutTasksInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -69617,6 +71072,7 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type TimeEntryUpsertWithWhereUniqueWithoutTaskInput = {
@@ -69654,6 +71110,7 @@ export namespace Prisma {
   export type TaskCreateWithoutDependenciesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -69680,6 +71137,7 @@ export namespace Prisma {
   export type TaskUncheckedCreateWithoutDependenciesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -69711,6 +71169,7 @@ export namespace Prisma {
   export type TaskCreateWithoutDependentsInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -69737,6 +71196,7 @@ export namespace Prisma {
   export type TaskUncheckedCreateWithoutDependentsInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -69779,6 +71239,7 @@ export namespace Prisma {
   export type TaskUpdateWithoutDependenciesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -69805,6 +71266,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateWithoutDependenciesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -69842,6 +71304,7 @@ export namespace Prisma {
   export type TaskUpdateWithoutDependentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -69868,6 +71331,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateWithoutDependentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -69894,18 +71358,16 @@ export namespace Prisma {
   export type FileCreateWithoutSprintInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
@@ -69916,9 +71378,9 @@ export namespace Prisma {
     feature?: FeatureCreateNestedOneWithoutFilesInput
     parent?: FileCreateNestedOneWithoutChildrenInput
     children?: FileCreateNestedManyWithoutParentInput
-    project?: ProjectCreateNestedOneWithoutFilesInput
+    project: ProjectCreateNestedOneWithoutFilesInput
     task?: TaskCreateNestedOneWithoutFilesInput
-    uploader: UserCreateNestedOneWithoutFileUploadsInput
+    author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
@@ -69926,32 +71388,30 @@ export namespace Prisma {
   export type FileUncheckedCreateWithoutSprintInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     taskId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
@@ -70177,7 +71637,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -70218,7 +71678,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -70242,6 +71702,7 @@ export namespace Prisma {
   export type UserStoryCreateWithoutSprintsInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -70266,11 +71727,13 @@ export namespace Prisma {
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
+    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryUncheckedCreateWithoutSprintsInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -70295,6 +71758,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
+    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryCreateOrConnectWithoutSprintsInput = {
@@ -70447,6 +71911,8 @@ export namespace Prisma {
 
   export type CommentCreateWithoutFileInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -70457,12 +71923,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
     item?: ItemCreateNestedOneWithoutCommentsInput
@@ -70476,6 +71940,8 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutFileInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -70491,12 +71957,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
     blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
@@ -70548,6 +72012,7 @@ export namespace Prisma {
   export type FeatureCreateWithoutFilesInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -70575,6 +72040,7 @@ export namespace Prisma {
   export type FeatureUncheckedCreateWithoutFilesInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -70607,18 +72073,16 @@ export namespace Prisma {
   export type FileCreateWithoutChildrenInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
@@ -70628,10 +72092,10 @@ export namespace Prisma {
     versions?: FileVersionCreateNestedManyWithoutFileInput
     feature?: FeatureCreateNestedOneWithoutFilesInput
     parent?: FileCreateNestedOneWithoutChildrenInput
-    project?: ProjectCreateNestedOneWithoutFilesInput
+    project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
     task?: TaskCreateNestedOneWithoutFilesInput
-    uploader: UserCreateNestedOneWithoutFileUploadsInput
+    author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
@@ -70639,32 +72103,30 @@ export namespace Prisma {
   export type FileUncheckedCreateWithoutChildrenInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
+    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
@@ -70676,18 +72138,16 @@ export namespace Prisma {
   export type FileCreateWithoutParentInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
@@ -70697,10 +72157,10 @@ export namespace Prisma {
     versions?: FileVersionCreateNestedManyWithoutFileInput
     feature?: FeatureCreateNestedOneWithoutFilesInput
     children?: FileCreateNestedManyWithoutParentInput
-    project?: ProjectCreateNestedOneWithoutFilesInput
+    project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
     task?: TaskCreateNestedOneWithoutFilesInput
-    uploader: UserCreateNestedOneWithoutFileUploadsInput
+    author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
@@ -70708,25 +72168,22 @@ export namespace Prisma {
   export type FileUncheckedCreateWithoutParentInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     taskId?: string | null
@@ -70734,6 +72191,7 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
@@ -70807,6 +72265,7 @@ export namespace Prisma {
   export type SprintCreateWithoutFilesInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -70828,6 +72287,7 @@ export namespace Prisma {
   export type SprintUncheckedCreateWithoutFilesInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -70854,6 +72314,7 @@ export namespace Prisma {
   export type TaskCreateWithoutFilesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -70880,6 +72341,7 @@ export namespace Prisma {
   export type TaskUncheckedCreateWithoutFilesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -70998,6 +72460,7 @@ export namespace Prisma {
   export type UserStoryCreateWithoutFilesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -71022,11 +72485,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryUncheckedCreateWithoutFilesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -71051,6 +72516,7 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryCreateOrConnectWithoutFilesInput = {
@@ -71187,6 +72653,7 @@ export namespace Prisma {
   export type FeatureUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -71214,6 +72681,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -71252,18 +72720,16 @@ export namespace Prisma {
   export type FileUpdateWithoutChildrenInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -71273,10 +72739,10 @@ export namespace Prisma {
     versions?: FileVersionUpdateManyWithoutFileNestedInput
     feature?: FeatureUpdateOneWithoutFilesNestedInput
     parent?: FileUpdateOneWithoutChildrenNestedInput
-    project?: ProjectUpdateOneWithoutFilesNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
     task?: TaskUpdateOneWithoutFilesNestedInput
-    uploader?: UserUpdateOneRequiredWithoutFileUploadsNestedInput
+    author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
@@ -71284,32 +72750,30 @@ export namespace Prisma {
   export type FileUncheckedUpdateWithoutChildrenInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
+    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
@@ -71406,6 +72870,7 @@ export namespace Prisma {
   export type SprintUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -71427,6 +72892,7 @@ export namespace Prisma {
   export type SprintUncheckedUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -71459,6 +72925,7 @@ export namespace Prisma {
   export type TaskUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -71485,6 +72952,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -71508,97 +72976,20 @@ export namespace Prisma {
     assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
   }
 
-  export type UserUpsertWithoutFileUploadsInput = {
+  export type UserUpsertWithWhereUniqueWithoutFileUploadsInput = {
+    where: UserWhereUniqueInput
     update: XOR<UserUpdateWithoutFileUploadsInput, UserUncheckedUpdateWithoutFileUploadsInput>
     create: XOR<UserCreateWithoutFileUploadsInput, UserUncheckedCreateWithoutFileUploadsInput>
-    where?: UserWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutFileUploadsInput = {
-    where?: UserWhereInput
+  export type UserUpdateWithWhereUniqueWithoutFileUploadsInput = {
+    where: UserWhereUniqueInput
     data: XOR<UserUpdateWithoutFileUploadsInput, UserUncheckedUpdateWithoutFileUploadsInput>
   }
 
-  export type UserUpdateWithoutFileUploadsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: NullableStringFieldUpdateOperationsInput | string | null
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    timezone?: NullableStringFieldUpdateOperationsInput | string | null
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUsersNestedInput
-    accounts?: AccountUpdateManyWithoutUserNestedInput
-    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
-    ChannelMember?: ChannelMemberUpdateManyWithoutUserNestedInput
-    comments?: CommentUpdateManyWithoutAuthorNestedInput
-    features?: FeatureUpdateManyWithoutUsersNestedInput
-    fields?: fieldsUpdateManyWithoutUsersNestedInput
-    FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    initiatives?: InitiativeUpdateManyWithoutUserNestedInput
-    ownedItems?: ItemUpdateManyWithoutUserNestedInput
-    Message?: MessageUpdateManyWithoutAuthorNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
-    projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
-    sessions?: SessionUpdateManyWithoutUserNestedInput
-    createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
-    organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
-    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
-    createdUserStories?: UserStoryUpdateManyWithoutCreatorNestedInput
-    assignedItems?: ItemUpdateManyWithoutAssigneesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
-    sprints?: SprintUpdateManyWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutFileUploadsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    username?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: NullableStringFieldUpdateOperationsInput | string | null
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    timezone?: NullableStringFieldUpdateOperationsInput | string | null
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUsersNestedInput
-    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
-    ChannelMember?: ChannelMemberUncheckedUpdateManyWithoutUserNestedInput
-    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
-    features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
-    fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
-    FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
-    ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
-    Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
-    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
-    organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
-    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
-    createdUserStories?: UserStoryUncheckedUpdateManyWithoutCreatorNestedInput
-    assignedItems?: ItemUncheckedUpdateManyWithoutAssigneesNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
-    sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+  export type UserUpdateManyWithWhereWithoutFileUploadsInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutFileUploadsInput>
   }
 
   export type UserStoryUpsertWithoutFilesInput = {
@@ -71615,6 +73006,7 @@ export namespace Prisma {
   export type UserStoryUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -71639,11 +73031,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -71668,6 +73062,7 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type ItemUpsertWithWhereUniqueWithoutFilesInput = {
@@ -71710,7 +73105,7 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -71751,7 +73146,7 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -71776,18 +73171,16 @@ export namespace Prisma {
   export type FileCreateWithoutVersionsInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
@@ -71797,10 +73190,10 @@ export namespace Prisma {
     feature?: FeatureCreateNestedOneWithoutFilesInput
     parent?: FileCreateNestedOneWithoutChildrenInput
     children?: FileCreateNestedManyWithoutParentInput
-    project?: ProjectCreateNestedOneWithoutFilesInput
+    project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
     task?: TaskCreateNestedOneWithoutFilesInput
-    uploader: UserCreateNestedOneWithoutFileUploadsInput
+    author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
@@ -71808,32 +73201,30 @@ export namespace Prisma {
   export type FileUncheckedCreateWithoutVersionsInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
@@ -71877,7 +73268,7 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -71918,7 +73309,7 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -71949,18 +73340,16 @@ export namespace Prisma {
   export type FileUpdateWithoutVersionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -71970,10 +73359,10 @@ export namespace Prisma {
     feature?: FeatureUpdateOneWithoutFilesNestedInput
     parent?: FileUpdateOneWithoutChildrenNestedInput
     children?: FileUpdateManyWithoutParentNestedInput
-    project?: ProjectUpdateOneWithoutFilesNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
     task?: TaskUpdateOneWithoutFilesNestedInput
-    uploader?: UserUpdateOneRequiredWithoutFileUploadsNestedInput
+    author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
@@ -71981,32 +73370,30 @@ export namespace Prisma {
   export type FileUncheckedUpdateWithoutVersionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
@@ -72034,7 +73421,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -72075,7 +73462,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -72100,18 +73487,16 @@ export namespace Prisma {
   export type FileCreateWithoutCommentsInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
@@ -72121,10 +73506,10 @@ export namespace Prisma {
     feature?: FeatureCreateNestedOneWithoutFilesInput
     parent?: FileCreateNestedOneWithoutChildrenInput
     children?: FileCreateNestedManyWithoutParentInput
-    project?: ProjectCreateNestedOneWithoutFilesInput
+    project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
     task?: TaskCreateNestedOneWithoutFilesInput
-    uploader: UserCreateNestedOneWithoutFileUploadsInput
+    author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
@@ -72132,32 +73517,30 @@ export namespace Prisma {
   export type FileUncheckedCreateWithoutCommentsInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     taskId?: string | null
     sprintId?: string | null
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
@@ -72251,6 +73634,8 @@ export namespace Prisma {
 
   export type CommentCreateWithoutRepliesInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -72261,12 +73646,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
     file?: FileCreateNestedOneWithoutCommentsInput
@@ -72280,6 +73663,8 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutRepliesInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -72296,12 +73681,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
     categories?: categoriesUncheckedCreateNestedManyWithoutCommentsInput
@@ -72314,6 +73697,8 @@ export namespace Prisma {
 
   export type CommentCreateWithoutParentCommentInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -72324,12 +73709,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
     file?: FileCreateNestedOneWithoutCommentsInput
@@ -72343,6 +73726,8 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutParentCommentInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -72358,12 +73743,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
     blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
@@ -72383,6 +73766,7 @@ export namespace Prisma {
   export type TaskCreateWithoutCommentsInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -72409,6 +73793,7 @@ export namespace Prisma {
   export type TaskUncheckedCreateWithoutCommentsInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -72440,6 +73825,7 @@ export namespace Prisma {
   export type UserStoryCreateWithoutCommentsInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -72464,11 +73850,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryUncheckedCreateWithoutCommentsInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -72493,6 +73881,7 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryCreateOrConnectWithoutCommentsInput = {
@@ -72503,6 +73892,7 @@ export namespace Prisma {
   export type blog_tagsCreateWithoutCommentsInput = {
     id: string
     name: string
+    order?: number
     color?: string | null
     isActive?: boolean
     createdAt?: Date | string
@@ -72513,6 +73903,7 @@ export namespace Prisma {
   export type blog_tagsUncheckedCreateWithoutCommentsInput = {
     id: string
     name: string
+    order?: number
     color?: string | null
     isActive?: boolean
     createdAt?: Date | string
@@ -72528,6 +73919,7 @@ export namespace Prisma {
   export type categoriesCreateWithoutCommentsInput = {
     id: string
     name: string
+    order?: number
     slug?: string | null
     description?: string | null
     color?: string | null
@@ -72542,6 +73934,7 @@ export namespace Prisma {
   export type categoriesUncheckedCreateWithoutCommentsInput = {
     id: string
     name: string
+    order?: number
     slug?: string | null
     description?: string | null
     color?: string | null
@@ -72593,7 +73986,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -72634,7 +74027,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -72665,18 +74058,16 @@ export namespace Prisma {
   export type FileUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -72686,10 +74077,10 @@ export namespace Prisma {
     feature?: FeatureUpdateOneWithoutFilesNestedInput
     parent?: FileUpdateOneWithoutChildrenNestedInput
     children?: FileUpdateManyWithoutParentNestedInput
-    project?: ProjectUpdateOneWithoutFilesNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
     task?: TaskUpdateOneWithoutFilesNestedInput
-    uploader?: UserUpdateOneRequiredWithoutFileUploadsNestedInput
+    author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
@@ -72697,32 +74088,30 @@ export namespace Prisma {
   export type FileUncheckedUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
@@ -72828,6 +74217,8 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutRepliesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72838,12 +74229,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
     file?: FileUpdateOneWithoutCommentsNestedInput
@@ -72857,6 +74246,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutRepliesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72873,12 +74264,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
     categories?: categoriesUncheckedUpdateManyWithoutCommentsNestedInput
@@ -72914,6 +74303,7 @@ export namespace Prisma {
   export type TaskUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -72940,6 +74330,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -72977,6 +74368,7 @@ export namespace Prisma {
   export type UserStoryUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -73001,11 +74393,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -73030,6 +74424,7 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type blog_tagsUpsertWithWhereUniqueWithoutCommentsInput = {
@@ -73054,6 +74449,7 @@ export namespace Prisma {
     NOT?: blog_tagsScalarWhereInput | blog_tagsScalarWhereInput[]
     id?: StringFilter<"blog_tags"> | string
     name?: StringFilter<"blog_tags"> | string
+    order?: IntFilter<"blog_tags"> | number
     color?: StringNullableFilter<"blog_tags"> | string | null
     isActive?: BoolFilter<"blog_tags"> | boolean
     createdAt?: DateTimeFilter<"blog_tags"> | Date | string
@@ -73083,6 +74479,7 @@ export namespace Prisma {
     NOT?: categoriesScalarWhereInput | categoriesScalarWhereInput[]
     id?: StringFilter<"categories"> | string
     name?: StringFilter<"categories"> | string
+    order?: IntFilter<"categories"> | number
     slug?: StringNullableFilter<"categories"> | string | null
     description?: StringNullableFilter<"categories"> | string | null
     color?: StringNullableFilter<"categories"> | string | null
@@ -73094,6 +74491,7 @@ export namespace Prisma {
 
   export type ChannelMemberCreateWithoutChannelInput = {
     id?: string
+    order?: number
     role?: string
     joinedAt?: Date | string
     user: UserCreateNestedOneWithoutChannelMemberInput
@@ -73101,6 +74499,7 @@ export namespace Prisma {
 
   export type ChannelMemberUncheckedCreateWithoutChannelInput = {
     id?: string
+    order?: number
     role?: string
     joinedAt?: Date | string
     userId: string
@@ -73175,6 +74574,7 @@ export namespace Prisma {
 
   export type MessageCreateWithoutChannelInput = {
     id?: string
+    order?: number
     content: string
     type?: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -73186,6 +74586,7 @@ export namespace Prisma {
 
   export type MessageUncheckedCreateWithoutChannelInput = {
     id?: string
+    order?: number
     content: string
     type?: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -73303,6 +74704,7 @@ export namespace Prisma {
   export type ChannelCreateWithoutMembersInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type?: string
     isPrivate?: boolean
@@ -73316,6 +74718,7 @@ export namespace Prisma {
   export type ChannelUncheckedCreateWithoutMembersInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type?: string
     isPrivate?: boolean
@@ -73355,7 +74758,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -73396,7 +74799,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -73432,6 +74835,7 @@ export namespace Prisma {
   export type ChannelUpdateWithoutMembersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
@@ -73445,6 +74849,7 @@ export namespace Prisma {
   export type ChannelUncheckedUpdateWithoutMembersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
@@ -73490,7 +74895,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -73531,7 +74936,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -73573,7 +74978,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -73614,7 +75019,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -73638,6 +75043,7 @@ export namespace Prisma {
   export type ChannelCreateWithoutMessagesInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type?: string
     isPrivate?: boolean
@@ -73651,6 +75057,7 @@ export namespace Prisma {
   export type ChannelUncheckedCreateWithoutMessagesInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type?: string
     isPrivate?: boolean
@@ -73702,7 +75109,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -73743,7 +75150,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -73773,6 +75180,7 @@ export namespace Prisma {
   export type ChannelUpdateWithoutMessagesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
@@ -73786,6 +75194,7 @@ export namespace Prisma {
   export type ChannelUncheckedUpdateWithoutMessagesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
@@ -73856,6 +75265,7 @@ export namespace Prisma {
   export type TeamCreateWithoutTemplatesInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -73871,6 +75281,7 @@ export namespace Prisma {
   export type TeamUncheckedCreateWithoutTemplatesInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -73965,6 +75376,7 @@ export namespace Prisma {
   export type TeamUpdateWithoutTemplatesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73980,6 +75392,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateWithoutTemplatesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74078,6 +75491,7 @@ export namespace Prisma {
   export type SprintCreateWithoutTimeEntriesInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -74099,6 +75513,7 @@ export namespace Prisma {
   export type SprintUncheckedCreateWithoutTimeEntriesInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -74125,6 +75540,7 @@ export namespace Prisma {
   export type TaskCreateWithoutTimeEntriesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -74151,6 +75567,7 @@ export namespace Prisma {
   export type TaskUncheckedCreateWithoutTimeEntriesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -74204,7 +75621,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -74245,7 +75662,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -74269,6 +75686,7 @@ export namespace Prisma {
   export type UserStoryCreateWithoutTimeEntriesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -74293,11 +75711,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryUncheckedCreateWithoutTimeEntriesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -74322,6 +75742,7 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryCreateOrConnectWithoutTimeEntriesInput = {
@@ -74432,6 +75853,7 @@ export namespace Prisma {
   export type SprintUpdateWithoutTimeEntriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74453,6 +75875,7 @@ export namespace Prisma {
   export type SprintUncheckedUpdateWithoutTimeEntriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74485,6 +75908,7 @@ export namespace Prisma {
   export type TaskUpdateWithoutTimeEntriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -74511,6 +75935,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateWithoutTimeEntriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -74570,7 +75995,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -74611,7 +76036,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -74641,6 +76066,7 @@ export namespace Prisma {
   export type UserStoryUpdateWithoutTimeEntriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -74665,11 +76091,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutTimeEntriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -74694,6 +76122,7 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserCreateWithoutNotificationsInput = {
@@ -74721,7 +76150,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -74762,7 +76191,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -74819,7 +76248,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -74860,7 +76289,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -74900,7 +76329,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -74941,7 +76370,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -74998,7 +76427,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -75039,7 +76468,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -75058,6 +76487,8 @@ export namespace Prisma {
 
   export type CommentCreateWithoutItemInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -75068,12 +76499,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
     file?: FileCreateNestedOneWithoutCommentsInput
@@ -75087,6 +76516,8 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutItemInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -75102,12 +76533,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
     blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
@@ -75298,6 +76727,7 @@ export namespace Prisma {
   export type SprintCreateWithoutItemsInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -75319,6 +76749,7 @@ export namespace Prisma {
   export type SprintUncheckedCreateWithoutItemsInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -75367,7 +76798,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -75408,7 +76839,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -75474,18 +76905,16 @@ export namespace Prisma {
   export type FileCreateWithoutItemsInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
@@ -75496,36 +76925,33 @@ export namespace Prisma {
     feature?: FeatureCreateNestedOneWithoutFilesInput
     parent?: FileCreateNestedOneWithoutChildrenInput
     children?: FileCreateNestedManyWithoutParentInput
-    project?: ProjectCreateNestedOneWithoutFilesInput
+    project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
     task?: TaskCreateNestedOneWithoutFilesInput
-    uploader: UserCreateNestedOneWithoutFileUploadsInput
+    author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
   }
 
   export type FileUncheckedCreateWithoutItemsInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     taskId?: string | null
@@ -75533,6 +76959,7 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
   }
 
   export type FileCreateOrConnectWithoutItemsInput = {
@@ -75565,7 +76992,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -75606,7 +77033,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -75762,6 +77189,7 @@ export namespace Prisma {
   export type SprintUpdateWithoutItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75783,6 +77211,7 @@ export namespace Prisma {
   export type SprintUncheckedUpdateWithoutItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75837,7 +77266,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -75878,7 +77307,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -75966,7 +77395,7 @@ export namespace Prisma {
     features?: FeatureCreateNestedManyWithoutUsersInput
     fields?: fieldsCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -76007,7 +77436,7 @@ export namespace Prisma {
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -76032,6 +77461,7 @@ export namespace Prisma {
   export type UserStoryCreateWithoutUserStoryAssigneesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -76056,11 +77486,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryUncheckedCreateWithoutUserStoryAssigneesInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -76085,6 +77517,7 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
   }
 
   export type UserStoryCreateOrConnectWithoutUserStoryAssigneesInput = {
@@ -76127,7 +77560,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -76168,7 +77601,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -76199,6 +77632,7 @@ export namespace Prisma {
   export type UserStoryUpdateWithoutUserStoryAssigneesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -76223,11 +77657,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutUserStoryAssigneesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -76252,11 +77688,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type categoriesCreateWithoutBlog_tagsInput = {
     id: string
     name: string
+    order?: number
     slug?: string | null
     description?: string | null
     color?: string | null
@@ -76271,6 +77709,7 @@ export namespace Prisma {
   export type categoriesUncheckedCreateWithoutBlog_tagsInput = {
     id: string
     name: string
+    order?: number
     slug?: string | null
     description?: string | null
     color?: string | null
@@ -76289,6 +77728,8 @@ export namespace Prisma {
 
   export type CommentCreateWithoutBlog_tagsInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -76299,12 +77740,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
     file?: FileCreateNestedOneWithoutCommentsInput
@@ -76318,6 +77757,8 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutBlog_tagsInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -76334,12 +77775,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
     categories?: categoriesUncheckedCreateNestedManyWithoutCommentsInput
@@ -76364,6 +77803,7 @@ export namespace Prisma {
   export type categoriesUpdateWithoutBlog_tagsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76378,6 +77818,7 @@ export namespace Prisma {
   export type categoriesUncheckedUpdateWithoutBlog_tagsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76408,6 +77849,7 @@ export namespace Prisma {
   export type blog_tagsCreateWithoutCategoriesInput = {
     id: string
     name: string
+    order?: number
     color?: string | null
     isActive?: boolean
     createdAt?: Date | string
@@ -76418,6 +77860,7 @@ export namespace Prisma {
   export type blog_tagsUncheckedCreateWithoutCategoriesInput = {
     id: string
     name: string
+    order?: number
     color?: string | null
     isActive?: boolean
     createdAt?: Date | string
@@ -76438,6 +77881,7 @@ export namespace Prisma {
   export type categoriesCreateWithoutOther_categoriesInput = {
     id: string
     name: string
+    order?: number
     slug?: string | null
     description?: string | null
     color?: string | null
@@ -76452,6 +77896,7 @@ export namespace Prisma {
   export type categoriesUncheckedCreateWithoutOther_categoriesInput = {
     id: string
     name: string
+    order?: number
     slug?: string | null
     description?: string | null
     color?: string | null
@@ -76471,6 +77916,7 @@ export namespace Prisma {
   export type categoriesCreateWithoutCategoriesInput = {
     id: string
     name: string
+    order?: number
     slug?: string | null
     description?: string | null
     color?: string | null
@@ -76485,6 +77931,7 @@ export namespace Prisma {
   export type categoriesUncheckedCreateWithoutCategoriesInput = {
     id: string
     name: string
+    order?: number
     slug?: string | null
     description?: string | null
     color?: string | null
@@ -76508,6 +77955,8 @@ export namespace Prisma {
 
   export type CommentCreateWithoutCategoriesInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -76518,12 +77967,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
     file?: FileCreateNestedOneWithoutCommentsInput
@@ -76537,6 +77984,8 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutCategoriesInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -76553,12 +78002,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
     replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
     blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
@@ -76599,6 +78046,7 @@ export namespace Prisma {
   export type categoriesUpdateWithoutOther_categoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76613,6 +78061,7 @@ export namespace Prisma {
   export type categoriesUncheckedUpdateWithoutOther_categoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76680,7 +78129,7 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     features?: FeatureCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeCreateNestedManyWithoutUserInput
     ownedItems?: ItemCreateNestedManyWithoutUserInput
     Message?: MessageCreateNestedManyWithoutAuthorInput
@@ -76721,7 +78170,7 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
     FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
-    fileUploads?: FileUncheckedCreateNestedManyWithoutUploaderInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
     initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
     ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
     Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
@@ -76962,6 +78411,7 @@ export namespace Prisma {
   export type TeamCreateWithoutFieldsInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -76977,6 +78427,7 @@ export namespace Prisma {
   export type TeamUncheckedCreateWithoutFieldsInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -77029,7 +78480,7 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     features?: FeatureUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -77070,7 +78521,7 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -77263,6 +78714,7 @@ export namespace Prisma {
   export type TeamUpdateWithoutFieldsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -77278,6 +78730,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateWithoutFieldsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -77324,6 +78777,7 @@ export namespace Prisma {
 
   export type ChannelMemberCreateManyUserInput = {
     id?: string
+    order?: number
     role?: string
     joinedAt?: Date | string
     channelId: string
@@ -77331,6 +78785,8 @@ export namespace Prisma {
 
   export type CommentCreateManyAuthorInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -77346,18 +78802,17 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
   }
 
   export type FeatureCreateManyUsersInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -77423,37 +78878,10 @@ export namespace Prisma {
     fileId: string
   }
 
-  export type FileCreateManyUploaderInput = {
-    id?: string
-    name: string
-    originalName?: string | null
-    type: $Enums.FileType
-    mimeType?: string | null
-    size?: number | null
-    url: string
-    path?: string | null
-    description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
-    script?: string | null
-    version?: number
-    isPublic?: boolean
-    isFolder?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    tags?: FileCreatetagsInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    parentId?: string | null
-    projectId?: string | null
-    featureId?: string | null
-    userStoryId?: string | null
-    taskId?: string | null
-    sprintId?: string | null
-  }
-
   export type InitiativeCreateManyUserInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     objective?: string | null
     priority?: $Enums.Priority
@@ -77504,6 +78932,7 @@ export namespace Prisma {
 
   export type MessageCreateManyAuthorInput = {
     id?: string
+    order?: number
     content: string
     type?: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -77527,6 +78956,7 @@ export namespace Prisma {
   export type ProjectMemberCreateManyUserInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     projectId: string
@@ -77545,6 +78975,7 @@ export namespace Prisma {
   export type TaskCreateManyCreatorInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -77565,6 +78996,7 @@ export namespace Prisma {
   export type TeamMemberCreateManyUserInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     teamId: string
@@ -77589,6 +79021,7 @@ export namespace Prisma {
   export type UserStoryCreateManyCreatorInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -77705,6 +79138,7 @@ export namespace Prisma {
 
   export type ChannelMemberUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     role?: StringFieldUpdateOperationsInput | string
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channel?: ChannelUpdateOneRequiredWithoutMembersNestedInput
@@ -77712,6 +79146,7 @@ export namespace Prisma {
 
   export type ChannelMemberUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     role?: StringFieldUpdateOperationsInput | string
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channelId?: StringFieldUpdateOperationsInput | string
@@ -77719,6 +79154,7 @@ export namespace Prisma {
 
   export type ChannelMemberUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     role?: StringFieldUpdateOperationsInput | string
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channelId?: StringFieldUpdateOperationsInput | string
@@ -77726,6 +79162,8 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -77736,12 +79174,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     file?: FileUpdateOneWithoutCommentsNestedInput
     item?: ItemUpdateOneWithoutCommentsNestedInput
@@ -77755,6 +79191,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -77770,12 +79208,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
     blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
@@ -77784,6 +79220,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateManyWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -77799,18 +79237,17 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
   }
 
   export type FeatureUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -77838,6 +79275,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -77865,6 +79303,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateManyWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -78024,21 +79463,19 @@ export namespace Prisma {
     fileId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type FileUpdateWithoutUploaderInput = {
+  export type FileUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -78049,35 +79486,33 @@ export namespace Prisma {
     feature?: FeatureUpdateOneWithoutFilesNestedInput
     parent?: FileUpdateOneWithoutChildrenNestedInput
     children?: FileUpdateManyWithoutParentNestedInput
-    project?: ProjectUpdateOneWithoutFilesNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
     task?: TaskUpdateOneWithoutFilesNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
 
-  export type FileUncheckedUpdateWithoutUploaderInput = {
+  export type FileUncheckedUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78088,28 +79523,26 @@ export namespace Prisma {
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
-  export type FileUncheckedUpdateManyWithoutUploaderInput = {
+  export type FileUncheckedUpdateManyWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78119,6 +79552,7 @@ export namespace Prisma {
   export type InitiativeUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     objective?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -78137,6 +79571,7 @@ export namespace Prisma {
   export type InitiativeUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     objective?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -78155,6 +79590,7 @@ export namespace Prisma {
   export type InitiativeUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     objective?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -78283,6 +79719,7 @@ export namespace Prisma {
 
   export type MessageUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -78294,6 +79731,7 @@ export namespace Prisma {
 
   export type MessageUncheckedUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -78305,6 +79743,7 @@ export namespace Prisma {
 
   export type MessageUncheckedUpdateManyWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -78350,6 +79789,7 @@ export namespace Prisma {
   export type ProjectMemberUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     project?: ProjectUpdateOneRequiredWithoutMembersNestedInput
@@ -78358,6 +79798,7 @@ export namespace Prisma {
   export type ProjectMemberUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     projectId?: StringFieldUpdateOperationsInput | string
@@ -78366,6 +79807,7 @@ export namespace Prisma {
   export type ProjectMemberUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     projectId?: StringFieldUpdateOperationsInput | string
@@ -78404,6 +79846,7 @@ export namespace Prisma {
   export type TaskUpdateWithoutCreatorInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -78430,6 +79873,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateWithoutCreatorInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -78456,6 +79900,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateManyWithoutCreatorInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -78476,6 +79921,7 @@ export namespace Prisma {
   export type TeamMemberUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     team?: TeamUpdateOneRequiredWithoutMembersNestedInput
@@ -78484,6 +79930,7 @@ export namespace Prisma {
   export type TeamMemberUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     teamId?: StringFieldUpdateOperationsInput | string
@@ -78492,6 +79939,7 @@ export namespace Prisma {
   export type TeamMemberUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     teamId?: StringFieldUpdateOperationsInput | string
@@ -78548,6 +79996,7 @@ export namespace Prisma {
   export type UserStoryUpdateWithoutCreatorInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -78572,11 +80021,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutCreatorInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -78601,11 +80052,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateManyWithoutCreatorInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -78810,6 +80263,7 @@ export namespace Prisma {
   export type SprintUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78831,6 +80285,7 @@ export namespace Prisma {
   export type SprintUncheckedUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78852,6 +80307,7 @@ export namespace Prisma {
   export type SprintUncheckedUpdateManyWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78869,6 +80325,7 @@ export namespace Prisma {
   export type TaskUpdateWithoutAssigneesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -78895,6 +80352,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateWithoutAssigneesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -78921,6 +80379,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateManyWithoutAssigneesInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -78977,6 +80436,7 @@ export namespace Prisma {
   export type TeamMemberCreateManyTeamInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     userId: string
@@ -78985,6 +80445,7 @@ export namespace Prisma {
   export type TeamCreateManyParentTeamInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     slug: string
     logoUrl?: string | null
@@ -78996,6 +80457,7 @@ export namespace Prisma {
   export type TemplateCreateManyTeamInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type: string
     category?: string | null
@@ -79118,6 +80580,7 @@ export namespace Prisma {
   export type TeamMemberUpdateWithoutTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutOrganizationMembershipsNestedInput
@@ -79126,6 +80589,7 @@ export namespace Prisma {
   export type TeamMemberUncheckedUpdateWithoutTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
@@ -79134,6 +80598,7 @@ export namespace Prisma {
   export type TeamMemberUncheckedUpdateManyWithoutTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
@@ -79142,6 +80607,7 @@ export namespace Prisma {
   export type TeamUpdateWithoutParentTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79157,6 +80623,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateWithoutParentTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79172,6 +80639,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateManyWithoutParentTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79183,6 +80651,7 @@ export namespace Prisma {
   export type TemplateUpdateWithoutTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79198,6 +80667,7 @@ export namespace Prisma {
   export type TemplateUncheckedUpdateWithoutTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79213,6 +80683,7 @@ export namespace Prisma {
   export type TemplateUncheckedUpdateManyWithoutTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79228,6 +80699,7 @@ export namespace Prisma {
   export type ChannelCreateManyProjectInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type?: string
     isPrivate?: boolean
@@ -79239,6 +80711,7 @@ export namespace Prisma {
   export type FeatureCreateManyProjectInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -79296,24 +80769,21 @@ export namespace Prisma {
   export type FileCreateManyProjectInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
     featureId?: string | null
     userStoryId?: string | null
@@ -79324,6 +80794,7 @@ export namespace Prisma {
   export type InitiativeCreateManyProjectInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     objective?: string | null
     priority?: $Enums.Priority
@@ -79341,6 +80812,7 @@ export namespace Prisma {
   export type ProjectMemberCreateManyProjectInput = {
     id?: string
     role?: $Enums.UserRole
+    order?: number
     joinedAt?: Date | string
     isActive?: boolean
     userId: string
@@ -79349,6 +80821,7 @@ export namespace Prisma {
   export type SprintCreateManyProjectInput = {
     id?: string
     name: string
+    order?: number
     goal?: string | null
     description?: string | null
     startDate: Date | string
@@ -79365,6 +80838,7 @@ export namespace Prisma {
   export type TemplateCreateManyProjectInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     type: string
     category?: string | null
@@ -79380,6 +80854,7 @@ export namespace Prisma {
   export type ChannelUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
@@ -79393,6 +80868,7 @@ export namespace Prisma {
   export type ChannelUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
@@ -79406,6 +80882,7 @@ export namespace Prisma {
   export type ChannelUncheckedUpdateManyWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
@@ -79417,6 +80894,7 @@ export namespace Prisma {
   export type FeatureUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -79444,6 +80922,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -79471,6 +80950,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateManyWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -79600,18 +81080,16 @@ export namespace Prisma {
   export type FileUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -79624,7 +81102,7 @@ export namespace Prisma {
     children?: FileUpdateManyWithoutParentNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
     task?: TaskUpdateOneWithoutFilesNestedInput
-    uploader?: UserUpdateOneRequiredWithoutFileUploadsNestedInput
+    author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
@@ -79632,24 +81110,21 @@ export namespace Prisma {
   export type FileUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79658,30 +81133,28 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
   export type FileUncheckedUpdateManyWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79692,6 +81165,7 @@ export namespace Prisma {
   export type InitiativeUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     objective?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -79710,6 +81184,7 @@ export namespace Prisma {
   export type InitiativeUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     objective?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -79728,6 +81203,7 @@ export namespace Prisma {
   export type InitiativeUncheckedUpdateManyWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     objective?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -79745,6 +81221,7 @@ export namespace Prisma {
   export type ProjectMemberUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutProjectMembershipsNestedInput
@@ -79753,6 +81230,7 @@ export namespace Prisma {
   export type ProjectMemberUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
@@ -79761,6 +81239,7 @@ export namespace Prisma {
   export type ProjectMemberUncheckedUpdateManyWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    order?: IntFieldUpdateOperationsInput | number
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
@@ -79769,6 +81248,7 @@ export namespace Prisma {
   export type SprintUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79790,6 +81270,7 @@ export namespace Prisma {
   export type SprintUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79811,6 +81292,7 @@ export namespace Prisma {
   export type SprintUncheckedUpdateManyWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79827,6 +81309,7 @@ export namespace Prisma {
   export type TemplateUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79842,6 +81325,7 @@ export namespace Prisma {
   export type TemplateUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79857,6 +81341,7 @@ export namespace Prisma {
   export type TemplateUncheckedUpdateManyWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79894,7 +81379,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -79935,7 +81420,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -79973,6 +81458,7 @@ export namespace Prisma {
   export type EpicCreateManyInitiativeInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: string
@@ -79986,6 +81472,7 @@ export namespace Prisma {
   export type EpicUpdateWithoutInitiativeInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: StringFieldUpdateOperationsInput | string
@@ -79995,11 +81482,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     features?: FeatureUpdateManyWithoutEpicNestedInput
+    userstories?: UserStoryUpdateManyWithoutEpicNestedInput
   }
 
   export type EpicUncheckedUpdateWithoutInitiativeInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: StringFieldUpdateOperationsInput | string
@@ -80009,11 +81498,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     features?: FeatureUncheckedUpdateManyWithoutEpicNestedInput
+    userstories?: UserStoryUncheckedUpdateManyWithoutEpicNestedInput
   }
 
   export type EpicUncheckedUpdateManyWithoutInitiativeInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: StringFieldUpdateOperationsInput | string
@@ -80027,6 +81518,7 @@ export namespace Prisma {
   export type FeatureCreateManyEpicInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -80049,6 +81541,7 @@ export namespace Prisma {
   export type FeatureUpdateWithoutEpicInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -80076,6 +81569,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateWithoutEpicInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -80103,6 +81597,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateManyWithoutEpicInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -80122,9 +81617,95 @@ export namespace Prisma {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type UserStoryUpdateWithoutEpicInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: UserStoryUpdatelabelsInput | string[]
+    tags?: UserStoryUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
+    comments?: CommentUpdateManyWithoutUserStoryNestedInput
+    files?: FileUpdateManyWithoutUserStoryNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
+    creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
+    feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
+    dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
+    dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
+    sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+  }
+
+  export type UserStoryUncheckedUpdateWithoutEpicInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: UserStoryUpdatelabelsInput | string[]
+    tags?: UserStoryUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    featureId?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
+    UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
+    files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
+    dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
+    dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+  }
+
+  export type UserStoryUncheckedUpdateManyWithoutEpicInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: UserStoryUpdatelabelsInput | string[]
+    tags?: UserStoryUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    featureId?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
+  }
+
   export type FeatureDependencyCreateManyDependentFeatureInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependsOnFeatureId: string
@@ -80133,6 +81714,7 @@ export namespace Prisma {
   export type FeatureDependencyCreateManyDependsOnFeatureInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentFeatureId: string
@@ -80141,6 +81723,7 @@ export namespace Prisma {
   export type FeatureCreateManyParentInput = {
     id?: string
     name: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -80163,26 +81746,23 @@ export namespace Prisma {
   export type FileCreateManyFeatureInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     userStoryId?: string | null
     taskId?: string | null
     sprintId?: string | null
@@ -80191,6 +81771,7 @@ export namespace Prisma {
   export type UserStoryCreateManyFeatureInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     acceptanceCriteria?: string | null
     priority?: $Enums.Priority
@@ -80212,6 +81793,7 @@ export namespace Prisma {
   export type FeatureDependencyUpdateWithoutDependentFeatureInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependsOnFeature?: FeatureUpdateOneRequiredWithoutDependentsNestedInput
@@ -80220,6 +81802,7 @@ export namespace Prisma {
   export type FeatureDependencyUncheckedUpdateWithoutDependentFeatureInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependsOnFeatureId?: StringFieldUpdateOperationsInput | string
@@ -80228,6 +81811,7 @@ export namespace Prisma {
   export type FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependsOnFeatureId?: StringFieldUpdateOperationsInput | string
@@ -80236,6 +81820,7 @@ export namespace Prisma {
   export type FeatureDependencyUpdateWithoutDependsOnFeatureInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentFeature?: FeatureUpdateOneRequiredWithoutDependenciesNestedInput
@@ -80244,6 +81829,7 @@ export namespace Prisma {
   export type FeatureDependencyUncheckedUpdateWithoutDependsOnFeatureInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentFeatureId?: StringFieldUpdateOperationsInput | string
@@ -80252,6 +81838,7 @@ export namespace Prisma {
   export type FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentFeatureId?: StringFieldUpdateOperationsInput | string
@@ -80260,6 +81847,7 @@ export namespace Prisma {
   export type FeatureUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -80287,6 +81875,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -80314,6 +81903,7 @@ export namespace Prisma {
   export type FeatureUncheckedUpdateManyWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -80336,18 +81926,16 @@ export namespace Prisma {
   export type FileUpdateWithoutFeatureInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -80357,10 +81945,10 @@ export namespace Prisma {
     versions?: FileVersionUpdateManyWithoutFileNestedInput
     parent?: FileUpdateOneWithoutChildrenNestedInput
     children?: FileUpdateManyWithoutParentNestedInput
-    project?: ProjectUpdateOneWithoutFilesNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
     task?: TaskUpdateOneWithoutFilesNestedInput
-    uploader?: UserUpdateOneRequiredWithoutFileUploadsNestedInput
+    author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
@@ -80368,58 +81956,53 @@ export namespace Prisma {
   export type FileUncheckedUpdateWithoutFeatureInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
   export type FileUncheckedUpdateManyWithoutFeatureInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -80428,6 +82011,7 @@ export namespace Prisma {
   export type UserStoryUpdateWithoutFeatureInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -80452,11 +82036,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutFeatureInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -80481,11 +82067,13 @@ export namespace Prisma {
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateManyWithoutFeatureInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -80510,6 +82098,8 @@ export namespace Prisma {
 
   export type CommentCreateManyUserStoryInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -80525,38 +82115,33 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
   }
 
   export type FileCreateManyUserStoryInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     taskId?: string | null
     sprintId?: string | null
@@ -80565,6 +82150,7 @@ export namespace Prisma {
   export type TaskCreateManyUserStoryInput = {
     id?: string
     title: string
+    order?: number
     description?: string | null
     priority?: $Enums.Priority
     status?: $Enums.TaskStatus
@@ -80601,6 +82187,7 @@ export namespace Prisma {
   export type UserStoryDependencyCreateManyDependentUserStoryInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependsOnUserStoryId: string
@@ -80609,6 +82196,7 @@ export namespace Prisma {
   export type UserStoryDependencyCreateManyDependsOnUserStoryInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentUserStoryId: string
@@ -80628,6 +82216,8 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80638,12 +82228,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
     file?: FileUpdateOneWithoutCommentsNestedInput
@@ -80657,6 +82245,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80672,12 +82262,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
     blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
@@ -80686,6 +82274,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateManyWithoutUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80701,30 +82291,26 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
   }
 
   export type FileUpdateWithoutUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -80735,68 +82321,63 @@ export namespace Prisma {
     feature?: FeatureUpdateOneWithoutFilesNestedInput
     parent?: FileUpdateOneWithoutChildrenNestedInput
     children?: FileUpdateManyWithoutParentNestedInput
-    project?: ProjectUpdateOneWithoutFilesNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
     task?: TaskUpdateOneWithoutFilesNestedInput
-    uploader?: UserUpdateOneRequiredWithoutFileUploadsNestedInput
+    author?: UserUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
 
   export type FileUncheckedUpdateWithoutUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
   export type FileUncheckedUpdateManyWithoutUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -80805,6 +82386,7 @@ export namespace Prisma {
   export type TaskUpdateWithoutUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -80831,6 +82413,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateWithoutUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -80857,6 +82440,7 @@ export namespace Prisma {
   export type TaskUncheckedUpdateManyWithoutUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
@@ -80925,6 +82509,7 @@ export namespace Prisma {
   export type UserStoryDependencyUpdateWithoutDependentUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependsOnUserStory?: UserStoryUpdateOneRequiredWithoutDependentsNestedInput
@@ -80933,6 +82518,7 @@ export namespace Prisma {
   export type UserStoryDependencyUncheckedUpdateWithoutDependentUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependsOnUserStoryId?: StringFieldUpdateOperationsInput | string
@@ -80941,6 +82527,7 @@ export namespace Prisma {
   export type UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependsOnUserStoryId?: StringFieldUpdateOperationsInput | string
@@ -80949,6 +82536,7 @@ export namespace Prisma {
   export type UserStoryDependencyUpdateWithoutDependsOnUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentUserStory?: UserStoryUpdateOneRequiredWithoutDependenciesNestedInput
@@ -80957,6 +82545,7 @@ export namespace Prisma {
   export type UserStoryDependencyUncheckedUpdateWithoutDependsOnUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentUserStoryId?: StringFieldUpdateOperationsInput | string
@@ -80965,6 +82554,7 @@ export namespace Prisma {
   export type UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentUserStoryId?: StringFieldUpdateOperationsInput | string
@@ -80973,6 +82563,7 @@ export namespace Prisma {
   export type SprintUpdateWithoutUserStoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80994,6 +82585,7 @@ export namespace Prisma {
   export type SprintUncheckedUpdateWithoutUserStoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81015,6 +82607,7 @@ export namespace Prisma {
   export type SprintUncheckedUpdateManyWithoutUserStoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     goal?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81029,8 +82622,57 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
   }
 
+  export type EpicUpdateWithoutUserstoriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiative?: InitiativeUpdateOneRequiredWithoutEpicsNestedInput
+    features?: FeatureUpdateManyWithoutEpicNestedInput
+  }
+
+  export type EpicUncheckedUpdateWithoutUserstoriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiativeId?: StringFieldUpdateOperationsInput | string
+    features?: FeatureUncheckedUpdateManyWithoutEpicNestedInput
+  }
+
+  export type EpicUncheckedUpdateManyWithoutUserstoriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiativeId?: StringFieldUpdateOperationsInput | string
+  }
+
   export type CommentCreateManyTaskInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -81046,38 +82688,33 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
   }
 
   export type FileCreateManyTaskInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     sprintId?: string | null
@@ -81086,6 +82723,7 @@ export namespace Prisma {
   export type TaskDependencyCreateManyDependentTaskInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependsOnTaskId: string
@@ -81094,6 +82732,7 @@ export namespace Prisma {
   export type TaskDependencyCreateManyDependsOnTaskInput = {
     id?: string
     type?: string
+    order?: number
     description?: string | null
     createdAt?: Date | string
     dependentTaskId: string
@@ -81117,6 +82756,8 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81127,12 +82768,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
     file?: FileUpdateOneWithoutCommentsNestedInput
@@ -81146,6 +82785,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81161,12 +82802,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
     blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
@@ -81175,6 +82814,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateManyWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -81190,30 +82831,26 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
   }
 
   export type FileUpdateWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -81224,9 +82861,9 @@ export namespace Prisma {
     feature?: FeatureUpdateOneWithoutFilesNestedInput
     parent?: FileUpdateOneWithoutChildrenNestedInput
     children?: FileUpdateManyWithoutParentNestedInput
-    project?: ProjectUpdateOneWithoutFilesNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
-    uploader?: UserUpdateOneRequiredWithoutFileUploadsNestedInput
+    author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
@@ -81234,58 +82871,53 @@ export namespace Prisma {
   export type FileUncheckedUpdateWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
   export type FileUncheckedUpdateManyWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -81294,6 +82926,7 @@ export namespace Prisma {
   export type TaskDependencyUpdateWithoutDependentTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependsOnTask?: TaskUpdateOneRequiredWithoutDependentsNestedInput
@@ -81302,6 +82935,7 @@ export namespace Prisma {
   export type TaskDependencyUncheckedUpdateWithoutDependentTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependsOnTaskId?: StringFieldUpdateOperationsInput | string
@@ -81310,6 +82944,7 @@ export namespace Prisma {
   export type TaskDependencyUncheckedUpdateManyWithoutDependentTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependsOnTaskId?: StringFieldUpdateOperationsInput | string
@@ -81318,6 +82953,7 @@ export namespace Prisma {
   export type TaskDependencyUpdateWithoutDependsOnTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentTask?: TaskUpdateOneRequiredWithoutDependenciesNestedInput
@@ -81326,6 +82962,7 @@ export namespace Prisma {
   export type TaskDependencyUncheckedUpdateWithoutDependsOnTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentTaskId?: StringFieldUpdateOperationsInput | string
@@ -81334,6 +82971,7 @@ export namespace Prisma {
   export type TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentTaskId?: StringFieldUpdateOperationsInput | string
@@ -81412,7 +83050,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -81453,7 +83091,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -81491,26 +83129,23 @@ export namespace Prisma {
   export type FileCreateManySprintInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
     parentId?: string | null
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     taskId?: string | null
@@ -81569,18 +83204,16 @@ export namespace Prisma {
   export type FileUpdateWithoutSprintInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -81591,9 +83224,9 @@ export namespace Prisma {
     feature?: FeatureUpdateOneWithoutFilesNestedInput
     parent?: FileUpdateOneWithoutChildrenNestedInput
     children?: FileUpdateManyWithoutParentNestedInput
-    project?: ProjectUpdateOneWithoutFilesNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     task?: TaskUpdateOneWithoutFilesNestedInput
-    uploader?: UserUpdateOneRequiredWithoutFileUploadsNestedInput
+    author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
@@ -81601,58 +83234,53 @@ export namespace Prisma {
   export type FileUncheckedUpdateWithoutSprintInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
   export type FileUncheckedUpdateManyWithoutSprintInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -81843,7 +83471,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -81884,7 +83512,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -81922,6 +83550,7 @@ export namespace Prisma {
   export type UserStoryUpdateWithoutSprintsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -81946,11 +83575,13 @@ export namespace Prisma {
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
+    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutSprintsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -81975,11 +83606,13 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
+    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
   }
 
   export type UserStoryUncheckedUpdateManyWithoutSprintsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -82001,6 +83634,8 @@ export namespace Prisma {
 
   export type CommentCreateManyFileInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -82016,12 +83651,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
   }
 
@@ -82039,25 +83672,22 @@ export namespace Prisma {
   export type FileCreateManyParentInput = {
     id?: string
     name: string
-    originalName?: string | null
+    order?: number
     type: $Enums.FileType
     mimeType?: string | null
-    size?: number | null
-    url: string
     path?: string | null
     description?: string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: string | null
+    use?: string | null
+    export?: string | null
     script?: string | null
     version?: number
-    isPublic?: boolean
     isFolder?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    uploaderId: string
-    projectId?: string | null
+    projectId: string
     featureId?: string | null
     userStoryId?: string | null
     taskId?: string | null
@@ -82066,6 +83696,8 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutFileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82076,12 +83708,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
     item?: ItemUpdateOneWithoutCommentsNestedInput
@@ -82095,6 +83725,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutFileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82110,12 +83742,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
     blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
@@ -82124,6 +83754,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateManyWithoutFileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82139,12 +83771,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
   }
 
@@ -82184,18 +83814,16 @@ export namespace Prisma {
   export type FileUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -82205,10 +83833,10 @@ export namespace Prisma {
     versions?: FileVersionUpdateManyWithoutFileNestedInput
     feature?: FeatureUpdateOneWithoutFilesNestedInput
     children?: FileUpdateManyWithoutParentNestedInput
-    project?: ProjectUpdateOneWithoutFilesNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
     task?: TaskUpdateOneWithoutFilesNestedInput
-    uploader?: UserUpdateOneRequiredWithoutFileUploadsNestedInput
+    author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
@@ -82216,25 +83844,22 @@ export namespace Prisma {
   export type FileUncheckedUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -82242,35 +83867,134 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
   export type FileUncheckedUpdateManyWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UserUpdateWithoutFileUploadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUsersNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    ChannelMember?: ChannelMemberUpdateManyWithoutUserNestedInput
+    comments?: CommentUpdateManyWithoutAuthorNestedInput
+    features?: FeatureUpdateManyWithoutUsersNestedInput
+    fields?: fieldsUpdateManyWithoutUsersNestedInput
+    FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
+    initiatives?: InitiativeUpdateManyWithoutUserNestedInput
+    ownedItems?: ItemUpdateManyWithoutUserNestedInput
+    Message?: MessageUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
+    organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
+    createdUserStories?: UserStoryUpdateManyWithoutCreatorNestedInput
+    assignedItems?: ItemUpdateManyWithoutAssigneesNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    sprints?: SprintUpdateManyWithoutUsersNestedInput
+    assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutFileUploadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUsersNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    ChannelMember?: ChannelMemberUncheckedUpdateManyWithoutUserNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
+    fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
+    FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
+    initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
+    ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
+    Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
+    organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
+    createdUserStories?: UserStoryUncheckedUpdateManyWithoutCreatorNestedInput
+    assignedItems?: ItemUncheckedUpdateManyWithoutAssigneesNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutFileUploadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ItemUpdateWithoutFilesInput = {
@@ -82388,6 +84112,8 @@ export namespace Prisma {
 
   export type CommentCreateManyParentCommentInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -82403,17 +84129,17 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
   }
 
   export type CommentUpdateWithoutParentCommentInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82424,12 +84150,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
     file?: FileUpdateOneWithoutCommentsNestedInput
@@ -82443,6 +84167,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutParentCommentInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82458,12 +84184,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
     blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
@@ -82472,6 +84196,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateManyWithoutParentCommentInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82487,18 +84213,17 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
   }
 
   export type blog_tagsUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     color?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82509,6 +84234,7 @@ export namespace Prisma {
   export type blog_tagsUncheckedUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     color?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82519,6 +84245,7 @@ export namespace Prisma {
   export type blog_tagsUncheckedUpdateManyWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     color?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82529,6 +84256,7 @@ export namespace Prisma {
   export type categoriesUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -82543,6 +84271,7 @@ export namespace Prisma {
   export type categoriesUncheckedUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -82557,6 +84286,7 @@ export namespace Prisma {
   export type categoriesUncheckedUpdateManyWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -82568,6 +84298,7 @@ export namespace Prisma {
 
   export type ChannelMemberCreateManyChannelInput = {
     id?: string
+    order?: number
     role?: string
     joinedAt?: Date | string
     userId: string
@@ -82575,6 +84306,7 @@ export namespace Prisma {
 
   export type MessageCreateManyChannelInput = {
     id?: string
+    order?: number
     content: string
     type?: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -82586,6 +84318,7 @@ export namespace Prisma {
 
   export type ChannelMemberUpdateWithoutChannelInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     role?: StringFieldUpdateOperationsInput | string
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutChannelMemberNestedInput
@@ -82593,6 +84326,7 @@ export namespace Prisma {
 
   export type ChannelMemberUncheckedUpdateWithoutChannelInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     role?: StringFieldUpdateOperationsInput | string
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -82600,6 +84334,7 @@ export namespace Prisma {
 
   export type ChannelMemberUncheckedUpdateManyWithoutChannelInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     role?: StringFieldUpdateOperationsInput | string
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -82607,6 +84342,7 @@ export namespace Prisma {
 
   export type MessageUpdateWithoutChannelInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -82618,6 +84354,7 @@ export namespace Prisma {
 
   export type MessageUncheckedUpdateWithoutChannelInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -82629,6 +84366,7 @@ export namespace Prisma {
 
   export type MessageUncheckedUpdateManyWithoutChannelInput = {
     id?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -82640,6 +84378,8 @@ export namespace Prisma {
 
   export type CommentCreateManyItemInput = {
     id?: string
+    title: string
+    order?: number
     content: string
     mentions?: CommentCreatementionsInput | string[]
     createdAt?: Date | string
@@ -82655,12 +84395,10 @@ export namespace Prisma {
     isPinned?: boolean
     isResolved?: boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: number
     publishedAt?: Date | string | null
     readingTime?: number | null
     slug?: string | null
     status?: string
-    title?: string | null
     visibility?: $Enums.Visibility
   }
 
@@ -82716,6 +84454,8 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutItemInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82726,12 +84466,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
     file?: FileUpdateOneWithoutCommentsNestedInput
@@ -82745,6 +84483,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutItemInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82760,12 +84500,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
     blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
@@ -82774,6 +84512,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateManyWithoutItemInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82789,12 +84529,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
   }
 
@@ -82961,18 +84699,16 @@ export namespace Prisma {
   export type FileUpdateWithoutItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
@@ -82983,36 +84719,33 @@ export namespace Prisma {
     feature?: FeatureUpdateOneWithoutFilesNestedInput
     parent?: FileUpdateOneWithoutChildrenNestedInput
     children?: FileUpdateManyWithoutParentNestedInput
-    project?: ProjectUpdateOneWithoutFilesNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
     task?: TaskUpdateOneWithoutFilesNestedInput
-    uploader?: UserUpdateOneRequiredWithoutFileUploadsNestedInput
+    author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
   }
 
   export type FileUncheckedUpdateWithoutItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -83020,31 +84753,29 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
   }
 
   export type FileUncheckedUpdateManyWithoutItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    size?: NullableIntFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
     path?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableJsonNullValueInput | InputJsonValue
-    export?: NullableJsonNullValueInput | InputJsonValue
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
     script?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
     isFolder?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
     tags?: FileUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    uploaderId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
     taskId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -83076,7 +84807,7 @@ export namespace Prisma {
     features?: FeatureUpdateManyWithoutUsersNestedInput
     fields?: fieldsUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUpdateManyWithoutUserNestedInput
     Message?: MessageUpdateManyWithoutAuthorNestedInput
@@ -83117,7 +84848,7 @@ export namespace Prisma {
     features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
     FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    fileUploads?: FileUncheckedUpdateManyWithoutUploaderNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
     initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
     ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
     Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
@@ -83154,6 +84885,8 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutBlog_tagsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -83164,12 +84897,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
     file?: FileUpdateOneWithoutCommentsNestedInput
@@ -83183,6 +84914,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutBlog_tagsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -83199,12 +84932,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
     categories?: categoriesUncheckedUpdateManyWithoutCommentsNestedInput
@@ -83212,6 +84943,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateManyWithoutBlog_tagsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -83228,18 +84961,17 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
   }
 
   export type blog_tagsCreateManyCategoriesInput = {
     id: string
     name: string
+    order?: number
     color?: string | null
     isActive?: boolean
     createdAt?: Date | string
@@ -83249,6 +84981,7 @@ export namespace Prisma {
   export type categoriesCreateManyCategoriesInput = {
     id: string
     name: string
+    order?: number
     slug?: string | null
     description?: string | null
     color?: string | null
@@ -83260,6 +84993,7 @@ export namespace Prisma {
   export type blog_tagsUpdateWithoutCategoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     color?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -83270,6 +85004,7 @@ export namespace Prisma {
   export type blog_tagsUncheckedUpdateWithoutCategoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     color?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -83280,6 +85015,7 @@ export namespace Prisma {
   export type blog_tagsUncheckedUpdateManyWithoutCategoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     color?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -83289,6 +85025,7 @@ export namespace Prisma {
   export type categoriesUpdateWithoutCategoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -83303,6 +85040,7 @@ export namespace Prisma {
   export type categoriesUncheckedUpdateWithoutCategoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -83317,6 +85055,7 @@ export namespace Prisma {
   export type categoriesUncheckedUpdateManyWithoutCategoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -83327,6 +85066,8 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutCategoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -83337,12 +85078,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
     file?: FileUpdateOneWithoutCommentsNestedInput
@@ -83356,6 +85095,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutCategoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -83372,12 +85113,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
     blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
@@ -83385,6 +85124,8 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateManyWithoutCategoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     mentions?: CommentUpdatementionsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -83401,12 +85142,10 @@ export namespace Prisma {
     isPinned?: BoolFieldUpdateOperationsInput | boolean
     isResolved?: BoolFieldUpdateOperationsInput | boolean
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    order?: IntFieldUpdateOperationsInput | number
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readingTime?: NullableIntFieldUpdateOperationsInput | number | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
   }
 

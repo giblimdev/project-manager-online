@@ -1,11 +1,21 @@
-// app/api/glossary/route.ts
+// 📄 /app/api/glossary/route.ts
+// 🎯 Rôle : API route principale pour la gestion des termes du glossaire
+// 📦 Responsabilités : CRUD des termes (GET, POST uniquement - pas de paramètres dynamiques)
+// 🔧 Composants utilisés : NextResponse, Prisma Client, Zod pour validation
+// 🌐 Base de données : PostgreSQL via Prisma
+
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { PrismaClient } from "@/lib/generated/prisma";
 import { z } from "zod";
 
-// Schema de validation pour la création/mise à jour
+const prisma = new PrismaClient();
+
+// 🔧 Schémas de validation Zod
 const glossarySchema = z.object({
-  term: z.string().min(1, "Le terme est requis"),
+  term: z
+    .string()
+    .min(1, "Le terme est requis")
+    .max(255, "Le terme ne peut pas dépasser 255 caractères"),
   description: z.string().optional().nullable(),
   type: z
     .enum(["TERM", "ACRONYM", "ABBREVIATION", "CONCEPT", "TEAM", "PROJECT"])
@@ -26,15 +36,11 @@ const querySchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).default("asc"),
 });
 
-/**
- * GET /api/glossary
- * Récupère la liste des termes du glossaire avec filtrage et pagination
- */
-export async function GET(request: NextRequest) {
+// 📋 GET - Récupérer tous les termes du glossaire avec pagination et filtres
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const { searchParams } = request.nextUrl;
 
-    // Validation des paramètres de requête
     const params = querySchema.safeParse({
       search: searchParams.get("search") || undefined,
       type: searchParams.get("type") || undefined,
@@ -46,13 +52,16 @@ export async function GET(request: NextRequest) {
           : undefined,
       page: parseInt(searchParams.get("page") || "1", 10),
       limit: parseInt(searchParams.get("limit") || "20", 10),
-      sortBy: searchParams.get("sortBy") || "order",
-      sortOrder: searchParams.get("sortOrder") || "asc",
+      sortBy: (searchParams.get("sortBy") as any) || "order",
+      sortOrder: (searchParams.get("sortOrder") as any) || "asc",
     });
 
     if (!params.success) {
       return NextResponse.json(
-        { error: "Paramètres invalides", details: params.error.issues },
+        {
+          error: "Paramètres de requête invalides",
+          details: params.error.issues,
+        },
         { status: 400 }
       );
     }
@@ -60,7 +69,7 @@ export async function GET(request: NextRequest) {
     const { search, type, isActive, page, limit, sortBy, sortOrder } =
       params.data;
 
-    // Construction des filtres
+    // Construction dynamique du filtre WHERE
     const where: any = {};
 
     if (search) {
@@ -78,10 +87,9 @@ export async function GET(request: NextRequest) {
       where.isActive = isActive;
     }
 
-    // Calcul de la pagination
     const skip = (page - 1) * limit;
 
-    // Exécution des requêtes
+    // Exécution parallèle des requêtes
     const [terms, totalCount] = await Promise.all([
       prisma.glossary.findMany({
         where,
@@ -94,39 +102,51 @@ export async function GET(request: NextRequest) {
 
     const totalPages = Math.ceil(totalCount / limit);
 
-    return NextResponse.json({
-      terms,
-      pagination: {
-        totalCount,
-        totalPages,
-        currentPage: page,
-        pageSize: limit,
-        hasNext: page < totalPages,
-        hasPrev: page > 1,
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          terms,
+          pagination: {
+            totalCount,
+            totalPages,
+            currentPage: page,
+            pageSize: limit,
+            hasNext: page < totalPages,
+            hasPrev: page > 1,
+          },
+        },
       },
-    });
+      { status: 200 }
+    );
   } catch (error) {
     console.error("GET /api/glossary error:", error);
     return NextResponse.json(
-      { error: "Erreur interne du serveur" },
+      {
+        success: false,
+        error: "Erreur lors de la récupération des termes du glossaire",
+        details: error instanceof Error ? error.message : "Erreur inconnue",
+      },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
-/**
- * POST /api/glossary
- * Crée un nouveau terme dans le glossaire
- */
-export async function POST(request: NextRequest) {
+// ➕ POST - Créer un nouveau terme du glossaire
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body = await request.json();
-
-    // Validation des données
     const validation = glossarySchema.safeParse(body);
+
     if (!validation.success) {
       return NextResponse.json(
-        { error: "Données invalides", details: validation.error.issues },
+        {
+          success: false,
+          error: "Données de création invalides",
+          details: validation.error.issues,
+        },
         { status: 400 }
       );
     }
@@ -143,22 +163,43 @@ export async function POST(request: NextRequest) {
 
     if (existingTerm) {
       return NextResponse.json(
-        { error: "Un terme avec ce nom existe déjà" },
+        {
+          success: false,
+          error: "Terme déjà existant",
+          details: "Un terme avec ce nom existe déjà dans le glossaire",
+        },
         { status: 409 }
       );
     }
 
-    // Création du terme
+    // Création du nouveau terme
     const newTerm = await prisma.glossary.create({
-      data,
+      data: {
+        ...data,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     });
 
-    return NextResponse.json(newTerm, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: newTerm,
+        message: "Terme créé avec succès",
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("POST /api/glossary error:", error);
     return NextResponse.json(
-      { error: "Erreur interne du serveur" },
+      {
+        success: false,
+        error: "Erreur lors de la création du terme",
+        details: error instanceof Error ? error.message : "Erreur inconnue",
+      },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }

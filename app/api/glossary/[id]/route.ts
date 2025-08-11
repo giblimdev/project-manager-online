@@ -1,38 +1,44 @@
-// app/api/glossary/[id]/route.ts
+// 📄 /app/api/glossary/[id]/route.ts
+// 🎯 Rôle : API route pour la gestion d'un terme spécifique du glossaire
+// 📦 Responsabilités : CRUD d'un terme individuel (GET, PUT, DELETE)
+// 🔧 Composants utilisés : NextResponse, Prisma Client, Zod pour validation
+// 🌐 Base de données : PostgreSQL via Prisma
+
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { PrismaClient } from "@/lib/generated/prisma";
 import { z } from "zod";
 
-// Schema pour la mise à jour (tous les champs optionnels)
+const prisma = new PrismaClient();
+
+// 🔧 Schéma de validation pour la mise à jour
 const updateGlossarySchema = z.object({
-  term: z.string().min(1, "Le terme ne peut pas être vide").optional(),
-  description: z.string().nullable().optional(),
+  term: z
+    .string()
+    .min(1, "Le terme est requis")
+    .max(255, "Le terme ne peut pas dépasser 255 caractères")
+    .optional(),
+  description: z.string().optional().nullable(),
   type: z
     .enum(["TERM", "ACRONYM", "ABBREVIATION", "CONCEPT", "TEAM", "PROJECT"])
     .optional(),
-  order: z.number().int().min(0, "L'ordre doit être positif").optional(),
+  order: z.number().int().min(0).optional(),
   isActive: z.boolean().optional(),
 });
 
-// Fonction utilitaire pour valider l'ID
-function validateId(id: string): boolean {
-  return typeof id === "string" && id.length > 0;
-}
-
-/**
- * GET /api/glossary/[id]
- * Récupère un terme spécifique du glossaire
- */
+// 📋 GET - Récupérer un terme spécifique
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  context: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
 
-    if (!validateId(id)) {
+    if (!id) {
       return NextResponse.json(
-        { error: "ID du terme invalide" },
+        {
+          success: false,
+          error: "ID du terme requis",
+        },
         { status: 400 }
       );
     }
@@ -42,51 +48,64 @@ export async function GET(
     });
 
     if (!term) {
-      return NextResponse.json({ error: "Terme non trouvé" }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Terme non trouvé",
+        },
+        { status: 404 }
+      );
     }
 
-    // Optionnel : ne pas retourner les termes inactifs
-    if (!term.isActive) {
-      return NextResponse.json({ error: "Terme non trouvé" }, { status: 404 });
-    }
-
-    return NextResponse.json(term);
+    return NextResponse.json(
+      {
+        success: true,
+        data: term,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("GET /api/glossary/[id] error:", error);
     return NextResponse.json(
-      { error: "Erreur interne du serveur" },
+      {
+        success: false,
+        error: "Erreur lors de la récupération du terme",
+        details: error instanceof Error ? error.message : "Erreur inconnue",
+      },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
-/**
- * PATCH /api/glossary/[id]
- * Met à jour un terme du glossaire
- */
-export async function PATCH(
+// ✏️ PUT - Mettre à jour un terme spécifique
+export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  context: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
 
-    if (!validateId(id)) {
+    if (!id) {
       return NextResponse.json(
-        { error: "ID du terme invalide" },
+        {
+          success: false,
+          error: "ID du terme requis",
+        },
         { status: 400 }
       );
     }
 
     const body = await request.json();
-
-    // Validation des données
     const validation = updateGlossarySchema.safeParse(body);
+
     if (!validation.success) {
       return NextResponse.json(
         {
-          error: "Données invalides",
-          details: validation.error.flatten().fieldErrors,
+          success: false,
+          error: "Données de mise à jour invalides",
+          details: validation.error.issues,
         },
         { status: 400 }
       );
@@ -94,36 +113,38 @@ export async function PATCH(
 
     const data = validation.data;
 
-    // Si aucune donnée à mettre à jour
-    if (Object.keys(data).length === 0) {
-      return NextResponse.json(
-        { error: "Aucune donnée à mettre à jour" },
-        { status: 400 }
-      );
-    }
-
-    // Vérification de l'existence du terme
+    // Vérifier que le terme existe
     const existingTerm = await prisma.glossary.findUnique({
       where: { id },
     });
 
-    if (!existingTerm || !existingTerm.isActive) {
-      return NextResponse.json({ error: "Terme non trouvé" }, { status: 404 });
+    if (!existingTerm) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Terme non trouvé",
+        },
+        { status: 404 }
+      );
     }
 
-    // Vérification de l'unicité du nom si modifié
+    // Vérification de l'unicité si le terme est modifié
     if (data.term && data.term !== existingTerm.term) {
       const duplicateTerm = await prisma.glossary.findFirst({
         where: {
           term: { equals: data.term, mode: "insensitive" },
           isActive: true,
-          id: { not: id },
+          NOT: { id },
         },
       });
 
       if (duplicateTerm) {
         return NextResponse.json(
-          { error: "Un terme avec ce nom existe déjà" },
+          {
+            success: false,
+            error: "Terme déjà existant",
+            details: "Un terme avec ce nom existe déjà dans le glossaire",
+          },
           { status: 409 }
         );
       }
@@ -132,78 +153,96 @@ export async function PATCH(
     // Mise à jour du terme
     const updatedTerm = await prisma.glossary.update({
       where: { id },
-      data,
+      data: {
+        ...data,
+        updatedAt: new Date(),
+      },
     });
 
-    return NextResponse.json(updatedTerm);
-  } catch (error) {
-    console.error("PATCH /api/glossary/[id] error:", error);
-
-    // Gestion spécifique des erreurs Prisma
-    if (
-      error instanceof Error &&
-      error.message.includes("Record to update not found")
-    ) {
-      return NextResponse.json({ error: "Terme non trouvé" }, { status: 404 });
-    }
-
     return NextResponse.json(
-      { error: "Erreur interne du serveur" },
+      {
+        success: true,
+        data: updatedTerm,
+        message: "Terme mis à jour avec succès",
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("PUT /api/glossary/[id] error:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Erreur lors de la mise à jour du terme",
+        details: error instanceof Error ? error.message : "Erreur inconnue",
+      },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
-/**
- * DELETE /api/glossary/[id]
- * Supprime définitivement un terme du glossaire (suppression physique)
- */
+// 🗑️ DELETE - Supprimer (désactiver) un terme spécifique
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  context: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
 
-    if (!validateId(id)) {
+    if (!id) {
       return NextResponse.json(
-        { error: "ID du terme invalide" },
+        {
+          success: false,
+          error: "ID du terme requis",
+        },
         { status: 400 }
       );
     }
 
-    // Vérification de l'existence du terme
+    // Vérifier que le terme existe
     const existingTerm = await prisma.glossary.findUnique({
       where: { id },
     });
 
     if (!existingTerm) {
-      return NextResponse.json({ error: "Terme non trouvé" }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Terme non trouvé",
+        },
+        { status: 404 }
+      );
     }
 
-    // ✅ SUPPRESSION PHYSIQUE - Supprime définitivement l'enregistrement
-    await prisma.glossary.delete({
+    // Suppression logique (désactivation)
+    const deletedTerm = await prisma.glossary.update({
       where: { id },
+      data: {
+        isActive: false,
+        updatedAt: new Date(),
+      },
     });
-
-    return NextResponse.json({
-      message: "Terme supprimé définitivement avec succès",
-      deletedId: id,
-    });
-  } catch (error) {
-    console.error("DELETE /api/glossary/[id] error:", error);
-
-    // Gestion spécifique des erreurs Prisma
-    if (
-      error instanceof Error &&
-      error.message.includes("Record to delete does not exist")
-    ) {
-      return NextResponse.json({ error: "Terme non trouvé" }, { status: 404 });
-    }
 
     return NextResponse.json(
-      { error: "Erreur interne du serveur" },
+      {
+        success: true,
+        data: deletedTerm,
+        message: "Terme supprimé avec succès",
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("DELETE /api/glossary/[id] error:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Erreur lors de la suppression du terme",
+        details: error instanceof Error ? error.message : "Erreur inconnue",
+      },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }

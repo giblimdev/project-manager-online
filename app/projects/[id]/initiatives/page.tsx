@@ -1,4 +1,4 @@
-// app/initiatives/page.tsx
+// app/projects/[Id]/initiatives/page.tsx
 
 /**
  * RÔLE : Page de gestion des initiatives d'un projet sélectionné avec architecture séparée
