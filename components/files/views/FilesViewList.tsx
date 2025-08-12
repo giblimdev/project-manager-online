@@ -258,6 +258,14 @@ export default function FilesViewList({
     (file: FileWithRelations) => {
       if (onDownload) {
         onDownload(file);
+      } else if (file.versions && file.versions.length > 0) {
+        // Utiliser l'URL de la dernière version
+        const latestVersion = file.versions[0];
+        if (latestVersion.url) {
+          window.open(latestVersion.url, "_blank");
+        } else {
+          toast.error("URL de téléchargement non disponible");
+        }
       } else if (file.path) {
         window.open(file.path, "_blank");
       } else if (file.script) {
@@ -286,7 +294,21 @@ export default function FilesViewList({
       if (onShare) {
         onShare(file);
       } else {
-        const shareUrl = `${window.location.origin}/files/${file.id}`;
+        let shareUrl: string | undefined;
+
+        // Priorité à l'URL de la dernière version
+        if (file.versions && file.versions.length > 0 && file.versions[0].url) {
+          shareUrl = file.versions[0].url;
+        }
+        // Fallback : construire une URL depuis le path
+        else if (file.path) {
+          shareUrl = `${window.location.origin}/api/files/${file.id}/download`;
+        }
+        // Dernière option : URL vers la page du fichier
+        else {
+          shareUrl = `${window.location.origin}/files/${file.id}`;
+        }
+
         navigator.clipboard.writeText(shareUrl);
         toast.success("Lien vers la référence copié");
       }
@@ -313,7 +335,19 @@ export default function FilesViewList({
     }));
   }, []);
 
-  // Tri des fichiers
+  // ✅ CORRECTION : Fonction utilitaire pour gérer les dates
+  const getTimestamp = useCallback((date: Date | string): number => {
+    if (date instanceof Date) {
+      return date.getTime();
+    }
+    if (typeof date === "string") {
+      return new Date(date).getTime();
+    }
+    // Si c'est un type DateTime de Prisma
+    return new Date(date as any).getTime();
+  }, []);
+
+  // Tri des fichiers avec correction des dates
   const sortedFiles = useMemo(() => {
     if (!sortConfig.key) return files;
 
@@ -335,8 +369,9 @@ export default function FilesViewList({
           bValue = b.script?.length || 0;
           break;
         case "date":
-          aValue = a.updatedAt.getTime();
-          bValue = b.updatedAt.getTime();
+          // ✅ CORRECTION : Gestion des dates string ou Date objects
+          aValue = getTimestamp(a.updatedAt);
+          bValue = getTimestamp(b.updatedAt);
           break;
         case "author":
           aValue = getAuthorsDisplayName(a.author).toLowerCase();
@@ -352,7 +387,7 @@ export default function FilesViewList({
 
       return sortConfig.direction === "desc" ? -comparison : comparison;
     });
-  }, [files, sortConfig, getAuthorsDisplayName]);
+  }, [files, sortConfig, getAuthorsDisplayName, getTimestamp]);
 
   // Gestion du clic sur une ligne
   const handleRowClick = useCallback(
@@ -620,10 +655,22 @@ export default function FilesViewList({
                   <TableCell className="hidden lg:table-cell">
                     <div className="space-y-1">
                       <div className="text-sm font-medium">
-                        {format(file.updatedAt, "dd/MM/yyyy", { locale: fr })}
+                        {format(
+                          file.updatedAt instanceof Date
+                            ? file.updatedAt
+                            : new Date(file.updatedAt),
+                          "dd/MM/yyyy",
+                          { locale: fr }
+                        )}
                       </div>
                       <div className="text-xs text-gray-500">
-                        {format(file.updatedAt, "HH:mm", { locale: fr })}
+                        {format(
+                          file.updatedAt instanceof Date
+                            ? file.updatedAt
+                            : new Date(file.updatedAt),
+                          "HH:mm",
+                          { locale: fr }
+                        )}
                       </div>
                     </div>
                   </TableCell>

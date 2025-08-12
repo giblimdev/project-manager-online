@@ -182,15 +182,19 @@ export default function FilesViewCard({
     [getTypeLabel]
   );
 
-  // ✅ Fonction pour calculer le niveau de complexité
-  const getComplexityLevel = useCallback((file: FileWithRelations): number => {
-    if (!file.script) return 0;
-    const length = file.script.length;
-    if (length < 100) return 25;
-    if (length < 500) return 50;
-    if (length < 2000) return 75;
-    return 100;
-  }, []);
+  // ✅ Fonction pour formater la complexité (longueur du script)
+  const formatComplexity = useCallback(
+    (file: FileWithRelations): { label: string; value: number } => {
+      if (!file.script) return { label: "Vide", value: 0 };
+
+      const length = file.script.length;
+      if (length < 100) return { label: "Simple", value: 25 };
+      if (length < 500) return { label: "Moyen", value: 50 };
+      if (length < 2000) return { label: "Complexe", value: 75 };
+      return { label: "Très complexe", value: 100 };
+    },
+    []
+  );
 
   // ✅ Obtenir le nom d'affichage des auteurs (relation multiple selon schéma)
   const getAuthorsDisplayName = useCallback(
@@ -210,7 +214,7 @@ export default function FilesViewCard({
     []
   );
 
-  // Actions par défaut si non fournies
+  // Actions par défaut si non fournies - CORRIGÉES
   const handleDelete = useCallback(
     (file: FileWithRelations) => {
       if (onDelete) {
@@ -226,6 +230,14 @@ export default function FilesViewCard({
     (file: FileWithRelations) => {
       if (onDownload) {
         onDownload(file);
+      } else if (file.versions && file.versions.length > 0) {
+        // ✅ CORRECTION : Utiliser l'URL de la dernière version
+        const latestVersion = file.versions[0];
+        if (latestVersion.url) {
+          window.open(latestVersion.url, "_blank");
+        } else {
+          toast.error("URL de téléchargement non disponible");
+        }
       } else if (file.path) {
         window.open(file.path, "_blank");
       } else if (file.script) {
@@ -237,20 +249,36 @@ export default function FilesViewCard({
               <head>
                 <title>${file.name} - Script</title>
                 <style>
-                  body { font-family: 'Courier New', monospace; padding: 20px; background: #f5f5f5; }
-                  h1 { color: #333; border-bottom: 2px solid #007acc; padding-bottom: 10px; }
-                  pre { background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd; overflow: auto; }
-                  code { color: #d73a49; }
+                  body { font-family: 'Courier New', monospace; padding: 20px; line-height: 1.6; }
+                  h1 { color: #333; border-bottom: 2px solid #007acc; }
+                  pre { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; }
+                  .metadata { background: #e8f4ff; padding: 10px; margin: 10px 0; border-radius: 5px; }
                 </style>
               </head>
               <body>
                 <h1>${file.name}</h1>
-                <p><strong>Type:</strong> ${getLabel(file.type)}</p>
-                ${
-                  file.description
-                    ? `<p><strong>Description:</strong> ${file.description}</p>`
-                    : ""
-                }
+                <div class="metadata">
+                  <strong>Type:</strong> ${getLabel(file.type)}<br/>
+                  ${
+                    file.description
+                      ? `<strong>Description:</strong> ${file.description}<br/>`
+                      : ""
+                  }
+                  ${
+                    file.use ? `<strong>Utilise:</strong> ${file.use}<br/>` : ""
+                  }
+                  ${
+                    file.import
+                      ? `<strong>Imports:</strong> ${file.import}<br/>`
+                      : ""
+                  }
+                  ${
+                    file.export
+                      ? `<strong>Exports:</strong> ${file.export}<br/>`
+                      : ""
+                  }
+                </div>
+                <h2>Script/Code :</h2>
                 <pre><code>${file.script}</code></pre>
               </body>
             </html>
@@ -268,7 +296,21 @@ export default function FilesViewCard({
       if (onShare) {
         onShare(file);
       } else {
-        const shareUrl = `${window.location.origin}/files/${file.id}`;
+        let shareUrl: string | undefined;
+
+        // ✅ CORRECTION : Priorité à l'URL de la dernière version
+        if (file.versions && file.versions.length > 0 && file.versions[0].url) {
+          shareUrl = file.versions[0].url;
+        }
+        // Fallback : construire une URL depuis le path
+        else if (file.path) {
+          shareUrl = `${window.location.origin}/api/files/${file.id}/download`;
+        }
+        // Dernière option : URL vers la page du fichier
+        else {
+          shareUrl = `${window.location.origin}/files/${file.id}`;
+        }
+
         navigator.clipboard.writeText(shareUrl);
         toast.success("Lien vers la référence copié");
       }
@@ -299,6 +341,16 @@ export default function FilesViewCard({
     [onFolderNavigate, onEdit]
   );
 
+  // Gestion de la sélection
+  const handleToggleSelection = useCallback(
+    (fileId: string) => {
+      if (onToggleSelection) {
+        onToggleSelection(fileId);
+      }
+    },
+    [onToggleSelection]
+  );
+
   // Message si aucun fichier
   if (files.length === 0) {
     return (
@@ -326,92 +378,45 @@ export default function FilesViewCard({
 
   return (
     <TooltipProvider>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {files.map((file) => {
           const isSelected = selectedFiles.includes(file.id);
-          const complexityLevel = getComplexityLevel(file);
+          const complexity = formatComplexity(file);
 
           return (
             <Card
               key={file.id}
               className={`
-                relative group hover:shadow-lg transition-all duration-200 cursor-pointer
-                ${
-                  isSelected
-                    ? "ring-2 ring-blue-500 shadow-lg"
-                    : "hover:shadow-md"
-                }
+                hover:shadow-lg transition-all duration-200 cursor-pointer group
+                ${isSelected ? "ring-2 ring-blue-500 bg-blue-50" : ""}
               `}
               onClick={() => handleCardClick(file)}
             >
               <CardContent className="p-4">
-                {/* En-tête de la carte */}
+                {/* En-tête avec icône et sélection */}
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center space-x-3 min-w-0 flex-1">
-                    {/* Checkbox de sélection */}
-                    {onToggleSelection && (
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => onToggleSelection(file.id)}
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    )}
-
-                    {/* Icône du fichier */}
+                  <div className="flex items-center space-x-3">
                     {getFileIcon(file)}
-
-                    {/* Nom du fichier */}
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-medium text-gray-900 truncate">
+                      <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
                         {file.name}
                       </h3>
-                      <p className="text-sm text-gray-500">
+                      <Badge variant="outline" className="mt-1 text-xs">
                         {getLabel(file.type)}
-                      </p>
+                      </Badge>
                     </div>
                   </div>
 
-                  {/* Menu d'actions */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onEdit(file)}>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Modifier
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleViewFile(file)}>
-                        <Eye className="h-4 w-4 mr-2" />
-                        Voir le contenu
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleShare(file)}>
-                        <Share2 className="h-4 w-4 mr-2" />
-                        Partager
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDuplicate(file)}>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Dupliquer
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => handleDelete(file)}
-                        className="text-red-600 focus:text-red-600"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Supprimer
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {/* Checkbox de sélection */}
+                  {onToggleSelection && (
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleToggleSelection(file.id)}
+                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  )}
                 </div>
 
                 {/* Description */}
@@ -423,112 +428,53 @@ export default function FilesViewCard({
 
                 {/* Métadonnées principales */}
                 <div className="space-y-2 mb-3">
-                  {/* Complexité et nombre d'éléments */}
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">
-                      {file.isFolder ? "Éléments" : "Complexité"}
-                    </span>
-                    <div className="flex items-center space-x-2">
-                      {file.isFolder ? (
-                        <span className="font-medium">
-                          {file._count?.children || 0} élément
-                          {(file._count?.children || 0) > 1 ? "s" : ""}
-                        </span>
-                      ) : (
-                        <>
-                          <span className="text-xs font-medium">
-                            {complexityLevel === 0
-                              ? "Vide"
-                              : complexityLevel <= 25
-                              ? "Simple"
-                              : complexityLevel <= 50
-                              ? "Moyen"
-                              : complexityLevel <= 75
-                              ? "Complexe"
-                              : "Très complexe"}
-                          </span>
-                          <Progress
-                            value={complexityLevel}
-                            className="w-16 h-2"
-                          />
-                        </>
+                  {/* Complexité pour les fichiers avec script */}
+                  {!file.isFolder && file.script && (
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>Complexité</span>
+                        <span>{complexity.label}</span>
+                      </div>
+                      <Progress value={complexity.value} className="h-1" />
+                      <div className="text-xs text-gray-400">
+                        {file.script.length} caractères
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Informations pour les dossiers */}
+                  {file.isFolder && file._count?.children && (
+                    <div className="text-sm text-gray-500">
+                      <Folder className="h-4 w-4 inline mr-1" />
+                      {file._count.children} élément
+                      {file._count.children > 1 ? "s" : ""}
+                    </div>
+                  )}
+
+                  {/* Métadonnées de développement */}
+                  {!file.isFolder && (
+                    <div className="space-y-1">
+                      {file.use && (
+                        <div className="text-xs text-gray-500">
+                          <Code className="h-3 w-3 inline mr-1" />
+                          Utilise: {file.use}
+                        </div>
+                      )}
+                      {file.import && (
+                        <div className="text-xs text-gray-500">
+                          <Import className="h-3 w-3 inline mr-1" />
+                          Imports configurés
+                        </div>
+                      )}
+                      {file.export && (
+                        <div className="text-xs text-gray-500">
+                          <Download className="h-3 w-3 inline mr-1" />
+                          Exports fournis
+                        </div>
                       )}
                     </div>
-                  </div>
-
-                  {/* Version */}
-                  {file.version > 1 && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Version</span>
-                      <Badge variant="outline" className="text-xs">
-                        v{file.version}
-                      </Badge>
-                    </div>
-                  )}
-
-                  {/* MimeType */}
-                  {file.mimeType && !file.isFolder && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Type MIME</span>
-                      <span className="text-xs font-mono bg-gray-100 px-2 py-1 rounded">
-                        {file.mimeType.split("/").pop()}
-                      </span>
-                    </div>
                   )}
                 </div>
-
-                {/* Badges métadonnées développement */}
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {file.import && (
-                    <Badge variant="secondary" className="text-xs">
-                      <Import className="h-3 w-3 mr-1" />
-                      Imports
-                    </Badge>
-                  )}
-                  {file.export && (
-                    <Badge variant="secondary" className="text-xs">
-                      <Download className="h-3 w-3 mr-1" />
-                      Exports
-                    </Badge>
-                  )}
-                  {file.script && (
-                    <Badge variant="secondary" className="text-xs">
-                      <Code className="h-3 w-3 mr-1" />
-                      Script
-                    </Badge>
-                  )}
-                  {file.isFolder && (
-                    <Badge variant="default" className="text-xs">
-                      <Folder className="h-3 w-3 mr-1" />
-                      Dossier
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Dépendances (use) */}
-                {file.use && (
-                  <div className="mb-3">
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Badge
-                          variant="outline"
-                          className="text-xs w-full justify-start"
-                        >
-                          <Zap className="h-3 w-3 mr-1" />
-                          <span className="truncate">
-                            Utilise:{" "}
-                            {file.use.length > 20
-                              ? `${file.use.substring(0, 20)}...`
-                              : file.use}
-                          </span>
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Dépendances: {file.use}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                )}
 
                 {/* Tags */}
                 {file.tags.length > 0 && (
@@ -536,147 +482,113 @@ export default function FilesViewCard({
                     {file.tags.slice(0, 3).map((tag, index) => (
                       <Badge
                         key={index}
-                        variant="outline"
-                        className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+                        variant="secondary"
+                        className="text-xs"
                       >
-                        <Tag className="h-3 w-3 mr-1" />
                         {tag}
                       </Badge>
                     ))}
                     {file.tags.length > 3 && (
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <span className="text-xs text-gray-400 cursor-help">
-                            +{file.tags.length - 3} tags
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <div>
-                            {file.tags.slice(3).map((tag, i) => (
-                              <p key={i}>{tag}</p>
-                            ))}
-                          </div>
-                        </TooltipContent>
-                      </Tooltip>
+                      <Badge variant="outline" className="text-xs">
+                        +{file.tags.length - 3}
+                      </Badge>
                     )}
                   </div>
                 )}
 
-                {/* Relations */}
-                <div className="space-y-1 mb-3 text-xs">
-                  {file.project && (
-                    <div className="flex items-center text-gray-600">
-                      <Hash className="h-3 w-3 mr-1" />
-                      <span className="truncate">{file.project.name}</span>
-                    </div>
-                  )}
-                  {file.feature && (
-                    <div className="flex items-center text-gray-600">
-                      <Package className="h-3 w-3 mr-1" />
-                      <span className="truncate">{file.feature.name}</span>
-                    </div>
-                  )}
-                  {file.userStory && (
-                    <div className="flex items-center text-gray-600">
-                      <FileText className="h-3 w-3 mr-1" />
-                      <span className="truncate">{file.userStory.title}</span>
-                    </div>
-                  )}
-                </div>
+                {/* Auteurs */}
+                {file.author && file.author.length > 0 && (
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Avatar className="h-6 w-6">
+                      {file.author[0].image ? (
+                        <AvatarImage src={file.author[0].image} />
+                      ) : null}
+                      <AvatarFallback className="text-xs">
+                        {getAuthorsDisplayName(file.author).charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-xs text-gray-500 truncate">
+                      {getAuthorsDisplayName(file.author)}
+                    </span>
+                  </div>
+                )}
 
-                {/* Pied de carte */}
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                  {/* Auteurs */}
-                  <div className="flex items-center space-x-2">
-                    {file.author && file.author.length > 0 ? (
-                      <>
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage
-                            src={file.author[0].image || undefined}
-                          />
-                          <AvatarFallback className="text-xs">
-                            {getAuthorsDisplayName(file.author).charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-xs text-gray-600 truncate">
-                          {getAuthorsDisplayName(file.author)}
-                        </span>
-                      </>
-                    ) : (
-                      <div className="flex items-center space-x-2">
-                        <Users className="h-4 w-4 text-gray-400" />
-                        <span className="text-xs text-gray-400">
-                          Aucun auteur
-                        </span>
-                      </div>
+                {/* Date et actions */}
+                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                  <span className="text-xs text-gray-500">
+                    <Clock className="h-3 w-3 inline mr-1" />
+                    Modifié le{" "}
+                    {format(
+                      file.updatedAt instanceof Date
+                        ? file.updatedAt
+                        : new Date(file.updatedAt),
+                      "dd MMMM yyyy 'à' HH:mm",
+                      { locale: fr }
                     )}
-                  </div>
+                  </span>
 
-                  {/* Date de modification */}
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <div className="flex items-center text-xs text-gray-500">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {format(file.updatedAt, "dd/MM", { locale: fr })}
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>
-                        Modifié le{" "}
-                        {format(file.updatedAt, "dd MMMM yyyy 'à' HH:mm", {
-                          locale: fr,
-                        })}
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-
-                {/* Actions rapides en hover */}
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="flex space-x-1">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          className="h-8 w-8 p-0 bg-white shadow-sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewFile(file);
-                          }}
-                        >
-                          {file.path ? (
-                            <ExternalLink className="h-3 w-3" />
-                          ) : (
-                            <Eye className="h-3 w-3" />
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>
-                          {file.path ? "Ouvrir le lien" : "Voir le contenu"}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          className="h-8 w-8 p-0 bg-white shadow-sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleShare(file);
-                          }}
-                        >
-                          <Share2 className="h-3 w-3" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Partager</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
+                  {/* Menu d'actions */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-6 w-6 p-0"
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(file);
+                        }}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Modifier
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewFile(file);
+                        }}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        {file.path ? "Ouvrir le lien" : "Voir le contenu"}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShare(file);
+                        }}
+                      >
+                        <Share2 className="h-4 w-4 mr-2" />
+                        Partager
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDuplicate(file);
+                        }}
+                      >
+                        <Copy className="h-4 w-4 mr-2" />
+                        Dupliquer
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(file);
+                        }}
+                        className="text-red-600 focus:text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Supprimer
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </CardContent>
             </Card>

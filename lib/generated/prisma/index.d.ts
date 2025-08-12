@@ -10434,10 +10434,16 @@ export namespace Prisma {
   export type $TeamPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Team"
     objects: {
+      /**
+       * Champs personnalisés
+       */
       fields: Prisma.$fieldsPayload<ExtArgs>[]
       members: Prisma.$TeamMemberPayload<ExtArgs>[]
       parentTeam: Prisma.$TeamPayload<ExtArgs> | null
       children: Prisma.$TeamPayload<ExtArgs>[]
+      /**
+       * Templates associés
+       */
       templates: Prisma.$TemplatePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -11692,8 +11698,14 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      /**
+       * Rôle dans l'équipe
+       */
       role: $Enums.UserRole
       order: number
+      /**
+       * Date d'adhésion
+       */
       joinedAt: Date
       isActive: boolean
       teamId: string
@@ -12899,14 +12911,23 @@ export namespace Prisma {
   export type $ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Project"
     objects: {
+      /**
+       * Canaux de discussion
+       */
       channels: Prisma.$ChannelPayload<ExtArgs>[]
       features: Prisma.$FeaturePayload<ExtArgs>[]
+      /**
+       * Champs personnalisés
+       */
       fields: Prisma.$fieldsPayload<ExtArgs>[]
       files: Prisma.$FilePayload<ExtArgs>[]
       initiatives: Prisma.$InitiativePayload<ExtArgs>[]
       members: Prisma.$ProjectMemberPayload<ExtArgs>[]
       sprints: Prisma.$SprintPayload<ExtArgs>[]
       templates: Prisma.$TemplatePayload<ExtArgs>[]
+      /**
+       * Propriétaires du projet
+       */
       user: Prisma.$UserPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -12914,13 +12935,25 @@ export namespace Prisma {
       name: string
       description: string | null
       slug: string
+      /**
+       * Clé unique (ex: PROJ)
+       */
       key: string
       order: number
       startDate: Date | null
       endDate: Date | null
       status: string
+      /**
+       * Visibilité (PUBLIC, PRIVATE, INT, ERNAL)
+       */
       visibility: string
+      /**
+       * Paramètres spécifiques
+       */
       settings: Prisma.JsonValue | null
+      /**
+       * Métadonnées personnalisées
+       */
       metadata: Prisma.JsonValue | null
       isActive: boolean
       createdAt: Date
@@ -15513,6 +15546,9 @@ export namespace Prisma {
       name: string
       order: number
       description: string | null
+      /**
+       * Objectif stratégique
+       */
       objective: string | null
       priority: $Enums.Priority
       status: string
@@ -19490,6 +19526,9 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      /**
+       * Type de dépendance
+       */
       type: string
       order: number
       description: string | null
@@ -23472,6 +23511,9 @@ export namespace Prisma {
       description: string | null
       priority: $Enums.Priority
       status: $Enums.TaskStatus
+      /**
+       * Type (TASK, BUG, etc.)
+       */
       type: string
       position: number
       labels: string[]
@@ -24772,6 +24814,9 @@ export namespace Prisma {
       description: string | null
       createdAt: Date
       dependentTaskId: string
+      /**
+       * Tâche requise
+       */
       dependsOnTaskId: string
     }, ExtArgs["result"]["taskDependency"]>
     composites: {}
@@ -25998,7 +26043,13 @@ export namespace Prisma {
       startDate: Date
       endDate: Date
       status: $Enums.SprintStatus
+      /**
+       * Capacité (en points/heures)
+       */
       capacity: number | null
+      /**
+       * Vélocité moyenne
+       */
       velocity: number | null
       burndownData: Prisma.JsonValue | null
       retrospective: Prisma.JsonValue | null

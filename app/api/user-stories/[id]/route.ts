@@ -162,14 +162,16 @@ interface UserStoryDetailResponse {
     id: string;
     name: string;
     type: string;
-    size: number;
-    url: string;
+    mimeType: string | null;
+    path: string | null;
+    description: string | null;
+    isFolder: boolean;
     createdAt: Date;
-    uploader: {
+    authors: {
       id: string;
       name: string | null;
       email: string;
-    };
+    }[];
   }[];
   sprints: {
     id: string;
@@ -407,9 +409,10 @@ export async function GET(
           orderBy: { date: "desc" },
           take: 20, // Limiter pour les performances
         },
+        // ✅ CORRECTION : Utilisation d'author au lieu d'uploader
         files: {
           include: {
-            uploader: {
+            author: {
               select: {
                 id: true,
                 name: true,
@@ -456,6 +459,10 @@ export async function GET(
     const response: UserStoryDetailResponse = {
       ...userStory,
       assignees: userStory.UserStoryAssignees.map((usa) => usa.users),
+      files: userStory.files.map((file) => ({
+        ...file,
+        authors: file.author, // Renommer author en authors pour la cohérence
+      })),
     } as UserStoryDetailResponse;
 
     return NextResponse.json<ApiResponse<UserStoryDetailResponse>>({

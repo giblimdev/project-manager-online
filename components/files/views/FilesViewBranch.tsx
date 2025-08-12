@@ -234,16 +234,16 @@ export default function FilesViewBranch({
 
   // ✅ Fonction pour formater la taille avec gestion du nullable
   const formatSize = useCallback(
-    (bytes: number | null): string => {
+    (size: number | null): string => {
       if (formatFileSize) {
-        return formatFileSize(bytes);
+        return formatFileSize(size);
       }
 
-      if (!bytes || bytes === 0) return "0 B";
+      if (!size || size === 0) return "0 B";
       const k = 1024;
       const sizes = ["B", "KB", "MB", "GB"];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      const i = Math.floor(Math.log(size) / Math.log(k));
+      return parseFloat((size / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
     },
     [formatFileSize]
   );
@@ -354,7 +354,7 @@ export default function FilesViewBranch({
     [onFolderNavigate, onEdit, toggleExpansion]
   );
 
-  // ✅ Actions par défaut si non fournies
+  // ✅ Actions par défaut si non fournies - CORRIGÉES
   const handleDelete = useCallback(
     (file: FileWithRelations) => {
       if (onDelete) {
@@ -370,10 +370,19 @@ export default function FilesViewBranch({
     (file: FileWithRelations) => {
       if (onDownload) {
         onDownload(file);
-      } else if (file.url) {
-        window.open(file.url, "_blank");
+      } else if (file.versions && file.versions.length > 0) {
+        // ✅ CORRECTION : Utiliser l'URL de la dernière version
+        const latestVersion = file.versions[0];
+        if (latestVersion.url) {
+          window.open(latestVersion.url, "_blank");
+        } else {
+          toast.error("URL de téléchargement non disponible");
+        }
+      } else if (file.path) {
+        // ✅ CORRECTION : Fallback sur le path du fichier
+        window.open(file.path, "_blank");
       } else {
-        toast.error("URL de téléchargement non disponible");
+        toast.error("Aucun chemin de téléchargement disponible");
       }
     },
     [onDownload]
@@ -384,7 +393,22 @@ export default function FilesViewBranch({
       if (onShare) {
         onShare(file);
       } else {
-        navigator.clipboard.writeText(file.url);
+        let shareUrl: string | undefined;
+
+        // ✅ CORRECTION : Priorité à l'URL de la dernière version
+        if (file.versions && file.versions.length > 0 && file.versions[0].url) {
+          shareUrl = file.versions[0].url;
+        }
+        // Fallback : construire une URL depuis le path
+        else if (file.path) {
+          shareUrl = `${window.location.origin}/api/files/${file.id}/download`;
+        }
+        // Dernière option : URL vers la page du fichier
+        else {
+          shareUrl = `${window.location.origin}/files/${file.id}`;
+        }
+
+        navigator.clipboard.writeText(shareUrl);
         toast.success("URL copiée dans le presse-papiers");
       }
     },
@@ -491,11 +515,6 @@ export default function FilesViewBranch({
                 </span>
 
                 {/* Badges d'état */}
-                {node.isPublic && (
-                  <Badge variant="secondary" className="text-xs">
-                    Public
-                  </Badge>
-                )}
                 {node.version > 1 && (
                   <Badge variant="outline" className="text-xs">
                     v{node.version}
@@ -508,9 +527,12 @@ export default function FilesViewBranch({
 
               {/* Informations secondaires */}
               <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
-                {!node.isFolder && node.size && (
-                  <span>{formatSize(node.size)}</span>
-                )}
+                {!node.isFolder &&
+                  node.versions &&
+                  node.versions.length > 0 &&
+                  node.versions[0].size && (
+                    <span>{formatSize(node.versions[0].size)}</span>
+                  )}
                 {node.isFolder && node._count?.children && (
                   <span>
                     {node._count.children} élément
@@ -523,8 +545,9 @@ export default function FilesViewBranch({
                 <span>
                   {format(node.updatedAt, "dd/MM/yyyy", { locale: fr })}
                 </span>
-                {node.uploader && (
-                  <span>par {node.uploader.name || node.uploader.email}</span>
+                {/* ✅ CORRECTION : Utilisation d'author au lieu d'uploader */}
+                {node.author && node.author.length > 0 && (
+                  <span>par {node.author[0].name || node.author[0].email}</span>
                 )}
               </div>
 
