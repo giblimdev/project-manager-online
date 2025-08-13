@@ -53,7 +53,7 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card"; 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
@@ -108,7 +108,7 @@ interface PageState {
   initiativesError: string | null;
   isFormOpen: boolean;
   editingInitiative: Initiative | null;
-  lastLoadedProjectId: string | null; // ✅ CORRECTION: Ajout pour éviter les rechargements inutiles
+  lastLoadedProjectId: string | null;
 }
 
 export default function InitiativesPage(): JSX.Element {

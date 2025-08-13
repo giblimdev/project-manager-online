@@ -1,58 +1,15 @@
-/*
-<FeaturesForm
-          userId={userId}
-          projectId={projectId}
-          feature={editingFeature}
-          onSuccess={handleFormSuccess}
-          onCancel={() => {
-            setIsFormOpen(false); 
-            setEditingFeature(null);   
-          }}
-        />
-*/
-// @/components/features/FeaturesForm.tsx
-// Formulaire de création/édition des features avec validation complète et typage strict
-// Rôle : Modal form pour CRUD des features avec validation Zod et gestion d'erreurs via Sonner
-// Composants utilisés : Dialog, Form, Input, Textarea, Select de shadcn/ui avec validation react-hook-form
-// API : Appels POST/PATCH pour création/modification avec gestion d'erreurs robuste
-// Validation : Schéma Zod complet avec tous les champs selon le modèle Prisma Feature
-// Props : Mode new/edit, feature data, projectId, userId et callbacks success/cancel
-// Hooks : useForm avec zodResolver, useEffect pour chargement des données d'édition
-// TypeScript : Mode strict avec interfaces complètes et typage des callbacks - Résolution des conflits de typage générique
-// Toast : Utilise Sonner pour les notifications utilisateur avec descriptions détaillées
+// @/components/features/FeatureForm.tsx
 
-"use client";
+// Rôle : Composant formulaire réutilisable pour créer/éditer une feature avec gestion hiérarchique
+// Responsabilités : Validation, gestion d'état du formulaire, interface utilisateur, sélection parent/enfants
+// Composants utilisés : shadcn/ui (Input, Textarea, Select, Button, Label, Badge, TreeView)
+// Hooks utilisés : useState, useEffect, useCallback
+// Types utilisés : FeatureFormData, Priority, SimpleFeature, FeatureHierarchy
 
-import { JSX, useEffect, useState } from "react";
-import { useForm, Control, FieldValues } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {
-  X,
-  Save,
-  Calendar,
-  Target,
-  TrendingUp,
-  AlertCircle,
-  Loader2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import React, { useState, useEffect, useCallback } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -60,70 +17,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; 
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Loader2,
+  ChevronRight,
+  ChevronDown,
+  FileText,
+  Folder,
+  FolderOpen,
+} from "lucide-react";
+import { Priority } from "@/lib/generated/prisma/client";
+import type { SimpleFeature } from "@/hooks/useFeatures";
 
-// Schéma Zod avec validation stricte selon le modèle Prisma
-const featureSchema = z
-  .object({
-    name: z.string().min(1, "Name is required").max(255, "Name is too long"),
-    description: z.string().optional().or(z.literal("")),
-    acceptanceCriteria: z.string().optional().or(z.literal("")),
-    priority: z.enum(["CRITICAL", "HIGH", "MEDIUM", "LOW"]),
-    status: z.string().min(1, "Status is required"),
-    storyPoints: z
-      .number()
-      .int()
-      .positive()
-      .optional()
-      .or(z.literal(undefined)),
-    businessValue: z
-      .number()
-      .int()
-      .min(1)
-      .max(10)
-      .optional()
-      .or(z.literal(undefined)),
-    technicalRisk: z
-      .number()
-      .int()
-      .min(1)
-      .max(10)
-      .optional()
-      .or(z.literal(undefined)),
-    effort: z.number().int().min(1).max(10).optional().or(z.literal(undefined)),
-    startDate: z.string().optional().or(z.literal("")),
-    endDate: z.string().optional().or(z.literal("")),
-    progress: z.number().min(0).max(100),
-    epicId: z.string().min(1, "Epic is required"),
-    parentId: z.string().optional().or(z.literal("")),
-  })
-  .refine(
-    (data) => {
-      if (data.startDate && data.endDate) {
-        return new Date(data.startDate) <= new Date(data.endDate);
-      }
-      return true;
-    },
-    {
-      message: "End date must be after start date",
-      path: ["endDate"],
-    }
-  );
+// Type étendu pour inclure les données hiérarchiques
+export interface FeatureWithHierarchy extends SimpleFeature {
+  parent?: SimpleFeature | null;
+  children?: SimpleFeature[];
+}
 
-// Type inféré du schéma Zod
-type FeatureFormData = z.infer<typeof featureSchema>;
-
-// Interface pour les données de feature existante
-interface Feature {
-  id: string;
+export interface FeatureFormData {
   name: string;
   description: string | null;
   acceptanceCriteria: string | null;
-  priority: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
+  priority: Priority;
   status: string;
   storyPoints: number | null;
   businessValue: number | null;
@@ -131,653 +51,617 @@ interface Feature {
   effort: number | null;
   startDate: string | null;
   endDate: string | null;
-  progress: number;
-  position: number;
-  order: number;
-  epicId: string;
-  parentId: string | null;
-  projectId: string | null;
-  userId: string | null;
-  createdAt: string;
-  updatedAt: string;
+  parentId: string | null; // ✅ Ajout pour la hiérarchie
 }
 
-// Props du composant
-interface FeaturesFormProps {
-  mode: "new" | "edit";
-  feature?: Feature | null;
-  projectId: string;
-  userId: string;
-  onSuccess: () => void;
+interface FeatureFormProps {
+  feature?: FeatureWithHierarchy | null;
+  availableParents?: SimpleFeature[]; // ✅ Features pouvant être parents
+  onSubmit: (data: FeatureFormData) => Promise<boolean>;
   onCancel: () => void;
+  isSubmitting: boolean;
+  className?: string;
+  showHierarchy?: boolean; // ✅ Afficher la section hiérarchie
 }
 
-export function FeaturesForm({
-  mode,
-  feature,
-  projectId,
-  userId,
-  onSuccess,
-  onCancel,
-}: FeaturesFormProps): JSX.Element {
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+const initialFormData: FeatureFormData = {
+  name: "",
+  description: null,
+  acceptanceCriteria: null,
+  priority: Priority.MEDIUM,
+  status: "ACTIVE",
+  storyPoints: null,
+  businessValue: null,
+  technicalRisk: null,
+  effort: null,
+  startDate: null,
+  endDate: null,
+  parentId: null, // ✅ Ajout
+};
 
-  // Configuration du formulaire avec typage strict
-  const form = useForm<FeatureFormData>({
-    resolver: zodResolver(featureSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      acceptanceCriteria: "",
-      priority: "MEDIUM",
-      status: "ACTIVE",
-      storyPoints: undefined,
-      businessValue: undefined,
-      technicalRisk: undefined,
-      effort: undefined,
-      startDate: "",
-      endDate: "",
-      progress: 0,
-      epicId: "",
-      parentId: "",
-    } as FeatureFormData,
-    mode: "onChange",
-  });
+const statusOptions = [
+  { value: "ACTIVE", label: "Actif" },
+  { value: "INACTIVE", label: "Inactif" },
+  { value: "COMPLETED", label: "Terminé" },
+  { value: "CANCELLED", label: "Annulé" },
+];
 
-  // Chargement des données pour le mode édition
-  useEffect(() => {
-    if (mode === "edit" && feature) {
-      const formData: FeatureFormData = {
-        name: feature.name,
-        description: feature.description || "",
-        acceptanceCriteria: feature.acceptanceCriteria || "",
-        priority: feature.priority,
-        status: feature.status,
-        storyPoints: feature.storyPoints || undefined,
-        businessValue: feature.businessValue || undefined,
-        technicalRisk: feature.technicalRisk || undefined,
-        effort: feature.effort || undefined,
-        startDate: feature.startDate ? feature.startDate.split("T")[0] : "",
-        endDate: feature.endDate ? feature.endDate.split("T")[0] : "",
-        progress: feature.progress,
-        epicId: feature.epicId,
-        parentId: feature.parentId || "",
-      };
-      form.reset(formData);
-    }
-  }, [mode, feature, form]);
+const priorityOptions = [
+  { value: Priority.CRITICAL, label: "Critique" },
+  { value: Priority.HIGH, label: "Élevée" },
+  { value: Priority.MEDIUM, label: "Moyenne" },
+  { value: Priority.LOW, label: "Faible" },
+];
 
-  // Soumission du formulaire
-  const onSubmit = async (data: FeatureFormData): Promise<void> => {
-    try {
-      setIsSubmitting(true);
+// Fonction pour convertir une feature en données de formulaire
+const featureToFormData = (feature: FeatureWithHierarchy): FeatureFormData => ({
+  name: feature.name,
+  description: feature.description,
+  acceptanceCriteria: feature.acceptanceCriteria,
+  priority: feature.priority,
+  status: feature.status,
+  storyPoints: feature.storyPoints,
+  businessValue: feature.businessValue,
+  technicalRisk: feature.technicalRisk,
+  effort: feature.effort,
+  startDate: feature.startDate
+    ? feature.startDate.toISOString().split("T")[0]
+    : null,
+  endDate: feature.endDate ? feature.endDate.toISOString().split("T")[0] : null,
+  parentId: feature.parentId, // ✅ Ajout
+});
 
-      // Transformation des données pour l'API
-      const payload = {
-        ...data,
-        projectId,
-        userId,
-        description: data.description || null,
-        acceptanceCriteria: data.acceptanceCriteria || null,
-        storyPoints: data.storyPoints || null,
-        businessValue: data.businessValue || null,
-        technicalRisk: data.technicalRisk || null,
-        effort: data.effort || null,
-        startDate: data.startDate
-          ? new Date(data.startDate).toISOString()
-          : null,
-        endDate: data.endDate ? new Date(data.endDate).toISOString() : null,
-        parentId: data.parentId || null,
-      };
+// Composant pour afficher la hiérarchie existante
+const FeatureHierarchyDisplay: React.FC<{
+  feature: FeatureWithHierarchy;
+  className?: string;
+}> = ({ feature, className }) => {
+  const [expandedChildren, setExpandedChildren] = useState<boolean>(false);
 
-      const url =
-        mode === "edit"
-          ? `/api/projects/${projectId}/features/${feature?.id}`
-          : `/api/projects/${projectId}/features`;
-
-      const response = await fetch(url, {
-        method: mode === "edit" ? "PATCH" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to save feature");
-      }
-
-      const savedFeature = await response.json();
-
-      toast.success(
-        `Feature ${mode === "edit" ? "updated" : "created"} successfully`,
-        {
-          description: `"${savedFeature.name}" has been ${
-            mode === "edit" ? "updated" : "added to your project"
-          }.`,
-        }
-      );
-
-      onSuccess();
-    } catch (error) {
-      console.error("Error saving feature:", error);
-      toast.error(
-        `Failed to ${mode === "edit" ? "update" : "create"} feature`,
-        {
-          description:
-            error instanceof Error
-              ? error.message
-              : "An unknown error occurred",
-        }
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Fonction utilitaire pour les couleurs de priorité
-  const getPriorityColor = (priority: string): string => {
-    switch (priority) {
-      case "CRITICAL":
-        return "destructive";
-      case "HIGH":
-        return "orange";
-      case "MEDIUM":
-        return "default";
-      case "LOW":
-        return "secondary";
-      default:
-        return "secondary";
-    }
-  };
-
-  // Validation des entrées numériques
-  const handleNumberInput = (value: string): number | undefined => {
-    const num = parseInt(value, 10);
-    return !isNaN(num) && num > 0 ? num : undefined;
-  };
+  const toggleExpanded = useCallback(() => {
+    setExpandedChildren((prev) => !prev);
+  }, []);
 
   return (
-    <Dialog open onOpenChange={onCancel}>
-      <DialogContent className="max-w-4xl max-h-[95vh] overflow-hidden flex flex-col">
-        <DialogHeader className="flex-shrink-0 pb-4">
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <Target className="h-6 w-6 text-primary" />
-            <span>
-              {mode === "edit" ? "Edit Feature" : "Create New Feature"}
-            </span>
-            {mode === "edit" && feature && (
-              <Badge
-                variant={getPriorityColor(feature.priority) as any}
-                className="ml-2"
-              >
-                {feature.priority}
-              </Badge>
-            )}
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="flex-1 overflow-y-auto px-1">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Section Information de base */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-semibold">Basic Information</h3>
-                  <Separator className="flex-1" />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Nom */}
-                  <FormField
-                    control={form.control as Control<FeatureFormData>}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem className="md:col-span-2">
-                        <FormLabel className="text-base font-medium">
-                          Feature Name *
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter a descriptive feature name"
-                            className="text-base"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          A clear, concise name that describes what this feature
-                          does
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Priorité */}
-                  <FormField
-                    control={form.control as Control<FeatureFormData>}
-                    name="priority"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-base font-medium">
-                          Priority
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select priority" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="CRITICAL">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-red-500 rounded-full" />
-                                Critical
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="HIGH">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-orange-500 rounded-full" />
-                                High
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="MEDIUM">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-yellow-500 rounded-full" />
-                                Medium
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="LOW">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full" />
-                                Low
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Statut */}
-                  <FormField
-                    control={form.control as Control<FeatureFormData>}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-base font-medium">
-                          Status
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="ACTIVE">Active</SelectItem>
-                            <SelectItem value="COMPLETED">Completed</SelectItem>
-                            <SelectItem value="ON_HOLD">On Hold</SelectItem>
-                            <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Description */}
-                <FormField
-                  control={form.control as Control<FeatureFormData>}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-base font-medium">
-                        Description
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Describe what this feature does and its purpose..."
-                          className="min-h-[100px] resize-none"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Provide a detailed description of the feature and its
-                        functionality
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Critères d'acceptation */}
-                <FormField
-                  control={form.control as Control<FeatureFormData>}
-                  name="acceptanceCriteria"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-base font-medium">
-                        Acceptance Criteria
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Define the criteria that must be met for this feature to be considered complete..."
-                          className="min-h-[100px] resize-none"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Clear, testable conditions that define when this feature
-                        is done
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+    <div className={`space-y-3 ${className}`}>
+      {/* Parent actuel */}
+      {feature.parent && (
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-muted-foreground">
+            Feature Parent
+          </Label>
+          <Card className="border-l-4 border-l-blue-500">
+            <CardContent className="py-3">
+              <div className="flex items-center gap-2">
+                <Folder className="h-4 w-4 text-blue-600" />
+                <span className="font-medium text-sm">
+                  {feature.parent.name}
+                </span>
+                <Badge variant="outline" className="text-xs">
+                  Parent
+                </Badge>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
-              {/* Section Estimation & Métriques */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-semibold">
-                    Estimation & Metrics
-                  </h3>
-                  <Separator className="flex-1" />
-                </div>
+      {/* Enfants existants */}
+      {feature.children && feature.children.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Label className="text-sm font-medium text-muted-foreground">
+              Features Enfants ({feature.children.length})
+            </Label>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleExpanded}
+              className="h-6 w-6 p-0"
+            >
+              {expandedChildren ? (
+                <ChevronDown className="h-3 w-3" />
+              ) : (
+                <ChevronRight className="h-3 w-3" />
+              )}
+            </Button>
+          </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {/* Story Points */}
-                  <FormField
-                    control={form.control as Control<FeatureFormData>}
-                    name="storyPoints"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1 text-base font-medium">
-                          <TrendingUp className="h-4 w-4" />
-                          Story Points
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="1, 2, 3, 5, 8..."
-                            value={field.value || ""}
-                            onChange={(e) =>
-                              field.onChange(handleNumberInput(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                        <FormDescription className="text-xs">
-                          Relative sizing (Fibonacci)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+          {expandedChildren && (
+            <Card className="border-l-4 border-l-green-500">
+              <CardContent className="py-3">
+                <ScrollArea className="max-h-32">
+                  <div className="space-y-2">
+                    {feature.children.map((child) => (
+                      <div
+                        key={child.id}
+                        className="flex items-center gap-2 py-1"
+                      >
+                        <FileText className="h-3 w-3 text-green-600" />
+                        <span className="text-sm">{child.name}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {child.status}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
-                  {/* Valeur métier */}
-                  <FormField
-                    control={form.control as Control<FeatureFormData>}
-                    name="businessValue"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-base font-medium">
-                          Business Value
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="1"
-                            max="10"
-                            placeholder="1-10"
-                            value={field.value || ""}
-                            onChange={(e) =>
-                              field.onChange(handleNumberInput(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                        <FormDescription className="text-xs">
-                          Impact score (1-10)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+export const FeatureForm: React.FC<FeatureFormProps> = ({
+  feature,
+  availableParents = [],
+  onSubmit,
+  onCancel,
+  isSubmitting,
+  showHierarchy = true,
+  className = "",
+}) => {
+  const [formData, setFormData] = useState<FeatureFormData>(initialFormData);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
-                  {/* Risque technique */}
-                  <FormField
-                    control={form.control as Control<FeatureFormData>}
-                    name="technicalRisk"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1 text-base font-medium">
-                          <AlertCircle className="h-4 w-4 text-orange-500" />
-                          Tech Risk
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="1"
-                            max="10"
-                            placeholder="1-10"
-                            value={field.value || ""}
-                            onChange={(e) =>
-                              field.onChange(handleNumberInput(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                        <FormDescription className="text-xs">
-                          Complexity score (1-10)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+  // Initialiser le formulaire
+  useEffect(() => {
+    if (feature) {
+      setFormData(featureToFormData(feature));
+    } else {
+      setFormData(initialFormData);
+    }
+    setValidationErrors({});
+  }, [feature]);
 
-                  {/* Effort */}
-                  <FormField
-                    control={form.control as Control<FeatureFormData>}
-                    name="effort"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-base font-medium">
-                          Effort
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="1"
-                            max="10"
-                            placeholder="1-10"
-                            value={field.value || ""}
-                            onChange={(e) =>
-                              field.onChange(handleNumberInput(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                        <FormDescription className="text-xs">
-                          Effort estimate (1-10)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+  const handleInputChange = (
+    field: keyof FeatureFormData,
+    value: any
+  ): void => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
 
-                {/* Progression */}
-                <FormField
-                  control={form.control as Control<FeatureFormData>}
-                  name="progress"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-base font-medium">
-                        Progress (%)
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min="0"
-                          max="100"
-                          placeholder="0-100"
-                          value={field.value}
-                          onChange={(e) => {
-                            const value = parseInt(e.target.value, 10);
-                            field.onChange(
-                              !isNaN(value)
-                                ? Math.max(0, Math.min(100, value))
-                                : 0
-                            );
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Current completion percentage (0-100%)
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+    // Nettoyer l'erreur de validation pour ce champ
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
 
-              {/* Section Timeline & Relations */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-semibold">
-                    Timeline & Relationships
-                  </h3>
-                  <Separator className="flex-1" />
-                </div>
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Date de début */}
-                  <FormField
-                    control={form.control as Control<FeatureFormData>}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1 text-base font-medium">
-                          <Calendar className="h-4 w-4 text-green-600" />
-                          Start Date
-                        </FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          When work on this feature begins
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+    if (!formData.name.trim()) {
+      errors.name = "Le nom de la feature est requis";
+    }
 
-                  {/* Date de fin */}
-                  <FormField
-                    control={form.control as Control<FeatureFormData>}
-                    name="endDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1 text-base font-medium">
-                          <Calendar className="h-4 w-4 text-red-600" />
-                          End Date
-                        </FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Target completion date
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+    // Validation spécifique à la hiérarchie
+    if (formData.parentId === feature?.id) {
+      errors.parentId = "Une feature ne peut pas être son propre parent";
+    }
 
-                  {/* Epic ID */}
-                  <FormField
-                    control={form.control as Control<FeatureFormData>}
-                    name="epicId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-base font-medium">
-                          Epic *
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="Epic ID" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          The epic this feature belongs to
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+    // Validation des métriques
+    if (
+      formData.storyPoints !== null &&
+      (formData.storyPoints < 0 || formData.storyPoints > 100)
+    ) {
+      errors.storyPoints = "Les story points doivent être entre 0 et 100";
+    }
 
-                  {/* Feature parent */}
-                  <FormField
-                    control={form.control as Control<FeatureFormData>}
-                    name="parentId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-base font-medium">
-                          Parent Feature
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Parent Feature ID (optional)"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Make this a sub-feature of another feature
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-            </form>
-          </Form>
+    if (
+      formData.businessValue !== null &&
+      (formData.businessValue < 0 || formData.businessValue > 100)
+    ) {
+      errors.businessValue = "La valeur business doit être entre 0 et 100";
+    }
+
+    if (
+      formData.technicalRisk !== null &&
+      (formData.technicalRisk < 0 || formData.technicalRisk > 100)
+    ) {
+      errors.technicalRisk = "Le risque technique doit être entre 0 et 100";
+    }
+
+    if (formData.effort !== null && formData.effort < 0) {
+      errors.effort = "L'effort ne peut pas être négatif";
+    }
+
+    // Validation des dates
+    if (
+      formData.startDate &&
+      formData.endDate &&
+      new Date(formData.startDate) > new Date(formData.endDate)
+    ) {
+      errors.endDate =
+        "La date de fin doit être postérieure à la date de début";
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const cleanedData: FeatureFormData = {
+      name: formData.name.trim(),
+      description: formData.description?.trim() || null,
+      acceptanceCriteria: formData.acceptanceCriteria?.trim() || null,
+      priority: formData.priority,
+      status: formData.status,
+      storyPoints: formData.storyPoints,
+      businessValue: formData.businessValue,
+      technicalRisk: formData.technicalRisk,
+      effort: formData.effort,
+      startDate: formData.startDate || null,
+      endDate: formData.endDate || null,
+      parentId: formData.parentId || null, // ✅ Inclus dans la soumission
+    };
+
+    await onSubmit(cleanedData);
+  };
+
+  // Filtrer les parents disponibles (exclure la feature actuelle et ses enfants)
+  const filteredParents = availableParents.filter((parent) => {
+    if (!feature) return true;
+
+    // Exclure la feature actuelle
+    if (parent.id === feature.id) return false;
+
+    // Exclure les enfants directs de cette feature
+    if (feature.children?.some((child) => child.id === parent.id)) return false;
+
+    return true;
+  });
+
+  const isEditing = !!feature;
+
+  return (
+    <form onSubmit={handleSubmit} className={`space-y-8 ${className}`}>
+      {/* Hiérarchie existante (mode édition) */}
+      {isEditing && showHierarchy && feature && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Label className="text-lg font-semibold">Hiérarchie Actuelle</Label>
+            <Badge variant="outline" className="text-xs">
+              Lecture seule
+            </Badge>
+          </div>
+          <FeatureHierarchyDisplay feature={feature} />
+          <Separator />
+        </div>
+      )}
+
+      {/* Informations de base */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Label className="text-lg font-semibold">Informations de Base</Label>
         </div>
 
-        <DialogFooter className="flex-shrink-0 pt-4 border-t gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
+        {/* Name */}
+        <div className="space-y-2">
+          <Label htmlFor="name">
+            Nom <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="name"
+            value={formData.name}
+            onChange={(e) => handleInputChange("name", e.target.value)}
+            placeholder="Nom de la feature"
+            className={validationErrors.name ? "border-red-500" : ""}
             disabled={isSubmitting}
-          >
-            <X className="h-4 w-4 mr-2" />
-            Cancel
-          </Button>
-          <Button
-            type="submit"
+          />
+          {validationErrors.name && (
+            <p className="text-sm text-red-600">{validationErrors.name}</p>
+          )}
+        </div>
+
+        {/* Description */}
+        <div className="space-y-2">
+          <Label htmlFor="description">Description</Label>
+          <Textarea
+            id="description"
+            value={formData.description || ""}
+            onChange={(e) => handleInputChange("description", e.target.value)}
+            placeholder="Description de la feature"
+            rows={3}
             disabled={isSubmitting}
-            onClick={form.handleSubmit(onSubmit)}
-            className="min-w-32"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                {mode === "edit" ? "Update Feature" : "Create Feature"}
-              </>
+          />
+        </div>
+
+        {/* Acceptance Criteria */}
+        <div className="space-y-2">
+          <Label htmlFor="acceptanceCriteria">Critères d'acceptation</Label>
+          <Textarea
+            id="acceptanceCriteria"
+            value={formData.acceptanceCriteria || ""}
+            onChange={(e) =>
+              handleInputChange("acceptanceCriteria", e.target.value)
+            }
+            placeholder="Définissez les critères d'acceptation"
+            rows={4}
+            disabled={isSubmitting}
+          />
+        </div>
+      </div>
+
+      {/* Section Hiérarchie (nouveau parent) */}
+      {showHierarchy && (
+        <div className="space-y-4">
+          <Separator />
+          <div className="flex items-center gap-2">
+            <Label className="text-lg font-semibold">Hiérarchie</Label>
+            <Badge variant="secondary" className="text-xs">
+              Optionnel
+            </Badge>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="parentId">Feature Parent</Label>
+            <Select
+              value={formData.parentId || "none"}
+              onValueChange={(value) =>
+                handleInputChange("parentId", value === "none" ? null : value)
+              }
+              disabled={isSubmitting}
+            >
+              <SelectTrigger
+                className={validationErrors.parentId ? "border-red-500" : ""}
+              >
+                <SelectValue placeholder="Sélectionner un parent (optionnel)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    <span>Aucun parent (feature racine)</span>
+                  </div>
+                </SelectItem>
+                {filteredParents.map((parent) => (
+                  <SelectItem key={parent.id} value={parent.id}>
+                    <div className="flex items-center gap-2">
+                      <Folder className="h-4 w-4" />
+                      <span>{parent.name}</span>
+                      <Badge variant="outline" className="text-xs">
+                        {parent.status}
+                      </Badge>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {validationErrors.parentId && (
+              <p className="text-sm text-red-600">
+                {validationErrors.parentId}
+              </p>
             )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+            <p className="text-xs text-muted-foreground">
+              Sélectionnez une feature parent pour organiser hiérarchiquement
+              vos features
+            </p>
+          </div>
+        </div>
+      )}
+
+      <Separator />
+
+      {/* Priority and Status */}
+      <div className="space-y-4">
+        <Label className="text-lg font-semibold">Configuration</Label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Priorité</Label>
+            <Select
+              value={formData.priority}
+              onValueChange={(value: Priority) =>
+                handleInputChange("priority", value)
+              }
+              disabled={isSubmitting}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {priorityOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Statut</Label>
+            <Select
+              value={formData.status}
+              onValueChange={(value) => handleInputChange("status", value)}
+              disabled={isSubmitting}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {statusOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      {/* Metrics */}
+      <div className="space-y-4">
+        <Label className="text-lg font-semibold">Métriques</Label>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="storyPoints">Story Points</Label>
+            <Input
+              id="storyPoints"
+              type="number"
+              min="0"
+              max="100"
+              value={formData.storyPoints || ""}
+              onChange={(e) =>
+                handleInputChange(
+                  "storyPoints",
+                  e.target.value ? parseInt(e.target.value) : null
+                )
+              }
+              placeholder="0-100"
+              className={validationErrors.storyPoints ? "border-red-500" : ""}
+              disabled={isSubmitting}
+            />
+            {validationErrors.storyPoints && (
+              <p className="text-xs text-red-600">
+                {validationErrors.storyPoints}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="businessValue">Valeur Business</Label>
+            <Input
+              id="businessValue"
+              type="number"
+              min="0"
+              max="100"
+              value={formData.businessValue || ""}
+              onChange={(e) =>
+                handleInputChange(
+                  "businessValue",
+                  e.target.value ? parseInt(e.target.value) : null
+                )
+              }
+              placeholder="0-100"
+              className={validationErrors.businessValue ? "border-red-500" : ""}
+              disabled={isSubmitting}
+            />
+            {validationErrors.businessValue && (
+              <p className="text-xs text-red-600">
+                {validationErrors.businessValue}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="technicalRisk">Risque Technique</Label>
+            <Input
+              id="technicalRisk"
+              type="number"
+              min="0"
+              max="100"
+              value={formData.technicalRisk || ""}
+              onChange={(e) =>
+                handleInputChange(
+                  "technicalRisk",
+                  e.target.value ? parseInt(e.target.value) : null
+                )
+              }
+              placeholder="0-100"
+              className={validationErrors.technicalRisk ? "border-red-500" : ""}
+              disabled={isSubmitting}
+            />
+            {validationErrors.technicalRisk && (
+              <p className="text-xs text-red-600">
+                {validationErrors.technicalRisk}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="effort">Effort</Label>
+            <Input
+              id="effort"
+              type="number"
+              min="0"
+              value={formData.effort || ""}
+              onChange={(e) =>
+                handleInputChange(
+                  "effort",
+                  e.target.value ? parseInt(e.target.value) : null
+                )
+              }
+              placeholder="Heures"
+              className={validationErrors.effort ? "border-red-500" : ""}
+              disabled={isSubmitting}
+            />
+            {validationErrors.effort && (
+              <p className="text-xs text-red-600">{validationErrors.effort}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Dates */}
+      <div className="space-y-4">
+        <Label className="text-lg font-semibold">Planification</Label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="startDate">Date de début</Label>
+            <Input
+              id="startDate"
+              type="date"
+              value={formData.startDate || ""}
+              onChange={(e) =>
+                handleInputChange("startDate", e.target.value || null)
+              }
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="endDate">Date de fin</Label>
+            <Input
+              id="endDate"
+              type="date"
+              value={formData.endDate || ""}
+              onChange={(e) =>
+                handleInputChange("endDate", e.target.value || null)
+              }
+              className={validationErrors.endDate ? "border-red-500" : ""}
+              disabled={isSubmitting}
+            />
+            {validationErrors.endDate && (
+              <p className="text-xs text-red-600">{validationErrors.endDate}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isSubmitting}
+          className="sm:w-auto"
+        >
+          Annuler
+        </Button>
+        <Button type="submit" disabled={isSubmitting} className="sm:w-auto">
+          {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          {isEditing ? "Mettre à jour" : "Créer"}
+        </Button>
+      </div>
+    </form>
   );
-}
+};

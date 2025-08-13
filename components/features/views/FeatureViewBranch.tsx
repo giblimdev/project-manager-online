@@ -1,117 +1,233 @@
-// @/components/features/views/FeaturesViewBranch.tsx
-// Vue arbre hiérarchique pour l'affichage des features
-// Rôle : Affichage en structure arborescente avec relations parent-enfant et actions CRUD
-// Composants utilisés : Card, CardContent, CardHeader, CardTitle, Button, Badge, Progress de shadcn/ui
-// Icônes Lucide : Edit, Trash2, ChevronUp, ChevronDown, ChevronRight, ExpandIcon, GitBranch, Target
-// Props : Reçoit les features, état de chargement et callbacks pour les actions
-// État : Gère l'expansion/collapse des nœuds de l'arbre avec Set d'IDs
-// TypeScript : Mode strict avec interfaces complètes pour les features et nœuds d'arbre
-// Navigation : Expansion/collapse des branches avec indentation visuelle
-// Design : Interface moderne avec connecteurs visuels et structure hiérarchique
+// @/components/features/views/FeatureViewsBranch.tsx
 
-"use client";
+// Rôle : Composant d'affichage hiérarchique en arbre pour les features
+// Responsabilités : Affichage arborescent, navigation hiérarchie, expand/collapse, drag & drop
+// Composants utilisés : Card, Badge, Button, Collapsible (shadcn/ui)
+// Libs externes : lucide-react (icônes)
+// Hooks utilisés : useState, useCallback (pour état d'expansion)
+// Types utilisés : FeatureSimple, Priority, FeatureDisplayProps
+// Utilisé par : page features, mode arbre
 
-import { JSX, useState } from "react";
-import {
-  Edit,
-  Trash2,
-  ChevronUp,
-  ChevronDown,
-  ChevronRight,
-  ChevronDown as ExpandIcon,
-  GitBranch,
-  Target,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useCallback } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  ChevronRight,
+  ChevronDown,
+  Edit2,
+  Trash2,
+  AlertCircle,
+  Loader2,
+  Plus,
+  FileText,
+  Folder,
+  FolderOpen,
+} from "lucide-react";
+import { Priority } from "@/lib/generated/prisma/client";
+import { FeatureSimple, FeatureDisplayProps } from "@/types/feature";
 
-interface Feature {
-  id: string;
-  name: string;
-  description: string | null;
-  acceptanceCriteria: string | null;
-  priority: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
-  status: string;
-  storyPoints: number | null;
-  businessValue: number | null;
-  technicalRisk: number | null;
-  effort: number | null;
-  startDate: string | null;
-  endDate: string | null;
-  progress: number;
-  position: number;
-  order: number;
-  epicId: string;
-  parentId: string | null;
-  projectId: string | null;
-  userId: string | null;
-  createdAt: string;
-  updatedAt: string;
+const priorityLabels: Record<Priority, string> = {
+  [Priority.CRITICAL]: "Critique",
+  [Priority.HIGH]: "Élevée",
+  [Priority.MEDIUM]: "Moyenne",
+  [Priority.LOW]: "Faible",
+};
+
+const priorityColors: Record<Priority, string> = {
+  [Priority.CRITICAL]: "destructive",
+  [Priority.HIGH]: "orange",
+  [Priority.MEDIUM]: "blue",
+  [Priority.LOW]: "secondary",
+};
+
+const statusLabels: Record<string, string> = {
+  ACTIVE: "Actif",
+  INACTIVE: "Inactif",
+  COMPLETED: "Terminé",
+  CANCELLED: "Annulé",
+};
+
+interface FeatureTreeViewProps extends FeatureDisplayProps {
+  featuresTree: FeatureSimple[];
 }
 
-interface TreeNode extends Feature {
-  children: TreeNode[];
+interface FeatureNodeProps {
+  feature: FeatureSimple & { children?: FeatureSimple[] };
   level: number;
+  onEdit: (feature: FeatureSimple) => void;
+  onDelete: (feature: FeatureSimple) => void;
+  expandedNodes: Set<string>;
+  onToggleExpand: (nodeId: string) => void;
 }
 
-interface FeaturesViewTreeProps {
-  features: Feature[];
-  loading: boolean;
-  onEdit: (feature: Feature) => void;
-  onDelete: (featureId: string) => void;
-  onOrderChange: (featureId: string, direction: "up" | "down") => void;
-}
-
-export function FeaturesViewTree({
-  features,
-  loading,
+// Composant pour un nœud individuel de l'arbre
+const FeatureNode: React.FC<FeatureNodeProps> = ({
+  feature,
+  level,
   onEdit,
   onDelete,
-  onOrderChange,
-}: FeaturesViewTreeProps): JSX.Element {
+  expandedNodes,
+  onToggleExpand,
+}) => {
+  const hasChildren = feature.children && feature.children.length > 0;
+  const isExpanded = expandedNodes.has(feature.id);
+  const indentWidth = level * 24; // 24px par niveau
+
+  return (
+    <div className="relative">
+      {/* Ligne de connexion pour les enfants */}
+      {level > 0 && (
+        <div
+          className="absolute left-3 top-0 w-px h-full bg-gray-200"
+          style={{ left: `${indentWidth - 12}px` }}
+        />
+      )}
+
+      <div
+        className="relative flex items-center gap-2 p-3 hover:bg-gray-50 rounded-lg group"
+        style={{ paddingLeft: `${indentWidth + 12}px` }}
+      >
+        {/* Indicateur de branche */}
+        {level > 0 && (
+          <div
+            className="absolute w-3 h-px bg-gray-200"
+            style={{ left: `${indentWidth - 12}px` }}
+          />
+        )}
+
+        {/* Bouton d'expansion/collapse */}
+        {hasChildren ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 w-6 p-0"
+            onClick={() => onToggleExpand(feature.id)}
+          >
+            {isExpanded ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )}
+          </Button>
+        ) : (
+          <div className="w-6 h-6" />
+        )}
+
+        {/* Icône de type */}
+        <div className="flex-shrink-0">
+          {hasChildren ? (
+            isExpanded ? (
+              <FolderOpen className="h-4 w-4 text-blue-600" />
+            ) : (
+              <Folder className="h-4 w-4 text-blue-600" />
+            )
+          ) : (
+            <FileText className="h-4 w-4 text-gray-500" />
+          )}
+        </div>
+
+        {/* Contenu du nœud */}
+        <div className="flex-1 min-w-0 flex items-center justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h4 className="text-sm font-medium text-gray-900 truncate">
+                {feature.name}
+              </h4>
+              <Badge
+                variant={priorityColors[feature.priority] as any}
+                className="text-xs"
+              >
+                {priorityLabels[feature.priority]}
+              </Badge>
+            </div>
+
+            {feature.description && (
+              <p className="text-xs text-gray-600 mt-1 line-clamp-1">
+                {feature.description}
+              </p>
+            )}
+          </div>
+
+          {/* Progression et actions */}
+          <div className="flex items-center gap-2">
+            {/* Mini barre de progression */}
+            <div className="flex items-center gap-1 w-16">
+              <div className="flex-1 bg-gray-200 rounded-full h-1">
+                <div
+                  className="bg-blue-600 h-1 rounded-full transition-all duration-300"
+                  style={{
+                    width: `${Math.min(Math.max(feature.progress, 0), 100)}%`,
+                  }}
+                />
+              </div>
+              <span className="text-xs text-gray-500 min-w-[2rem]">
+                {feature.progress}%
+              </span>
+            </div>
+
+            {/* Actions (visibles au hover) */}
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEdit(feature)}
+                className="h-6 w-6 p-0"
+                title="Modifier"
+              >
+                <Edit2 className="h-3 w-3" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDelete(feature)}
+                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                title="Supprimer"
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Enfants */}
+      {hasChildren && isExpanded && (
+        <div className="ml-4">
+          {feature.children!.map((child) => (
+            <FeatureNode
+              key={child.id}
+              feature={child}
+              level={level + 1}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              expandedNodes={expandedNodes}
+              onToggleExpand={onToggleExpand}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const FeatureTreeView: React.FC<FeatureTreeViewProps> = ({
+  featuresTree,
+  isLoading,
+  error,
+  onCreateFeature,
+  onEditFeature,
+  onDeleteFeature,
+  className = "",
+}) => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
 
-  const buildTree = (features: Feature[]): TreeNode[] => {
-    const nodeMap = new Map<string, TreeNode>();
-    const rootNodes: TreeNode[] = [];
-
-    // Create nodes
-    features.forEach((feature) => {
-      nodeMap.set(feature.id, {
-        ...feature,
-        children: [],
-        level: 0,
-      });
-    });
-
-    // Build hierarchy
-    features.forEach((feature) => {
-      const node = nodeMap.get(feature.id)!;
-      if (feature.parentId && nodeMap.has(feature.parentId)) {
-        const parent = nodeMap.get(feature.parentId)!;
-        parent.children.push(node);
-        node.level = parent.level + 1;
-      } else {
-        rootNodes.push(node);
-      }
-    });
-
-    // Sort by order
-    const sortByOrder = (nodes: TreeNode[]): TreeNode[] => {
-      return nodes
-        .sort((a, b) => a.order - b.order)
-        .map((node) => ({
-          ...node,
-          children: sortByOrder(node.children),
-        }));
-    };
-
-    return sortByOrder(rootNodes);
-  };
-
-  const toggleExpanded = (nodeId: string): void => {
+  const handleToggleExpand = useCallback((nodeId: string) => {
     setExpandedNodes((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(nodeId)) {
@@ -121,265 +237,148 @@ export function FeaturesViewTree({
       }
       return newSet;
     });
-  };
+  }, []);
 
-  const getPriorityColor = (priority: string): string => {
-    switch (priority) {
-      case "CRITICAL":
-        return "destructive";
-      case "HIGH":
-        return "destructive";
-      case "MEDIUM":
-        return "default";
-      case "LOW":
-        return "secondary";
-      default:
-        return "secondary";
-    }
-  };
+  const handleExpandAll = useCallback(() => {
+    const allNodeIds = new Set<string>();
 
-  const getStatusColor = (status: string): string => {
-    switch (status.toUpperCase()) {
-      case "ACTIVE":
-        return "default";
-      case "COMPLETED":
-        return "success";
-      case "ON_HOLD":
-        return "secondary";
-      case "CANCELLED":
-        return "destructive";
-      default:
-        return "secondary";
-    }
-  };
+    const collectIds = (features: FeatureSimple[]) => {
+      features.forEach((feature) => {
+        if (feature.children && feature.children.length > 0) {
+          allNodeIds.add(feature.id);
+          collectIds(feature.children);
+        }
+      });
+    };
 
-  const renderTreeNode = (
-    node: TreeNode,
-    index: number,
-    siblings: TreeNode[]
-  ): JSX.Element => {
-    const isExpanded = expandedNodes.has(node.id);
-    const hasChildren = node.children.length > 0;
-    const indentLevel = node.level * 24;
+    collectIds(featuresTree);
+    setExpandedNodes(allNodeIds);
+  }, [featuresTree]);
 
+  const handleCollapseAll = useCallback(() => {
+    setExpandedNodes(new Set());
+  }, []);
+
+  // État de chargement
+  if (isLoading) {
     return (
-      <div key={node.id} className="space-y-1">
-        <div
-          className="group flex items-center gap-2 p-3 rounded-lg hover:bg-muted/50 transition-colors border-l-2 border-transparent hover:border-primary/20"
-          style={{ marginLeft: `${indentLevel}px` }}
-        >
-          {/* Expand/Collapse Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0 hover:bg-primary/10"
-            onClick={() => toggleExpanded(node.id)}
-            disabled={!hasChildren}
-          >
-            {hasChildren ? (
-              isExpanded ? (
-                <ExpandIcon className="h-4 w-4 text-primary" />
-              ) : (
-                <ChevronRight className="h-4 w-4 text-primary" />
-              )
-            ) : (
-              <div className="h-4 w-4 flex items-center justify-center">
-                <div className="w-1 h-1 bg-muted-foreground rounded-full" />
-              </div>
-            )}
-          </Button>
-
-          {/* Tree connector lines */}
-          {node.level > 0 && (
-            <div className="flex items-center">
-              <div className="w-4 h-px bg-border" />
-              <GitBranch className="h-3 w-3 text-muted-foreground" />
-            </div>
-          )}
-
-          {/* Feature content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1 flex-wrap">
-              <span className="font-medium truncate text-sm sm:text-base">
-                {node.name}
-              </span>
-              <div className="flex items-center gap-1">
-                <Badge
-                  variant={getPriorityColor(node.priority) as any}
-                  className="text-xs"
-                >
-                  {node.priority}
-                </Badge>
-                <Badge
-                  variant={getStatusColor(node.status) as any}
-                  className="text-xs"
-                >
-                  {node.status}
-                </Badge>
-              </div>
-            </div>
-
-            {node.description && (
-              <p className="text-sm text-muted-foreground line-clamp-1 mb-2 hidden sm:block">
-                {node.description}
-              </p>
-            )}
-
-            <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
-              <div className="flex items-center gap-1 min-w-0">
-                <span className="hidden sm:inline">Progress:</span>
-                <span className="sm:hidden">Prog:</span>
-                <div className="flex items-center gap-1 min-w-0">
-                  <Progress
-                    value={node.progress}
-                    className="w-12 sm:w-16 h-1"
-                  />
-                  <span className="text-xs">{node.progress}%</span>
-                </div>
-              </div>
-              {node.storyPoints && (
-                <div className="flex items-center gap-1">
-                  <span className="hidden sm:inline">SP:</span>
-                  <span className="sm:hidden">P:</span>
-                  <span className="font-medium">{node.storyPoints}</span>
-                </div>
-              )}
-              {hasChildren && (
-                <div className="flex items-center gap-1 text-primary">
-                  <span className="text-xs">
-                    {node.children.length} sub-feature
-                    {node.children.length !== 1 ? "s" : ""}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Order controls - Hidden on mobile, shown on hover */}
-          <div className="hidden sm:flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0 hover:bg-primary/10"
-              onClick={() => onOrderChange(node.id, "up")}
-              disabled={index === 0}
-              title="Move up"
-            >
-              <ChevronUp className="h-3 w-3" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0 hover:bg-primary/10"
-              onClick={() => onOrderChange(node.id, "down")}
-              disabled={index === siblings.length - 1}
-              title="Move down"
-            >
-              <ChevronDown className="h-3 w-3" />
-            </Button>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 sm:opacity-100 transition-opacity">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-primary/10"
-              onClick={() => onEdit(node)}
-              title="Edit feature"
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={() => onDelete(node.id)}
-              title="Delete feature"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Render children if expanded */}
-        {hasChildren && isExpanded && (
-          <div className="space-y-1 border-l border-muted ml-6 pl-2">
-            {node.children.map((child, childIndex) =>
-              renderTreeNode(child, childIndex, node.children)
-            )}
-          </div>
-        )}
+      <div className={`space-y-6 ${className}`}>
+        <Card>
+          <CardContent className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin mr-2" />
+            <span className="text-muted-foreground">
+              Chargement des features...
+            </span>
+          </CardContent>
+        </Card>
       </div>
     );
-  };
+  }
 
-  if (loading) {
+  // État d'erreur
+  if (error) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center gap-4">
-                <div className="h-4 w-4 bg-muted rounded animate-pulse" />
-                <div className="h-4 bg-muted rounded animate-pulse flex-1" />
-                <div className="h-4 w-16 sm:w-20 bg-muted rounded animate-pulse" />
+      <div className={`space-y-6 ${className}`}>
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 text-red-700">
+              <AlertCircle className="h-4 w-4" />
+              <span>{error}</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // État vide
+  if (featuresTree.length === 0) {
+    return (
+      <div className={`space-y-6 ${className}`}>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <div className="text-center space-y-4">
+              <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                <Plus className="h-6 w-6 text-gray-400" />
               </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Aucune Feature
+                </h3>
+                <p className="text-muted-foreground text-center max-w-sm">
+                  Commencez par créer votre première feature pour cet epic.
+                </p>
+              </div>
+              <Button onClick={onCreateFeature} className="mt-4">
+                <Plus className="h-4 w-4 mr-2" />
+                Créer une Feature
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Vue en arbre
+  return (
+    <div className={`space-y-4 ${className}`}>
+      {/* Contrôles d'expansion */}
+      <Card className="bg-blue-50 border-blue-200">
+        <CardContent className="py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Folder className="h-4 w-4 text-blue-600" />
+              <span className="text-sm font-medium text-blue-900">
+                Vue hiérarchique
+              </span>
+              <Badge variant="outline" className="text-xs">
+                {featuresTree.length} feature
+                {featuresTree.length > 1 ? "s" : ""} racine
+                {featuresTree.length > 1 ? "s" : ""}
+              </Badge>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleExpandAll}
+                className="text-blue-700 hover:text-blue-800"
+              >
+                Tout déplier
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCollapseAll}
+                className="text-blue-700 hover:text-blue-800"
+              >
+                Tout replier
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Arbre des features */}
+      <Card>
+        <CardContent className="p-0">
+          <div className="max-h-[600px] overflow-y-auto">
+            {featuresTree.map((feature) => (
+              <FeatureNode
+                key={feature.id}
+                feature={feature}
+                level={0}
+                onEdit={onEditFeature}
+                onDelete={onDeleteFeature}
+                expandedNodes={expandedNodes}
+                onToggleExpand={handleToggleExpand}
+              />
             ))}
           </div>
         </CardContent>
       </Card>
-    );
-  }
-
-  const treeData = buildTree(features);
-
-  if (treeData.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-8 sm:p-12 text-center">
-          <GitBranch className="h-12 sm:h-16 w-12 sm:w-16 mx-auto text-muted-foreground mb-4 sm:mb-6" />
-          <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3">
-            No Features Found
-          </h3>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto">
-            Create features and organize them in a hierarchical structure to
-            better manage your project.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card>
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-          <GitBranch className="h-5 w-5" />
-          <span className="hidden sm:inline">Features Tree</span>
-          <span className="sm:hidden">Tree</span>
-          <span className="text-sm sm:text-base font-normal text-muted-foreground">
-            ({features.length})
-          </span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-2 sm:p-4">
-        <div className="space-y-1">
-          {treeData.map((node, index) => renderTreeNode(node, index, treeData))}
-        </div>
-
-        {/* Mobile Order Controls Info */}
-        <div className="mt-4 p-3 bg-muted/30 rounded-lg text-xs text-muted-foreground sm:hidden">
-          <p className="flex items-center gap-1">
-            <ChevronUp className="h-3 w-3" />
-            <ChevronDown className="h-3 w-3" />
-            Order controls available on desktop
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+    </div>
   );
-}
-
-// Export par défaut pour la compatibilité avec vos imports
-export default FeaturesViewTree;
+};

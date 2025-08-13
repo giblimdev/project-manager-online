@@ -53,6 +53,8 @@ import {
   Target,
   PlusCircle,
   RefreshCw,
+  Filter,
+  Info,
 } from "lucide-react";
 import InitiativesList from "./InitiativesList";
 
@@ -111,7 +113,7 @@ interface FilterState {
 // Types pour les modes d'affichage
 type ViewMode = "list" | "card" | "tree";
 
-// ✅ NOUVELLE LOGIQUE: Props reçues de la page parent (pas de chargement interne)
+// ✅ Props reçues de la page parent (pas de chargement interne)
 interface InitiativesDisplayProps {
   projectId: string;
   filters: FilterState;
@@ -119,8 +121,11 @@ interface InitiativesDisplayProps {
   initiatives: Initiative[];
   onCreateInitiative: () => void;
   onEditInitiative: (initiative: Initiative) => void;
-  onDeleteInitiative: (initiativeId: string) => void;
-  onMoveInitiative: (initiativeId: string, direction: "up" | "down") => void;
+  onDeleteInitiative: (initiativeId: string) => Promise<void>; // ✅ CORRECTION: Promise<void>
+  onMoveInitiative: (
+    initiativeId: string,
+    direction: "up" | "down"
+  ) => Promise<void>; // ✅ CORRECTION: Promise<void>
   loading: boolean;
 }
 
@@ -135,7 +140,7 @@ export default function InitiativesDisplay({
   onMoveInitiative,
   loading,
 }: InitiativesDisplayProps): JSX.Element {
-  // ✅ NOUVELLE LOGIQUE: Filtrage optimisé avec useMemo
+  // ✅ Filtrage optimisé avec useMemo et recherche étendue
   const filteredInitiatives = useMemo(() => {
     if (!initiatives.length) return [];
 
@@ -143,13 +148,19 @@ export default function InitiativesDisplay({
 
     // Filtrage par nom (recherche dans nom, description, objectif)
     if (filters.name.trim()) {
-      const searchTerm = filters.name.toLowerCase();
-      filtered = filtered.filter(
-        (initiative) =>
-          initiative.name.toLowerCase().includes(searchTerm) ||
-          initiative.description?.toLowerCase().includes(searchTerm) ||
-          initiative.objective?.toLowerCase().includes(searchTerm)
-      );
+      const searchTerm = filters.name.toLowerCase().trim();
+      filtered = filtered.filter((initiative) => {
+        const searchableText = [
+          initiative.name,
+          initiative.description,
+          initiative.objective,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        return searchableText.includes(searchTerm);
+      });
     }
 
     // Filtrage par priorité
@@ -167,17 +178,39 @@ export default function InitiativesDisplay({
 
   // Statistiques des initiatives filtrées pour affichage
   const stats = useMemo(() => {
-    return {
+    const baseStats = {
       total: filteredInitiatives.length,
+      originalTotal: initiatives.length,
       active: filteredInitiatives.filter((i) => i.status === "ACTIVE").length,
       planning: filteredInitiatives.filter((i) => i.status === "PLANNING")
         .length,
       completed: filteredInitiatives.filter((i) => i.status === "COMPLETED")
         .length,
+      onHold: filteredInitiatives.filter((i) => i.status === "ON_HOLD").length,
+      cancelled: filteredInitiatives.filter((i) => i.status === "CANCELLED")
+        .length,
       critical: filteredInitiatives.filter((i) => i.priority === "CRITICAL")
         .length,
+      high: filteredInitiatives.filter((i) => i.priority === "HIGH").length,
     };
-  }, [filteredInitiatives]);
+
+    return {
+      ...baseStats,
+      isFiltered: baseStats.total !== baseStats.originalTotal,
+    };
+  }, [filteredInitiatives, initiatives.length]);
+
+  // Configuration des statuts avec couleurs
+  const statusConfig = useMemo(
+    () => ({
+      PLANNING: { color: "text-blue-600", bgColor: "bg-blue-100" },
+      ACTIVE: { color: "text-green-600", bgColor: "bg-green-100" },
+      COMPLETED: { color: "text-emerald-600", bgColor: "bg-emerald-100" },
+      ON_HOLD: { color: "text-yellow-600", bgColor: "bg-yellow-100" },
+      CANCELLED: { color: "text-red-600", bgColor: "bg-red-100" },
+    }),
+    []
+  );
 
   // Fonction pour obtenir l'icône du mode d'affichage
   const getViewModeIcon = (mode: ViewMode) => {
@@ -207,16 +240,19 @@ export default function InitiativesDisplay({
     }
   };
 
-  // ✅ NOUVELLE LOGIQUE: Affichage du skeleton pendant le chargement
+  // ✅ Affichage du skeleton pendant le chargement initial
   if (loading && initiatives.length === 0) {
     return (
       <div className="space-y-6">
         {/* Header skeleton */}
-        <Card className="p-4">
+        <Card className="p-4 animate-pulse">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Skeleton className="h-8 w-32" />
-              <Skeleton className="h-6 w-16" />
+              <Skeleton className="h-12 w-12 rounded-lg" />
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-40" />
+                <Skeleton className="h-4 w-64" />
+              </div>
             </div>
             <Skeleton className="h-10 w-32" />
           </div>
@@ -233,7 +269,7 @@ export default function InitiativesDisplay({
           }`}
         >
           {[...Array(6)].map((_, i) => (
-            <Card key={i} className="p-6">
+            <Card key={i} className="p-6 animate-pulse">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <Skeleton className="h-6 w-3/4" />
@@ -242,8 +278,11 @@ export default function InitiativesDisplay({
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-2/3" />
                 <div className="flex justify-between items-center">
-                  <Skeleton className="h-6 w-20" />
                   <div className="flex space-x-2">
+                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-6 w-20" />
+                  </div>
+                  <div className="flex space-x-1">
                     <Skeleton className="h-8 w-8" />
                     <Skeleton className="h-8 w-8" />
                     <Skeleton className="h-8 w-8" />
@@ -259,32 +298,36 @@ export default function InitiativesDisplay({
 
   return (
     <div className="space-y-6">
-      {/* Header avec informations et mode d'affichage */}
-      <Card className="shadow-sm border border-gray-200">
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            {/* Informations et statistiques */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Target className="h-5 w-5 text-blue-600" />
+      {/* Header avec informations et statistiques détaillées */}
+      <Card className="shadow-sm border border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardContent className="p-6">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            {/* Informations et statistiques principales */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 flex-1">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-blue-600 rounded-xl shadow-lg">
+                  <Target className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="text-xl font-bold text-gray-900">
                     Initiatives du projet
                   </h3>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span>{stats.total} total</span>
-                    <span>•</span>
-                    <span>{stats.active} actives</span>
-                    <span>•</span>
-                    <span>{stats.critical} critiques</span>
+                  <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                    <span className="font-medium">
+                      {stats.total} affiché{stats.total > 1 ? "es" : "e"}
+                    </span>
+                    {stats.isFiltered && (
+                      <>
+                        <span>•</span>
+                        <span>{stats.originalTotal} total</span>
+                      </>
+                    )}
                     {loading && (
                       <>
                         <span>•</span>
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1 text-blue-600">
                           <RefreshCw className="h-3 w-3 animate-spin" />
-                          Chargement...
+                          Actualisation...
                         </span>
                       </>
                     )}
@@ -292,57 +335,119 @@ export default function InitiativesDisplay({
                 </div>
               </div>
 
+              {/* Statistiques détaillées */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 text-sm">
+                <div className="text-center p-2 bg-white rounded-lg shadow-sm">
+                  <div className="font-bold text-green-600">{stats.active}</div>
+                  <div className="text-gray-600">Actives</div>
+                </div>
+                <div className="text-center p-2 bg-white rounded-lg shadow-sm">
+                  <div className="font-bold text-blue-600">
+                    {stats.planning}
+                  </div>
+                  <div className="text-gray-600">Planifiées</div>
+                </div>
+                <div className="text-center p-2 bg-white rounded-lg shadow-sm">
+                  <div className="font-bold text-emerald-600">
+                    {stats.completed}
+                  </div>
+                  <div className="text-gray-600">Terminées</div>
+                </div>
+                <div className="text-center p-2 bg-white rounded-lg shadow-sm">
+                  <div className="font-bold text-red-600">{stats.critical}</div>
+                  <div className="text-gray-600">Critiques</div>
+                </div>
+                <div className="text-center p-2 bg-white rounded-lg shadow-sm">
+                  <div className="font-bold text-orange-600">{stats.high}</div>
+                  <div className="text-gray-600">Haute priorité</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Mode d'affichage actuel et filtres actifs */}
+            <div className="flex flex-col items-end gap-3">
+              {/* Mode d'affichage */}
+              <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border">
+                <span className="text-sm font-medium text-gray-700">
+                  Affichage:
+                </span>
+                <div className="flex items-center gap-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-md">
+                  {getViewModeIcon(viewMode)}
+                  <span className="text-sm font-medium">
+                    {getViewModeLabel(viewMode)}
+                  </span>
+                </div>
+              </div>
+
               {/* Filtres actifs */}
               {(filters.name || filters.priority !== "ALL") && (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 justify-end">
+                  <div className="flex items-center gap-1 text-xs text-gray-600">
+                    <Filter className="h-3 w-3" />
+                    <span>Filtres actifs:</span>
+                  </div>
                   {filters.name && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
-                      Nom: "{filters.name}"
+                    <span className="px-2 py-1 bg-blue-500 text-white rounded-full text-xs font-medium">
+                      "{filters.name}"
                     </span>
                   )}
                   {filters.priority !== "ALL" && (
-                    <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">
-                      Priorité: {filters.priority}
+                    <span className="px-2 py-1 bg-green-500 text-white rounded-full text-xs font-medium">
+                      {filters.priority}
                     </span>
                   )}
                 </div>
               )}
             </div>
-
-            {/* Mode d'affichage actuel (informatif) */}
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <span>Affichage:</span>
-              <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded">
-                {getViewModeIcon(viewMode)}
-                <span>{getViewModeLabel(viewMode)}</span>
-              </div>
-            </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Message informatif sur les initiatives */}
+      {!loading && initiatives.length > 0 && (
+        <Alert className="border-blue-200 bg-blue-50">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-blue-800">
+            <strong>💡 Astuce:</strong> Cliquez sur une carte d'initiative pour
+            voir ses détails, ou utilisez les boutons d'actions pour gérer les
+            épics, modifier ou supprimer une initiative.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Message si aucune initiative après filtrage */}
       {!loading &&
         filteredInitiatives.length === 0 &&
         initiatives.length > 0 && (
-          <Card className="text-center py-12">
+          <Card className="text-center py-12 border-dashed border-2 border-gray-300">
             <CardContent>
-              <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                <AlertTriangle className="h-8 w-8 text-gray-400" />
+              <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                <AlertTriangle className="h-8 w-8 text-orange-500" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Aucune initiative trouvée
               </h3>
               <p className="text-gray-600 mb-4">
                 Aucune initiative ne correspond aux filtres appliqués.
+                <br />
+                Essayez de modifier vos critères de recherche ou créez une
+                nouvelle initiative.
               </p>
-              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button
                   onClick={onCreateInitiative}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all"
                 >
                   <PlusCircle className="h-4 w-4 mr-2" />
                   Créer une initiative
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.reload()}
+                  className="border-gray-300 hover:bg-gray-50"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Actualiser
                 </Button>
               </div>
             </CardContent>
@@ -351,31 +456,35 @@ export default function InitiativesDisplay({
 
       {/* Message si aucune initiative du tout */}
       {!loading && initiatives.length === 0 && (
-        <Card className="text-center py-12">
+        <Card className="text-center py-16 border-dashed border-2 border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100">
           <CardContent>
-            <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <Target className="h-8 w-8 text-gray-400" />
+            <div className="mx-auto w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+              <Target className="h-10 w-10 text-blue-600" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-xl font-bold text-gray-900 mb-3">
               Aucune initiative
             </h3>
-            <p className="text-gray-600 mb-4">
-              Ce projet ne contient pas encore d'initiatives.
+            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+              Ce projet ne contient pas encore d'initiatives. Les initiatives
+              permettent d'organiser et de structurer le travail de votre équipe
+              vers des objectifs communs.
             </p>
             <Button
               onClick={onCreateInitiative}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all"
             >
-              <PlusCircle className="h-4 w-4 mr-2" />
+              <PlusCircle className="h-5 w-5 mr-2" />
               Créer la première initiative
             </Button>
           </CardContent>
         </Card>
       )}
 
-      {/* ✅ NOUVELLE LOGIQUE: Transmission à InitiativesList selon le mode sélectionné */}
+      {/* ✅ Transmission à InitiativesList selon le mode sélectionné */}
       {!loading && filteredInitiatives.length > 0 && (
         <InitiativesList
+          projectId={projectId} // ✅ CORRECTION: Ajout du projectId manquant
           initiatives={filteredInitiatives}
           viewMode={viewMode}
           onCreateInitiative={onCreateInitiative}
@@ -388,12 +497,39 @@ export default function InitiativesDisplay({
 
       {/* Indicateur de chargement lors du refresh */}
       {loading && initiatives.length > 0 && (
-        <div className="flex items-center justify-center py-4">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <RefreshCw className="h-4 w-4 animate-spin" />
-            <span>Actualisation des initiatives...</span>
-          </div>
-        </div>
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-center gap-3">
+              <RefreshCw className="h-5 w-5 animate-spin text-blue-600" />
+              <span className="text-blue-800 font-medium">
+                Actualisation des initiatives en cours...
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Debug info (développement uniquement) */}
+      {process.env.NODE_ENV === "development" && (
+        <Card className="border-gray-300 bg-gray-50">
+          <CardContent className="p-3">
+            <details className="text-xs text-gray-600">
+              <summary className="cursor-pointer font-medium">
+                Debug Info
+              </summary>
+              <div className="mt-2 space-y-1">
+                <div>Project ID: {projectId}</div>
+                <div>View Mode: {viewMode}</div>
+                <div>Total Initiatives: {initiatives.length}</div>
+                <div>Filtered Initiatives: {filteredInitiatives.length}</div>
+                <div>Filter Name: "{filters.name}"</div>
+                <div>Filter Priority: {filters.priority}</div>
+                <div>Loading: {loading ? "Yes" : "No"}</div>
+                <div>Is Filtered: {stats.isFiltered ? "Yes" : "No"}</div>
+              </div>
+            </details>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

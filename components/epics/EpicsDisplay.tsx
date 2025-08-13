@@ -1,125 +1,111 @@
-// components/epics/EpicsDisplay.tsx
+// @/components/epics/EpicsDisplay.tsx
 
 /**
- * RÔLE : Composant intermédiaire pour la gestion des épics avec filtrage et affichage selon le mode
+ * RÔLE : Composant pour sélectionner le mode d'affichage des épics (liste ou carte)
  * RESPONSABILITÉS :
- * - Réception des épics depuis la page parent et application des filtres
- * - Filtrage par nom et priorité selon l'état des filtres reçus
- * - Sélection du mode d'affichage et transmission à EpicsList
- * - Gestion des props et callbacks pour les actions sur les épics
- * - Interface entre la page et le composant d'affichage pour une architecture séparée
- * - Optimisation des performances avec useMemo pour les filtres
- * - Validation des données et gestion des états vides
- *
- * COMPOSANTS UTILISÉS :
- * - EpicsList: Composant d'affichage des épics selon le mode sélectionné
+ * - Afficher des boutons pour sélectionner le mode d'affichage (list ou card)
+ * - Transmettre le mode sélectionné au composant parent via callback
+ * - Interface simple avec icônes Lucide pour une UI moderne
+ * - Gestion d'état synchronisée avec le parent
+ * - Design responsive avec masquage conditionnel des labels
  *
  * LIBS UTILISÉS :
- * - React 19 hooks: useMemo, JSX
- * - TypeScript strict mode avec interfaces complètes
+ * - React 19 hooks: useEffect, JSX
+ * - TypeScript strict mode avec interfaces
+ * - lucide-react: Icônes List et Grid3X3 pour les boutons de mode
+ * - shadcn/ui: Button pour une UI cohérente
+ * - Tailwind CSS: Classes pour le design responsive
  *
- * PROPS reçues de la page :
- * - projectId: string - ID du projet pour les épics
- * - filters: FilterState - État des filtres (nom, priorité)
- * - viewMode: ViewMode - Mode d'affichage sélectionné
- * - epics: Epic[] - Liste des épics à afficher
- * - onCreateEpic: () => void - Handler création épic
- * - onEditEpic: (epic: Epic) => void - Handler édition épic
- * - onDeleteEpic: (epicId: string) => void - Handler suppression épic
- * - onMoveEpic: (epicId: string, direction: "up" | "down") => void - Handler réorganisation
- * - loading: boolean - État de chargement
+ * PROPS :
+ * - viewMode: "list" | "card" - Mode d'affichage actuel (contrôlé par le parent)
+ * - onViewModeChange: (mode: "list" | "card") => void - Callback pour transmettre le mode au parent
  */
 
 "use client";
 
-import React, { JSX, useMemo } from "react";
-import EpicsList from "@/components/epics/EpicsList";
+import React, { JSX, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Grid3X3, List, Eye } from "lucide-react";
 
-// Interface Epic selon le schéma Prisma
-export interface Epic {
-  id: string;
-  name: string;
-  description: string | null;
-  priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-  status: string;
-  startDate: Date | null;
-  endDate: Date | null;
-  progress: number;
-  initiativeId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  features?: Array<{
-    id: string;
-    name: string;
-    progress: number;
-  }>;
-}
+// ✅ Types pour les modes d'affichage (cohérent avec la page)
+type ViewMode = "list" | "card";
 
-// Interface pour les filtres
-interface FilterState {
-  name: string;
-  priority: "ALL" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-}
-
-// Types pour les modes d'affichage
-type ViewMode = "list" | "card" | "tree";
-
-// Interface pour les props du composant
+// ✅ Interface pour les props du composant
 interface EpicsDisplayProps {
-  projectId: string;
-  filters: FilterState;
   viewMode: ViewMode;
-  epics: Epic[];
-  onCreateEpic: () => void;
-  onEditEpic: (epic: Epic) => void;
-  onDeleteEpic: (epicId: string) => void;
-  onMoveEpic: (epicId: string, direction: "up" | "down") => void;
-  loading: boolean;
+  onViewModeChange: (mode: ViewMode) => void;
 }
 
 export default function EpicsDisplay({
-  projectId,
-  filters,
   viewMode,
-  epics,
-  onCreateEpic,
-  onEditEpic,
-  onDeleteEpic,
-  onMoveEpic,
-  loading,
+  onViewModeChange,
 }: EpicsDisplayProps): JSX.Element {
-  // Filtrage des épics selon les critères sélectionnés
-  const filteredEpics = useMemo(() => {
-    let filtered = [...epics];
-
-    // Filtrage par nom
-    if (filters.name.trim()) {
-      const searchTerm = filters.name.toLowerCase().trim();
-      filtered = filtered.filter(
-        (epic) =>
-          epic.name.toLowerCase().includes(searchTerm) ||
-          epic.description?.toLowerCase().includes(searchTerm)
-      );
+  // ✅ Handler pour changer le mode et informer le parent
+  const handleViewModeChange = (mode: ViewMode): void => {
+    // Éviter les re-renders inutiles si le mode n'a pas changé
+    if (viewMode !== mode) {
+      onViewModeChange(mode);
     }
+  };
 
-    // Filtrage par priorité
-    if (filters.priority !== "ALL") {
-      filtered = filtered.filter((epic) => epic.priority === filters.priority);
-    }
-
-    return filtered;
-  }, [epics, filters]);
-
-  // Transmission des épics filtrés à EpicsList
   return (
-    <EpicsList
-      epics={filteredEpics}
-      viewMode={viewMode}
-      onCreateEpic={onCreateEpic}
-      onEditEpic={onEditEpic}
-      onDeleteEpic={onDeleteEpic}
-      onMoveEpic={onMoveEpic}
-      loading={loading}
-    />
+    <div className="space-y-3">
+      {/* ✅ En-tête du composant */}
+      <div className="flex items-center space-x-2">
+        <Eye className="h-4 w-4 text-muted-foreground" />
+        <h3 className="text-sm font-medium text-foreground">
+          Mode d'affichage
+        </h3>
+      </div>
+
+      {/* ✅ Boutons de sélection du mode */}
+      <div className="flex items-center gap-2 p-1 bg-muted/50 border rounded-lg">
+        <Button
+          variant={viewMode === "list" ? "default" : "ghost"}
+          size="sm"
+          onClick={() => handleViewModeChange("list")}
+          className={`
+            flex items-center gap-2 flex-1 justify-center transition-all
+            ${
+              viewMode === "list"
+                ? "bg-background shadow-sm text-foreground"
+                : "hover:bg-muted text-muted-foreground hover:text-foreground"
+            }
+          `}
+          aria-label="Affichage en liste"
+          aria-pressed={viewMode === "list"}
+        >
+          <List className="h-4 w-4" />
+          <span className="text-xs font-medium">Liste</span>
+        </Button>
+
+        <Button
+          variant={viewMode === "card" ? "default" : "ghost"}
+          size="sm"
+          onClick={() => handleViewModeChange("card")}
+          className={`
+            flex items-center gap-2 flex-1 justify-center transition-all
+            ${
+              viewMode === "card"
+                ? "bg-background shadow-sm text-foreground"
+                : "hover:bg-muted text-muted-foreground hover:text-foreground"
+            }
+          `}
+          aria-label="Affichage en cartes"
+          aria-pressed={viewMode === "card"}
+        >
+          <Grid3X3 className="h-4 w-4" />
+          <span className="text-xs font-medium">Cartes</span>
+        </Button>
+      </div>
+
+      {/* ✅ Indicateur de mode actuel (optionnel) */}
+      <div className="text-xs text-muted-foreground text-center">
+        Mode actuel :{" "}
+        <span className="font-medium text-foreground">
+          {viewMode === "list" ? "Liste" : "Cartes"}
+        </span>
+      </div>
+    </div>
   );
 }

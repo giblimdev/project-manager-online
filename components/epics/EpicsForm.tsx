@@ -1,57 +1,27 @@
-// components/epics/EpicsForm.tsx
-
-/**
- * RÔLE : Formulaire moderne de création et modification des épics avec design cohérent
- * RESPONSABILITÉS :
- * - Créer de nouveaux épics avec projectId du projet parent
- * - Modifier des épics existants avec validation complète react-hook-form + Zod
- * - Interface responsive moderne cohérente avec le design system
- * - Gestion des états de chargement et validation temps réel optimisée
- * - Conversion correcte des types pour éviter les erreurs TypeScript strictes
- * - Design Dialog moderne avec sections organisées et feedback utilisateur
- * - Gestion des dates avec Calendar picker et validation croisée française
- * - Progress bar visuelle et métriques avec icons lucide-react cohérentes
- * - Sélection d'initiative parente obligatoire selon le schéma Prisma
- * - CORRECTION: Gestion stricte des types pour Select avec as const et casting
- * - AJOUT: Astérisques (*) sur les champs obligatoires pour UX améliorée
- *
- * COMPOSANTS UTILISÉS :
- * - shadcn/ui: Dialog, Input, Textarea, Select, Button, Calendar, Progress
- * - react-hook-form: Gestion formulaire avec validation temps réel et zodResolver
- * - zod: Schéma validation strict selon Prisma Epic avec messages français
- * - date-fns: Formatage dates françaises et manipulation timestamps
- * - lucide-react: Icons modernes cohérentes (Save, Plus, Target, Calendar, etc.)
- * - sonner: Toast notifications feedback utilisateur avec durée adaptée
- *
- * LIBS UTILISÉS :
- * - React 19 hooks: useState, useEffect, useCallback, useMemo, JSX
- * - Next.js 15 client component avec TypeScript strict mode
- * - react-hook-form (^7.47.0) avec zodResolver et types stricts
- * - zod validation schema strict selon schéma Prisma Epic
- * - Tailwind CSS responsive design moderne avec gradient et shadows
- * - date-fns (^2.30.0) pour locale française et formatage dates
- *
- * API :
- * - GET /api/initiatives?projectId=[id] (liste des initiatives disponibles)
- * - POST /api/epics (création avec projectId et initiativeId)
- * - PUT /api/epics/[id] (modification avec validation et conversion types)
- */
-
+// @/components/epics/EpicsForm.tsx
 "use client";
 
-import React, { JSX, useState, useEffect, useCallback, useMemo } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -59,97 +29,69 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  CalendarIcon,
-  Loader2,
-  Save,
-  Plus,
-  Target,
-  BarChart3,
-  Clock,
-  AlertTriangle,
-  CheckCircle2,
-} from "lucide-react";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+import {
+  Save,
+  X,
+  Calendar as CalendarIcon,
+  AlertTriangle,
+  Target,
+  FileText,
+  Clock,
+  CheckCircle2,
+  Loader2,
+  TrendingUp,
+} from "lucide-react";
 import { toast } from "sonner";
-import { Epic } from "./EpicsDisplay";
 
-// Interface pour les props du composant
-interface EpicsFormProps {
-  projectId: string;
-  epic?: Epic | null;
-  onSuccess: () => void;
-  onCancel: () => void;
-}
+// Types alignés avec le schéma Prisma
+type Priority = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
 
-// Interface pour les initiatives disponibles
-interface Initiative {
+interface Epic {
   id: string;
   name: string;
-  priority: string;
+  order: number;
+  description: string | null;
+  priority: Priority;
   status: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  progress: number;
+  initiativeId: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-// ✅ CORRECTION: Interface flexible pour la réponse API
-interface ApiResponse<T = any> {
-  success?: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-  timestamp?: string;
-  // Permet aussi les réponses directes
-  [key: string]: any;
-}
-
-// ✅ CORRECTION: Types stricts pour les enums selon Prisma
-const PRIORITY_VALUES = ["LOW", "MEDIUM", "HIGH", "CRITICAL"] as const;
-const STATUS_VALUES = [
-  "PLANNING",
-  "ACTIVE",
-  "ON_HOLD",
-  "COMPLETED",
-  "CANCELLED",
-] as const;
-
-type PriorityType = (typeof PRIORITY_VALUES)[number];
-type StatusType = (typeof STATUS_VALUES)[number];
-
-// Schéma Zod avec validation complète selon le schéma Prisma Epic
+// Schema Zod strictement aligné avec le modèle Prisma
 const epicFormSchema = z
   .object({
     name: z
       .string()
-      .min(2, "Le nom doit contenir au moins 2 caractères")
-      .max(200, "Le nom ne peut pas dépasser 200 caractères")
-      .trim(),
-    description: z
-      .string()
-      .max(2000, "La description ne peut pas dépasser 2000 caractères")
-      .optional()
-      .or(z.literal("")),
-    priority: z.enum(PRIORITY_VALUES, {
-      message: "Veuillez sélectionner une priorité valide",
-    }),
-    status: z.enum(STATUS_VALUES, {
-      message: "Veuillez sélectionner un statut valide",
-    }),
-    startDate: z.date().optional(),
-    endDate: z.date().optional(),
+      .min(1, "Le nom est requis")
+      .min(3, "Le nom doit contenir au moins 3 caractères")
+      .max(255, "Le nom ne peut pas dépasser 255 caractères"),
+    description: z.string().nullable(),
+    priority: z.enum(["CRITICAL", "HIGH", "MEDIUM", "LOW"]),
+    status: z.string().min(1, "Le statut est requis"),
+    startDate: z.date().nullable(),
+    endDate: z.date().nullable(),
     progress: z
       .number()
-      .min(0, "Le progrès doit être entre 0 et 100")
-      .max(100, "Le progrès doit être entre 0 et 100"),
-    initiativeId: z.string().min(1, "Veuillez sélectionner une initiative"),
+      .min(0, "La progression ne peut pas être négative")
+      .max(100, "La progression ne peut pas dépasser 100%"),
+    order: z.number().int().positive(),
   })
   .refine(
     (data) => {
@@ -166,651 +108,489 @@ const epicFormSchema = z
 
 type EpicFormValues = z.infer<typeof epicFormSchema>;
 
-export default function EpicsForm({
-  projectId,
-  epic = null,
+interface EpicsFormProps {
+  isOpen: boolean;
+  epic: Epic | null;
+  initiativeId: string;
+  onSuccess: () => void;
+  onCancel: () => void;
+}
+
+const PRIORITY_CONFIG: Record<
+  Priority,
+  {
+    label: string;
+    color: string;
+    bgColor: string;
+    icon: React.ComponentType<any>;
+  }
+> = {
+  CRITICAL: {
+    label: "Critique",
+    color: "text-red-700",
+    bgColor: "bg-red-50 border-red-200",
+    icon: AlertTriangle,
+  },
+  HIGH: {
+    label: "Haute",
+    color: "text-orange-700",
+    bgColor: "bg-orange-50 border-orange-200",
+    icon: TrendingUp,
+  },
+  MEDIUM: {
+    label: "Moyenne",
+    color: "text-blue-700",
+    bgColor: "bg-blue-50 border-blue-200",
+    icon: Target,
+  },
+  LOW: {
+    label: "Basse",
+    color: "text-green-700",
+    bgColor: "bg-green-50 border-green-200",
+    icon: Clock,
+  },
+};
+
+const STATUS_OPTIONS = [
+  { value: "ACTIVE", label: "Actif", icon: Target, color: "text-blue-600" },
+  {
+    value: "COMPLETED",
+    label: "Terminé",
+    icon: CheckCircle2,
+    color: "text-green-600",
+  },
+  {
+    value: "ON_HOLD",
+    label: "En pause",
+    icon: Clock,
+    color: "text-orange-600",
+  },
+  {
+    value: "CANCELLED",
+    label: "Annulé",
+    icon: AlertTriangle,
+    color: "text-red-600",
+  },
+];
+
+export function EpicsForm({
+  isOpen,
+  epic,
+  initiativeId,
   onSuccess,
   onCancel,
-}: EpicsFormProps): JSX.Element {
-  // États locaux
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [initiatives, setInitiatives] = useState<Initiative[]>([]);
-  const [isLoadingInitiatives, setIsLoadingInitiatives] = useState(true);
-
-  // Mode édition ou création
-  const isEditing = useMemo(() => Boolean(epic?.id), [epic?.id]);
-
-  // Valeurs par défaut selon le mode (création/édition)
-  const defaultValues: EpicFormValues = useMemo(() => {
-    if (isEditing && epic) {
-      return {
-        name: epic.name || "",
-        description: epic.description || "",
-        priority: epic.priority as PriorityType,
-        status: epic.status as StatusType,
-        startDate: epic.startDate ? new Date(epic.startDate) : undefined,
-        endDate: epic.endDate ? new Date(epic.endDate) : undefined,
-        progress: epic.progress || 0,
-        initiativeId: epic.initiativeId || "",
-      };
-    }
-
-    return {
-      name: "",
-      description: "",
-      priority: "MEDIUM" as PriorityType,
-      status: "PLANNING" as StatusType,
-      startDate: undefined,
-      endDate: undefined,
-      progress: 0,
-      initiativeId: "",
-    };
-  }, [isEditing, epic]);
-
-  // Configuration du formulaire react-hook-form
+}: EpicsFormProps) {
   const form = useForm<EpicFormValues>({
     resolver: zodResolver(epicFormSchema),
-    defaultValues,
+    defaultValues: {
+      name: "",
+      description: null,
+      priority: "MEDIUM",
+      status: "ACTIVE",
+      startDate: null,
+      endDate: null,
+      progress: 0,
+      order: 1000,
+    },
     mode: "onChange",
   });
 
-  // Chargement des initiatives disponibles
   useEffect(() => {
-    const loadInitiatives = async () => {
-      try {
-        const response = await fetch(`/api/initiatives?projectId=${projectId}`);
-        if (!response.ok) {
-          throw new Error("Erreur lors du chargement des initiatives");
-        }
-
-        const result = await response.json();
-        let initiativesData: Initiative[];
-
-        if (result.success !== undefined) {
-          if (!result.success) {
-            throw new Error(result.error || "Erreur lors du chargement");
-          }
-          initiativesData = result.data || [];
-        } else if (Array.isArray(result)) {
-          initiativesData = result;
-        } else {
-          initiativesData = result.initiatives || [];
-        }
-
-        setInitiatives(initiativesData);
-      } catch (error) {
-        console.error("Erreur chargement initiatives:", error);
-        toast.error("Impossible de charger les initiatives");
-        setInitiatives([]);
-      } finally {
-        setIsLoadingInitiatives(false);
-      }
-    };
-
-    loadInitiatives();
-  }, [projectId]);
-
-  // Reset du formulaire quand l'épic change
-  useEffect(() => {
-    console.log("📋 EpicsForm - Reset formulaire avec épic:", epic?.name);
-    form.reset(defaultValues);
-  }, [epic, defaultValues, form]);
-
-  // ✅ CORRECTION PRINCIPALE: Gestion de la soumission avec support multiple formats API
-  const onSubmit = useCallback(
-    async (data: EpicFormValues): Promise<void> => {
-      console.log("📝 EpicsForm - Soumission:", data);
-      setIsSubmitting(true);
-
-      try {
-        const epicData = {
-          name: data.name,
-          description: data.description?.trim() || null,
-          priority: data.priority,
-          status: data.status,
-          startDate: data.startDate ? data.startDate.toISOString() : null,
-          endDate: data.endDate ? data.endDate.toISOString() : null,
-          progress: data.progress,
-          initiativeId: data.initiativeId,
-        };
-
-        const url = isEditing ? `/api/epics/${epic!.id}` : "/api/epics";
-        const method = isEditing ? "PUT" : "POST";
-
-        console.log(`🚀 EpicsForm - ${method} ${url}`, epicData);
-
-        const response = await fetch(url, {
-          method,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(epicData),
+    if (isOpen) {
+      if (epic) {
+        form.reset({
+          name: epic.name,
+          description: epic.description,
+          priority: epic.priority,
+          status: epic.status,
+          startDate: epic.startDate,
+          endDate: epic.endDate,
+          progress: epic.progress,
+          order: epic.order,
         });
-
-        const result = await response.json();
-        console.log("📡 EpicsForm - Réponse API:", result);
-
-        // ✅ CORRECTION: Vérification du statut HTTP en premier
-        if (!response.ok) {
-          throw new Error(
-            result?.error ||
-              result?.message ||
-              `Erreur HTTP ${response.status}: ${response.statusText}`
-          );
-        }
-
-        // ✅ CORRECTION: Gestion flexible des formats de réponse API
-        let isSuccess = false;
-        let errorMessage: string | null = null;
-
-        if (result.success !== undefined) {
-          // Format avec propriété 'success'
-          isSuccess = result.success;
-          errorMessage = result.error || result.message || null;
-        } else if (result.id) {
-          // Format direct avec objet créé/modifié (contient un ID)
-          isSuccess = true;
-        } else if (response.status >= 200 && response.status < 300) {
-          // Statut HTTP 2xx considéré comme succès
-          isSuccess = true;
-        }
-
-        if (!isSuccess && errorMessage) {
-          throw new Error(errorMessage);
-        }
-
-        console.log("✅ EpicsForm - Opération réussie");
-        onSuccess();
-
-        toast.success(
-          isEditing
-            ? `Épic "${data.name}" mis à jour avec succès`
-            : `Épic "${data.name}" créé avec succès`,
-          {
-            duration: 3000,
-          }
-        );
-      } catch (error) {
-        console.error("💥 EpicsForm - Erreur soumission:", error);
-        const errorMessage =
-          error instanceof Error ? error.message : "Erreur inconnue";
-        toast.error(`Erreur: ${errorMessage}`, {
-          duration: 5000,
-        });
-      } finally {
-        setIsSubmitting(false);
+      } else {
+        form.reset();
       }
-    },
-    [isEditing, epic, onSuccess]
-  );
-
-  // Fonctions utilitaires pour les icônes et couleurs
-  const getPriorityIcon = useCallback((priority: string) => {
-    switch (priority) {
-      case "LOW":
-        return "🟢";
-      case "MEDIUM":
-        return "🟡";
-      case "HIGH":
-        return "🟠";
-      case "CRITICAL":
-        return "🔴";
-      default:
-        return "⚪";
     }
-  }, []);
+  }, [isOpen, epic, form]);
 
-  const getStatusIcon = useCallback((status: string) => {
-    switch (status) {
-      case "PLANNING":
-        return Clock;
-      case "ACTIVE":
-        return Target;
-      case "ON_HOLD":
-        return AlertTriangle;
-      case "COMPLETED":
-        return CheckCircle2;
-      case "CANCELLED":
-        return AlertTriangle;
-      default:
-        return Clock;
+  const onSubmit = async (data: EpicFormValues) => {
+    try {
+      const payload = {
+        ...data,
+        initiativeId,
+        startDate: data.startDate?.toISOString() || null,
+        endDate: data.endDate?.toISOString() || null,
+      };
+
+      const url = epic ? `/api/epics/${epic.id}` : "/api/epics";
+      const method = epic ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Erreur lors de la sauvegarde");
+      }
+
+      toast.success(epic ? "Épic modifié" : "Épic créé", {
+        description: `"${data.name}" a été ${
+          epic ? "modifié" : "créé"
+        } avec succès`,
+      });
+
+      onSuccess();
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Erreur inconnue";
+      toast.error("Erreur de sauvegarde", {
+        description: errorMessage,
+      });
     }
-  }, []);
+  };
 
-  // ✅ Fonction utilitaire pour formater les dates avec protection null
-  const formatDateSafely = useCallback((date: Date | undefined): string => {
-    if (!date) return "Sélectionner une date";
-    return format(date, "PPP", { locale: fr });
-  }, []);
-
-  // Surveillance du progrès pour la barre
-  const watchProgress = form.watch("progress");
-  const watchStartDate = form.watch("startDate");
-  const watchEndDate = form.watch("endDate");
+  const handleCancel = () => {
+    form.reset();
+    onCancel();
+  };
 
   return (
-    <Dialog open={true} onOpenChange={() => onCancel()}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={isOpen} onOpenChange={handleCancel}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-3 text-2xl">
-            {isEditing ? (
-              <>
-                <Save className="h-6 w-6 text-blue-600" />
-                Modifier l'épic
-              </>
-            ) : (
-              <>
-                <Plus className="h-6 w-6 text-green-600" />
-                Créer un nouvel épic
-              </>
-            )}
+          <DialogTitle className="flex items-center space-x-2">
+            <FileText className="h-5 w-5 text-blue-600" />
+            <span>{epic ? "Modifier l'épic" : "Nouvel épic"}</span>
           </DialogTitle>
           <DialogDescription>
-            {isEditing
-              ? "Modifiez les détails de votre épic ci-dessous."
-              : "Remplissez les informations pour créer un nouvel épic."}
+            {epic
+              ? `Modifiez les informations de l'épic "${epic.name}"`
+              : "Créez un nouvel épic pour structurer votre initiative"}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {/* Informations de base */}
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-              Informations de base
-            </h3>
-
-            {/* Nom de l'épic */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Nom de l'épic <span className="text-red-500">*</span>
-              </label>
-              <Input
-                {...form.register("name")}
-                placeholder="Ex: Système d'authentification"
-                className="focus:ring-2 focus:ring-blue-500"
-              />
-              <p className="text-xs text-gray-500">
-                Le nom principal de votre épic (2-200 caractères)
-              </p>
-              {form.formState.errors.name && (
-                <p className="text-sm text-red-600">
-                  {form.formState.errors.name.message}
-                </p>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center space-x-2">
+                    <FileText className="h-4 w-4" />
+                    <span>Nom de l'épic *</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Ex: Système d'authentification utilisateur..."
+                      {...field}
+                      className="text-base"
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Un nom clair et descriptif pour votre épic (3-255
+                    caractères)
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
 
-            {/* Initiative parente */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Initiative parente <span className="text-red-500">*</span>
-              </label>
-              {isLoadingInitiatives ? (
-                <div className="flex items-center space-x-2 p-3 border rounded-lg">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span className="text-sm text-gray-500">
-                    Chargement des initiatives...
-                  </span>
-                </div>
-              ) : (
-                <Select
-                  value={form.watch("initiativeId")}
-                  onValueChange={(value: string) =>
-                    form.setValue("initiativeId", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez une initiative">
-                      {form.watch("initiativeId") && initiatives.length > 0 && (
-                        <span>
-                          {
-                            initiatives.find(
-                              (i) => i.id === form.watch("initiativeId")
-                            )?.name
-                          }
-                        </span>
-                      )}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {initiatives.length === 0 ? (
-                      <SelectItem value="" disabled>
-                        Aucune initiative disponible
-                      </SelectItem>
-                    ) : (
-                      initiatives.map((initiative) => (
-                        <SelectItem key={initiative.id} value={initiative.id}>
-                          {initiative.name}
-                          <span className="text-xs text-gray-500 ml-2">
-                            ({initiative.priority})
-                          </span>
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Décrivez l'objectif et le périmètre de cet épic..."
+                      className="min-h-[100px] resize-none"
+                      value={field.value || ""}
+                      onChange={(e) => field.onChange(e.target.value || null)}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Description détaillée de l'épic (optionnel)
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
               )}
-              <p className="text-xs text-gray-500">
-                L'initiative à laquelle cet épic appartient
-              </p>
-              {form.formState.errors.initiativeId && (
-                <p className="text-sm text-red-600">
-                  {form.formState.errors.initiativeId.message}
-                </p>
-              )}
-            </div>
+            />
 
-            {/* Priorité */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Priorité <span className="text-red-500">*</span>
-              </label>
-              <Select
-                value={form.watch("priority")}
-                onValueChange={(value: string) =>
-                  form.setValue("priority", value as PriorityType)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue>
-                    {form.watch("priority") && (
-                      <span className="flex items-center gap-2">
-                        {getPriorityIcon(form.watch("priority"))}
-                        {form.watch("priority") === "LOW" && "Faible"}
-                        {form.watch("priority") === "MEDIUM" && "Moyenne"}
-                        {form.watch("priority") === "HIGH" && "Élevée"}
-                        {form.watch("priority") === "CRITICAL" && "Critique"}
-                      </span>
-                    )}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="LOW">
-                    <span className="flex items-center gap-2">🟢 Faible</span>
-                  </SelectItem>
-                  <SelectItem value="MEDIUM">
-                    <span className="flex items-center gap-2">🟡 Moyenne</span>
-                  </SelectItem>
-                  <SelectItem value="HIGH">
-                    <span className="flex items-center gap-2">🟠 Élevée</span>
-                  </SelectItem>
-                  <SelectItem value="CRITICAL">
-                    <span className="flex items-center gap-2">🔴 Critique</span>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-gray-500">
-                Niveau de priorité de l'épic
-              </p>
-              {form.formState.errors.priority && (
-                <p className="text-sm text-red-600">
-                  {form.formState.errors.priority.message}
-                </p>
-              )}
-            </div>
-
-            {/* Statut */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Statut <span className="text-red-500">*</span>
-              </label>
-              <Select
-                value={form.watch("status")}
-                onValueChange={(value: string) =>
-                  form.setValue("status", value as StatusType)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue>
-                    {form.watch("status") && (
-                      <span className="flex items-center gap-2">
-                        {React.createElement(
-                          getStatusIcon(form.watch("status")),
-                          {
-                            className: "h-4 w-4",
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="priority"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center space-x-2">
+                      <Target className="h-4 w-4" />
+                      <span>Priorité *</span>
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner la priorité" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Object.entries(PRIORITY_CONFIG).map(
+                          ([value, config]) => {
+                            const IconComponent = config.icon;
+                            return (
+                              <SelectItem key={value} value={value}>
+                                <div className="flex items-center space-x-2">
+                                  <IconComponent className="h-4 w-4" />
+                                  <span>{config.label}</span>
+                                  <Badge
+                                    variant="outline"
+                                    className={`text-xs ${config.color} ${config.bgColor}`}
+                                  >
+                                    {value}
+                                  </Badge>
+                                </div>
+                              </SelectItem>
+                            );
                           }
                         )}
-                        {form.watch("status") === "PLANNING" && "Planification"}
-                        {form.watch("status") === "ACTIVE" && "Actif"}
-                        {form.watch("status") === "ON_HOLD" && "En pause"}
-                        {form.watch("status") === "COMPLETED" && "Terminé"}
-                        {form.watch("status") === "CANCELLED" && "Annulé"}
-                      </span>
-                    )}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="PLANNING">
-                    <span className="flex items-center gap-2">
-                      <Clock className="h-4 w-4" /> Planification
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="ACTIVE">
-                    <span className="flex items-center gap-2">
-                      <Target className="h-4 w-4" /> Actif
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="ON_HOLD">
-                    <span className="flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4" /> En pause
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="COMPLETED">
-                    <span className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4" /> Terminé
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="CANCELLED">
-                    <span className="flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4" /> Annulé
-                    </span>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-gray-500">État actuel de l'épic</p>
-              {form.formState.errors.status && (
-                <p className="text-sm text-red-600">
-                  {form.formState.errors.status.message}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Planification */}
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-              Planification
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Date de début */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Date de début
-                </label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !watchStartDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formatDateSafely(watchStartDate)}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={watchStartDate}
-                      onSelect={(date) => form.setValue("startDate", date)}
-                      disabled={(date) =>
-                        watchEndDate
-                          ? date > watchEndDate
-                          : date < new Date("1900-01-01")
-                      }
-                      initialFocus
-                      locale={fr}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <p className="text-xs text-gray-500">
-                  Date de commencement de l'épic
-                </p>
-                {form.formState.errors.startDate && (
-                  <p className="text-sm text-red-600">
-                    {form.formState.errors.startDate.message}
-                  </p>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-
-              {/* Date de fin */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Date de fin
-                </label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !watchEndDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formatDateSafely(watchEndDate)}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={watchEndDate}
-                      onSelect={(date) => form.setValue("endDate", date)}
-                      disabled={(date) =>
-                        watchStartDate
-                          ? date < watchStartDate
-                          : date < new Date("1900-01-01")
-                      }
-                      initialFocus
-                      locale={fr}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <p className="text-xs text-gray-500">
-                  Date de fin prévue de l'épic
-                </p>
-                {form.formState.errors.endDate && (
-                  <p className="text-sm text-red-600">
-                    {form.formState.errors.endDate.message}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Métriques et suivi */}
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-              Métriques et suivi
-            </h3>
-
-            <div className="space-y-4">
-              <label className="text-sm font-medium text-gray-700">
-                Progrès (%) <span className="text-red-500">*</span>
-              </label>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span>0%</span>
-                  <span className="font-medium">{watchProgress}%</span>
-                  <span>100%</span>
-                </div>
-                <Progress value={watchProgress} className="w-full" />
-                <Input
-                  {...form.register("progress", { valueAsNumber: true })}
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="1"
-                  className="text-center font-medium"
-                />
-              </div>
-              <p className="text-xs text-gray-500">
-                Pourcentage d'avancement de l'épic (0-100)
-              </p>
-              {form.formState.errors.progress && (
-                <p className="text-sm text-red-600">
-                  {form.formState.errors.progress.message}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-              Description détaillée
-            </h3>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Description<span className="text-red-500">*</span>
-              </label>
-              <Textarea
-                {...form.register("description")}
-                placeholder="Décrivez l'objectif et les fonctionnalités de cet épic..."
-                rows={4}
-                className="resize-none focus:ring-2 focus:ring-blue-500"
               />
-              <p className="text-xs text-gray-500">
-                Description complète de l'épic (optionnel, max 2000 caractères)
-              </p>
-              {form.formState.errors.description && (
-                <p className="text-sm text-red-600">
-                  {form.formState.errors.description.message}
-                </p>
-              )}
-            </div>
-          </div>
 
-          {/* Actions */}
-          <div className="flex items-center justify-end space-x-4 pt-6 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              disabled={isSubmitting}
-            >
-              Annuler
-            </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting || !form.formState.isValid}
-            >
-              {isSubmitting ? (
-                <>
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Statut</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner le statut" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {STATUS_OPTIONS.map((status) => {
+                          const IconComponent = status.icon;
+                          return (
+                            <SelectItem key={status.value} value={status.value}>
+                              <div className="flex items-center space-x-2">
+                                <IconComponent
+                                  className={`h-4 w-4 ${status.color}`}
+                                />
+                                <span>{status.label}</span>
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="startDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Date de début</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP", { locale: fr })
+                            ) : (
+                              <span>Sélectionner une date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value || undefined}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date < new Date(new Date().setHours(0, 0, 0, 0))
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormDescription>
+                      Date prévue de début des travaux (optionnel)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="endDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Date de fin</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP", { locale: fr })
+                            ) : (
+                              <span>Sélectionner une date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value || undefined}
+                          onSelect={field.onChange}
+                          disabled={(date) => {
+                            const startDate = form.getValues("startDate");
+                            return startDate ? date < startDate : false;
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormDescription>
+                      Date prévue de fin des travaux (optionnel)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="progress"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center space-x-2">
+                      <TrendingUp className="h-4 w-4" />
+                      <span>Progression (%)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="1"
+                        placeholder="0"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(Number(e.target.value) || 0)
+                        }
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Pourcentage d'avancement (0-100%)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="order"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ordre d'affichage</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="1"
+                        step="1"
+                        placeholder="1000"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(Number(e.target.value) || 1000)
+                        }
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Position dans la liste (plus petit = plus haut)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <DialogFooter className="flex justify-between pt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                disabled={form.formState.isSubmitting}
+              >
+                <X className="mr-2 h-4 w-4" />
+                Annuler
+              </Button>
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+              >
+                {form.formState.isSubmitting ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {isEditing ? "Modification..." : "Création..."}
-                </>
-              ) : (
-                <>
-                  {isEditing ? (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Modifier l'épic
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Créer l'épic
-                    </>
-                  )}
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
+                ) : (
+                  <Save className="mr-2 h-4 w-4" />
+                )}
+                {epic ? "Modifier" : "Créer"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

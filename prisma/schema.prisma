@@ -496,10 +496,10 @@ model Comment {
 
 model Channel {
   id          String          @id @default(cuid())
-  name        String
+  name        String /// Nom du canal
   order       Int             @default(1000)
   description String?
-  type        String          @default("TEXT")
+  type        String          @default("TEXT") // Type (TEXT, VOICE, VIDEO)
   isPrivate   Boolean         @default(false)
   isArchived  Boolean         @default(false)
   createdAt   DateTime        @default(now())
@@ -594,10 +594,10 @@ model Notification {
   title     String
   message   String
   data      Json?            @default("{}")
-  read      Boolean          @default(false)
-  readAt    DateTime?
+  read      Boolean          @default(false) // Lu ?
+  readAt    DateTime? /// Date de lecture
   createdAt DateTime         @default(now())
-  userId    String
+  userId    String // Destinataire
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
@@ -670,7 +670,8 @@ model Glossary {
   term        String //titre
   order       Int      @default(1000)
   description String?
-  type        String   @default("TERM")
+  type        String   @default("TERM") // "TERM" "ACRONYM" "CONCEPT" "TOOL" "PROCESS" "ROLE" "METHODOLOGY" "FRAMEWORK" "TECHNOLOGY"
+  category    String?  @default("") // champ libre ('SCRUM'...) 
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

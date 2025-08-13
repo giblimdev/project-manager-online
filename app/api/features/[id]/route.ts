@@ -1,96 +1,107 @@
 // @/app/api/features/[id]/route.ts
-// Rôle : API REST pour la gestion d'une feature spécifique
-// Responsabilités : GET, PUT, DELETE d'une feature, gestion des relations
 
-import prisma from "@/lib/prisma";
+// Rôle : Route API pour gérer une feature spécifique (GET, PUT, DELETE)
+// Responsabilités : CRUD individuel des features, validation, gestion d'erreurs
+// Utilisé par : composants React, hooks de données
+
 import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { Priority } from "@/lib/generated/prisma/client";
 
 interface RouteParams {
-  params: Promise<{ id: string }>; // Update to Promise
+  params: Promise<{ id: string }>;
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: RouteParams
-): Promise<NextResponse> {
+// GET - Récupérer une feature par ID
+export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = await params; // Await the params to resolve the id
+    const { id } = await params;
+
+    if (!id) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "ID de la feature requis",
+          timestamp: new Date().toISOString(),
+        },
+        { status: 400 }
+      );
+    }
 
     const feature = await prisma.feature.findUnique({
       where: { id },
-      include: {
-        parent: true,
-        children: {
-          include: {
-            children: true,
-            userStories: {
-              select: {
-                id: true,
-                title: true,
-                status: true,
-                storyPoints: true,
-              },
-            },
-          },
-        },
-        epic: {
-          include: {
-            initiative: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-        Project: true,
-        users: true,
-        userStories: {
-          include: {
-            creator: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-          },
-        },
-        files: true,
-        dependencies: {
-          include: {
-            dependsOnFeature: true,
-          },
-        },
-        dependents: {
-          include: {
-            dependentFeature: true,
-          },
-        },
+      select: {
+        id: true,
+        name: true,
+        order: true,
+        description: true,
+        acceptanceCriteria: true,
+        priority: true,
+        status: true,
+        storyPoints: true,
+        businessValue: true,
+        technicalRisk: true,
+        effort: true,
+        startDate: true,
+        endDate: true,
+        progress: true,
+        position: true,
+        createdAt: true,
+        updatedAt: true,
+        epicId: true,
+        parentId: true,
+        projectId: true,
+        userId: true,
       },
     });
 
     if (!feature) {
-      return NextResponse.json({ error: "Feature not found" }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Feature non trouvée",
+          timestamp: new Date().toISOString(),
+        },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json(feature);
-  } catch (error) {
-    console.error("Error fetching feature:", error);
+    return NextResponse.json({
+      success: true,
+      data: feature,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error("Erreur lors de la récupération de la feature:", error);
+
     return NextResponse.json(
-      { error: "Failed to fetch feature" },
+      {
+        success: false,
+        error: "Erreur lors de la récupération de la feature",
+        details: error?.message || "Unknown error",
+        timestamp: new Date().toISOString(),
+      },
       { status: 500 }
     );
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: RouteParams
-): Promise<NextResponse> {
+// PUT - Mettre à jour une feature
+export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = await params; // Await the params to resolve the id
-    const data = await request.json();
+    const { id } = await params;
+    const body = await request.json();
+
+    if (!id) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "ID de la feature requis",
+          timestamp: new Date().toISOString(),
+        },
+        { status: 400 }
+      );
+    }
 
     // Vérifier que la feature existe
     const existingFeature = await prisma.feature.findUnique({
@@ -98,114 +109,126 @@ export async function PUT(
     });
 
     if (!existingFeature) {
-      return NextResponse.json({ error: "Feature not found" }, { status: 404 });
-    }
-
-    // Vérification du parent si fourni
-    if (data.parentId && data.parentId !== existingFeature.parentId) {
-      if (data.parentId === id) {
-        return NextResponse.json(
-          { error: "Feature cannot be its own parent" },
-          { status: 400 }
-        );
-      }
-
-      const parent = await prisma.feature.findUnique({
-        where: { id: data.parentId },
-      });
-
-      if (!parent) {
-        return NextResponse.json(
-          { error: "Parent feature not found" },
-          { status: 404 }
-        );
-      }
-
-      // Vérifier qu'on ne crée pas une relation circulaire
-      if (await hasCircularDependency(id, data.parentId)) {
-        return NextResponse.json(
-          { error: "Circular dependency detected" },
-          { status: 400 }
-        );
-      }
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Feature non trouvée",
+          timestamp: new Date().toISOString(),
+        },
+        { status: 404 }
+      );
     }
 
     const updatedFeature = await prisma.feature.update({
       where: { id },
       data: {
-        name: data.name,
-        description: data.description,
-        acceptanceCriteria: data.acceptanceCriteria,
-        priority: data.priority,
-        status: data.status,
-        storyPoints: data.storyPoints,
-        businessValue: data.businessValue,
-        technicalRisk: data.technicalRisk,
-        effort: data.effort,
-        startDate: data.startDate ? new Date(data.startDate) : null,
-        endDate: data.endDate ? new Date(data.endDate) : null,
-        parentId: data.parentId === "" ? null : data.parentId,
-        progress: data.progress,
-        position: data.position,
+        ...(body.name && { name: body.name }),
+        ...(body.order !== undefined && { order: body.order }),
+        ...(body.description !== undefined && {
+          description: body.description,
+        }),
+        ...(body.acceptanceCriteria !== undefined && {
+          acceptanceCriteria: body.acceptanceCriteria,
+        }),
+        ...(body.priority && { priority: body.priority }),
+        ...(body.status && { status: body.status }),
+        ...(body.storyPoints !== undefined && {
+          storyPoints: body.storyPoints,
+        }),
+        ...(body.businessValue !== undefined && {
+          businessValue: body.businessValue,
+        }),
+        ...(body.technicalRisk !== undefined && {
+          technicalRisk: body.technicalRisk,
+        }),
+        ...(body.effort !== undefined && { effort: body.effort }),
+        ...(body.startDate !== undefined && {
+          startDate: body.startDate ? new Date(body.startDate) : null,
+        }),
+        ...(body.endDate !== undefined && {
+          endDate: body.endDate ? new Date(body.endDate) : null,
+        }),
+        ...(body.progress !== undefined && { progress: body.progress }),
+        ...(body.position !== undefined && { position: body.position }),
+        ...(body.parentId !== undefined && { parentId: body.parentId }),
+        ...(body.projectId !== undefined && { projectId: body.projectId }),
+        ...(body.userId !== undefined && { userId: body.userId }),
       },
-      include: {
-        parent: true,
-        children: true,
-        epic: true,
-        Project: true,
-        users: true,
+      select: {
+        id: true,
+        name: true,
+        order: true,
+        description: true,
+        acceptanceCriteria: true,
+        priority: true,
+        status: true,
+        storyPoints: true,
+        businessValue: true,
+        technicalRisk: true,
+        effort: true,
+        startDate: true,
+        endDate: true,
+        progress: true,
+        position: true,
+        createdAt: true,
+        updatedAt: true,
+        epicId: true,
+        parentId: true,
+        projectId: true,
+        userId: true,
       },
     });
 
-    return NextResponse.json(updatedFeature);
-  } catch (error) {
-    console.error("Error updating feature:", error);
+    return NextResponse.json({
+      success: true,
+      data: updatedFeature,
+      message: "Feature mise à jour avec succès",
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error("Erreur lors de la mise à jour de la feature:", error);
+
     return NextResponse.json(
-      { error: "Failed to update feature" },
+      {
+        success: false,
+        error: "Erreur lors de la mise à jour de la feature",
+        details: error?.message || "Unknown error",
+        timestamp: new Date().toISOString(),
+      },
       { status: 500 }
     );
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: RouteParams
-): Promise<NextResponse> {
+// DELETE - Supprimer une feature
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = await params; // Await the params to resolve the id
+    const { id } = await params;
 
-    // Vérifier que la feature existe
-    const feature = await prisma.feature.findUnique({
-      where: { id },
-      include: {
-        children: true,
-        userStories: true,
-      },
-    });
-
-    if (!feature) {
-      return NextResponse.json({ error: "Feature not found" }, { status: 404 });
-    }
-
-    // Vérifier s'il y a des enfants
-    if (feature.children.length > 0) {
+    if (!id) {
       return NextResponse.json(
         {
-          error:
-            "Cannot delete feature with child features. Please delete or reassign child features first.",
+          success: false,
+          error: "ID de la feature requis",
+          timestamp: new Date().toISOString(),
         },
         { status: 400 }
       );
     }
 
-    // Vérifier s'il y a des user stories
-    if (feature.userStories.length > 0) {
+    // Vérifier que la feature existe
+    const existingFeature = await prisma.feature.findUnique({
+      where: { id },
+    });
+
+    if (!existingFeature) {
       return NextResponse.json(
         {
-          error:
-            "Cannot delete feature with user stories. Please delete or reassign user stories first.",
+          success: false,
+          error: "Feature non trouvée",
+          timestamp: new Date().toISOString(),
         },
-        { status: 400 }
+        { status: 404 }
       );
     }
 
@@ -213,28 +236,22 @@ export async function DELETE(
       where: { id },
     });
 
-    return NextResponse.json({ message: "Feature deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting feature:", error);
+    return NextResponse.json({
+      success: true,
+      message: "Feature supprimée avec succès",
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error("Erreur lors de la suppression de la feature:", error);
+
     return NextResponse.json(
-      { error: "Failed to delete feature" },
+      {
+        success: false,
+        error: "Erreur lors de la suppression de la feature",
+        details: error?.message || "Unknown error",
+        timestamp: new Date().toISOString(),
+      },
       { status: 500 }
     );
   }
-}
-
-async function hasCircularDependency(
-  featureId: string,
-  parentId: string
-): Promise<boolean> {
-  if (featureId === parentId) return true;
-
-  const parent = await prisma.feature.findUnique({
-    where: { id: parentId },
-    select: { parentId: true },
-  });
-
-  if (!parent?.parentId) return false;
-
-  return hasCircularDependency(featureId, parent.parentId);
 }

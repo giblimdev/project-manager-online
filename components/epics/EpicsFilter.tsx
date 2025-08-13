@@ -1,38 +1,33 @@
-// components/epics/EpicsFilter.tsx
+// @/components/epics/EpicsFilter.tsx
 
 /**
- * RÔLE : Composant de filtrage des épics par nom et priorité avec interface moderne
+ * RÔLE : Composant de filtrage pour les épics par nom et priorité
  * RESPONSABILITÉS :
- * - Filtrage par nom avec recherche en temps réel (nom et description)
- * - Filtrage par priorité avec sélection multiple (ALL, LOW, MEDIUM, HIGH, CRITICAL)
- * - Interface utilisateur moderne et responsive avec shadcn/ui
- * - Gestion des états de filtrage avec callbacks vers le composant parent
- * - Indicateurs visuels pour les filtres actifs et le nombre de résultats
- * - Reset rapide des filtres avec bouton dédié
- * - Persistance des filtres pendant la session utilisateur
- *
- * COMPOSANTS UTILISÉS :
- * - Input: Composant de saisie shadcn/ui pour la recherche par nom
- * - Select: Composant de sélection shadcn/ui pour la priorité
- * - Button: Composant bouton shadcn/ui pour le reset
- * - Badge: Composant badge pour les indicateurs de filtres actifs
+ * - Filtrage par recherche textuelle sur le nom des épics
+ * - Filtrage par priorité (ALL, CRITICAL, HIGH, MEDIUM, LOW)
+ * - Interface responsive avec icônes Lucide et design moderne
+ * - Callbacks pour transmettre les filtres au composant parent
+ * - Gestion d'état synchronisée avec les props du parent
  *
  * LIBS UTILISÉS :
- * - React 19 hooks: useCallback, JSX
- * - Next.js 15 client component avec TypeScript strict mode
- * - Tailwind CSS: Design moderne responsive avec spacing et colors
- * - lucide-react: Icons pour Search, Filter, X pour l'interface
- * - shadcn/ui: Input, Select, Button, Badge components
+ * - React 19 hooks: JSX
+ * - TypeScript strict mode avec interfaces
+ * - lucide-react: Icônes Search, Filter, X pour l'interface
+ * - shadcn/ui: Input, Select, Button pour une UI cohérente
+ * - Tailwind CSS: Classes pour le design responsive
  *
- * PROPS reçues de la page parent :
- * - filters: FilterState - État actuel des filtres
- * - onFiltersChange: (filters: FilterState) => void - Callback de mise à jour des filtres
+ * PROPS :
+ * - search: string - Terme de recherche actuel
+ * - priority: FilterPriority - Priorité sélectionnée ("ALL" | Priority)
+ * - onSearchChange: (search: string) => void - Callback pour changement de recherche
+ * - onPriorityChange: (priority: FilterPriority) => void - Callback pour changement de priorité
  */
 
 "use client";
 
-import React, { JSX, useCallback } from "react";
+import React, { JSX } from "react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -40,226 +35,226 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Search, Filter, X } from "lucide-react";
+import { Search, Filter, X, Target } from "lucide-react";
 
-// Interface pour l'état des filtres
-interface FilterState {
-  name: string;
-  priority: "ALL" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-}
+// ✅ Types cohérents avec la page épics
+type Priority = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
+type FilterPriority = Priority | "ALL";
 
-// Interface pour les props du composant
+// ✅ Interface pour les props du composant
 interface EpicsFilterProps {
-  filters: FilterState;
-  onFiltersChange: (filters: FilterState) => void;
+  search: string;
+  priority: FilterPriority;
+  onSearchChange: (search: string) => void;
+  onPriorityChange: (priority: FilterPriority) => void;
 }
+
+// ✅ Configuration des priorités avec couleurs
+const PRIORITY_OPTIONS: Array<{
+  value: FilterPriority;
+  label: string;
+  color: string;
+  bgColor: string;
+}> = [
+  {
+    value: "ALL",
+    label: "Toutes priorités",
+    color: "text-muted-foreground",
+    bgColor: "bg-muted/50",
+  },
+  {
+    value: "CRITICAL",
+    label: "Critique",
+    color: "text-red-700",
+    bgColor: "bg-red-50",
+  },
+  {
+    value: "HIGH",
+    label: "Haute",
+    color: "text-orange-700",
+    bgColor: "bg-orange-50",
+  },
+  {
+    value: "MEDIUM",
+    label: "Moyenne",
+    color: "text-blue-700",
+    bgColor: "bg-blue-50",
+  },
+  {
+    value: "LOW",
+    label: "Basse",
+    color: "text-green-700",
+    bgColor: "bg-green-50",
+  },
+];
 
 export default function EpicsFilter({
-  filters,
-  onFiltersChange,
+  search,
+  priority,
+  onSearchChange,
+  onPriorityChange,
 }: EpicsFilterProps): JSX.Element {
-  // Handler pour la mise à jour du filtre par nom
-  const handleNameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newFilters = {
-        ...filters,
-        name: e.target.value,
-      };
-      onFiltersChange(newFilters);
-    },
-    [filters, onFiltersChange]
+  // ✅ Handler pour réinitialiser tous les filtres
+  const handleResetFilters = (): void => {
+    onSearchChange("");
+    onPriorityChange("ALL");
+  };
+
+  // ✅ Vérifier si des filtres sont actifs
+  const hasActiveFilters = search.trim() !== "" || priority !== "ALL";
+
+  // ✅ Obtenir les données de la priorité sélectionnée
+  const selectedPriorityData = PRIORITY_OPTIONS.find(
+    (opt) => opt.value === priority
   );
-
-  // Handler pour la mise à jour du filtre par priorité
-  const handlePriorityChange = useCallback(
-    (value: string) => {
-      const newFilters = {
-        ...filters,
-        priority: value as FilterState["priority"],
-      };
-      onFiltersChange(newFilters);
-    },
-    [filters, onFiltersChange]
-  );
-
-  // Handler pour reset tous les filtres
-  const handleResetFilters = useCallback(() => {
-    const resetFilters: FilterState = {
-      name: "",
-      priority: "ALL",
-    };
-    onFiltersChange(resetFilters);
-  }, [onFiltersChange]);
-
-  // Fonction utilitaire pour obtenir l'icône de priorité
-  const getPriorityIcon = useCallback((priority: string): string => {
-    switch (priority) {
-      case "LOW":
-        return "🟢";
-      case "MEDIUM":
-        return "🟡";
-      case "HIGH":
-        return "🟠";
-      case "CRITICAL":
-        return "🔴";
-      default:
-        return "";
-    }
-  }, []);
-
-  // Calcul du nombre de filtres actifs
-  const activeFiltersCount = [
-    filters.name.trim() !== "",
-    filters.priority !== "ALL",
-  ].filter(Boolean).length;
 
   return (
     <div className="space-y-4">
-      {/* Header avec titre et indicateur de filtres actifs */}
+      {/* ✅ En-tête du composant */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Filter className="h-5 w-5 text-gray-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Filtres</h3>
-          {activeFiltersCount > 0 && (
-            <Badge variant="secondary" className="ml-2">
-              {activeFiltersCount} filtre{activeFiltersCount > 1 ? "s" : ""}{" "}
-              actif{activeFiltersCount > 1 ? "s" : ""}
-            </Badge>
-          )}
+        <div className="flex items-center space-x-2">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-sm font-medium text-foreground">Filtres</h3>
         </div>
 
-        {/* Bouton reset (visible seulement si des filtres sont actifs) */}
-        {activeFiltersCount > 0 && (
+        {/* ✅ Bouton de réinitialisation (affiché seulement si filtres actifs) */}
+        {hasActiveFilters && (
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={handleResetFilters}
-            className="text-gray-600 hover:text-gray-900"
+            className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
           >
-            <X className="h-4 w-4 mr-1" />
-            Reset
+            <X className="h-3 w-3 mr-1" />
+            Réinitialiser
           </Button>
         )}
       </div>
 
-      {/* Ligne de filtres */}
+      {/* ✅ Conteneur des filtres */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Filtre par nom */}
+        {/* ✅ Filtre de recherche par nom */}
         <div className="space-y-2">
-          <label
-            htmlFor="name-filter"
-            className="text-sm font-medium text-gray-700"
-          >
+          <label className="text-xs font-medium text-muted-foreground">
             Rechercher par nom
           </label>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              id="name-filter"
               type="text"
-              placeholder="Nom ou description de l'épic..."
-              value={filters.name}
-              onChange={handleNameChange}
-              className="pl-10"
+              placeholder="Nom de l'épic..."
+              value={search}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="pl-10 h-9"
             />
+            {/* ✅ Bouton pour effacer la recherche */}
+            {search && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onSearchChange("")}
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0 hover:bg-muted"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            )}
           </div>
-          {filters.name.trim() && (
-            <p className="text-xs text-gray-500">
-              Recherche active : "{filters.name}"
-            </p>
-          )}
         </div>
 
-        {/* Filtre par priorité */}
+        {/* ✅ Filtre par priorité */}
         <div className="space-y-2">
-          <label
-            htmlFor="priority-filter"
-            className="text-sm font-medium text-gray-700"
-          >
+          <label className="text-xs font-medium text-muted-foreground">
             Filtrer par priorité
           </label>
-          <Select value={filters.priority} onValueChange={handlePriorityChange}>
-            <SelectTrigger id="priority-filter">
-              <SelectValue placeholder="Sélectionner une priorité">
-                {filters.priority === "ALL" ? (
-                  "Toutes les priorités"
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <span>{getPriorityIcon(filters.priority)}</span>
-                    <span>
-                      {filters.priority === "LOW" && "Faible"}
-                      {filters.priority === "MEDIUM" && "Moyenne"}
-                      {filters.priority === "HIGH" && "Élevée"}
-                      {filters.priority === "CRITICAL" && "Critique"}
+          <Select
+            value={priority}
+            onValueChange={(value: FilterPriority) => onPriorityChange(value)}
+          >
+            <SelectTrigger className="h-9">
+              <div className="flex items-center space-x-2">
+                <Target className="h-4 w-4 text-muted-foreground" />
+                <SelectValue>
+                  {selectedPriorityData && (
+                    <span className={selectedPriorityData.color}>
+                      {selectedPriorityData.label}
                     </span>
-                  </div>
-                )}
-              </SelectValue>
+                  )}
+                </SelectValue>
+              </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">
-                <div className="flex items-center gap-2">
-                  <span className="w-4"></span>
-                  <span>Toutes les priorités</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="CRITICAL">
-                <div className="flex items-center gap-2">
-                  <span>🔴</span>
-                  <span>Critique</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="HIGH">
-                <div className="flex items-center gap-2">
-                  <span>🟠</span>
-                  <span>Élevée</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="MEDIUM">
-                <div className="flex items-center gap-2">
-                  <span>🟡</span>
-                  <span>Moyenne</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="LOW">
-                <div className="flex items-center gap-2">
-                  <span>🟢</span>
-                  <span>Faible</span>
-                </div>
-              </SelectItem>
+              {PRIORITY_OPTIONS.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="cursor-pointer"
+                >
+                  <div className="flex items-center space-x-2">
+                    <div
+                      className={`w-3 h-3 rounded-full border ${
+                        option.bgColor
+                      } ${
+                        option.value !== "ALL"
+                          ? "border-current"
+                          : "border-muted"
+                      }`}
+                    />
+                    <span className={option.color}>{option.label}</span>
+                  </div>
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
-          {filters.priority !== "ALL" && (
-            <p className="text-xs text-gray-500">
-              Priorité : {getPriorityIcon(filters.priority)} {filters.priority}
-            </p>
-          )}
         </div>
       </div>
 
-      {/* Résumé des filtres actifs */}
-      {activeFiltersCount > 0 && (
-        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="flex items-center gap-2 text-sm text-blue-800">
-            <Filter className="h-4 w-4" />
-            <span className="font-medium">Filtres actifs :</span>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {filters.name.trim() && (
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                Nom : "{filters.name}"
-              </Badge>
+      {/* ✅ Indicateurs de filtres actifs */}
+      {hasActiveFilters && (
+        <div className="pt-2 border-t">
+          <div className="flex flex-wrap gap-2">
+            {search.trim() && (
+              <div className="inline-flex items-center px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs">
+                <Search className="h-3 w-3 mr-1" />
+                Recherche: "{search}"
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onSearchChange("")}
+                  className="ml-1 h-4 w-4 p-0 hover:bg-blue-100"
+                >
+                  <X className="h-2 w-2" />
+                </Button>
+              </div>
             )}
-            {filters.priority !== "ALL" && (
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                {getPriorityIcon(filters.priority)} {filters.priority}
-              </Badge>
+
+            {priority !== "ALL" && selectedPriorityData && (
+              <div
+                className={`inline-flex items-center px-2 py-1 rounded-md ${selectedPriorityData.bgColor} ${selectedPriorityData.color} text-xs`}
+              >
+                <Target className="h-3 w-3 mr-1" />
+                Priorité: {selectedPriorityData.label}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onPriorityChange("ALL")}
+                  className="ml-1 h-4 w-4 p-0 hover:bg-current hover:bg-opacity-20"
+                >
+                  <X className="h-2 w-2" />
+                </Button>
+              </div>
             )}
           </div>
         </div>
       )}
+
+      {/* ✅ Résumé des résultats (optionnel) */}
+      <div className="text-xs text-muted-foreground">
+        {hasActiveFilters ? (
+          <span>Filtres actifs appliqués</span>
+        ) : (
+          <span>Aucun filtre appliqué</span>
+        )}
+      </div>
     </div>
   );
 }

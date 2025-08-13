@@ -13,7 +13,7 @@
  *
  * COMPOSANTS UTILISÉS :
  * - ProjectForm: Formulaire de création/édition (@/components/projects/ProjectForm)
- * - ProjectsDisplayView: Affichage en grille/liste (@/components/projects/ProjectsDisplayView)
+ * - ProjectsList: Affichage de la liste des projets (@/components/projects/ProjectsList)
  * - ProjectsFilter: Filtrage et recherche (@/components/projects/ProjectsFilter)
  * - useSelectedProjectStore: Store Zustand optimisé (@/stores/useSelectedProjectStore)
  * - useProjectStoreHydration: Hook d'hydratation sécurisée
@@ -61,19 +61,31 @@ import {
   Eye,
   EyeOff,
   AlertCircle,
+  TrendingUp,
+  Archive,
+  Lock,
+  Globe,
+  Search,
+  Filter,
+  MoreHorizontal,
 } from "lucide-react";
 import { useSession } from "@/lib/auth/auth-client";
 import { toast } from "sonner";
 
 // Composants existants
 import ProjectForm from "@/components/projects/ProjectForm";
-import ProjectsDisplayView from "@/components/projects/ProjectsDisplayView";
+import ProjectsList from "@/components/projects/ProjectsList";
 import ProjectsFilter from "@/components/projects/ProjectsFilter";
-// ✅ CORRECTION: Suppression de ProjectsList qui cause la duplication
 
-// ✅ CORRECTION: Import du store avec hook d'hydratation séparé
-import useSelectedProjectStore, {
+// ✅ CORRECTION: Import du store avec les hooks spécialisés
+import {
+  useSelectedProjectStore,
   useProjectStoreHydration,
+  useSelectedProjectId,
+  useSelectedProjectData,
+  useProjectLoading,
+  useProjectError,
+  useProjectActions,
 } from "@/stores/useSelectedProjectStore";
 
 // Types basés sur le schéma Prisma Project (sans relations pour la liste)
@@ -140,19 +152,18 @@ export default function ProjectsPage(): JSX.Element {
     statusFilter: "all",
   }));
 
-  // ✅ CORRECTION: Store avec sélecteurs séparés pour éviter les re-renders
-  const selectedProjectId = useSelectedProjectStore(
-    (state) => state.selectedProjectId
-  );
-  const projectData = useSelectedProjectStore((state) => state.projectData);
-  const isLoading = useSelectedProjectStore((state) => state.isLoading);
-  const setSelectedProjectId = useSelectedProjectStore(
-    (state) => state.setSelectedProjectId
-  );
-  const loadProjectData = useSelectedProjectStore(
-    (state) => state.loadProjectData
-  );
-  const clearProject = useSelectedProjectStore((state) => state.clearProject);
+  // ✅ CORRECTION: Store avec hooks spécialisés pour éviter les re-renders
+  const selectedProjectId = useSelectedProjectId();
+  const projectData = useSelectedProjectData();
+  const isLoading = useProjectLoading();
+  const projectError = useProjectError();
+  const {
+    setSelectedProjectId,
+    loadProjectData,
+    clearProject,
+    updateProjectData,
+    refreshProject,
+  } = useProjectActions();
 
   // ✅ CORRECTION: Hydratation avec hook séparé
   const isHydrated = useProjectStoreHydration();
@@ -363,7 +374,7 @@ export default function ProjectsPage(): JSX.Element {
       state.projects.length
     );
     updateState({ filteredProjects: filtered });
-  }, [state.searchTerm, state.statusFilter, state.projects]); // ✅ Pas d'updateState dans les deps
+  }, [state.searchTerm, state.statusFilter, state.projects]);
 
   /**
    * Gestion de la recherche via ProjectsFilter
@@ -392,7 +403,7 @@ export default function ProjectsPage(): JSX.Element {
    */
   const handleProjectSelect = useCallback(
     (project: ProjectSimple): void => {
-      console.log("📍 Navigation vers le projet:", project.name, project.id);
+      console.log("🔍 Navigation vers le projet:", project.name, project.id);
 
       // Mise à jour du store avec l'ID du projet sélectionné
       setSelectedProjectId(project.id);
@@ -671,6 +682,15 @@ export default function ProjectsPage(): JSX.Element {
   );
 
   /**
+   * Gère la création d'un nouveau projet
+   */
+  const handleCreate = useCallback((): void => {
+    console.log("➕ Création nouveau projet");
+    clearProject(); // S'assurer qu'aucun projet n'est sélectionné
+    updateState({ isFormOpen: true });
+  }, [clearProject, updateState]);
+
+  /**
    * Gestion de la déconnexion Better Auth
    */
   const handleLogout = useCallback(async (): Promise<void> => {
@@ -743,8 +763,8 @@ export default function ProjectsPage(): JSX.Element {
               </p>
               {/* ✅ DIAGNOSTIC: Affichage des états pour debug */}
               <div className="mt-4 text-xs text-gray-500 space-y-1">
-                <div>Hydraté: {isHydrated ? "✅" : "⏳"}</div>
-                <div>Auth Loading: {authState.isLoading ? "⏳" : "✅"}</div>
+                <div>Hydraté: {isHydrated ? "✅" : "⳿"}</div>
+                <div>Auth Loading: {authState.isLoading ? "⳿" : "✅"}</div>
                 <div>Session: {session ? "✅" : "❌"}</div>
                 {authState.hasError && (
                   <div className="text-red-500">Erreur: {authState.error}</div>
@@ -867,19 +887,19 @@ export default function ProjectsPage(): JSX.Element {
                   variant={state.viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => handleViewModeChange("grid")}
-                  className="px-3"
-                  title="Vue grille"
+                  className="flex-1 sm:flex-initial"
                 >
-                  <Grid3X3 className="h-4 w-4" />
+                  <Grid3X3 className="h-4 w-4 mr-2" />
+                  Grille
                 </Button>
                 <Button
                   variant={state.viewMode === "list" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => handleViewModeChange("list")}
-                  className="px-3"
-                  title="Vue liste"
+                  className="flex-1 sm:flex-initial"
                 >
-                  <List className="h-4 w-4" />
+                  <List className="h-4 w-4 mr-2" />
+                  Liste
                 </Button>
               </div>
 
@@ -890,256 +910,260 @@ export default function ProjectsPage(): JSX.Element {
                   variant="outline"
                   size="sm"
                   disabled={isLoadingState}
-                  className="px-3"
-                  title="Actualiser"
                 >
                   <RefreshCw
-                    className={`h-4 w-4 ${
+                    className={`h-4 w-4 mr-2 ${
                       isLoadingState ? "animate-spin" : ""
                     }`}
                   />
+                  Actualiser
                 </Button>
-
                 <Button
-                  onClick={() => handleFormToggle(true)}
+                  onClick={handleCreate}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                   size="sm"
                 >
                   <PlusCircle className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Nouveau projet</span>
-                  <span className="sm:hidden">Nouveau</span>
-                </Button>
-              </div>
-
-              {/* Menu utilisateur */}
-              <div className="flex gap-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="px-3"
-                  title="Paramètres"
-                >
-                  <Settings className="h-4 w-4" />
+                  Nouveau projet
                 </Button>
                 <Button
                   onClick={handleLogout}
                   variant="outline"
                   size="sm"
-                  className="px-3"
-                  title="Se déconnecter"
+                  className="text-red-600 border-red-200 hover:bg-red-50"
                 >
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Déconnexion</span>
                 </Button>
               </div>
             </div>
           </div>
 
-          {/* Statistiques en cartes responsive (si projets existants) */}
+          {/* Statistiques rapides en cards responsive */}
           {hasProjects && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              <Card className="p-4 bg-white hover:shadow-md transition-shadow">
-                <div className="flex items-center space-x-2">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <BarChart3 className="h-4 w-4 text-blue-600" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-gray-900">
+                    {stats.total}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Total</p>
-                    <p className="text-xl font-bold">{stats.total}</p>
+                  <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
+                    <BarChart3 className="h-3 w-3" />
+                    Total
                   </div>
-                </div>
+                </CardContent>
               </Card>
-
-              <Card className="p-4 bg-white hover:shadow-md transition-shadow">
-                <div className="flex items-center space-x-2">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Activity className="h-4 w-4 text-green-600" />
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-green-600">
+                    {stats.active}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Actifs</p>
-                    <p className="text-xl font-bold">{stats.active}</p>
+                  <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
+                    <Activity className="h-3 w-3" />
+                    Actifs
                   </div>
-                </div>
+                </CardContent>
               </Card>
-
-              <Card className="p-4 bg-white hover:shadow-md transition-shadow">
-                <div className="flex items-center space-x-2">
-                  <div className="p-2 bg-gray-100 rounded-lg">
-                    <RefreshCw className="h-4 w-4 text-gray-600" />
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-orange-600">
+                    {stats.inactive}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      Inactifs
-                    </p>
-                    <p className="text-xl font-bold">{stats.inactive}</p>
+                  <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
+                    <EyeOff className="h-3 w-3" />
+                    Inactifs
                   </div>
-                </div>
+                </CardContent>
               </Card>
-
-              <Card className="p-4 bg-white hover:shadow-md transition-shadow">
-                <div className="flex items-center space-x-2">
-                  <div className="p-2 bg-orange-100 rounded-lg">
-                    <Calendar className="h-4 w-4 text-orange-600" />
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-gray-600">
+                    {stats.archived}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      Archivés
-                    </p>
-                    <p className="text-xl font-bold">{stats.archived}</p>
+                  <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
+                    <Archive className="h-3 w-3" />
+                    Archivés
                   </div>
-                </div>
+                </CardContent>
               </Card>
-
-              <Card className="p-4 bg-white hover:shadow-md transition-shadow">
-                <div className="flex items-center space-x-2">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <EyeOff className="h-4 w-4 text-purple-600" />
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-red-600">
+                    {stats.private}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Privés</p>
-                    <p className="text-xl font-bold">{stats.private}</p>
+                  <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
+                    <Lock className="h-3 w-3" />
+                    Privés
                   </div>
-                </div>
+                </CardContent>
               </Card>
-
-              <Card className="p-4 bg-white hover:shadow-md transition-shadow">
-                <div className="flex items-center space-x-2">
-                  <div className="p-2 bg-indigo-100 rounded-lg">
-                    <Eye className="h-4 w-4 text-indigo-600" />
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {stats.public}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Publics</p>
-                    <p className="text-xl font-bold">{stats.public}</p>
+                  <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
+                    <Globe className="h-3 w-3" />
+                    Publics
                   </div>
-                </div>
+                </CardContent>
               </Card>
             </div>
           )}
         </div>
 
-        {/* Filtres - utilisation de votre composant */}
-        {(hasProjects || isLoadingState) && (
-          <Card className="p-4 bg-white">
+        {/* Zone de filtrage avec composant ProjectsFilter */}
+        <Card>
+          <CardContent className="p-4">
             <ProjectsFilter
-              onFilter={handleFilter}
-              onStatusFilter={handleStatusFilter}
               searchTerm={state.searchTerm}
               statusFilter={state.statusFilter}
+              onSearchChange={handleFilter}
+              onStatusFilterChange={handleStatusFilter}
+              totalCount={state.projects.length}
+              filteredCount={state.filteredProjects.length}
             />
+          </CardContent>
+        </Card>
+
+        {/* Contenu principal avec ProjectsList */}
+        {isLoadingState ? (
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-center space-x-3 py-12">
+                <RefreshCw className="h-6 w-6 animate-spin text-blue-600" />
+                <span className="text-gray-600">Chargement des projets...</span>
+              </div>
+              {/* Skeleton des projets */}
+              <div className="space-y-4 mt-6">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <Skeleton className="h-12 w-12 rounded" />
+                    <div className="space-y-2 flex-1">
+                      <Skeleton className="h-4 w-[250px]" />
+                      <Skeleton className="h-4 w-[200px]" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
           </Card>
+        ) : isError ? (
+          <Card>
+            <CardContent className="p-6">
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  <div className="space-y-2">
+                    <p className="font-medium">
+                      Erreur lors du chargement des projets
+                    </p>
+                    <p className="text-sm">{state.error}</p>
+                    <Button
+                      onClick={handleRefresh}
+                      variant="outline"
+                      size="sm"
+                      className="mt-2"
+                    >
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Réessayer
+                    </Button>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            </CardContent>
+          </Card>
+        ) : isEmpty ? (
+          <Card>
+            <CardContent className="p-12 text-center space-y-4">
+              {state.searchTerm || state.statusFilter !== "all" ? (
+                <>
+                  <Search className="h-12 w-12 mx-auto text-gray-400" />
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900">
+                      Aucun résultat trouvé
+                    </h3>
+                    <p className="text-gray-600 mt-2">
+                      Essayez de modifier vos critères de recherche ou de
+                      filtrage
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                    <Button
+                      onClick={() =>
+                        updateState({ searchTerm: "", statusFilter: "all" })
+                      }
+                      variant="outline"
+                    >
+                      Réinitialiser les filtres
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <BarChart3 className="h-12 w-12 mx-auto text-gray-400" />
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900">
+                      Aucun projet trouvé
+                    </h3>
+                    <p className="text-gray-600 mt-2">
+                      Commencez par créer votre premier projet pour organiser
+                      votre travail
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleCreate}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    <PlusCircle className="h-4 w-4 mr-2" />
+                    Créer mon premier projet
+                  </Button>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          // ✅ UTILISATION DU COMPOSANT ProjectsList
+          <ProjectsList
+            projects={state.filteredProjects}
+            viewMode={state.viewMode}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onSelect={handleProjectSelect}
+            onReorder={handleReorder}
+            onCreate={handleCreate}
+            loading={isLoadingState}
+          />
         )}
 
-        {/* Contenu principal */}
-        <div className="min-h-[400px]">
-          {/* État de chargement avec skeleton responsive */}
-          {isLoadingState && (
-            <div
-              className={`grid gap-4 ${
-                state.viewMode === "grid"
-                  ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                  : "grid-cols-1"
-              }`}
-            >
-              {[...Array(8)].map((_, i) => (
-                <Card key={i} className="p-4">
-                  <CardContent className="p-0 space-y-3">
-                    <Skeleton className="h-6 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
-                    <Skeleton className="h-20 w-full" />
-                    <div className="flex justify-between">
-                      <Skeleton className="h-6 w-16" />
-                      <Skeleton className="h-6 w-16" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+        {/* Modal de formulaire avec ProjectForm */}
+        {state.isFormOpen && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold">
+                    {selectedProjectId
+                      ? "Modifier le projet"
+                      : "Nouveau projet"}
+                  </h2>
+                  <Button
+                    onClick={() => handleFormToggle(false)}
+                    variant="ghost"
+                    size="sm"
+                  >
+                    ×
+                  </Button>
+                </div>
+                <ProjectForm
+                  projectId={selectedProjectId}
+                  onSuccess={handleFormSuccess}
+                  onCancel={() => handleFormToggle(false)}
+                />
+              </div> 
             </div>
-          )}
-
-          {/* État d'erreur avec design moderne */}
-          {isError && state.error && (
-            <Alert variant="destructive" className="max-w-2xl mx-auto bg-white">
-              <Activity className="h-4 w-4" />
-              <AlertDescription className="space-y-2">
-                <div className="font-medium">
-                  Erreur lors du chargement des projets
-                </div>
-                <div className="text-sm">{state.error}</div>
-                <div className="text-xs text-gray-600 mt-2">
-                  Actions recommandées :
-                  <ul className="list-disc ml-4 mt-1">
-                    <li>Vérifiez votre connexion internet</li>
-                    <li>Actualisez la page</li>
-                    <li>Reconnectez-vous si nécessaire</li>
-                  </ul>
-                </div>
-                <Button
-                  onClick={handleRefresh}
-                  variant="outline"
-                  size="sm"
-                  className="mt-3"
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Réessayer
-                </Button>
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {/* État vide avec design moderne */}
-          {isEmpty && !isLoadingState && (
-            <Card className="max-w-md mx-auto text-center p-8 bg-white">
-              <CardContent className="space-y-4">
-                <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                  <PlusCircle className="h-8 w-8 text-gray-400" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {state.searchTerm || state.statusFilter !== "all"
-                      ? "Aucun projet trouvé"
-                      : "Aucun projet"}
-                  </h3>
-                  <p className="text-gray-500 mt-1">
-                    {state.searchTerm || state.statusFilter !== "all"
-                      ? "Essayez de modifier vos critères de recherche"
-                      : "Commencez par créer votre premier projet"}
-                  </p>
-                </div>
-                <Button
-                  onClick={() => handleFormToggle(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  <PlusCircle className="h-4 w-4 mr-2" />
-                  {state.searchTerm || state.statusFilter !== "all"
-                    ? "Créer un nouveau projet"
-                    : "Créer mon premier projet"}
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* ✅ CORRECTION: Affichage des projets - utilisation uniquement de ProjectsDisplayView */}
-          {!isLoadingState && !isError && !isEmpty && (
-            <ProjectsDisplayView
-              projects={state.filteredProjects}
-              viewMode={state.viewMode}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onSelect={handleProjectSelect}
-              onReorder={handleReorder}
-              loading={isLoadingState}
-            />
-          )}
-        </div>
-
-        {/* Formulaire de projet - utilisation de votre composant */}
-        <ProjectForm
-          open={state.isFormOpen}
-          onOpenChange={handleFormToggle}
-          project={projectData} // Peut être null si pas encore chargé
-          projectLoading={isLoading} // Indicateur de chargement du projet
-          onSuccess={handleFormSuccess}
-          userId={authState.currentUserId} // ID utilisateur pour la création
-        />
+          </div>
+        )}
       </div>
     </div>
   );

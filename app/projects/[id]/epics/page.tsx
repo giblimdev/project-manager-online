@@ -1,93 +1,93 @@
-// app/projects/[id]/epic/page.tsx
+// @/app/projects/[id]/epic/page.tsx
 
 /**
- * RÔLE : Page de gestion des épics d'un projet sélectionné avec architecture séparée
+ * RÔLE : Page de gestion des épics d'une initiative sélectionnée avec architecture séparée
  * RESPONSABILITÉS :
- * - Affichage des épics du projet sélectionné via le store Zustand
+ * - Affichage des épics de l'initiative sélectionnée via le store useSelectedInitiativeStore
+ * - Vérification de la sélection d'initiative avec redirection si nécessaire
  * - Gestion des filtres par nom et priorité (LOW, MEDIUM, HIGH, CRITICAL) via EpicsFilter
- * - Basculement entre les modes d'affichage (list, card, tree) via EpicsDisplay
- * - EpicsDisplay sélectionne le mode et transmet à EpicsList qui affiche selon le mode
+ * - Sélection des modes d'affichage (list, card) via EpicsDisplay
  * - EpicsList gère l'affichage des épics + boutons actions (edit, delete, up, down) + bouton ajouter
  * - EpicsForm en modal pour création/édition d'épics
- * - Vérification de la sélection du projet avec gestion d'erreur
  * - Interface responsive et moderne avec design cards et transitions
- * - Intégration avec le store useSelectedProjectStore pour la persistance
- * - Gestion des états de chargement et d'hydratation du store
- * - Protection contre les boucles infinies d'appels API
+ * - Intégration avec useSelectedInitiativeStore pour obtenir l'initiative contexte
  *
  * COMPOSANTS UTILISÉS :
- * - EpicsDisplay: Composant qui sélectionne le mode d'affichage et transmet à EpicsList
+ * - EpicsDisplay: Composant qui propose les modes d'affichage (list, card)
  * - EpicsList: Affiche les épics selon le mode sélectionné + boutons d'actions + bouton ajouter
  * - EpicsFilter: Composant de filtrage par nom et priorité
- * - EpicsForm: Formulaire de création/édition d'épics
- * - useSelectedProjectStore: Store Zustand pour le projet sélectionné
- * - useProjectStoreHydration: Hook d'hydratation sécurisée du store
+ * - EpicsForm: Formulaire de création/édition d'épics en modal
+ * - useSelectedInitiativeStore: Store Zustand pour l'initiative sélectionnée (contexte principal)
+ * - useSelectedProjectStore: Store Zustand pour le projet sélectionné (contexte secondaire)
  * - Card, CardContent, Button: Composants UI shadcn/ui
  * - Skeleton: Composant de loading state
  *
  * LIBS UTILISÉS :
  * - React 19 hooks: useState, useEffect, useCallback, useMemo, useRef, JSX
- * - Next.js 15 client component
+ * - Next.js 15 client component avec useRouter pour navigation
  * - Zustand: Store management avec persistance localStorage
  * - TypeScript strict mode avec interfaces complètes
  * - Tailwind CSS: Design moderne responsive avec gradient et shadows
- * - lucide-react: Icons (RefreshCw, AlertTriangle, Folder, PlusCircle, Target)
+ * - lucide-react: Icons (RefreshCw, AlertTriangle, Folder, ArrowLeft, Target, Layers)
  * - shadcn/ui: Card, Button, Skeleton components
  * - sonner: Toast notifications pour les actions utilisateur
  *
  * API :
- * - GET /api/epics?projectId=[id] (liste des épics d'un projet)
+ * - GET /api/epics?initiativeId=[id] (liste des épics d'une initiative)
  * - POST /api/epics (création d'un nouvel épic)
  * - PUT /api/epics/[id] (mise à jour d'un épic)
  * - DELETE /api/epics/[id] (suppression d'un épic)
- * - Utilise les données du store chargées par /api/projects/[id]
+ * - Utilise les données du store chargées par /api/initiatives/[id]
  */
 
 "use client";
 
-import React, {
-  JSX,
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import React, { JSX, useState, useEffect, useCallback, useMemo } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   RefreshCw,
   AlertTriangle,
-  Folder,
   Target,
-  TrendingUp,
-  Calendar,
+  Layers,
+  ArrowLeft,
+  Plus,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+
+// ✅ Import des stores Zustand
 import {
-  useSelectedProjectStore,
+  useSelectedInitiativeId,
+  useSelectedInitiativeData,
+  useInitiativeStoreHydration,
+} from "@/stores/useSelectedInitiativeStore";
+import {
+  useSelectedProjectId,
   useProjectStoreHydration,
 } from "@/stores/useSelectedProjectStore";
+import { useSelectedEpicStore } from "@/stores/useSelectedEpicStore";
+
+// ✅ Import des composants épics
 import EpicsDisplay from "@/components/epics/EpicsDisplay";
 import EpicsFilter from "@/components/epics/EpicsFilter";
-import EpicsForm from "@/components/epics/EpicsForm";
+import EpicsList from "@/components/epics/EpicsList";
+import { EpicsForm } from "@/components/epics/EpicsForm";
 
-// Interface pour l'état des filtres selon les enums Priority du schéma Prisma
-interface FilterState {
-  name: string;
-  priority: "ALL" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-}
+// ✅ Types pour les épics
+type Priority = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
+type ViewMode = "list" | "card";
+type FilterPriority = Priority | "ALL";
 
-// Types pour les modes d'affichage
-type ViewMode = "list" | "card" | "tree";
-
-// Interface Epic selon le schéma Prisma pour la gestion locale
+// Interface Epic basée sur le schéma Prisma
 interface Epic {
   id: string;
   name: string;
+  order: number;
   description: string | null;
-  priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  priority: Priority;
   status: string;
   startDate: Date | null;
   endDate: Date | null;
@@ -95,427 +95,376 @@ interface Epic {
   initiativeId: string;
   createdAt: Date;
   updatedAt: Date;
+  // Relations optionnelles
   features?: Array<{
     id: string;
     name: string;
+    status: string;
     progress: number;
   }>;
+  userstories?: Array<{
+    id: string;
+    title: string;
+    status: string;
+  }>;
+  _count?: {
+    features: number;
+    userstories: number;
+  };
 }
 
-// Interface pour l'état de la page
-interface PageState {
-  epics: Epic[];
-  isLoadingEpics: boolean;
-  epicsError: string | null;
-  isFormOpen: boolean;
-  editingEpic: Epic | null;
-  lastLoadedProjectId: string | null;
+// Interface pour les filtres
+interface FilterState {
+  search: string;
+  priority: FilterPriority;
+}
+
+// Interface pour l'API Response
+interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
 }
 
 export default function EpicsPage(): JSX.Element {
-  // Store Zustand pour le projet sélectionné
-  const selectedProjectId = useSelectedProjectStore(
-    (state) => state.selectedProjectId
-  );
-  const projectData = useSelectedProjectStore((state) => state.projectData);
-  const isLoading = useSelectedProjectStore((state) => state.isLoading);
-  const error = useSelectedProjectStore((state) => state.error);
-  const loadProjectData = useSelectedProjectStore(
-    (state) => state.loadProjectData
-  );
-  const isHydrated = useProjectStoreHydration();
+  const params = useParams();
+  const router = useRouter();
 
-  // État local pour la page
-  const [filters, setFilters] = useState<FilterState>({
-    name: "",
-    priority: "ALL",
-  });
+  // ✅ Stores Zustand
+  const projectId = useSelectedProjectId();
+  const isProjectHydrated = useProjectStoreHydration();
+
+  const initiativeId = useSelectedInitiativeId();
+  const initiativeData = useSelectedInitiativeData();
+  const isInitiativeHydrated = useInitiativeStoreHydration();
+
+  const { setSelectedEpicId } = useSelectedEpicStore();
+
+  // ✅ États locaux
+  const [epics, setEpics] = useState<Epic[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("card");
 
-  // État simplifié pour la gestion des épics
-  const [pageState, setPageState] = useState<PageState>({
-    epics: [],
-    isLoadingEpics: false,
-    epicsError: null,
-    isFormOpen: false,
-    editingEpic: null,
-    lastLoadedProjectId: null,
+  // ✅ État du formulaire
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingEpic, setEditingEpic] = useState<Epic | null>(null);
+
+  // ✅ État des filtres
+  const [filters, setFilters] = useState<FilterState>({
+    search: "",
+    priority: "ALL",
   });
 
-  // useRef pour éviter les dépendances circulaires
-  const loadEpicsRef = useRef<((projectId: string) => Promise<void>) | null>(
-    null
-  );
-  const isLoadingRef = useRef(false);
+  // ✅ Fonction de chargement des épics avec logs de diagnostic
+  const fetchEpics = useCallback(async () => {
+    console.log("🔧 DIAGNOSTIC fetchEpics - Début");
+    console.log("📊 Store Hydration Status:", {
+      isInitiativeHydrated,
+      isProjectHydrated,
+    });
+    console.log("📋 Store Values:", {
+      initiativeId,
+      initiativeData: initiativeData
+        ? {
+            id: initiativeData.id,
+            name: initiativeData.name,
+            projectId: initiativeData.projectId,
+          }
+        : null,
+      projectId,
+    });
 
-  // Console.log pour diagnostiquer l'état du store
-  useEffect(() => {
-    console.log("🔍 DEBUG EpicsPage - État du store:");
-    console.log("- selectedProjectId:", selectedProjectId);
-    console.log("- projectData:", projectData);
-    console.log("- isLoading:", isLoading);
-    console.log("- error:", error);
-    console.log("- isHydrated:", isHydrated);
-    console.log(
-      "- pageState.lastLoadedProjectId:",
-      pageState.lastLoadedProjectId
-    );
-    console.log("- isLoadingRef.current:", isLoadingRef.current);
-
-    if (projectData) {
-      console.log("- Project name:", projectData.name);
-      console.log("- Project key:", projectData.key);
-      console.log("- Page epics count:", pageState.epics.length);
-      console.log("- Project _count:", projectData._count);
-    }
-  }, [
-    selectedProjectId,
-    projectData,
-    isLoading,
-    error,
-    isHydrated,
-    pageState.lastLoadedProjectId,
-  ]);
-
-  // Chargement automatique des données avec protection contre boucles
-  useEffect(() => {
-    if (
-      isHydrated &&
-      selectedProjectId &&
-      !projectData &&
-      !isLoading &&
-      !error
-    ) {
+    if (!isInitiativeHydrated || !initiativeId) {
       console.log(
-        "🔄 EpicsPage - Chargement automatique des données du projet"
+        "❌ ARRÊT: Store non hydraté ou aucune initiative sélectionnée"
       );
-      loadProjectData(selectedProjectId);
-    }
-  }, [
-    isHydrated,
-    selectedProjectId,
-    projectData,
-    isLoading,
-    error,
-    loadProjectData,
-  ]);
-
-  // Fonction de chargement des épics avec protection anti-boucle
-  const loadEpics = useCallback(async (projectId: string) => {
-    // Protection contre les appels multiples simultanés
-    if (isLoadingRef.current) {
-      console.log("⚠️ Chargement déjà en cours, ignorer");
+      console.log("Details:", {
+        isInitiativeHydrated,
+        initiativeId,
+        raison: !isInitiativeHydrated
+          ? "Store non hydraté"
+          : "Aucune initiative sélectionnée",
+      });
+      setIsLoading(false);
       return;
     }
 
-    // Vérifier si on a déjà chargé les données pour ce projet
-    if (
-      pageState.lastLoadedProjectId === projectId &&
-      pageState.epics.length > 0
-    ) {
-      console.log("✅ Épics déjà chargés pour ce projet");
-      return;
-    }
-
-    console.log("🔄 Chargement des épics pour le projet:", projectId);
-
-    isLoadingRef.current = true;
-    setPageState((prev) => ({
-      ...prev,
-      isLoadingEpics: true,
-      epicsError: null,
-    }));
+    setIsLoading(true);
+    setError(null);
 
     try {
-      const response = await fetch(`/api/epics?projectId=${projectId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
+      const searchParams = new URLSearchParams();
+      searchParams.set("initiativeId", initiativeId);
+
+      if (filters.search) {
+        searchParams.set("search", filters.search);
+      }
+
+      if (filters.priority !== "ALL") {
+        searchParams.set("priority", filters.priority);
+      }
+
+      const apiUrl = `/api/epics?${searchParams.toString()}`;
+      console.log("🌐 URL API construite:", apiUrl);
+      console.log("📤 Paramètres envoyés:", {
+        initiativeId,
+        search: filters.search || "none",
+        priority: filters.priority,
+      });
+
+      console.log("🚀 Envoi de la requête fetch...");
+      const response = await fetch(apiUrl);
+
+      console.log("📥 Réponse reçue:", {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        url: response.url,
+        headers: Object.fromEntries(response.headers.entries()),
       });
 
       if (!response.ok) {
         throw new Error(`Erreur ${response.status}: ${response.statusText}`);
       }
 
-      const result = await response.json();
-      let epics: Epic[];
+      const result: ApiResponse<Epic[]> = await response.json();
+      console.log("📋 Données reçues de l'API:", {
+        success: result.success,
+        dataLength: result.data?.length || 0,
+        error: result.error,
+        message: result.message,
+        fullResult: result,
+      });
 
-      // Gérer les différents formats de réponse API
-      if (result.success !== undefined) {
-        if (!result.success) {
-          throw new Error(result.error || "Erreur lors du chargement");
-        }
-        epics = result.data || [];
-      } else if (Array.isArray(result)) {
-        epics = result;
-      } else {
-        epics = result.epics || [];
+      if (!result.success) {
+        throw new Error(result.error || "Erreur lors du chargement des épics");
       }
 
-      console.log("✅ Épics chargés:", epics.length);
-
-      setPageState((prev) => ({
-        ...prev,
-        epics,
-        isLoadingEpics: false,
-        epicsError: null,
-        lastLoadedProjectId: projectId,
+      // ✅ Normalisation des dates
+      const normalizedEpics = (result.data || []).map((epic) => ({
+        ...epic,
+        startDate: epic.startDate ? new Date(epic.startDate) : null,
+        endDate: epic.endDate ? new Date(epic.endDate) : null,
+        createdAt: new Date(epic.createdAt),
+        updatedAt: new Date(epic.updatedAt),
       }));
 
-      toast.success(`${epics.length} épic(s) chargé(s)`);
+      console.log("✅ Épics normalisés:", {
+        count: normalizedEpics.length,
+        epics: normalizedEpics.map((e) => ({
+          id: e.id,
+          name: e.name,
+          initiativeId: e.initiativeId,
+        })),
+      });
+
+      setEpics(normalizedEpics);
     } catch (error) {
-      console.error("💥 Erreur chargement épics:", error);
+      console.error("💥 Erreur lors du chargement des épics:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Erreur inconnue";
-
-      setPageState((prev) => ({
-        ...prev,
-        epics: [],
-        isLoadingEpics: false,
-        epicsError: errorMessage,
-        lastLoadedProjectId: null,
-      }));
-
-      toast.error(`Erreur: ${errorMessage}`);
+      console.log("🔴 Détails de l'erreur:", {
+        type: error?.constructor?.name,
+        message: errorMessage,
+        stack: error instanceof Error ? error.stack : "No stack",
+      });
+      setError(errorMessage);
+      toast.error("Erreur de chargement", {
+        description: errorMessage,
+      });
     } finally {
-      isLoadingRef.current = false;
+      setIsLoading(false);
+      console.log("🏁 fetchEpics terminé");
     }
-  }, []);
+  }, [initiativeId, isInitiativeHydrated, filters]);
 
-  // Stocker la référence pour éviter les dépendances circulaires
-  loadEpicsRef.current = loadEpics;
-
-  // Chargement automatique avec protection contre les boucles
+  // ✅ Chargement initial
   useEffect(() => {
-    let mounted = true;
-
-    const shouldLoad =
-      projectData?.id &&
-      isHydrated &&
-      !pageState.isLoadingEpics &&
-      pageState.lastLoadedProjectId !== projectData.id &&
-      !isLoadingRef.current;
-
-    if (shouldLoad && mounted && loadEpicsRef.current) {
-      console.log("🚀 Déclenchement chargement épics");
-      loadEpicsRef.current(projectData.id);
+    if (isInitiativeHydrated && isProjectHydrated) {
+      fetchEpics();
     }
+  }, [fetchEpics, isInitiativeHydrated, isProjectHydrated]);
 
-    return () => {
-      mounted = false;
-    };
-  }, [
-    projectData?.id,
-    isHydrated,
-    pageState.isLoadingEpics,
-    pageState.lastLoadedProjectId,
-  ]);
+  // ✅ Gestion du clic sur un épic (sélection + navigation)
+  const handleEpicClick = useCallback(
+    (epic: Epic) => {
+      // Mise à jour du store Epic sélectionné
+      setSelectedEpicId(epic.id);
 
-  // Reset des épics quand le projet change
-  useEffect(() => {
-    if (
-      selectedProjectId !== pageState.lastLoadedProjectId &&
-      pageState.epics.length > 0
-    ) {
-      console.log("🔄 Changement de projet - Reset des épics");
-      setPageState((prev) => ({
-        ...prev,
-        epics: [],
-        lastLoadedProjectId: null,
-        epicsError: null,
-      }));
-    }
-  }, [
-    selectedProjectId,
-    pageState.lastLoadedProjectId,
-    pageState.epics.length,
-  ]);
+      // Navigation vers la page des features
+      router.push(`/projects/${projectId}/features`);
 
-  // Handlers pour le formulaire
-  const handleCreateEpic = useCallback(() => {
-    console.log("➕ Ouverture formulaire création épic");
-    setPageState((prev) => ({
-      ...prev,
-      isFormOpen: true,
-      editingEpic: null,
-    }));
+      toast.success("Épic sélectionné", {
+        description: `Navigation vers les fonctionnalités de "${epic.name}"`,
+      });
+    },
+    [setSelectedEpicId, router, projectId]
+  );
+
+  // ✅ Handlers pour le formulaire
+  const handleCreateNew = useCallback(() => {
+    setEditingEpic(null);
+    setIsFormOpen(true);
   }, []);
 
-  const handleEditEpic = useCallback((epic: Epic) => {
-    console.log("✏️ Ouverture formulaire édition épic:", epic.name);
-    setPageState((prev) => ({
-      ...prev,
-      isFormOpen: true,
-      editingEpic: epic,
-    }));
+  const handleEdit = useCallback((epic: Epic) => {
+    setEditingEpic(epic);
+    setIsFormOpen(true);
   }, []);
 
-  const handleDeleteEpic = useCallback(
-    async (epicId: string) => {
-      const epic = pageState.epics.find((e) => e.id === epicId);
-      if (!epic) {
-        toast.error("Épic non trouvé");
+  const handleFormSuccess = useCallback(() => {
+    setIsFormOpen(false);
+    setEditingEpic(null);
+    fetchEpics();
+    toast.success(editingEpic ? "Épic mis à jour" : "Épic créé", {
+      description: "Les modifications ont été enregistrées avec succès",
+    });
+  }, [editingEpic, fetchEpics]);
+
+  const handleFormCancel = useCallback(() => {
+    setIsFormOpen(false);
+    setEditingEpic(null);
+  }, []);
+
+  // ✅ Gestion de la suppression
+  const handleDelete = useCallback(
+    async (epic: Epic) => {
+      if (
+        !confirm(`Êtes-vous sûr de vouloir supprimer l'épic "${epic.name}" ?`)
+      ) {
         return;
       }
-
-      const confirmMessage = `Êtes-vous sûr de vouloir supprimer l'épic "${epic.name}" ?\n\nCette action est irréversible.`;
-
-      if (!window.confirm(confirmMessage)) {
-        return;
-      }
-
-      console.log("🗑️ Suppression épic:", epic.name);
-      const deletingToast = toast.loading(`Suppression de ${epic.name}...`);
 
       try {
-        const response = await fetch(`/api/epics/${epicId}`, {
+        const response = await fetch(`/api/epics/${epic.id}`, {
           method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
         });
 
         if (!response.ok) {
           throw new Error(`Erreur ${response.status}: ${response.statusText}`);
         }
 
-        // Mettre à jour la liste locale
-        setPageState((prev) => ({
-          ...prev,
-          epics: prev.epics.filter((e) => e.id !== epicId),
-        }));
+        const result: ApiResponse<void> = await response.json();
 
-        console.log("✅ Épic supprimé avec succès");
-        toast.success(`Épic "${epic.name}" supprimé`, {
-          id: deletingToast,
+        if (!result.success) {
+          throw new Error(result.error || "Erreur lors de la suppression");
+        }
+
+        toast.success("Épic supprimé", {
+          description: `"${epic.name}" a été supprimé avec succès`,
         });
+
+        fetchEpics();
       } catch (error) {
-        console.error("💥 Erreur suppression:", error);
+        console.error("💥 Erreur lors de la suppression:", error);
         const errorMessage =
           error instanceof Error ? error.message : "Erreur inconnue";
-        toast.error(`Erreur: ${errorMessage}`, {
-          id: deletingToast,
+        toast.error("Erreur de suppression", {
+          description: errorMessage,
         });
       }
     },
-    [pageState.epics]
+    [fetchEpics]
   );
 
-  // Handlers pour réorganisation (up/down)
-  const handleMoveEpic = useCallback(
-    async (epicId: string, direction: "up" | "down") => {
-      const currentIndex = pageState.epics.findIndex((e) => e.id === epicId);
-      const epic = pageState.epics[currentIndex];
+  // ✅ Gestion du changement d'ordre
+  const handleOrderChange = useCallback(
+    async (epicId: string, newOrder: number) => {
+      try {
+        const response = await fetch(`/api/epics/${epicId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ order: newOrder }),
+        });
 
-      if (!epic) return;
+        if (!response.ok) {
+          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+        }
 
-      let newIndex: number;
-      if (direction === "up" && currentIndex > 0) {
-        newIndex = currentIndex - 1;
-      } else if (
-        direction === "down" &&
-        currentIndex < pageState.epics.length - 1
-      ) {
-        newIndex = currentIndex + 1;
-      } else {
-        return; // Pas de mouvement possible
+        const result: ApiResponse<Epic> = await response.json();
+
+        if (!result.success) {
+          throw new Error(result.error || "Erreur lors de la mise à jour");
+        }
+
+        fetchEpics();
+      } catch (error) {
+        console.error("💥 Erreur lors du changement d'ordre:", error);
+        toast.error("Erreur de mise à jour", {
+          description: "Impossible de modifier l'ordre de l'épic",
+        });
       }
-
-      console.log(
-        `🔄 Déplacement ${direction}:`,
-        epic.name,
-        "index:",
-        currentIndex,
-        "→",
-        newIndex
-      );
-
-      // Mise à jour optimiste de l'UI
-      const newEpics = [...pageState.epics];
-      newEpics.splice(currentIndex, 1);
-      newEpics.splice(newIndex, 0, epic);
-
-      setPageState((prev) => ({
-        ...prev,
-        epics: newEpics,
-      }));
-
-      toast.success(`Épic "${epic.name}" déplacé`);
     },
-    [pageState.epics]
+    [fetchEpics]
   );
 
-  // Handler de succès avec rechargement forcé
-  const handleFormSuccess = useCallback(() => {
-    console.log("✅ Succès formulaire - Rechargement des épics");
-    setPageState((prev) => ({
-      ...prev,
-      isFormOpen: false,
-      editingEpic: null,
-      lastLoadedProjectId: null, // Force le rechargement
-    }));
-
-    // Recharger la liste des épics si on a un projet
-    if (projectData?.id && loadEpicsRef.current) {
-      loadEpicsRef.current(projectData.id);
-    }
-
-    toast.success(
-      pageState.editingEpic
-        ? "Épic mis à jour avec succès"
-        : "Épic créé avec succès"
-    );
-  }, [projectData?.id, pageState.editingEpic]);
-
-  const handleFormCancel = useCallback(() => {
-    console.log("❌ Annulation formulaire");
-    setPageState((prev) => ({
-      ...prev,
-      isFormOpen: false,
-      editingEpic: null,
-    }));
+  // ✅ Handlers pour les filtres
+  const handleSearchChange = useCallback((search: string) => {
+    setFilters((prev) => ({ ...prev, search }));
   }, []);
 
-  // Handler de retry avec reset du cache
-  const handleRetryLoadEpics = useCallback(() => {
-    if (projectData?.id) {
-      console.log("🔄 Retry chargement épics");
-      setPageState((prev) => ({
-        ...prev,
-        lastLoadedProjectId: null, // Reset pour forcer rechargement
-        epicsError: null,
-      }));
+  const handlePriorityChange = useCallback((priority: FilterPriority) => {
+    setFilters((prev) => ({ ...prev, priority }));
+  }, []);
 
-      if (loadEpicsRef.current) {
-        loadEpicsRef.current(projectData.id);
-      }
-    }
-  }, [projectData?.id]);
+  // ✅ Statistiques calculées
+  const stats = useMemo(() => {
+    const totalEpics = epics.length;
+    const completedEpics = epics.filter((e) => e.progress >= 100).length;
+    const inProgressEpics = epics.filter(
+      (e) => e.progress > 0 && e.progress < 100
+    ).length;
+    const notStartedEpics = epics.filter((e) => e.progress === 0).length;
 
-  // Affichage pendant l'hydratation ou le chargement initial
-  if (!isHydrated || (isLoading && !projectData)) {
+    return {
+      total: totalEpics,
+      completed: completedEpics,
+      inProgress: inProgressEpics,
+      notStarted: notStartedEpics,
+    };
+  }, [epics]);
+
+  // ✅ Navigation de retour
+  const handleBackToInitiatives = useCallback(() => {
+    router.push(`/projects/${projectId}/initiatives`);
+  }, [router, projectId]);
+
+  // ✅ Gestion des états de chargement et d'erreur
+  if (!isInitiativeHydrated || !isProjectHydrated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <Card className="w-full max-w-md mx-4">
-          <CardContent className="p-8 text-center space-y-4">
-            <RefreshCw className="h-12 w-12 animate-spin mx-auto text-blue-600" />
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900">
-                {!isHydrated ? "Initialisation..." : "Chargement du projet..."}
-              </h3>
-              <p className="text-gray-600 mt-2">
-                {!isHydrated
-                  ? "Hydratation du store en cours"
-                  : "Récupération des données du projet"}
-              </p>
-              <div className="mt-4 text-xs text-gray-500 space-y-1">
-                <div>Hydraté: {isHydrated ? "✅" : "⏳"}</div>
-                <div>ID Projet: {selectedProjectId || "❌"}</div>
-                <div>Données: {projectData ? "✅" : "❌"}</div>
-                <div>Chargement: {isLoading ? "⏳" : "✅"}</div>
+      <div className="container mx-auto p-6 space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Chargement des stores...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!projectId) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center justify-center h-64 space-y-4">
+              <AlertTriangle className="h-8 w-8 text-amber-500" />
+              <div className="text-center">
+                <h3 className="text-lg font-semibold">
+                  Aucun projet sélectionné
+                </h3>
+                <p className="text-muted-foreground">
+                  Veuillez sélectionner un projet pour accéder aux épics
+                </p>
               </div>
+              <Button onClick={() => router.push("/projects")}>
+                Sélectionner un projet
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -523,309 +472,212 @@ export default function EpicsPage(): JSX.Element {
     );
   }
 
-  // Affichage d'erreur avec possibilité de retry
+  if (!initiativeId || !initiativeData) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center justify-center h-64 space-y-4">
+              <Target className="h-8 w-8 text-blue-500" />
+              <div className="text-center">
+                <h3 className="text-lg font-semibold">
+                  Aucune initiative sélectionnée
+                </h3>
+                <p className="text-muted-foreground">
+                  Veuillez sélectionner une initiative pour gérer ses épics
+                </p>
+              </div>
+              <Button
+                onClick={() =>
+                  router.push(`/projects/${projectId}/initiatives`)
+                }
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Retour aux initiatives
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <Card className="w-full max-w-md mx-4">
-          <CardContent className="p-8 text-center space-y-4">
-            <AlertTriangle className="h-12 w-12 mx-auto text-red-500" />
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900">
-                Erreur de chargement
-              </h3>
-              <p className="text-gray-600 mt-2">{error}</p>
-            </div>
-            <Button
-              onClick={() =>
-                selectedProjectId && loadProjectData(selectedProjectId, true)
-              }
-              className="bg-blue-600 hover:bg-blue-700"
-              disabled={!selectedProjectId}
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Réessayer
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Vérification de l'existence des données du projet
-  if (!projectData) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <Card className="w-full max-w-lg mx-4">
-          <CardContent className="p-8 text-center space-y-4">
-            <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-              <Folder className="h-8 w-8 text-gray-400" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                Aucun projet sélectionné
-              </h2>
-              <p className="text-gray-600">
-                Veuillez sélectionner un projet pour voir les épics.
-              </p>
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg text-left">
-                <h4 className="font-medium text-gray-900 mb-2">
-                  État du store:
-                </h4>
-                <div className="space-y-1 text-sm text-gray-600">
-                  <div>• ID sélectionné: {selectedProjectId || "Aucun"}</div>
-                  <div>
-                    • Données projet: {projectData ? "Présentes" : "Absentes"}
-                  </div>
-                  <div>
-                    • Hydratation: {isHydrated ? "Complète" : "En cours"}
-                  </div>
-                  <div>• Chargement: {isLoading ? "En cours" : "Terminé"}</div>
-                  {error && (
-                    <div className="text-red-600">• Erreur: {error}</div>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="text-sm text-gray-500">
-              Retournez à la page des projets pour en sélectionner un
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Calcul des statistiques des épics
-  const epicsStats = useMemo(() => {
-    const epics = pageState.epics;
-    return {
-      total: epics.length,
-      active: epics.filter((e) => e.status === "ACTIVE").length,
-      planning: epics.filter((e) => e.status === "PLANNING").length,
-      completed: epics.filter((e) => e.status === "COMPLETED").length,
-      onHold: epics.filter((e) => e.status === "ON_HOLD").length,
-      cancelled: epics.filter((e) => e.status === "CANCELLED").length,
-      critical: epics.filter((e) => e.priority === "CRITICAL").length,
-      high: epics.filter((e) => e.priority === "HIGH").length,
-      medium: epics.filter((e) => e.priority === "MEDIUM").length,
-      low: epics.filter((e) => e.priority === "LOW").length,
-    };
-  }, [pageState.epics]);
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
-        {/* Header avec informations détaillées */}
-        <div className="mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-gray-900">Épics</h1>
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                  {epicsStats.total} total
-                </span>
-                {pageState.isLoadingEpics && (
-                  <RefreshCw className="h-5 w-5 animate-spin text-gray-500" />
-                )}
-              </div>
-
-              <div className="flex items-center gap-2 text-gray-600">
-                <Folder className="h-4 w-4" />
-                <span>Projet: </span>
-                <span className="font-medium text-gray-900">
-                  {projectData.name}
-                </span>
-                {projectData.key && (
-                  <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-mono">
-                    {projectData.key}
-                  </span>
-                )}
-              </div>
-
-              {/* Statistiques en ligne */}
-              <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  {epicsStats.planning} planifiés
-                </span>
-                <span className="flex items-center gap-1">
-                  <Target className="h-4 w-4 text-green-600" />
-                  {epicsStats.active} actifs
-                </span>
-                <span>✅ {epicsStats.completed} terminés</span>
-                <span>⏸️ {epicsStats.onHold} en pause</span>
-                <span className="flex items-center gap-1">
-                  <AlertTriangle className="h-4 w-4 text-red-600" />
-                  {epicsStats.critical} critiques
-                </span>
-              </div>
-
-              {/* Description des épics */}
-              <div className="mt-4 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-                <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-blue-600" />
-                  Qu'est-ce qu'un Épic ?
-                </h3>
-                <p className="text-gray-600 text-sm mb-2">
-                  Un Épic est un conteneur de fonctionnalités qui :
-                </p>
-                <ul className="text-sm text-gray-600 space-y-1 ml-4">
-                  <li>
-                    • Regroupe plusieurs Features liées à un objectif commun
-                  </li>
-                  <li>
-                    • Fait partie d'une Initiative plus large pour structurer le
-                    backlog
-                  </li>
-                  <li>
-                    • S'étend généralement sur 1 à 3 Sprints selon la complexité
-                  </li>
-                  <li>
-                    • Apporte une valeur métier mesurable aux utilisateurs
-                    finaux
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            {/* View Mode Toggle */}
-            <div className="flex bg-white rounded-xl p-2 shadow-sm border border-gray-200">
-              {(["list", "card", "tree"] as const).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    viewMode === mode
-                      ? "bg-blue-600 text-white shadow-md transform scale-105"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                  }`}
-                  title={`Mode ${mode}`}
-                >
-                  <span className="mr-2">
-                    {mode === "list" && "📋"}
-                    {mode === "card" && "🗂️"}
-                    {mode === "tree" && "🌳"}
-                  </span>
-                  <span className="capitalize hidden sm:inline">{mode}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Filtres */}
-        <div className="mb-6">
-          <Card className="shadow-sm border border-gray-200">
-            <CardContent className="p-4">
-              <EpicsFilter filters={filters} onFiltersChange={setFilters} />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Affichage des erreurs */}
-        {pageState.epicsError && (
-          <Card className="mb-6 border-red-200 bg-red-50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 text-red-700">
-                <AlertTriangle className="h-5 w-5" />
-                <span className="font-medium">Erreur de chargement</span>
-              </div>
-              <p className="text-red-600 text-sm mt-1">
-                {pageState.epicsError}
-              </p>
-              <Button
-                onClick={handleRetryLoadEpics}
-                variant="outline"
-                size="sm"
-                className="mt-3 border-red-300 text-red-700 hover:bg-red-100"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center text-destructive">
+              <AlertTriangle className="mr-2 h-5 w-5" />
+              Erreur de chargement
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">{error}</p>
+            <div className="flex space-x-2">
+              <Button onClick={fetchEpics} className="flex-1">
+                <RefreshCw className="mr-2 h-4 w-4" />
                 Réessayer
               </Button>
-            </CardContent>
-          </Card>
-        )}
+              <Button variant="outline" onClick={handleBackToInitiatives}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Retour
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
-        {/* Affichage des épics avec EpicsDisplay */}
-        {pageState.isLoadingEpics && pageState.epics.length === 0 ? (
-          // Skeleton pendant le chargement initial
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i} className="p-6">
-                <div className="space-y-4">
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                  <div className="flex justify-between">
-                    <Skeleton className="h-6 w-16" />
-                    <Skeleton className="h-6 w-20" />
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          // EpicsDisplay gère le mode et transmet à EpicsList
-          <EpicsDisplay
-            projectId={projectData.id}
-            filters={filters}
-            viewMode={viewMode}
-            epics={pageState.epics}
-            onCreateEpic={handleCreateEpic}
-            onEditEpic={handleEditEpic}
-            onDeleteEpic={handleDeleteEpic}
-            onMoveEpic={handleMoveEpic}
-            loading={pageState.isLoadingEpics}
-          />
-        )}
-
-        {/* Formulaire EpicsForm en modal */}
-        {pageState.isFormOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-auto">
-              <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  {pageState.editingEpic ? "Modifier l'épic" : "Nouvel épic"}
-                </h2>
+  return (
+    <div className="container mx-auto p-6 space-y-6">
+      {/* ✅ En-tête avec navigation */}
+      <Card className="border-gradient bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
                 <Button
-                  onClick={handleFormCancel}
                   variant="ghost"
                   size="sm"
-                  className="text-gray-500 hover:text-gray-700"
+                  onClick={handleBackToInitiatives}
+                  className="text-muted-foreground hover:text-foreground"
                 >
-                  ✕
+                  <ArrowLeft className="mr-1 h-3 w-3" />
+                  Initiatives
                 </Button>
+                <span className="text-muted-foreground">/</span>
+                <span className="text-sm font-medium text-muted-foreground">
+                  {initiativeData.name}
+                </span>
               </div>
-              <div className="p-6">
-                <EpicsForm
-                  projectId={projectData.id}
-                  epic={pageState.editingEpic}
-                  onSuccess={handleFormSuccess}
-                  onCancel={handleFormCancel}
-                />
-              </div>
+              <CardTitle className="flex items-center text-2xl">
+                <Layers className="mr-3 h-6 w-6 text-blue-600" />
+                Épics de l'initiative
+              </CardTitle>
+              <p className="text-muted-foreground">
+                Gérez les épics de "{initiativeData.name}"
+              </p>
+            </div>
+            <div className="flex items-center space-x-2">
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              <Button
+                variant="outline"
+                onClick={fetchEpics}
+                disabled={isLoading}
+              >
+                Actualiser
+              </Button>
+              <Button
+                onClick={handleCreateNew}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Nouvel épic
+              </Button>
             </div>
           </div>
-        )}
+        </CardHeader>
+      </Card>
 
-        {/* Debug info (développement uniquement) */}
-        {process.env.NODE_ENV === "development" && (
-          <div className="fixed bottom-4 right-4 bg-black bg-opacity-80 text-white p-3 rounded-lg text-xs max-w-sm">
-            <div className="font-bold mb-1">Debug Info:</div>
-            <div>Projet ID: {selectedProjectId || "null"}</div>
-            <div>Projet Data: {projectData ? "✅" : "❌"}</div>
-            <div>Hydrated: {isHydrated ? "✅" : "❌"}</div>
-            <div>Loading Store: {isLoading ? "⏳" : "✅"}</div>
-            <div>Loading Epics: {pageState.isLoadingEpics ? "⏳" : "✅"}</div>
-            <div>Epics: {pageState.epics.length}</div>
-            <div>
-              Last Loaded Project: {pageState.lastLoadedProjectId || "null"}
+      {/* ✅ Statistiques */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <CardContent className="pt-4">
+            <div className="text-2xl font-bold text-blue-700">
+              {stats.total}
             </div>
-            <div>Form Open: {pageState.isFormOpen ? "✅" : "❌"}</div>
-          </div>
-        )}
+            <p className="text-xs text-blue-600">Total épics</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <CardContent className="pt-4">
+            <div className="text-2xl font-bold text-green-700">
+              {stats.completed}
+            </div>
+            <p className="text-xs text-green-600">Terminés</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+          <CardContent className="pt-4">
+            <div className="text-2xl font-bold text-orange-700">
+              {stats.inProgress}
+            </div>
+            <p className="text-xs text-orange-600">En cours</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200">
+          <CardContent className="pt-4">
+            <div className="text-2xl font-bold text-gray-700">
+              {stats.notStarted}
+            </div>
+            <p className="text-xs text-gray-600">Non commencés</p>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* ✅ Contrôles d'affichage et filtrage */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        <Card className="lg:w-1/3">
+          <CardContent className="pt-4">
+            <EpicsDisplay viewMode={viewMode} onViewModeChange={setViewMode} />
+          </CardContent>
+        </Card>
+
+        <Card className="lg:w-2/3">
+          <CardContent className="pt-4">
+            <EpicsFilter
+              search={filters.search}
+              priority={filters.priority}
+              onSearchChange={handleSearchChange}
+              onPriorityChange={handlePriorityChange}
+            />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ✅ Liste des épics */}
+      <Card className="shadow-lg">
+        <CardContent className="pt-6">
+          {isLoading ? (
+            <div className="space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-center space-x-4">
+                  <Skeleton className="h-12 w-12 rounded-lg" />
+                  <div className="space-y-2 flex-1">
+                    <Skeleton className="h-4 w-[250px]" />
+                    <Skeleton className="h-4 w-[200px]" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <EpicsList
+              epics={epics}
+              viewMode={viewMode}
+              onEpicClick={handleEpicClick}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onOrderChange={handleOrderChange}
+              isLoading={isLoading}
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ✅ Formulaire modal */}
+      <EpicsForm
+        isOpen={isFormOpen}
+        epic={editingEpic}
+        initiativeId={initiativeId}
+        onSuccess={handleFormSuccess}
+        onCancel={handleFormCancel}
+      />
     </div>
   );
 }

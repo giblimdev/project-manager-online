@@ -27529,6 +27529,9 @@ export namespace Prisma {
       order: number
       type: $Enums.FileType
       mimeType: string | null
+      /**
+       * Chemin dans l'application
+       */
       path: string | null
       description: string | null
       import: string | null
@@ -31653,6 +31656,9 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      /**
+       * Nom du canal
+       */
       name: string
       order: number
       description: string | null
@@ -37635,6 +37641,9 @@ export namespace Prisma {
       message: string
       data: Prisma.JsonValue | null
       read: boolean
+      /**
+       * Date de lecture
+       */
       readAt: Date | null
       createdAt: Date
       userId: string
@@ -41290,6 +41299,7 @@ export namespace Prisma {
     order: number | null
     description: string | null
     type: string | null
+    category: string | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -41301,6 +41311,7 @@ export namespace Prisma {
     order: number | null
     description: string | null
     type: string | null
+    category: string | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -41312,6 +41323,7 @@ export namespace Prisma {
     order: number
     description: number
     type: number
+    category: number
     isActive: number
     createdAt: number
     updatedAt: number
@@ -41333,6 +41345,7 @@ export namespace Prisma {
     order?: true
     description?: true
     type?: true
+    category?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -41344,6 +41357,7 @@ export namespace Prisma {
     order?: true
     description?: true
     type?: true
+    category?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -41355,6 +41369,7 @@ export namespace Prisma {
     order?: true
     description?: true
     type?: true
+    category?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -41453,6 +41468,7 @@ export namespace Prisma {
     order: number
     description: string | null
     type: string
+    category: string | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -41483,6 +41499,7 @@ export namespace Prisma {
     order?: boolean
     description?: boolean
     type?: boolean
+    category?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -41494,6 +41511,7 @@ export namespace Prisma {
     order?: boolean
     description?: boolean
     type?: boolean
+    category?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -41505,6 +41523,7 @@ export namespace Prisma {
     order?: boolean
     description?: boolean
     type?: boolean
+    category?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -41516,12 +41535,13 @@ export namespace Prisma {
     order?: boolean
     description?: boolean
     type?: boolean
+    category?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type GlossaryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "term" | "order" | "description" | "type" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["glossary"]>
+  export type GlossaryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "term" | "order" | "description" | "type" | "category" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["glossary"]>
 
   export type $GlossaryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Glossary"
@@ -41532,6 +41552,7 @@ export namespace Prisma {
       order: number
       description: string | null
       type: string
+      category: string | null
       isActive: boolean
       createdAt: Date
       updatedAt: Date
@@ -41963,6 +41984,7 @@ export namespace Prisma {
     readonly order: FieldRef<"Glossary", 'Int'>
     readonly description: FieldRef<"Glossary", 'String'>
     readonly type: FieldRef<"Glossary", 'String'>
+    readonly category: FieldRef<"Glossary", 'String'>
     readonly isActive: FieldRef<"Glossary", 'Boolean'>
     readonly createdAt: FieldRef<"Glossary", 'DateTime'>
     readonly updatedAt: FieldRef<"Glossary", 'DateTime'>
@@ -47932,6 +47954,7 @@ export namespace Prisma {
     order: 'order',
     description: 'description',
     type: 'type',
+    category: 'category',
     isActive: 'isActive',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -51325,6 +51348,7 @@ export namespace Prisma {
     order?: IntFilter<"Glossary"> | number
     description?: StringNullableFilter<"Glossary"> | string | null
     type?: StringFilter<"Glossary"> | string
+    category?: StringNullableFilter<"Glossary"> | string | null
     isActive?: BoolFilter<"Glossary"> | boolean
     createdAt?: DateTimeFilter<"Glossary"> | Date | string
     updatedAt?: DateTimeFilter<"Glossary"> | Date | string
@@ -51336,6 +51360,7 @@ export namespace Prisma {
     order?: SortOrder
     description?: SortOrderInput | SortOrder
     type?: SortOrder
+    category?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -51350,6 +51375,7 @@ export namespace Prisma {
     order?: IntFilter<"Glossary"> | number
     description?: StringNullableFilter<"Glossary"> | string | null
     type?: StringFilter<"Glossary"> | string
+    category?: StringNullableFilter<"Glossary"> | string | null
     isActive?: BoolFilter<"Glossary"> | boolean
     createdAt?: DateTimeFilter<"Glossary"> | Date | string
     updatedAt?: DateTimeFilter<"Glossary"> | Date | string
@@ -51361,6 +51387,7 @@ export namespace Prisma {
     order?: SortOrder
     description?: SortOrderInput | SortOrder
     type?: SortOrder
+    category?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -51380,6 +51407,7 @@ export namespace Prisma {
     order?: IntWithAggregatesFilter<"Glossary"> | number
     description?: StringNullableWithAggregatesFilter<"Glossary"> | string | null
     type?: StringWithAggregatesFilter<"Glossary"> | string
+    category?: StringNullableWithAggregatesFilter<"Glossary"> | string | null
     isActive?: BoolWithAggregatesFilter<"Glossary"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Glossary"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Glossary"> | Date | string
@@ -55234,6 +55262,7 @@ export namespace Prisma {
     order?: number
     description?: string | null
     type?: string
+    category?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -55245,6 +55274,7 @@ export namespace Prisma {
     order?: number
     description?: string | null
     type?: string
+    category?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -55256,6 +55286,7 @@ export namespace Prisma {
     order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55267,6 +55298,7 @@ export namespace Prisma {
     order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55278,6 +55310,7 @@ export namespace Prisma {
     order?: number
     description?: string | null
     type?: string
+    category?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -55289,6 +55322,7 @@ export namespace Prisma {
     order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55300,6 +55334,7 @@ export namespace Prisma {
     order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58285,6 +58320,7 @@ export namespace Prisma {
     order?: SortOrder
     description?: SortOrder
     type?: SortOrder
+    category?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58300,6 +58336,7 @@ export namespace Prisma {
     order?: SortOrder
     description?: SortOrder
     type?: SortOrder
+    category?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58311,6 +58348,7 @@ export namespace Prisma {
     order?: SortOrder
     description?: SortOrder
     type?: SortOrder
+    category?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder

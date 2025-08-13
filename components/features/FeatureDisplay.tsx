@@ -1,84 +1,91 @@
-// @/components/features/FeaturesDisplay.tsx
-// Composant pour sélectionner le mode d'affichage des features (list, card, tree)
-// Rôle : Interface de sélection du mode d'affichage
-// Composants : Boutons de sélection avec icônes Lucide
-// État : Gère le mode d'affichage sélectionné
+// @/components/features/DisplayModeSelector.tsx
 
-"use client";
+// Rôle : Sélecteur de mode d'affichage pour les features
+// Responsabilités : Interface de sélection, persistance mode, feedback visuel
+// Composants utilisés : Button, Badge, Tooltip (shadcn/ui)
+// Libs externes : lucide-react (icônes)
+// Types utilisés : FeatureDisplayMode, DisplayModeConfig
+// Utilisé par : page features, header d'actions
 
-import { JSX, useState } from "react";
-import { List, Grid, GitBranch } from "lucide-react";
+import React from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { List, GitBranch, FileText } from "lucide-react";
+import { FeatureDisplayMode, DISPLAY_MODE_CONFIGS } from "@/types/feature";
 
-export type ViewMode = "list" | "card" | "tree";
-
-interface FeaturesDisplayProps {
-  onViewModeChange?: (mode: ViewMode) => void;
+interface DisplayModeSelectorProps {
+  currentMode: FeatureDisplayMode;
+  onModeChange: (mode: FeatureDisplayMode) => void;
+  disabled?: boolean;
+  className?: string;
 }
 
-export function FeaturesDisplay({
-  onViewModeChange,
-}: FeaturesDisplayProps): JSX.Element {
-  const [selectedMode, setSelectedMode] = useState<ViewMode>("list");
+const modeIcons = {
+  [FeatureDisplayMode.LIST]: List,
+  [FeatureDisplayMode.TREE]: GitBranch,
+  [FeatureDisplayMode.DETAIL]: FileText,
+};
 
-  const handleModeChange = (mode: ViewMode): void => {
-    setSelectedMode(mode);
-    onViewModeChange?.(mode);
-  };
-
-  const viewModes = [
-    {
-      mode: "list" as const,
-      icon: List,
-      label: "List View",
-      description: "Display features in a detailed list format",
-    },
-    {
-      mode: "card" as const,
-      icon: Grid,
-      label: "Card View",
-      description: "Display features as cards with visual previews",
-    },
-    {
-      mode: "tree" as const,
-      icon: GitBranch,
-      label: "Tree View",
-      description: "Display features in a hierarchical tree structure",
-    },
-  ];
-
+export const DisplayModeSelector: React.FC<DisplayModeSelectorProps> = ({
+  currentMode,
+  onModeChange,
+  disabled = false,
+  className = "",
+}) => {
   return (
-    <Card className="w-full">
-      <CardContent className="p-4 sm:p-6">
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-lg font-semibold">Display Options</h2>
-            <p className="text-sm text-muted-foreground">
-              Choose how you want to view your features
-            </p>
-          </div>
+    <TooltipProvider>
+      <div
+        className={`flex items-center gap-1 bg-gray-100 rounded-lg p-1 ${className}`}
+      >
+        {Object.values(FeatureDisplayMode).map((mode) => {
+          const config = DISPLAY_MODE_CONFIGS[mode];
+          const IconComponent = modeIcons[mode];
+          const isActive = currentMode === mode;
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {viewModes.map(({ mode, icon: Icon, label, description }) => (
-              <Button
-                key={mode}
-                variant={selectedMode === mode ? "default" : "outline"}
-                className="h-auto p-4 flex flex-col items-start space-y-2 text-left"
-                onClick={() => handleModeChange(mode)}
-              >
-                <div className="flex items-center space-x-2">
-                  <Icon className="h-4 w-4" />
-                  <span className="font-medium">{label}</span>
+          return (
+            <Tooltip key={mode}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={isActive ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => onModeChange(mode)}
+                  disabled={disabled}
+                  className={`
+                    relative h-8 px-3 transition-all duration-200
+                    ${
+                      isActive
+                        ? "bg-white shadow-sm text-gray-900"
+                        : "hover:bg-gray-200 text-gray-600"
+                    }
+                  `}
+                >
+                  <IconComponent className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">{config.label}</span>
+
+                  {isActive && (
+                    <Badge
+                      variant="secondary"
+                      className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-blue-500"
+                    />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <div className="text-center">
+                  <p className="font-medium">{config.label}</p>
+                  <p className="text-xs text-gray-600">{config.description}</p>
                 </div>
-                <span className="text-xs text-muted-foreground hidden sm:block">
-                  {description}
-                </span>
-              </Button>
-            ))}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </div>
+    </TooltipProvider>
   );
-}
+};

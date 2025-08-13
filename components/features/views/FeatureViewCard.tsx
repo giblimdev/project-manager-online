@@ -26,19 +26,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
+// ✅ CORRIGÉ: Types standardisés pour être cohérents avec les composants parents.
+type Priority = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
+type Status = "ACTIVE" | "COMPLETED" | "CANCELLED" | "ON_HOLD";
+
 interface Feature {
   id: string;
   name: string;
   description: string | null;
   acceptanceCriteria: string | null;
-  priority: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
-  status: string;
+  priority: Priority;
+  status: Status; // Type Status strict
   storyPoints: number | null;
   businessValue: number | null;
   technicalRisk: number | null;
   effort: number | null;
-  startDate: string | null;
-  endDate: string | null;
+  startDate: Date | null; // Type Date
+  endDate: Date | null; // Type Date
   progress: number;
   position: number;
   order: number;
@@ -46,8 +50,8 @@ interface Feature {
   parentId: string | null;
   projectId: string | null;
   userId: string | null;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date; // Type Date
+  updatedAt: Date; // Type Date
 }
 
 interface FeaturesViewCardProps {
@@ -65,10 +69,9 @@ export function FeaturesViewCard({
   onDelete,
   onOrderChange,
 }: FeaturesViewCardProps): JSX.Element {
-  const getPriorityColor = (priority: string): string => {
+  const getPriorityColor = (priority: Priority): string => {
     switch (priority) {
       case "CRITICAL":
-        return "destructive";
       case "HIGH":
         return "destructive";
       case "MEDIUM":
@@ -80,8 +83,8 @@ export function FeaturesViewCard({
     }
   };
 
-  const getStatusColor = (status: string): string => {
-    switch (status.toUpperCase()) {
+  const getStatusColor = (status: Status): string => {
+    switch (status) {
       case "ACTIVE":
         return "default";
       case "COMPLETED":
@@ -95,7 +98,7 @@ export function FeaturesViewCard({
     }
   };
 
-  const getPriorityIcon = (priority: string): JSX.Element => {
+  const getPriorityIcon = (priority: Priority): JSX.Element => {
     switch (priority) {
       case "CRITICAL":
         return (
@@ -116,22 +119,22 @@ export function FeaturesViewCard({
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {[...Array(8)].map((_, i) => (
-          <Card key={i} className="h-80">
+          <Card key={i} className="h-80 animate-pulse">
             <CardHeader className="pb-3">
               <div className="space-y-2">
-                <div className="h-5 bg-muted rounded animate-pulse" />
-                <div className="h-4 bg-muted rounded animate-pulse w-3/4" />
+                <div className="h-5 bg-muted rounded" />
+                <div className="h-4 bg-muted rounded w-3/4" />
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="h-20 bg-muted rounded animate-pulse" />
+              <div className="h-20 bg-muted rounded" />
               <div className="space-y-2">
-                <div className="h-3 bg-muted rounded animate-pulse" />
-                <div className="h-3 bg-muted rounded animate-pulse w-2/3" />
+                <div className="h-3 bg-muted rounded" />
+                <div className="h-3 bg-muted rounded w-2/3" />
               </div>
               <div className="flex justify-between">
-                <div className="h-8 w-16 bg-muted rounded animate-pulse" />
-                <div className="h-8 w-16 bg-muted rounded animate-pulse" />
+                <div className="h-8 w-16 bg-muted rounded" />
+                <div className="h-8 w-16 bg-muted rounded" />
               </div>
             </CardContent>
           </Card>
@@ -171,7 +174,6 @@ export function FeaturesViewCard({
                 </CardTitle>
               </div>
 
-              {/* Order controls - Hidden on mobile, visible on hover on desktop */}
               <div className="hidden sm:flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
                 <Button
                   variant="ghost"
@@ -213,14 +215,12 @@ export function FeaturesViewCard({
           </CardHeader>
 
           <CardContent className="space-y-4 pt-0">
-            {/* Description */}
             {feature.description && (
               <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
                 {feature.description}
               </p>
             )}
 
-            {/* Progress Section */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground font-medium">
@@ -233,9 +233,8 @@ export function FeaturesViewCard({
               <Progress value={feature.progress} className="h-2 bg-muted/50" />
             </div>
 
-            {/* Metrics Grid */}
             <div className="grid grid-cols-2 gap-3 text-sm">
-              {feature.storyPoints && (
+              {feature.storyPoints != null && (
                 <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-md">
                   <TrendingUp className="h-3 w-3 text-primary" />
                   <div className="min-w-0 flex-1">
@@ -247,7 +246,7 @@ export function FeaturesViewCard({
                 </div>
               )}
 
-              {feature.businessValue && (
+              {feature.businessValue != null && (
                 <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-md">
                   <Target className="h-3 w-3 text-green-600" />
                   <div className="min-w-0 flex-1">
@@ -260,47 +259,21 @@ export function FeaturesViewCard({
                   </div>
                 </div>
               )}
-
-              {feature.technicalRisk && (
-                <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-md">
-                  <div className="h-3 w-3 bg-orange-500 rounded-full" />
-                  <div className="min-w-0 flex-1">
-                    <span className="text-muted-foreground text-xs block">
-                      Tech Risk
-                    </span>
-                    <span className="font-semibold">
-                      {feature.technicalRisk}/10
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {feature.effort && (
-                <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-md">
-                  <div className="h-3 w-3 bg-blue-500 rounded-full" />
-                  <div className="min-w-0 flex-1">
-                    <span className="text-muted-foreground text-xs block">
-                      Effort
-                    </span>
-                    <span className="font-semibold">{feature.effort}/10</span>
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* Dates Section */}
             {(feature.startDate || feature.endDate) && (
               <div className="space-y-2 p-2 bg-muted/20 rounded-md">
                 <div className="text-xs font-medium text-muted-foreground mb-1">
                   Timeline
                 </div>
                 <div className="space-y-1 text-xs">
+                  {/* ✅ CORRIGÉ: Utilisation directe de l'objet Date */}
                   {feature.startDate && (
                     <div className="flex items-center gap-2">
                       <Calendar className="h-3 w-3 text-green-600" />
                       <span className="text-muted-foreground">Start:</span>
                       <span className="font-medium">
-                        {new Date(feature.startDate).toLocaleDateString()}
+                        {feature.startDate.toLocaleDateString()}
                       </span>
                     </div>
                   )}
@@ -309,7 +282,7 @@ export function FeaturesViewCard({
                       <Clock className="h-3 w-3 text-red-600" />
                       <span className="text-muted-foreground">End:</span>
                       <span className="font-medium">
-                        {new Date(feature.endDate).toLocaleDateString()}
+                        {feature.endDate.toLocaleDateString()}
                       </span>
                     </div>
                   )}
@@ -317,17 +290,15 @@ export function FeaturesViewCard({
               </div>
             )}
 
-            {/* Footer with Actions */}
             <div className="flex items-center justify-between pt-2 border-t border-border/50">
               <div className="text-xs text-muted-foreground">
-                Updated {new Date(feature.updatedAt).toLocaleDateString()}
+                Updated {feature.updatedAt.toLocaleDateString()}
               </div>
-
               <div className="flex items-center gap-1">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0 hover:bg-primary/10 transition-colors"
+                  className="h-8 w-8 p-0 hover:bg-primary/10"
                   onClick={() => onEdit(feature)}
                   title="Edit feature"
                 >
@@ -336,37 +307,13 @@ export function FeaturesViewCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
+                  className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                   onClick={() => onDelete(feature.id)}
                   title="Delete feature"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-            </div>
-
-            {/* Mobile Order Controls */}
-            <div className="flex sm:hidden justify-center gap-2 pt-2 border-t border-border/50">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1 h-8"
-                onClick={() => onOrderChange(feature.id, "up")}
-                disabled={index === 0}
-              >
-                <ChevronUp className="h-3 w-3 mr-1" />
-                Up
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1 h-8"
-                onClick={() => onOrderChange(feature.id, "down")}
-                disabled={index === features.length - 1}
-              >
-                <ChevronDown className="h-3 w-3 mr-1" />
-                Down
-              </Button>
             </div>
           </CardContent>
         </Card>
@@ -375,5 +322,4 @@ export function FeaturesViewCard({
   );
 }
 
-// Export par défaut pour la compatibilité avec vos imports
 export default FeaturesViewCard;

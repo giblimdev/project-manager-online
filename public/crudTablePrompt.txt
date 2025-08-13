@@ -193,3 +193,95 @@ app/
  └─ hierarchy/
      ├─ HierarchyList.tsx  ← générique pour afficher une liste hiérarchique (ex. Feature enfants)
      ├─ HierarchyNode.tsx
+
+
+     ////////////////////////////////////////////
+
+     Template de prompt pour ton application
+(copier-coller, puis remplir les zones entre [ ... ])
+
+less
+Copier
+Modifier
+[CONTEXTE]
+Tu es un expert en développement TypeScript, Next.js 15, React 19, Zustand 5, Prisma 5 et PostgreSQL.
+Mon application est un outil de gestion de projet structuré comme suit :
+- Flux : Project → Initiative → Epic → Feature → User Story
+- Stores Zustand pour chaque entité, avec persistance localStorage, cache TTL et hydratation Next.js 15
+- API REST sous /api/[entity]/[id] qui retourne les données Prisma avec relations
+Voici le schéma Prisma complet : 
+[COLLER ICI LE SCHÉMA PRISMA REQUIS POUR L’ENTITÉ]
+
+Voici un exemple de store complet que nous utilisons :  
+[COLLER ICI LE CODE DE useSelectedProjectStore.ts COMME RÉFÉRENCE]
+
+[INSTRUCTION PRINCIPALE]
+Crée un fichier [NOM_DU_STORE].ts qui gère l’entité [NOM_ENTITÉ] sélectionnée.
+L’architecture et les patterns doivent suivre l’exemple donné ci-dessus.
+
+[CONTRAINTES]
+- Utiliser TypeScript strict
+- Structure Zustand avec persist et createJSONStorage
+- Cache TTL de 5 minutes
+- Hydratation sécurisée avec Next.js 15 (skipHydration: true)
+- Invalidation de cache par version
+- Préfetch automatique de l’entité suivante dans la hiérarchie après chargement
+- Conversion de toutes les dates ISO en objets Date
+- Interface complète conforme au schéma Prisma
+
+[EXEMPLES]
+Structure à respecter :  
+- Interface [Entity]Full avec toutes les relations Prisma
+- State & Actions séparés
+- Type guard isValid[Entity]
+- Actions : setSelected[Entity]Id, load[Entity]Data, update[Entity]Data, clear[Entity]
+- Hooks : use[Entity]StoreHydration, sélecteurs optimisés, use[Entity]Store global
+💡 Comment l’utiliser pour ton cas
+Créer useSelectedInitiativeStore.ts
+
+Remplir [NOM_DU_STORE] = useSelectedInitiativeStore
+
+Remplir [NOM_ENTITÉ] = Initiative
+
+Coller dans [COLLER ICI LE SCHÉMA PRISMA REQUIS POUR L’ENTITÉ] uniquement la partie model Initiative { ... } et ses relations.
+
+Coller le code complet de useSelectedProjectStore.ts dans [COLLER ICI LE CODE DE useSelectedProjectStore.ts COMME RÉFÉRENCE].
+
+Créer useSelectedEpicStore.ts
+
+Même procédé mais avec Epic.
+
+Créer useSelectedFeatureStore.ts
+
+Même procédé mais avec Feature.
+
+📊 Avantages de ce template
+Tu gardes toujours la même architecture dans tout le projet
+
+Tu évites les oublis (cache, hydratation, typage strict)
+
+Tu fournis toujours le minimum vital d’informations à l’IA pour avoir un code utilisable directement
+
+Tu peux l’industrialiser pour créer rapidement de nouveaux modules
+
+
+/////////////////////////////////////////////////////
+
+Je vais te préparer useSelectedEpicStore.ts sur le même modèle que ton useSelectedProjectStore.ts,
+mais adapté à l’entité Epic de ton schéma Prisma
+, avec :
+
+Typage strict selon model Epic
+
+Cache TTL (5 minutes)
+
+Persistance localStorage
+
+Hydratation sécurisée pour Next.js 15
+
+Conversion des dates ISO → Date
+
+Préfetch automatique des Features après chargement de l’Epic
+
+Sélecteurs optimisés pour éviter les re-rendus inutiles
+

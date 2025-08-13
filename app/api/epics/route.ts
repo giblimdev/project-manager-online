@@ -1,4 +1,5 @@
 // app/api/epics/route.ts
+
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import type { Priority, Epic } from "@/lib/generated/prisma/client";
@@ -27,6 +28,15 @@ interface EpicResponse extends Epic {
   }[];
 }
 
+// ✅ Interface pour les réponses API (correspondant à ApiResponse<T> de votre page)
+interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+  timestamp?: string;
+}
+
 function isError(err: unknown): err is Error {
   return err instanceof Error;
 }
@@ -47,11 +57,18 @@ function getErrorMessage(error: unknown): string {
   return "Erreur inconnue";
 }
 
-export async function GET(
-  request: NextRequest
-): Promise<NextResponse<EpicResponse[] | { error: string; details?: string }>> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  console.log("🔧 API /api/epics - GET Request reçue");
+
   try {
     const { searchParams } = new URL(request.url);
+
+    // ✅ Log des paramètres reçus
+    console.log("📥 Paramètres URL reçus:", {
+      url: request.url,
+      searchParams: Object.fromEntries(searchParams.entries()),
+    });
+
     const initiativeId = searchParams.get("initiativeId");
     const projectId = searchParams.get("projectId");
     const status = searchParams.get("status");
@@ -60,11 +77,24 @@ export async function GET(
     const endDate = searchParams.get("endDate");
     const search = searchParams.get("search");
 
+    console.log("📋 Valeurs extraites:", {
+      initiativeId,
+      projectId,
+      status,
+      priority,
+      startDate,
+      endDate,
+      search,
+    });
+
     const whereClause: any = {};
 
     // Filtrage par initiative
     if (initiativeId) {
       whereClause.initiativeId = initiativeId;
+      console.log("✅ Filtre initiativeId appliqué:", initiativeId);
+    } else {
+      console.log("❌ Aucun initiativeId fourni");
     }
 
     // Filtrage par projet (via initiative)
@@ -72,16 +102,19 @@ export async function GET(
       whereClause.initiative = {
         projectId: projectId,
       };
+      console.log("✅ Filtre projectId appliqué:", projectId);
     }
 
     // Filtrage par statut
     if (status) {
       whereClause.status = status;
+      console.log("✅ Filtre status appliqué:", status);
     }
 
     // Filtrage par priorité avec validation enum
     if (priority && ["CRITICAL", "HIGH", "MEDIUM", "LOW"].includes(priority)) {
       whereClause.priority = priority;
+      console.log("✅ Filtre priority appliqué:", priority);
     }
 
     // Filtrage par dates avec validation
@@ -91,6 +124,7 @@ export async function GET(
         whereClause.startDate = {
           gte: parsedStartDate,
         };
+        console.log("✅ Filtre startDate appliqué:", parsedStartDate);
       }
     }
 
@@ -100,6 +134,7 @@ export async function GET(
         whereClause.endDate = {
           lte: parsedEndDate,
         };
+        console.log("✅ Filtre endDate appliqué:", parsedEndDate);
       }
     }
 
@@ -119,8 +154,15 @@ export async function GET(
           },
         },
       ];
+      console.log("✅ Filtre search appliqué:", search.trim());
     }
 
+    console.log(
+      "🔍 Clause WHERE finale:",
+      JSON.stringify(whereClause, null, 2)
+    );
+
+    console.log("🚀 Exécution de la requête Prisma...");
     const epics = await prisma.epic.findMany({
       where: whereClause,
       include: {
@@ -141,29 +183,55 @@ export async function GET(
         },
       },
       orderBy: {
-        createdAt: "desc",
+        order: "asc", // ✅ Changé de createdAt à order selon votre schéma
       },
     });
 
-    return NextResponse.json(epics);
+    console.log("📊 Résultats Prisma:", {
+      count: epics.length,
+      epics: epics.map((e) => ({
+        id: e.id,
+        name: e.name,
+        initiativeId: e.initiativeId,
+        initiative: e.initiative
+          ? {
+              id: e.initiative.id,
+              name: e.initiative.name,
+              projectId: e.initiative.projectId,
+            }
+          : null,
+      })),
+    });
+
+    // ✅ CORRECTION PRINCIPALE : Retour au format ApiResponse attendu par la page
+    console.log("✅ Réponse API envoyée avec succès");
+    return NextResponse.json({
+      success: true,
+      data: epics,
+      timestamp: new Date().toISOString(),
+    });
   } catch (error: unknown) {
-    console.error("Erreur lors de la récupération des épics:", error);
+    console.error("💥 Erreur dans l'API /api/epics:", error);
+    console.log("🔴 Détails de l'erreur API:", {
+      type: error?.constructor?.name,
+      message: getErrorMessage(error),
+      stack: error instanceof Error ? error.stack : "No stack",
+    });
 
     const errorMessage = getErrorMessage(error);
-
     return NextResponse.json(
       {
+        success: false,
         error: "Erreur lors de la récupération des épics",
         details: errorMessage,
+        timestamp: new Date().toISOString(),
       },
       { status: 500 }
     );
   }
 }
 
-export async function POST(
-  request: NextRequest
-): Promise<NextResponse<EpicResponse | { error: string; details?: string }>> {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body: CreateEpicRequest = await request.json();
     const {
@@ -179,7 +247,10 @@ export async function POST(
     // Validation des données obligatoires
     if (!name?.trim() || !initiativeId) {
       return NextResponse.json(
-        { error: "Le nom et l'ID de l'initiative sont obligatoires" },
+        {
+          success: false,
+          error: "Le nom et l'ID de l'initiative sont obligatoires",
+        },
         { status: 400 }
       );
     }
@@ -189,6 +260,7 @@ export async function POST(
     if (priority && !validPriorities.includes(priority)) {
       return NextResponse.json(
         {
+          success: false,
           error:
             "Priorité invalide. Valeurs autorisées: CRITICAL, HIGH, MEDIUM, LOW",
         },
@@ -204,7 +276,10 @@ export async function POST(
       parsedStartDate = new Date(startDate);
       if (isNaN(parsedStartDate.getTime())) {
         return NextResponse.json(
-          { error: "Format de date de début invalide" },
+          {
+            success: false,
+            error: "Format de date de début invalide",
+          },
           { status: 400 }
         );
       }
@@ -214,7 +289,10 @@ export async function POST(
       parsedEndDate = new Date(endDate);
       if (isNaN(parsedEndDate.getTime())) {
         return NextResponse.json(
-          { error: "Format de date de fin invalide" },
+          {
+            success: false,
+            error: "Format de date de fin invalide",
+          },
           { status: 400 }
         );
       }
@@ -223,7 +301,10 @@ export async function POST(
     // Vérification que la date de fin est postérieure à la date de début
     if (parsedStartDate && parsedEndDate && parsedEndDate <= parsedStartDate) {
       return NextResponse.json(
-        { error: "La date de fin doit être postérieure à la date de début" },
+        {
+          success: false,
+          error: "La date de fin doit être postérieure à la date de début",
+        },
         { status: 400 }
       );
     }
@@ -235,10 +316,22 @@ export async function POST(
 
     if (!initiative) {
       return NextResponse.json(
-        { error: "Initiative non trouvée" },
+        {
+          success: false,
+          error: "Initiative non trouvée",
+        },
         { status: 404 }
       );
     }
+
+    // Obtenir le prochain ordre
+    const lastEpic = await prisma.epic.findFirst({
+      where: { initiativeId },
+      orderBy: { order: "desc" },
+      select: { order: true },
+    });
+
+    const nextOrder = lastEpic ? lastEpic.order + 1 : 1;
 
     // Créer l'épic
     const epic = await prisma.epic.create({
@@ -250,6 +343,7 @@ export async function POST(
         startDate: parsedStartDate,
         endDate: parsedEndDate,
         progress: 0,
+        order: nextOrder,
         initiativeId,
       },
       include: {
@@ -271,7 +365,16 @@ export async function POST(
       },
     });
 
-    return NextResponse.json(epic, { status: 201 });
+    // ✅ Format de réponse cohérent
+    return NextResponse.json(
+      {
+        success: true,
+        data: epic,
+        message: "Épic créé avec succès",
+        timestamp: new Date().toISOString(),
+      },
+      { status: 201 }
+    );
   } catch (error: unknown) {
     console.error("Erreur lors de la création de l'épic:", error);
 
@@ -279,25 +382,32 @@ export async function POST(
     if (isPrismaError(error)) {
       if (error.code === "P2002") {
         return NextResponse.json(
-          { error: "Un épic avec ce nom existe déjà dans cette initiative" },
+          {
+            success: false,
+            error: "Un épic avec ce nom existe déjà dans cette initiative",
+          },
           { status: 409 }
         );
       }
 
       if (error.code === "P2003") {
         return NextResponse.json(
-          { error: "Référence invalide (initiative inexistante)" },
+          {
+            success: false,
+            error: "Référence invalide (initiative inexistante)",
+          },
           { status: 400 }
         );
       }
     }
 
     const errorMessage = getErrorMessage(error);
-
     return NextResponse.json(
       {
+        success: false,
         error: "Erreur lors de la création de l'épic",
         details: errorMessage,
+        timestamp: new Date().toISOString(),
       },
       { status: 500 }
     );

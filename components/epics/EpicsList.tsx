@@ -1,577 +1,619 @@
-// components/epics/EpicsList.tsx
+// @/components/epics/EpicsList.tsx
 
 /**
- * RÔLE : Composant d'affichage des épics selon le mode sélectionné avec boutons d'actions complets
+ * RÔLE : Composant d'affichage de la liste des épics avec filtrage et gestion des vues
  * RESPONSABILITÉS :
- * - Affichage des épics selon le mode (list, card, tree) transmis par EpicsDisplay
- * - Gestion des boutons d'actions rapides : edit, delete, up, down pour chaque épic
- * - Bouton ajouter un nouvel épic en header de la liste
- * - Formatage des données (dates, priorités) selon le schéma Prisma
- * - Interface responsive et moderne avec design cards et transitions fluides
- * - Gestion des états vides avec messages informatifs et call-to-action
- * - Affichage des relations (features) en mode tree selon le schéma Prisma
- * - Actions de réorganisation (up/down) pour modifier l'ordre des épics
- * - Gestion du loading state avec indicateurs visuels appropriés
+ * - Affichage des épics en grid/list responsive moderne
+ * - Actions CRUD sur les épics via callbacks (onEdit, onDelete, onOrderChange)
+ * - Gestion des modes de vue (grid, list)
+ * - Interface responsive avec Tailwind CSS et design moderne
+ * - Gestion des états de chargement avec loading prop
+ * - Navigation via Link vers /features avec mise à jour du store SelectedEpic
  *
  * COMPOSANTS UTILISÉS :
- * - Card, CardContent: Composants UI shadcn/ui pour les conteneurs d'épics
- * - Button: Composant bouton shadcn/ui avec variants pour les actions
- * - Skeleton: Composant de loading state pour les épics en chargement
- * - Badge: Composant badge pour les priorités et statuts des épics
- * - Progress: Composant progress bar pour l'avancement
- *
- * LIBS UTILISÉS :
- * - React 19 hooks: JSX pour l'affichage et optimisation des performances
- * - Next.js 15 client component avec TypeScript strict mode
- * - Tailwind CSS: Design moderne responsive avec grid, flex, hover, transitions
- * - lucide-react: Icons pour les actions (Edit, Trash2, ChevronUp, ChevronDown, Plus)
- * - shadcn/ui: Card, Button, Badge, Progress components avec design system cohérent
- * - Intl API: Formatage des dates selon la locale française
- *
- * PROPS reçues de EpicsDisplay :
- * - epics: Liste des épics filtrés à afficher selon le schéma Prisma
- * - viewMode: Mode d'affichage sélectionné (list, card, tree)
- * - onCreateEpic: Handler pour créer un nouvel épic
- * - onEditEpic: Handler pour éditer un épic existant
- * - onDeleteEpic: Handler pour supprimer un épic
- * - onMoveEpic: Handler pour réorganiser (up/down) les épics
- * - loading: État de chargement des données depuis la page parent
+ * - Link (Next.js) pour navigation native
+ * - Button, Badge, Card, CardContent, CardHeader, Progress : shadcn/ui
+ * - Icons : lucide-react (Plus, Edit2, Trash2, Calendar, Target, Users, etc.)
+ * - Skeleton pour les états de chargement
+ * - DropdownMenu pour les actions
  */
 
 "use client";
 
-import React, { JSX, useCallback } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import React, { JSX } from "react";
+import Link from "next/link"; // ✅ AJOUT: Import de Link
+import { useParams } from "next/navigation"; // ✅ AJOUT: Pour récupérer projectId
+import { useSelectedEpicStore } from "@/stores/useSelectedEpicStore"; // ✅ AJOUT: Store Epic
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Edit,
-  Trash2,
-  ChevronUp,
-  ChevronDown,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Plus,
-  Target,
-  TrendingUp,
+  Edit2,
+  Trash2,
   Calendar,
-  BarChart3,
-  AlertTriangle,
+  Target,
+  Users,
+  ArrowUp,
+  ArrowDown,
+  MoreVertical,
+  Clock,
+  TrendingUp,
+  Layers,
+  CheckCircle2,
+  AlertCircle,
+  PlayCircle,
+  PauseCircle,
 } from "lucide-react";
-import { Epic } from "./EpicsDisplay";
 
-// Interface pour les props du composant
+// ✅ Types cohérents avec la page et le schéma Prisma
+type Priority = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
+type ViewMode = "list" | "card";
+
+// Interface Epic (cohérente avec la page épics)
+interface Epic {
+  id: string;
+  name: string;
+  order: number;
+  description: string | null;
+  priority: Priority;
+  status: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  progress: number;
+  initiativeId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  // Relations optionnelles
+  features?: Array<{
+    id: string;
+    name: string;
+    status: string;
+    progress: number;
+  }>;
+  userstories?: Array<{
+    id: string;
+    title: string;
+    status: string;
+  }>;
+  _count?: {
+    features: number;
+    userstories: number;
+  };
+}
+
+// ✅ Props du composant (onEpicClick optionnel maintenant)
 interface EpicsListProps {
   epics: Epic[];
-  viewMode: "list" | "card" | "tree";
-  onCreateEpic: () => void;
-  onEditEpic: (epic: Epic) => void;
-  onDeleteEpic: (epicId: string) => void;
-  onMoveEpic: (epicId: string, direction: "up" | "down") => void;
-  loading: boolean;
+  viewMode: ViewMode;
+  onEpicClick?: (epic: Epic) => void; // ✅ Optionnel maintenant
+  onEdit: (epic: Epic) => void;
+  onDelete: (epic: Epic) => void;
+  onOrderChange: (epicId: string, newOrder: number) => void;
+  isLoading: boolean;
 }
+
+// ✅ Configuration des priorités avec couleurs et icônes
+const PRIORITY_CONFIG: Record<
+  Priority,
+  {
+    label: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
+    color: string;
+    bgColor: string;
+    icon: React.ComponentType<any>;
+  }
+> = {
+  CRITICAL: {
+    label: "Critique",
+    variant: "destructive",
+    color: "text-red-700",
+    bgColor: "bg-red-50 border-red-200",
+    icon: AlertCircle,
+  },
+  HIGH: {
+    label: "Haute",
+    variant: "default",
+    color: "text-orange-700",
+    bgColor: "bg-orange-50 border-orange-200",
+    icon: TrendingUp,
+  },
+  MEDIUM: {
+    label: "Moyenne",
+    variant: "secondary",
+    color: "text-blue-700",
+    bgColor: "bg-blue-50 border-blue-200",
+    icon: Target,
+  },
+  LOW: {
+    label: "Basse",
+    variant: "outline",
+    color: "text-green-700",
+    bgColor: "bg-green-50 border-green-200",
+    icon: Clock,
+  },
+};
+
+// ✅ Configuration des statuts
+const STATUS_CONFIG: Record<
+  string,
+  {
+    label: string;
+    icon: React.ComponentType<any>;
+    color: string;
+  }
+> = {
+  ACTIVE: { label: "Actif", icon: PlayCircle, color: "text-blue-600" },
+  COMPLETED: { label: "Terminé", icon: CheckCircle2, color: "text-green-600" },
+  ON_HOLD: { label: "En pause", icon: PauseCircle, color: "text-orange-600" },
+  CANCELLED: { label: "Annulé", icon: AlertCircle, color: "text-red-600" },
+};
 
 export default function EpicsList({
   epics,
   viewMode,
-  onCreateEpic,
-  onEditEpic,
-  onDeleteEpic,
-  onMoveEpic,
-  loading,
+  onEpicClick, // ✅ Gardé pour compatibilité mais optionnel
+  onEdit,
+  onDelete,
+  onOrderChange,
+  isLoading,
 }: EpicsListProps): JSX.Element {
-  // Fonctions utilitaires pour le formatage des données
-  const getPriorityColor = useCallback((priority: string): string => {
-    switch (priority) {
-      case "LOW":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "MEDIUM":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "HIGH":
-        return "bg-orange-100 text-orange-800 border-orange-200";
-      case "CRITICAL":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  }, []);
+  // ✅ AJOUT: Récupération du projectId et du store Epic
+  const params = useParams();
+  const projectId = params.id as string;
+  const { setSelectedEpicId } = useSelectedEpicStore();
 
-  const getPriorityIcon = useCallback((priority: string): string => {
-    switch (priority) {
-      case "LOW":
-        return "🟢";
-      case "MEDIUM":
-        return "🟡";
-      case "HIGH":
-        return "🟠";
-      case "CRITICAL":
-        return "🔴";
-      default:
-        return "⚪";
-    }
-  }, []);
+  // ✅ AJOUT: Handler pour mise à jour du store au clic sur Link
+  const handleEpicLinkClick = (epic: Epic) => {
+    setSelectedEpicId(epic.id);
 
-  const getStatusColor = useCallback((status: string): string => {
-    switch (status.toUpperCase()) {
-      case "PLANNING":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "ACTIVE":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "ON_HOLD":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "COMPLETED":
-        return "bg-purple-100 text-purple-800 border-purple-200";
-      case "CANCELLED":
-        return "bg-gray-100 text-gray-800 border-gray-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+    // ✅ Appeler onEpicClick si fourni (pour compatibilité)
+    if (onEpicClick) {
+      onEpicClick(epic);
     }
-  }, []);
+  };
 
-  const formatDate = useCallback((date: Date | null): string => {
-    if (!date) return "Non défini";
-    return new Date(date).toLocaleDateString("fr-FR", {
+  // ✅ Fonction pour formater les dates
+  const formatDate = (date: Date | null): string => {
+    if (!date) return "Non définie";
+    return new Intl.DateTimeFormat("fr-FR", {
       day: "2-digit",
-      month: "2-digit",
+      month: "short",
       year: "numeric",
-    });
-  }, []);
+    }).format(date);
+  };
 
-  const formatPercentage = useCallback((value: number | null): string => {
-    if (value === null) return "0%";
-    return `${Math.round(value)}%`;
-  }, []);
+  // ✅ Handlers pour les changements d'ordre
+  const handleMoveUp = (epic: Epic) => {
+    if (epic.order > 1) {
+      onOrderChange(epic.id, epic.order - 1);
+    }
+  };
 
-  // Composant pour les boutons d'action avec icônes modernes
-  const ActionButtons = ({
-    epic,
-    index,
-    isFirst,
-    isLast,
-  }: {
-    epic: Epic;
-    index: number;
-    isFirst: boolean;
-    isLast: boolean;
-  }) => (
-    <div className="flex items-center space-x-1">
-      {/* Bouton déplacer vers le haut */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onMoveEpic(epic.id, "up")}
-        disabled={isFirst || loading}
-        className="h-8 w-8 p-0 hover:bg-blue-100"
-        title="Déplacer vers le haut"
-      >
-        <ChevronUp className="h-4 w-4 text-blue-600" />
-      </Button>
+  const handleMoveDown = (epic: Epic) => {
+    const maxOrder = Math.max(...epics.map((e) => e.order));
+    if (epic.order < maxOrder) {
+      onOrderChange(epic.id, epic.order + 1);
+    }
+  };
 
-      {/* Bouton déplacer vers le bas */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onMoveEpic(epic.id, "down")}
-        disabled={isLast || loading}
-        className="h-8 w-8 p-0 hover:bg-blue-100"
-        title="Déplacer vers le bas"
-      >
-        <ChevronDown className="h-4 w-4 text-blue-600" />
-      </Button>
-
-      {/* Bouton éditer */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onEditEpic(epic)}
-        disabled={loading}
-        className="h-8 w-8 p-0 hover:bg-green-100"
-        title="Modifier l'épic"
-      >
-        <Edit className="h-4 w-4 text-green-600" />
-      </Button>
-
-      {/* Bouton supprimer */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onDeleteEpic(epic.id)}
-        disabled={loading}
-        className="h-8 w-8 p-0 hover:bg-red-100"
-        title="Supprimer l'épic"
-      >
-        <Trash2 className="h-4 w-4 text-red-600" />
-      </Button>
-    </div>
-  );
-
-  // Composant pour la barre de progression
-  const ProgressBar = ({ progress }: { progress: number }) => (
-    <div className="flex items-center space-x-2">
-      <div className="flex-1 bg-gray-200 rounded-full h-2">
-        <div
-          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-          style={{ width: `${Math.min(Math.max(progress, 0), 100)}%` }}
-        />
-      </div>
-      <span className="text-sm text-gray-600 min-w-0 font-medium">
-        {formatPercentage(progress)}
-      </span>
-    </div>
-  );
-
-  // État vide avec design moderne
-  if (epics.length === 0 && !loading) {
+  // ✅ État de chargement avec skeletons
+  if (isLoading) {
     return (
-      <Card className="text-center py-12">
-        <CardContent>
-          <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <Target className="h-8 w-8 text-gray-400" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Aucun épic trouvé
-          </h3>
-          <p className="text-gray-600 mb-6">
-            Créez votre premier épic pour commencer à organiser vos
-            fonctionnalités.
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-10 w-32" />
+        </div>
+        <div
+          className={
+            viewMode === "card"
+              ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
+              : "space-y-3"
+          }
+        >
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className={
+                viewMode === "card" ? "" : "flex items-center space-x-4"
+              }
+            >
+              <Skeleton
+                className={
+                  viewMode === "card"
+                    ? "h-48 w-full rounded-lg"
+                    : "h-16 w-16 rounded-lg"
+                }
+              />
+              {viewMode === "list" && (
+                <div className="space-y-2 flex-1">
+                  <Skeleton className="h-4 w-[250px]" />
+                  <Skeleton className="h-4 w-[200px]" />
+                  <Skeleton className="h-4 w-[150px]" />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ État vide
+  if (epics.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+          <Layers className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <div className="text-center space-y-2">
+          <h3 className="text-lg font-semibold">Aucun épic trouvé</h3>
+          <p className="text-muted-foreground max-w-md">
+            Commencez par créer votre premier épic pour structurer votre
+            initiative
           </p>
-          <Button
-            onClick={onCreateEpic}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-            disabled={loading}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Créer un épic
-          </Button>
-        </CardContent>
-      </Card>
+        </div>
+        <Button onClick={() => onEdit({} as Epic)} className="mt-4">
+          <Plus className="mr-2 h-4 w-4" />
+          Créer le premier épic
+        </Button>
+      </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Header avec compteur et bouton d'ajout */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center space-x-3">
-          <h2 className="text-xl font-semibold text-gray-900">
+      {/* ✅ En-tête avec statistiques et bouton d'ajout */}
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h3 className="text-lg font-semibold">
             {epics.length} épic{epics.length > 1 ? "s" : ""}
-          </h2>
-          {loading && (
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-              <span>Actualisation...</span>
-            </div>
-          )}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Mode d'affichage : {viewMode === "card" ? "Cartes" : "Liste"}
+          </p>
         </div>
-
         <Button
-          onClick={onCreateEpic}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
-          disabled={loading}
+          onClick={() => onEdit({} as Epic)}
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
         >
-          <Plus className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Ajouter un épic</span>
-          <span className="sm:hidden">Ajouter</span>
+          <Plus className="mr-2 h-4 w-4" />
+          Nouvel épic
         </Button>
       </div>
 
-      {/* Affichage selon le mode sélectionné */}
+      {/* ✅ Affichage conditionnel selon le mode */}
+      {viewMode === "card" ? (
+        // ✅ Mode Cartes avec Link
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {epics.map((epic) => {
+            const priorityConfig = PRIORITY_CONFIG[epic.priority];
+            const statusConfig =
+              STATUS_CONFIG[epic.status] || STATUS_CONFIG.ACTIVE;
+            const PriorityIcon = priorityConfig.icon;
+            const StatusIcon = statusConfig.icon;
 
-      {/* Mode Liste (Tableau) */}
-      {viewMode === "list" && (
-        <Card className="shadow-sm border border-gray-200">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Épic
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Priorité
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statut
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Progrès
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Dates
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {epics.map((epic, index) => (
-                  <tr
-                    key={epic.id}
-                    className={`hover:bg-gray-50 transition-colors ${
-                      loading ? "opacity-50" : ""
-                    }`}
-                  >
-                    <td className="px-6 py-4">
-                      <div className="max-w-xs">
-                        <div className="text-sm font-medium text-gray-900 truncate">
-                          {epic.name}
-                        </div>
-                        {epic.description && (
-                          <div className="text-sm text-gray-500 truncate">
-                            {epic.description}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge className={`${getPriorityColor(epic.priority)}`}>
-                        {getPriorityIcon(epic.priority)} {epic.priority}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge className={`${getStatusColor(epic.status)}`}>
-                        {epic.status}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="w-32">
-                        <ProgressBar progress={epic.progress} />
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      <div className="space-y-1">
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="h-3 w-3 text-gray-400" />
-                          <span className="text-xs">
-                            Début: {formatDate(epic.startDate)}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="h-3 w-3 text-gray-400" />
-                          <span className="text-xs">
-                            Fin: {formatDate(epic.endDate)}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <ActionButtons
-                        epic={epic}
-                        index={index}
-                        isFirst={index === 0}
-                        isLast={index === epics.length - 1}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-      )}
-
-      {/* Mode Cartes */}
-      {viewMode === "card" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {epics.map((epic, index) => (
-            <Card
-              key={epic.id}
-              className={`shadow-sm border hover:shadow-md transition-all duration-200 ${
-                loading ? "opacity-50" : ""
-              }`}
-            >
-              <CardContent className="p-6">
-                {/* Header de la carte */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
-                      {epic.name}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge className={`${getPriorityColor(epic.priority)}`}>
-                        {getPriorityIcon(epic.priority)} {epic.priority}
-                      </Badge>
-                      <Badge className={`${getStatusColor(epic.status)}`}>
-                        {epic.status}
-                      </Badge>
-                    </div>
-                  </div>
-                  <ActionButtons
-                    epic={epic}
-                    index={index}
-                    isFirst={index === 0}
-                    isLast={index === epics.length - 1}
-                  />
-                </div>
-
-                {/* Description */}
-                {epic.description && (
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {epic.description}
-                  </p>
-                )}
-
-                {/* Métriques principales */}
-                <div className="space-y-3">
-                  {/* Progrès */}
-                  <div>
-                    <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
-                      <div className="flex items-center space-x-1">
-                        <BarChart3 className="h-4 w-4" />
-                        <span>Progrès</span>
-                      </div>
-                      <span className="font-medium">
-                        {formatPercentage(epic.progress)}
-                      </span>
-                    </div>
-                    <ProgressBar progress={epic.progress} />
-                  </div>
-
-                  {/* Dates */}
-                  <div className="text-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Début:</span>
-                      <span className="font-medium">
-                        {formatDate(epic.startDate)}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Fin:</span>
-                      <span className="font-medium">
-                        {formatDate(epic.endDate)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Features count */}
-                  {epic.features && epic.features.length > 0 && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Features:</span>
-                      <span className="font-medium">
-                        {epic.features.length} fonctionnalité
-                        {epic.features.length > 1 ? "s" : ""}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {/* Mode Arbre (Hiérarchique) */}
-      {viewMode === "tree" && (
-        <Card className="shadow-sm border border-gray-200">
-          <CardContent className="p-6">
-            <div className="space-y-6">
-              {epics.map((epic, index) => (
-                <div
-                  key={epic.id}
-                  className={`border-l-4 border-blue-600 pl-6 relative ${
-                    loading ? "opacity-50" : ""
-                  }`}
+            return (
+              <Link
+                key={epic.id}
+                href={`/projects/${projectId}/features`}
+                onClick={() => handleEpicLinkClick(epic)}
+                className="block"
+              >
+                <Card
+                  className={`
+                    group cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-1
+                    ${priorityConfig.bgColor}
+                  `}
                 >
-                  {/* Ligne principale de l'épic */}
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <Target className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                        <h3 className="text-lg font-semibold text-gray-900">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2 flex-1">
+                        <div className="flex items-center space-x-2">
+                          <Badge
+                            variant={priorityConfig.variant}
+                            className="text-xs"
+                          >
+                            <PriorityIcon className="w-3 h-3 mr-1" />
+                            {priorityConfig.label}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            <StatusIcon
+                              className={`w-3 h-3 mr-1 ${statusConfig.color}`}
+                            />
+                            {statusConfig.label}
+                          </Badge>
+                        </div>
+                        <CardTitle className="text-lg line-clamp-2 group-hover:text-blue-600 transition-colors">
                           {epic.name}
-                        </h3>
-                        <Badge className={`${getPriorityColor(epic.priority)}`}>
-                          {getPriorityIcon(epic.priority)} {epic.priority}
-                        </Badge>
-                        <Badge className={`${getStatusColor(epic.status)}`}>
-                          {epic.status}
-                        </Badge>
+                        </CardTitle>
                       </div>
 
-                      {epic.description && (
-                        <p className="text-gray-600 text-sm mb-2 ml-8">
-                          {epic.description}
-                        </p>
-                      )}
+                      {/* Menu d'actions */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          asChild
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                        >
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              onEdit(epic);
+                            }}
+                          >
+                            <Edit2 className="mr-2 h-4 w-4" />
+                            Modifier
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleMoveUp(epic);
+                            }}
+                          >
+                            <ArrowUp className="mr-2 h-4 w-4" />
+                            Monter
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleMoveDown(epic);
+                            }}
+                          >
+                            <ArrowDown className="mr-2 h-4 w-4" />
+                            Descendre
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              onDelete(epic);
+                            }}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Supprimer
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="space-y-4">
+                    {/* Description */}
+                    {epic.description && (
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {epic.description}
+                      </p>
+                    )}
+
+                    {/* Progression */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          Progression
+                        </span>
+                        <span className="font-medium">{epic.progress}%</span>
+                      </div>
+                      <Progress value={epic.progress} className="h-2" />
                     </div>
 
-                    <ActionButtons
-                      epic={epic}
-                      index={index}
-                      isFirst={index === 0}
-                      isLast={index === epics.length - 1}
-                    />
-                  </div>
+                    {/* Dates */}
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="h-3 w-3" />
+                        <span>Début: {formatDate(epic.startDate)}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="h-3 w-3" />
+                        <span>Fin: {formatDate(epic.endDate)}</span>
+                      </div>
+                    </div>
 
-                  {/* Métriques en grille */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-4 ml-8">
-                    <div>
-                      <div className="flex items-center space-x-1 text-gray-600 mb-1">
-                        <BarChart3 className="h-4 w-4" />
-                        <span>Progrès</span>
+                    {/* Compteurs */}
+                    <div className="flex items-center justify-between pt-2 border-t">
+                      <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                        <Target className="h-3 w-3" />
+                        <span>
+                          {epic._count?.features || 0} fonctionnalités
+                        </span>
                       </div>
-                      <div className="font-medium">
-                        {formatPercentage(epic.progress)}
+                      <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                        <Users className="h-3 w-3" />
+                        <span>
+                          {epic._count?.userstories || 0} user stories
+                        </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
-                        <div
-                          className="bg-blue-600 h-1 rounded-full"
-                          style={{ width: `${epic.progress}%` }}
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      ) : (
+        // ✅ Mode Liste avec Link
+        <div className="space-y-3">
+          {epics.map((epic) => {
+            const priorityConfig = PRIORITY_CONFIG[epic.priority];
+            const statusConfig =
+              STATUS_CONFIG[epic.status] || STATUS_CONFIG.ACTIVE;
+            const PriorityIcon = priorityConfig.icon;
+            const StatusIcon = statusConfig.icon;
+
+            return (
+              <Link
+                key={epic.id}
+                href={`/projects/${projectId}/features`}
+                onClick={() => handleEpicLinkClick(epic)}
+                className="block"
+              >
+                <Card className="group cursor-pointer transition-all duration-200 hover:shadow-md hover:bg-muted/30">
+                  <CardContent className="py-4">
+                    <div className="flex items-center space-x-4">
+                      {/* Icône de priorité */}
+                      <div
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${priorityConfig.bgColor}`}
+                      >
+                        <PriorityIcon
+                          className={`h-5 w-5 ${priorityConfig.color}`}
                         />
                       </div>
-                    </div>
 
-                    <div>
-                      <div className="flex items-center space-x-1 text-gray-600 mb-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>Début</span>
-                      </div>
-                      <div className="font-medium">
-                        {formatDate(epic.startDate)}
-                      </div>
-                    </div>
+                      {/* Contenu principal */}
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <div className="flex items-center space-x-3">
+                          <h4 className="text-lg font-semibold truncate group-hover:text-blue-600 transition-colors">
+                            {epic.name}
+                          </h4>
+                          <Badge
+                            variant={priorityConfig.variant}
+                            className="text-xs"
+                          >
+                            {priorityConfig.label}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            <StatusIcon
+                              className={`w-3 h-3 mr-1 ${statusConfig.color}`}
+                            />
+                            {statusConfig.label}
+                          </Badge>
+                        </div>
 
-                    <div>
-                      <div className="flex items-center space-x-1 text-gray-600 mb-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>Fin</span>
-                      </div>
-                      <div className="font-medium">
-                        {formatDate(epic.endDate)}
-                      </div>
-                    </div>
-                  </div>
+                        {epic.description && (
+                          <p className="text-sm text-muted-foreground line-clamp-1">
+                            {epic.description}
+                          </p>
+                        )}
 
-                  {/* Features sous l'épic */}
-                  {epic.features && epic.features.length > 0 && (
-                    <div className="mt-4 ml-6 space-y-2">
-                      {epic.features.map((feature) => (
-                        <div
-                          key={feature.id}
-                          className="border-l-2 border-green-400 pl-3"
-                        >
-                          <div className="flex items-center text-sm">
-                            <span className="mr-2">✨</span>
-                            <span className="font-medium text-gray-800">
-                              {feature.name}
-                            </span>
-                            <span className="ml-2 text-gray-600">
-                              ({feature.progress}%)
+                        <div className="flex items-center space-x-6 text-xs text-muted-foreground">
+                          <div className="flex items-center space-x-1">
+                            <Calendar className="h-3 w-3" />
+                            <span>
+                              {formatDate(epic.startDate)} →{" "}
+                              {formatDate(epic.endDate)}
                             </span>
                           </div>
+                          <div className="flex items-center space-x-1">
+                            <Target className="h-3 w-3" />
+                            <span>{epic._count?.features || 0} features</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Users className="h-3 w-3" />
+                            <span>{epic._count?.userstories || 0} stories</span>
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      </div>
 
-                  {index < epics.length - 1 && (
-                    <hr className="mt-4 border-gray-200" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                      {/* Progression */}
+                      <div className="flex items-center space-x-3">
+                        <div className="text-right">
+                          <div className="text-sm font-medium">
+                            {epic.progress}%
+                          </div>
+                          <Progress
+                            value={epic.progress}
+                            className="w-20 h-2"
+                          />
+                        </div>
+
+                        {/* Actions */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            asChild
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }}
+                          >
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onEdit(epic);
+                              }}
+                            >
+                              <Edit2 className="mr-2 h-4 w-4" />
+                              Modifier
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleMoveUp(epic);
+                              }}
+                            >
+                              <ArrowUp className="mr-2 h-4 w-4" />
+                              Monter
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleMoveDown(epic);
+                              }}
+                            >
+                              <ArrowDown className="mr-2 h-4 w-4" />
+                              Descendre
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onDelete(epic);
+                              }}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Supprimer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
       )}
     </div>
   );
