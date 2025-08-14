@@ -508,29 +508,6 @@ export default function InitiativesDisplay({
           </CardContent>
         </Card>
       )}
-
-      {/* Debug info (développement uniquement) */}
-      {process.env.NODE_ENV === "development" && (
-        <Card className="border-gray-300 bg-gray-50">
-          <CardContent className="p-3">
-            <details className="text-xs text-gray-600">
-              <summary className="cursor-pointer font-medium">
-                Debug Info
-              </summary>
-              <div className="mt-2 space-y-1">
-                <div>Project ID: {projectId}</div>
-                <div>View Mode: {viewMode}</div>
-                <div>Total Initiatives: {initiatives.length}</div>
-                <div>Filtered Initiatives: {filteredInitiatives.length}</div>
-                <div>Filter Name: "{filters.name}"</div>
-                <div>Filter Priority: {filters.priority}</div>
-                <div>Loading: {loading ? "Yes" : "No"}</div>
-                <div>Is Filtered: {stats.isFiltered ? "Yes" : "No"}</div>
-              </div>
-            </details>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

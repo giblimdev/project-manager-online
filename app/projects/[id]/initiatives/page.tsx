@@ -14,6 +14,7 @@
  * - Intégration avec le store useSelectedProjectStore pour la persistance
  * - Gestion des états de chargement et d'hydratation du store
  * - CORRECTION: Protection contre les boucles infinies d'appels API
+ * - ALERTE SIMPLE: Alerte de confirmation correctement structurée sans erreur d'hydratation
  *
  * COMPOSANTS UTILISÉS :
  * - InitiativesDisplay: Composant qui sélectionne le mode d'affichage et transmet à InitiativesList
@@ -24,6 +25,7 @@
  * - useProjectStoreHydration: Hook d'hydratation sécurisée du store
  * - Card, CardContent, Button: Composants UI shadcn/ui
  * - Skeleton: Composant de loading state
+ * - AlertDialog: Composant d'alerte personnalisé shadcn/ui (structure HTML correcte)
  *
  * LIBS UTILISÉS :
  * - React 19 hooks: useState, useEffect, useCallback, useMemo, useRef, JSX
@@ -31,15 +33,15 @@
  * - Zustand: Store management avec persistance localStorage
  * - TypeScript strict mode avec interfaces complètes
  * - Tailwind CSS: Design moderne responsive avec gradient et shadows
- * - lucide-react: Icons (RefreshCw, AlertTriangle, Folder, PlusCircle, Target)
- * - shadcn/ui: Card, Button, Skeleton components
+ * - lucide-react: Icons (RefreshCw, AlertTriangle, Folder, Target, Trash2)
+ * - shadcn/ui: Card, Button, Skeleton, AlertDialog components
  * - sonner: Toast notifications pour les actions utilisateur
  *
  * API :
  * - GET /api/initiatives?projectId=[id] (liste des initiatives d'un projet)
  * - POST /api/initiatives (création d'une nouvelle initiative)
  * - PUT /api/initiatives/[id] (mise à jour d'une initiative)
- * - DELETE /api/initiatives/[id] (suppression d'une initiative)
+ * - DELETE /api/initiatives/[id] (suppression d'une initiative avec force=true)
  * - Utilise les données du store chargées par /api/projects/[id]
  */
 
@@ -53,9 +55,19 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import { Card, CardContent } from "@/components/ui/card"; 
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   RefreshCw,
   AlertTriangle,
@@ -63,6 +75,7 @@ import {
   Target,
   TrendingUp,
   Calendar,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -109,6 +122,10 @@ interface PageState {
   isFormOpen: boolean;
   editingInitiative: Initiative | null;
   lastLoadedProjectId: string | null;
+  deleteAlert: {
+    isOpen: boolean;
+    initiative: Initiative | null;
+  };
 }
 
 export default function InitiativesPage(): JSX.Element {
@@ -131,21 +148,25 @@ export default function InitiativesPage(): JSX.Element {
   });
   const [viewMode, setViewMode] = useState<ViewMode>("card");
 
-  // ✅ CORRECTION: État simplifié avec contrôle des rechargements
+  // ✅ État simplifié avec contrôle des rechargements + alerte
   const [pageState, setPageState] = useState<PageState>({
     initiatives: [],
     isLoadingInitiatives: false,
     initiativesError: null,
     isFormOpen: false,
     editingInitiative: null,
-    lastLoadedProjectId: null, // ✅ Track du dernier projet chargé
+    lastLoadedProjectId: null,
+    deleteAlert: {
+      isOpen: false,
+      initiative: null,
+    },
   });
 
-  // ✅ CORRECTION: useRef pour éviter les dépendances circulaires
+  // ✅ useRef pour éviter les dépendances circulaires
   const loadInitiativesRef = useRef<
     ((projectId: string) => Promise<void>) | null
   >(null);
-  const isLoadingRef = useRef(false); // ✅ Protection contre les appels multiples
+  const isLoadingRef = useRef(false);
 
   // ✅ Console.log pour diagnostiquer l'état du store
   useEffect(() => {
@@ -176,7 +197,7 @@ export default function InitiativesPage(): JSX.Element {
     pageState.lastLoadedProjectId,
   ]);
 
-  // ✅ CORRECTION: Chargement automatique des données avec protection contre boucles
+  // ✅ Chargement automatique des données avec protection contre boucles
   useEffect(() => {
     if (
       isHydrated &&
@@ -199,94 +220,100 @@ export default function InitiativesPage(): JSX.Element {
     loadProjectData,
   ]);
 
-  // ✅ CORRECTION: Fonction de chargement des initiatives avec protection anti-boucle
-  const loadInitiatives = useCallback(async (projectId: string) => {
-    // Protection contre les appels multiples simultanés
-    if (isLoadingRef.current) {
-      console.log("⚠️ Chargement déjà en cours, ignorer");
-      return;
-    }
-
-    // Vérifier si on a déjà chargé les données pour ce projet
-    if (
-      pageState.lastLoadedProjectId === projectId &&
-      pageState.initiatives.length > 0
-    ) {
-      console.log("✅ Initiatives déjà chargées pour ce projet");
-      return;
-    }
-
-    console.log("🔄 Chargement des initiatives pour le projet:", projectId);
-
-    isLoadingRef.current = true;
-    setPageState((prev) => ({
-      ...prev,
-      isLoadingInitiatives: true,
-      initiativesError: null,
-    }));
-
-    try {
-      const response = await fetch(`/api/initiatives?projectId=${projectId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+  // ✅ Fonction de chargement des initiatives avec protection anti-boucle
+  const loadInitiatives = useCallback(
+    async (projectId: string): Promise<void> => {
+      // Protection contre les appels multiples simultanés
+      if (isLoadingRef.current) {
+        console.log("⚠️ Chargement déjà en cours, ignorer");
+        return;
       }
 
-      const result = await response.json();
-      let initiatives: Initiative[];
-
-      // Gérer les différents formats de réponse API
-      if (result.success !== undefined) {
-        if (!result.success) {
-          throw new Error(result.error || "Erreur lors du chargement");
-        }
-        initiatives = result.data || [];
-      } else if (Array.isArray(result)) {
-        initiatives = result;
-      } else {
-        initiatives = result.initiatives || [];
+      // Vérifier si on a déjà chargé les données pour ce projet
+      if (
+        pageState.lastLoadedProjectId === projectId &&
+        pageState.initiatives.length > 0
+      ) {
+        console.log("✅ Initiatives déjà chargées pour ce projet");
+        return;
       }
 
-      console.log("✅ Initiatives chargées:", initiatives.length);
+      console.log("🔄 Chargement des initiatives pour le projet:", projectId);
 
+      isLoadingRef.current = true;
       setPageState((prev) => ({
         ...prev,
-        initiatives,
-        isLoadingInitiatives: false,
+        isLoadingInitiatives: true,
         initiativesError: null,
-        lastLoadedProjectId: projectId, // ✅ Marquer comme chargé
       }));
 
-      toast.success(`${initiatives.length} initiative(s) chargée(s)`);
-    } catch (error) {
-      console.error("💥 Erreur chargement initiatives:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Erreur inconnue";
+      try {
+        const response = await fetch(
+          `/api/initiatives?projectId=${projectId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            cache: "no-store",
+          }
+        );
 
-      setPageState((prev) => ({
-        ...prev,
-        initiatives: [],
-        isLoadingInitiatives: false,
-        initiativesError: errorMessage,
-        lastLoadedProjectId: null, // ✅ Reset en cas d'erreur
-      }));
+        if (!response.ok) {
+          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+        }
 
-      toast.error(`Erreur: ${errorMessage}`);
-    } finally {
-      isLoadingRef.current = false; // ✅ Libérer le verrou
-    }
-  }, []); // ✅ Pas de dépendances pour éviter les re-créations
+        const result = await response.json();
+        let initiatives: Initiative[];
 
-  // ✅ CORRECTION: Stocker la référence pour éviter les dépendances circulaires
+        // Gérer les différents formats de réponse API
+        if (result.success !== undefined) {
+          if (!result.success) {
+            throw new Error(result.error || "Erreur lors du chargement");
+          }
+          initiatives = result.data || [];
+        } else if (Array.isArray(result)) {
+          initiatives = result;
+        } else {
+          initiatives = result.initiatives || [];
+        }
+
+        console.log("✅ Initiatives chargées:", initiatives.length);
+
+        setPageState((prev) => ({
+          ...prev,
+          initiatives,
+          isLoadingInitiatives: false,
+          initiativesError: null,
+          lastLoadedProjectId: projectId,
+        }));
+
+        toast.success(`${initiatives.length} initiative(s) chargée(s)`);
+      } catch (error) {
+        console.error("💥 Erreur chargement initiatives:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "Erreur inconnue";
+
+        setPageState((prev) => ({
+          ...prev,
+          initiatives: [],
+          isLoadingInitiatives: false,
+          initiativesError: errorMessage,
+          lastLoadedProjectId: null,
+        }));
+
+        toast.error(`Erreur: ${errorMessage}`);
+      } finally {
+        isLoadingRef.current = false;
+      }
+    },
+    [pageState.lastLoadedProjectId, pageState.initiatives.length]
+  );
+
+  // ✅ Stocker la référence pour éviter les dépendances circulaires
   loadInitiativesRef.current = loadInitiatives;
 
-  // ✅ CORRECTION: Chargement automatique avec protection contre les boucles
+  // ✅ Chargement automatique avec protection contre les boucles
   useEffect(() => {
     let mounted = true;
 
@@ -306,13 +333,13 @@ export default function InitiativesPage(): JSX.Element {
       mounted = false;
     };
   }, [
-    projectData?.id, // ✅ Seulement l'ID du projet
+    projectData?.id,
     isHydrated,
     pageState.isLoadingInitiatives,
-    pageState.lastLoadedProjectId, // ✅ Éviter rechargement si déjà fait
+    pageState.lastLoadedProjectId,
   ]);
 
-  // ✅ CORRECTION: Reset des initiatives quand le projet change
+  // ✅ Reset des initiatives quand le projet change
   useEffect(() => {
     if (
       selectedProjectId !== pageState.lastLoadedProjectId &&
@@ -332,7 +359,7 @@ export default function InitiativesPage(): JSX.Element {
     pageState.initiatives.length,
   ]);
 
-  // ✅ Handlers pour le formulaire (inchangés)
+  // ✅ Handlers pour le formulaire
   const handleCreateInitiative = useCallback(() => {
     console.log("➕ Ouverture formulaire création initiative");
     setPageState((prev) => ({
@@ -351,64 +378,116 @@ export default function InitiativesPage(): JSX.Element {
     }));
   }, []);
 
+  // ✅ Handler pour ouvrir l'alerte de suppression
   const handleDeleteInitiative = useCallback(
-    async (initiativeId: string) => {
+    async (initiativeId: string): Promise<void> => {
       const initiative = pageState.initiatives.find(
         (i) => i.id === initiativeId
       );
+
       if (!initiative) {
         toast.error("Initiative non trouvée");
         return;
       }
 
-      const confirmMessage = `Êtes-vous sûr de vouloir supprimer l'initiative "${initiative.name}" ?\n\nCette action est irréversible.`;
+      console.log("🗑️ Ouverture alerte suppression:", initiative.name);
+      setPageState((prev) => ({
+        ...prev,
+        deleteAlert: {
+          isOpen: true,
+          initiative,
+        },
+      }));
+    },
+    [pageState.initiatives]
+  );
 
-      if (!window.confirm(confirmMessage)) {
-        return;
-      }
+  // ✅ Handler pour confirmer la suppression avec gestion intelligente
+  const handleConfirmDelete = useCallback(async (): Promise<void> => {
+    const { initiative } = pageState.deleteAlert;
 
-      console.log("🗑️ Suppression initiative:", initiative.name);
-      const deletingToast = toast.loading(
-        `Suppression de ${initiative.name}...`
-      );
+    if (!initiative) {
+      toast.error("Aucune initiative sélectionnée");
+      return;
+    }
 
-      try {
-        const response = await fetch(`/api/initiatives/${initiativeId}`, {
+    console.log("🗑️ Suppression confirmée:", initiative.name);
+
+    // Fermer l'alerte immédiatement
+    setPageState((prev) => ({
+      ...prev,
+      deleteAlert: {
+        isOpen: false,
+        initiative: null,
+      },
+    }));
+
+    const deletingToast = toast.loading(`Suppression de ${initiative.name}...`);
+
+    try {
+      // ✅ Essayer d'abord sans force
+      let response = await fetch(`/api/initiatives/${initiative.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Si échec à cause d'éléments liés, forcer la suppression
+      if (!response.ok && response.status === 400) {
+        console.log("🔄 Retry with force=true due to related elements");
+        response = await fetch(`/api/initiatives/${initiative.id}?force=true`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
           },
         });
-
-        if (!response.ok) {
-          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
-        }
-
-        // Mettre à jour la liste locale
-        setPageState((prev) => ({
-          ...prev,
-          initiatives: prev.initiatives.filter((i) => i.id !== initiativeId),
-        }));
-
-        console.log("✅ Initiative supprimée avec succès");
-        toast.success(`Initiative "${initiative.name}" supprimée`, {
-          id: deletingToast,
-        });
-      } catch (error) {
-        console.error("💥 Erreur suppression:", error);
-        const errorMessage =
-          error instanceof Error ? error.message : "Erreur inconnue";
-        toast.error(`Erreur: ${errorMessage}`, {
-          id: deletingToast,
-        });
       }
-    },
-    [pageState.initiatives]
-  );
 
-  // ✅ Handlers pour réorganisation (inchangés)
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      // Mettre à jour la liste locale
+      setPageState((prev) => ({
+        ...prev,
+        initiatives: prev.initiatives.filter((i) => i.id !== initiative.id),
+      }));
+
+      console.log("✅ Initiative supprimée avec succès");
+      toast.success(
+        result.message || `Initiative "${initiative.name}" supprimée`,
+        {
+          id: deletingToast,
+        }
+      );
+    } catch (error) {
+      console.error("💥 Erreur suppression:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Erreur inconnue";
+      toast.error(`Erreur: ${errorMessage}`, {
+        id: deletingToast,
+      });
+    }
+  }, [pageState.deleteAlert]);
+
+  // ✅ Handler pour annuler la suppression
+  const handleCancelDelete = useCallback(() => {
+    console.log("❌ Suppression annulée");
+    setPageState((prev) => ({
+      ...prev,
+      deleteAlert: {
+        isOpen: false,
+        initiative: null,
+      },
+    }));
+  }, []);
+
+  // ✅ Handlers pour réorganisation
   const handleMoveInitiative = useCallback(
-    async (initiativeId: string, direction: "up" | "down") => {
+    async (initiativeId: string, direction: "up" | "down"): Promise<void> => {
       const currentIndex = pageState.initiatives.findIndex(
         (i) => i.id === initiativeId
       );
@@ -425,7 +504,7 @@ export default function InitiativesPage(): JSX.Element {
       ) {
         newIndex = currentIndex + 1;
       } else {
-        return; // Pas de mouvement possible
+        return;
       }
 
       console.log(
@@ -452,14 +531,14 @@ export default function InitiativesPage(): JSX.Element {
     [pageState.initiatives]
   );
 
-  // ✅ CORRECTION: Handler de succès avec rechargement forcé
+  // ✅ Handler de succès avec rechargement forcé
   const handleFormSuccess = useCallback(() => {
     console.log("✅ Succès formulaire - Rechargement des initiatives");
     setPageState((prev) => ({
       ...prev,
       isFormOpen: false,
       editingInitiative: null,
-      lastLoadedProjectId: null, // ✅ Force le rechargement
+      lastLoadedProjectId: null,
     }));
 
     // Recharger la liste des initiatives si on a un projet
@@ -483,13 +562,13 @@ export default function InitiativesPage(): JSX.Element {
     }));
   }, []);
 
-  // ✅ CORRECTION: Handler de retry avec reset du cache
+  // ✅ Handler de retry avec reset du cache
   const handleRetryLoadInitiatives = useCallback(() => {
     if (projectData?.id) {
       console.log("🔄 Retry chargement initiatives");
       setPageState((prev) => ({
         ...prev,
-        lastLoadedProjectId: null, // ✅ Reset pour forcer rechargement
+        lastLoadedProjectId: null,
         initiativesError: null,
       }));
 
@@ -627,7 +706,8 @@ export default function InitiativesPage(): JSX.Element {
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Initiatives
+                  Initiatives de :{" "}
+                  <span className="text-blue-600">{projectData.name}</span>
                 </h1>
                 <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
                   {initiativesStats.total} total
@@ -818,25 +898,57 @@ export default function InitiativesPage(): JSX.Element {
           </div>
         )}
 
-        {/* Debug info (développement uniquement) */}
-        {process.env.NODE_ENV === "development" && (
-          <div className="fixed bottom-4 right-4 bg-black bg-opacity-80 text-white p-3 rounded-lg text-xs max-w-sm">
-            <div className="font-bold mb-1">Debug Info:</div>
-            <div>Projet ID: {selectedProjectId || "null"}</div>
-            <div>Projet Data: {projectData ? "✅" : "❌"}</div>
-            <div>Hydrated: {isHydrated ? "✅" : "❌"}</div>
-            <div>Loading Store: {isLoading ? "⏳" : "✅"}</div>
-            <div>
-              Loading Initiatives:{" "}
-              {pageState.isLoadingInitiatives ? "⏳" : "✅"}
-            </div>
-            <div>Initiatives: {pageState.initiatives.length}</div>
-            <div>
-              Last Loaded Project: {pageState.lastLoadedProjectId || "null"}
-            </div>
-            <div>Form Open: {pageState.isFormOpen ? "✅" : "❌"}</div>
-          </div>
-        )}
+        {/* ✅ ALERTE CORRIGÉE: Structure HTML valide sans imbrication de <p> */}
+        <AlertDialog
+          open={pageState.deleteAlert.isOpen}
+          onOpenChange={handleCancelDelete}
+        >
+          <AlertDialogContent className="max-w-md">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2 text-lg">
+                <Trash2 className="h-5 w-5 text-red-600" />
+                Confirmer la suppression
+              </AlertDialogTitle>
+              <AlertDialogDescription asChild>
+                <div className="space-y-3 py-2">
+                  {pageState.deleteAlert.initiative && (
+                    <>
+                      <div className="text-gray-700">
+                        Voulez-vous vraiment supprimer l'initiative{" "}
+                        <span className="font-semibold text-gray-900">
+                          "{pageState.deleteAlert.initiative.name}"
+                        </span>{" "}
+                        ?
+                      </div>
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                        <div className="text-sm text-red-800 font-medium flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+                          Cette action est définitive et ne peut pas être
+                          annulée.
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex gap-3 pt-4">
+              <AlertDialogCancel
+                onClick={handleCancelDelete}
+                className="flex-1 border-gray-300 hover:bg-gray-50"
+              >
+                Non, garder
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleConfirmDelete}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Oui, supprimer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

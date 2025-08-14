@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Edit,
@@ -60,7 +59,6 @@ export default function InitiativesList({
     (state) => state.setSelectedInitiativeId
   );
 
-  // ✅ Handler pour navigation sans liens imbriqués
   const handleInitiativeSelect = useCallback(
     (initiative: Initiative) => {
       console.log(
@@ -91,31 +89,16 @@ export default function InitiativesList({
       e.stopPropagation();
       e.preventDefault();
 
-      const confirmMessage = `Êtes-vous sûr de vouloir supprimer l'initiative "${initiative.name}" ?
-    
-Cette action est irréversible et supprimera :
-• Tous les épics associés
-• Toutes les features et user stories
-• Toutes les données liées
-
-Taper "SUPPRIMER" pour confirmer :`;
-
-      const confirmation = prompt(confirmMessage);
-
-      if (confirmation === "SUPPRIMER") {
-        try {
-          await onDeleteInitiative(initiative.id);
-          toast.success(
-            `Initiative "${initiative.name}" supprimée avec succès`
-          );
-        } catch (error) {
-          console.error("Erreur suppression initiative:", error);
-          toast.error(
-            `Erreur lors de la suppression : ${
-              error instanceof Error ? error.message : "Erreur inconnue"
-            }`
-          );
-        }
+      // ✅ Appel direct sans prompt, l'AlertDialog de pj1 prendra le relais
+      try {
+        await onDeleteInitiative(initiative.id);
+      } catch (error) {
+        console.error("Erreur suppression initiative:", error);
+        toast.error(
+          `Erreur lors de la suppression : ${
+            error instanceof Error ? error.message : "Erreur inconnue"
+          }`
+        );
       }
     },
     [onDeleteInitiative]

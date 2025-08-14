@@ -10,19 +10,27 @@
  * - Optimisation des performances avec React.memo et useCallback
  * - États de chargement et animations fluides
  * - Navigation vers les détails avec indication visuelle
+ * - Intégration API route /api/projects/order pour sauvegarde ordre
+ * - Notifications modernes avec Sonner
  *
  * COMPOSANTS UTILISÉS :
  * - shadcn/ui: Button, Card, CardContent, CardHeader, CardTitle, Badge, Skeleton
  * - lucide-react: PlusCircle, Edit, Trash2, ChevronUp, ChevronDown, Eye, Globe, Lock, Activity, Archive
+ * - sonner: toast notifications modernes
  * - Store: useSelectedProjectStore pour la cohérence d'état
- * - React hooks: JSX, useCallback, useMemo, memo
+ * - React hooks: JSX, useCallback, useMemo, memo, useState
  *
  * LIBS UTILISÉS :
- * - React (JSX, useCallback, useMemo, memo)
+ * - React (JSX, useCallback, useMemo, memo, useState)
  * - Next.js 15 client component compatible
  * - TypeScript strict mode avec interfaces strictes
  * - Tailwind CSS pour le styling responsive et moderne
  * - Zustand store pour l'état partagé
+ * - Sonner pour les notifications toast
+ * - Fetch API pour appels REST vers /api/projects/order
+ *
+ * ROUTES API UTILISÉES :
+ * - PUT /api/projects/order - Sauvegarde de l'ordre des projets
  *
  * PROPS de @/app/projects/page.tsx :
  * - projects: ProjectSimple[] - Liste des projets filtrés depuis la page
@@ -33,11 +41,12 @@
  * - onReorder: (projectId, direction) => Promise<void> - Callback de réorganisation
  * - onCreate: () => void - Callback de création vers la page
  * - loading: boolean - État de chargement global de la page
+ * - onOrderUpdate: () => Promise<void> - Callback de rafraîchissement après réorganisation
  */
 
 "use client";
 
-import React, { JSX, useCallback, useMemo } from "react";
+import React, { JSX, useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -48,6 +57,8 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+// ✅ NOUVEAU: Import Sonner pour les notifications modernes
+import { toast } from "sonner";
 import {
   PlusCircle,
   Edit,
@@ -72,6 +83,7 @@ import {
   Clock,
   AlertTriangle,
   CheckCircle2,
+  Loader2,
 } from "lucide-react";
 
 // ✅ CORRECTION: Import du store cohérent avec la page
@@ -102,6 +114,21 @@ interface ProjectSimple {
 // Type pour le mode d'affichage cohérent avec la page
 type ViewMode = "grid" | "list";
 
+// Interface pour les données de l'API route /api/projects/order
+interface ProjectOrderItem {
+  id: string;
+  order: number;
+}
+
+interface ProjectOrderRequest {
+  projectOrder: ProjectOrderItem[];
+}
+
+interface ProjectOrderResponse {
+  message: string;
+  updatedCount: number;
+}
+
 // Interface pour les props du composant strictement typée
 interface ProjectsListProps {
   projects: ProjectSimple[];
@@ -113,6 +140,8 @@ interface ProjectsListProps {
   onCreate: () => void;
   loading?: boolean;
   className?: string;
+  // ✅ Callback pour rafraîchir après mise à jour de l'ordre
+  onOrderUpdate?: () => Promise<void>;
 }
 
 // Configuration des badges de statut moderne
@@ -140,10 +169,124 @@ export default React.memo(function ProjectsList({
   onCreate,
   loading = false,
   className = "",
+  onOrderUpdate,
 }: ProjectsListProps): JSX.Element {
   // ✅ CORRECTION: Store cohérent avec la page
   const selectedProjectId = useSelectedProjectId();
   const { setSelectedProjectId } = useProjectActions();
+
+  // ✅ États pour la gestion du réordonnement
+  const [reorderingProjectId, setReorderingProjectId] = useState<string | null>(
+    null
+  );
+  const [optimisticOrder, setOptimisticOrder] = useState<ProjectSimple[]>([]);
+
+  /**
+   * ✅ MISE À JOUR: Appel API avec notifications Sonner
+   */
+  const saveProjectOrder = useCallback(
+    async (projectOrder: ProjectOrderItem[]): Promise<boolean> => {
+      try {
+        console.log("🔄 ProjectsList - Sauvegarde ordre:", projectOrder);
+
+        const requestBody: ProjectOrderRequest = {
+          projectOrder,
+        };
+
+        const response = await fetch("/api/projects/order", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Erreur lors de la sauvegarde");
+        }
+
+        const data: ProjectOrderResponse = await response.json();
+
+        console.log(
+          "✅ Ordre sauvegardé:",
+          data.message,
+          `(${data.updatedCount} projets)`
+        );
+
+        // ✅ NOUVEAU: Notification de succès avec Sonner
+        toast.success("Ordre mis à jour", {
+          description: `${data.updatedCount} projets réorganisés avec succès.`,
+          duration: 3000,
+          action: {
+            label: "✓",
+            onClick: () => console.log("Toast fermé"),
+          },
+        });
+
+        return true;
+      } catch (error) {
+        console.error("❌ Erreur sauvegarde ordre:", error);
+
+        // ✅ NOUVEAU: Notification d'erreur avec Sonner
+        toast.error("Erreur de sauvegarde", {
+          description:
+            error instanceof Error
+              ? error.message
+              : "Impossible de sauvegarder l'ordre",
+          duration: 5000,
+          action: {
+            label: "Réessayer",
+            onClick: () => window.location.reload(),
+          },
+        });
+
+        return false;
+      }
+    },
+    []
+  );
+
+  /**
+   * ✅ Mise à jour optimiste de l'ordre
+   */
+  const updateOptimisticOrder = useCallback(
+    (projectId: string, direction: "up" | "down"): ProjectSimple[] => {
+      const currentProjects =
+        optimisticOrder.length > 0 ? optimisticOrder : sortedProjects;
+      const projectIndex = currentProjects.findIndex((p) => p.id === projectId);
+
+      if (projectIndex === -1) return currentProjects;
+
+      const newProjects = [...currentProjects];
+
+      if (direction === "up" && projectIndex > 0) {
+        // Échanger avec le projet précédent
+        [newProjects[projectIndex - 1], newProjects[projectIndex]] = [
+          newProjects[projectIndex],
+          newProjects[projectIndex - 1],
+        ];
+      } else if (
+        direction === "down" &&
+        projectIndex < newProjects.length - 1
+      ) {
+        // Échanger avec le projet suivant
+        [newProjects[projectIndex], newProjects[projectIndex + 1]] = [
+          newProjects[projectIndex + 1],
+          newProjects[projectIndex],
+        ];
+      }
+
+      // Recalculer les ordres
+      const updatedProjects = newProjects.map((project, index) => ({
+        ...project,
+        order: index,
+      }));
+
+      return updatedProjects;
+    },
+    [optimisticOrder, projects]
+  );
 
   /**
    * Configuration des badges de statut selon le schéma Prisma
@@ -238,7 +381,7 @@ export default React.memo(function ProjectsList({
    */
   const handleProjectSelect = useCallback(
     (project: ProjectSimple): void => {
-      if (loading) return;
+      if (loading || reorderingProjectId) return;
 
       console.log(
         "📍 ProjectsList - Sélection projet:",
@@ -251,8 +394,13 @@ export default React.memo(function ProjectsList({
 
       // Callback vers la page parente
       onSelect(project);
+
+      // ✅ NOUVEAU: Notification de sélection avec Sonner
+      toast.info(`Projet "${project.name}" sélectionné`, {
+        duration: 2000,
+      });
     },
-    [loading, setSelectedProjectId, onSelect]
+    [loading, reorderingProjectId, setSelectedProjectId, onSelect]
   );
 
   /**
@@ -261,35 +409,79 @@ export default React.memo(function ProjectsList({
   const handleEdit = useCallback(
     async (event: React.MouseEvent, project: ProjectSimple): Promise<void> => {
       event.stopPropagation();
-      if (loading) return;
+      if (loading || reorderingProjectId) return;
 
       console.log("✏️ ProjectsList - Édition projet:", project.name);
 
       try {
+        // ✅ NOUVEAU: Notification de début d'édition
+        toast.loading(`Édition de "${project.name}"...`, {
+          id: `edit-${project.id}`,
+        });
+
         await onEdit(project);
+
+        // ✅ NOUVEAU: Notification de succès
+        toast.success(`Projet "${project.name}" ouvert pour édition`, {
+          id: `edit-${project.id}`,
+          duration: 2000,
+        });
       } catch (error) {
         console.error("Erreur lors de l'édition:", error);
+
+        // ✅ NOUVEAU: Notification d'erreur
+        toast.error("Erreur lors de l'édition", {
+          id: `edit-${project.id}`,
+          description:
+            error instanceof Error ? error.message : "Une erreur est survenue",
+          duration: 4000,
+        });
       }
     },
-    [onEdit, loading]
+    [onEdit, loading, reorderingProjectId]
   );
 
   const handleDelete = useCallback(
     async (event: React.MouseEvent, projectId: string): Promise<void> => {
       event.stopPropagation();
-      if (loading) return;
+      if (loading || reorderingProjectId) return;
+
+      const project = projects.find((p) => p.id === projectId);
+      const projectName = project?.name || "le projet";
 
       console.log("🗑️ ProjectsList - Suppression projet:", projectId);
 
       try {
+        // ✅ NOUVEAU: Notification de confirmation
+        toast.loading(`Suppression de "${projectName}"...`, {
+          id: `delete-${projectId}`,
+        });
+
         await onDelete(projectId);
+
+        // ✅ NOUVEAU: Notification de succès
+        toast.success(`Projet "${projectName}" supprimé`, {
+          id: `delete-${projectId}`,
+          duration: 3000,
+        });
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);
+
+        // ✅ NOUVEAU: Notification d'erreur
+        toast.error("Erreur lors de la suppression", {
+          id: `delete-${projectId}`,
+          description:
+            error instanceof Error ? error.message : "Une erreur est survenue",
+          duration: 4000,
+        });
       }
     },
-    [onDelete, loading]
+    [onDelete, loading, reorderingProjectId, projects]
   );
 
+  /**
+   * ✅ MISE À JOUR: Gestion du réordonnement avec notifications Sonner
+   */
   const handleReorder = useCallback(
     async (
       event: React.MouseEvent,
@@ -297,7 +489,10 @@ export default React.memo(function ProjectsList({
       direction: "up" | "down"
     ): Promise<void> => {
       event.stopPropagation();
-      if (loading) return;
+      if (loading || reorderingProjectId) return;
+
+      const project = projects.find((p) => p.id === projectId);
+      const projectName = project?.name || "le projet";
 
       console.log(
         "📊 ProjectsList - Réorganisation projet:",
@@ -305,13 +500,78 @@ export default React.memo(function ProjectsList({
         direction
       );
 
+      setReorderingProjectId(projectId);
+
+      // ✅ NOUVEAU: Notification de début de réorganisation
+      const toastId = `reorder-${projectId}`;
+      toast.loading(`Réorganisation de "${projectName}"...`, {
+        id: toastId,
+      });
+
       try {
-        await onReorder(projectId, direction);
+        // 1. Mise à jour optimiste de l'interface
+        const newOptimisticOrder = updateOptimisticOrder(projectId, direction);
+        setOptimisticOrder(newOptimisticOrder);
+
+        // 2. Préparation des données pour l'API
+        const projectOrderData: ProjectOrderItem[] = newOptimisticOrder.map(
+          (project) => ({
+            id: project.id,
+            order: project.order,
+          })
+        );
+
+        // 3. Sauvegarde via l'API
+        const success = await saveProjectOrder(projectOrderData);
+
+        if (success) {
+          // 4. Callback vers la page parente pour synchronisation
+          if (onReorder) {
+            await onReorder(projectId, direction);
+          }
+
+          // 5. Rafraîchissement optionnel
+          if (onOrderUpdate) {
+            await onOrderUpdate();
+          }
+
+          // 6. Réinitialisation de l'état optimiste après succès
+          setTimeout(() => {
+            setOptimisticOrder([]);
+          }, 500);
+
+          // ✅ NOUVEAU: Fermeture du toast de chargement (succès géré par saveProjectOrder)
+          toast.dismiss(toastId);
+        } else {
+          // 7. Annulation de la mise à jour optimiste en cas d'erreur
+          setOptimisticOrder([]);
+          toast.dismiss(toastId);
+        }
       } catch (error) {
         console.error("Erreur lors de la réorganisation:", error);
+
+        // Annulation de la mise à jour optimiste
+        setOptimisticOrder([]);
+
+        // ✅ NOUVEAU: Notification d'erreur spécifique
+        toast.error("Erreur de réorganisation", {
+          id: toastId,
+          description: `Impossible de déplacer "${projectName}"`,
+          duration: 4000,
+        });
+      } finally {
+        setReorderingProjectId(null);
       }
     },
-    [onReorder, loading]
+    [
+      loading,
+      reorderingProjectId,
+      projects,
+      updateOptimisticOrder,
+      saveProjectOrder,
+      onReorder,
+      onOrderUpdate,
+    ]
   );
 
   /**
@@ -343,10 +603,12 @@ export default React.memo(function ProjectsList({
     }
   }, [viewMode]);
 
-  // Tri des projets par ordre avec mémorisation
+  // ✅ Tri des projets avec gestion de l'état optimiste
   const sortedProjects = useMemo(() => {
-    return [...projects].sort((a, b) => a.order - b.order);
-  }, [projects]);
+    const projectsToUse =
+      optimisticOrder.length > 0 ? optimisticOrder : projects;
+    return [...projectsToUse].sort((a, b) => a.order - b.order);
+  }, [projects, optimisticOrder]);
 
   // ✅ SKELETON DE CHARGEMENT MODERNE
   if (loading) {
@@ -410,13 +672,24 @@ export default React.memo(function ProjectsList({
                   {sortedProjects.length} projet
                   {sortedProjects.length !== 1 ? "s" : ""} • Mode{" "}
                   {viewMode === "grid" ? "grille" : "liste"}
+                  {reorderingProjectId && (
+                    <span className="ml-2 text-blue-600">
+                      • Réorganisation en cours...
+                    </span>
+                  )}
                 </p>
               </div>
             </div>
 
             <Button
-              onClick={onCreate}
-              disabled={loading}
+              onClick={() => {
+                onCreate();
+                // ✅ NOUVEAU: Notification d'action
+                toast.info("Formulaire de création ouvert", {
+                  duration: 2000,
+                });
+              }}
+              disabled={loading || !!reorderingProjectId}
               className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
               size="default"
             >
@@ -443,8 +716,14 @@ export default React.memo(function ProjectsList({
                 </p>
               </div>
               <Button
-                onClick={onCreate}
+                onClick={() => {
+                  onCreate();
+                  toast.success("Prêt à créer votre premier projet !", {
+                    duration: 3000,
+                  });
+                }}
                 className="bg-blue-600 hover:bg-blue-700 text-white mt-4"
+                disabled={!!reorderingProjectId}
               >
                 <PlusCircle className="h-4 w-4 mr-2" />
                 Créer un projet
@@ -466,6 +745,7 @@ export default React.memo(function ProjectsList({
                 const StatusIcon = statusConfig.icon;
                 const VisibilityIcon = visibilityConfig.icon;
                 const isSelected = selectedProjectId === project.id;
+                const isReordering = reorderingProjectId === project.id;
 
                 return (
                   <Card
@@ -478,10 +758,11 @@ export default React.memo(function ProjectsList({
                           : "border-gray-200 hover:border-gray-300 bg-white"
                       }
                       ${
-                        loading
+                        loading || reorderingProjectId
                           ? "opacity-50 cursor-not-allowed"
                           : "hover:shadow-lg"
                       }
+                      ${isReordering ? "ring-2 ring-blue-300 shadow-lg" : ""}
                     `}
                     onClick={() => handleProjectSelect(project)}
                   >
@@ -547,11 +828,19 @@ export default React.memo(function ProjectsList({
                                 onClick={(e) =>
                                   handleReorder(e, project.id, "up")
                                 }
-                                disabled={loading || index === 0}
+                                disabled={
+                                  loading ||
+                                  !!reorderingProjectId ||
+                                  index === 0
+                                }
                                 className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100"
                                 title="Monter"
                               >
-                                <ChevronUp className="h-3 w-3" />
+                                {isReordering ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <ChevronUp className="h-3 w-3" />
+                                )}
                               </Button>
                               <Button
                                 variant="ghost"
@@ -560,12 +849,18 @@ export default React.memo(function ProjectsList({
                                   handleReorder(e, project.id, "down")
                                 }
                                 disabled={
-                                  loading || index === sortedProjects.length - 1
+                                  loading ||
+                                  !!reorderingProjectId ||
+                                  index === sortedProjects.length - 1
                                 }
                                 className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100"
                                 title="Descendre"
                               >
-                                <ChevronDown className="h-3 w-3" />
+                                {isReordering ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <ChevronDown className="h-3 w-3" />
+                                )}
                               </Button>
                             </div>
 
@@ -574,7 +869,7 @@ export default React.memo(function ProjectsList({
                                 variant="ghost"
                                 size="sm"
                                 onClick={(e) => handleEdit(e, project)}
-                                disabled={loading}
+                                disabled={loading || !!reorderingProjectId}
                                 className="h-7 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100 hover:text-blue-700"
                               >
                                 <Edit className="h-3 w-3 mr-1" />
@@ -584,7 +879,7 @@ export default React.memo(function ProjectsList({
                                 variant="ghost"
                                 size="sm"
                                 onClick={(e) => handleDelete(e, project.id)}
-                                disabled={loading}
+                                disabled={loading || !!reorderingProjectId}
                                 className="h-7 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 hover:text-red-700"
                               >
                                 <Trash2 className="h-3 w-3 mr-1" />
@@ -603,15 +898,20 @@ export default React.memo(function ProjectsList({
                                 className={`
                                 w-10 h-10 rounded-lg flex items-center justify-center
                                 ${isSelected ? "bg-blue-200" : "bg-gray-100"}
+                                ${isReordering ? "bg-blue-300" : ""}
                               `}
                               >
-                                <VisibilityIcon
-                                  className={`h-5 w-5 ${
-                                    isSelected
-                                      ? "text-blue-700"
-                                      : visibilityConfig.className
-                                  }`}
-                                />
+                                {isReordering ? (
+                                  <Loader2 className="h-5 w-5 text-blue-700 animate-spin" />
+                                ) : (
+                                  <VisibilityIcon
+                                    className={`h-5 w-5 ${
+                                      isSelected
+                                        ? "text-blue-700"
+                                        : visibilityConfig.className
+                                    }`}
+                                  />
+                                )}
                               </div>
                             </div>
 
@@ -657,11 +957,19 @@ export default React.memo(function ProjectsList({
                                 onClick={(e) =>
                                   handleReorder(e, project.id, "up")
                                 }
-                                disabled={loading || index === 0}
+                                disabled={
+                                  loading ||
+                                  !!reorderingProjectId ||
+                                  index === 0
+                                }
                                 className="h-5 w-6 p-0 hover:bg-blue-100"
                                 title="Monter"
                               >
-                                <ChevronUp className="h-3 w-3" />
+                                {isReordering ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <ChevronUp className="h-3 w-3" />
+                                )}
                               </Button>
                               <Button
                                 variant="ghost"
@@ -670,12 +978,18 @@ export default React.memo(function ProjectsList({
                                   handleReorder(e, project.id, "down")
                                 }
                                 disabled={
-                                  loading || index === sortedProjects.length - 1
+                                  loading ||
+                                  !!reorderingProjectId ||
+                                  index === sortedProjects.length - 1
                                 }
                                 className="h-5 w-6 p-0 hover:bg-blue-100"
                                 title="Descendre"
                               >
-                                <ChevronDown className="h-3 w-3" />
+                                {isReordering ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <ChevronDown className="h-3 w-3" />
+                                )}
                               </Button>
                             </div>
 
@@ -684,7 +998,7 @@ export default React.memo(function ProjectsList({
                               variant="outline"
                               size="sm"
                               onClick={(e) => handleEdit(e, project)}
-                              disabled={loading}
+                              disabled={loading || !!reorderingProjectId}
                               className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700"
                             >
                               <Edit className="h-4 w-4 mr-1" />
@@ -695,7 +1009,7 @@ export default React.memo(function ProjectsList({
                               variant="outline"
                               size="sm"
                               onClick={() => handleProjectSelect(project)}
-                              disabled={loading}
+                              disabled={loading || !!reorderingProjectId}
                               className="hover:bg-green-50 hover:border-green-300 hover:text-green-700"
                             >
                               <ExternalLink className="h-4 w-4 mr-1" />
@@ -706,7 +1020,7 @@ export default React.memo(function ProjectsList({
                               variant="outline"
                               size="sm"
                               onClick={(e) => handleDelete(e, project.id)}
-                              disabled={loading}
+                              disabled={loading || !!reorderingProjectId}
                               className="hover:bg-red-50 hover:border-red-300 hover:text-red-700"
                             >
                               <Trash2 className="h-4 w-4 mr-1" />
@@ -740,6 +1054,14 @@ export default React.memo(function ProjectsList({
                 </span>
                 <span>•</span>
                 <span>Mode: {viewMode === "grid" ? "Grille" : "Liste"}</span>
+                {reorderingProjectId && (
+                  <>
+                    <span>•</span>
+                    <span className="text-blue-600 font-medium">
+                      🔄 Sauvegarde en cours...
+                    </span>
+                  </>
+                )}
               </div>
               <div className="text-xs text-gray-500">
                 Dernière mise à jour: {new Date().toLocaleTimeString()}
@@ -753,4 +1075,10 @@ export default React.memo(function ProjectsList({
 });
 
 // Export des types pour la réutilisabilité
-export type { ProjectsListProps, ProjectSimple, ViewMode };
+export type {
+  ProjectsListProps,
+  ProjectSimple,
+  ViewMode,
+  ProjectOrderItem,
+  ProjectOrderRequest,
+};

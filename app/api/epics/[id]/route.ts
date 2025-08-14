@@ -1,5 +1,5 @@
 // app/api/epics/[id]/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server"; 
 import prisma from "@/lib/prisma";
 import type { Priority } from "@/lib/generated/prisma/client";
 
@@ -10,7 +10,7 @@ interface UpdateEpicRequest {
   status?: string;
   startDate?: Date | string | null;
   endDate?: Date | string | null;
-  progress?: number;
+  progress?: number; 
 }
 
 function isError(err: unknown): err is Error {

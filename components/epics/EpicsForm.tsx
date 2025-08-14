@@ -82,7 +82,7 @@ const epicFormSchema = z
       .min(1, "Le nom est requis")
       .min(3, "Le nom doit contenir au moins 3 caractères")
       .max(255, "Le nom ne peut pas dépasser 255 caractères"),
-    description: z.string().nullable(),
+    description: z.string().optional(),
     priority: z.enum(["CRITICAL", "HIGH", "MEDIUM", "LOW"]),
     status: z.string().min(1, "Le statut est requis"),
     startDate: z.date().nullable(),
@@ -184,7 +184,7 @@ export function EpicsForm({
     resolver: zodResolver(epicFormSchema),
     defaultValues: {
       name: "",
-      description: null,
+      description: "",
       priority: "MEDIUM",
       status: "ACTIVE",
       startDate: null,
@@ -200,7 +200,7 @@ export function EpicsForm({
       if (epic) {
         form.reset({
           name: epic.name,
-          description: epic.description,
+          description: epic.description || "",
           priority: epic.priority,
           status: epic.status,
           startDate: epic.startDate,
@@ -209,7 +209,16 @@ export function EpicsForm({
           order: epic.order,
         });
       } else {
-        form.reset();
+        form.reset({
+          name: "",
+          description: "",
+          priority: "MEDIUM",
+          status: "ACTIVE",
+          startDate: null,
+          endDate: null,
+          progress: 0,
+          order: 1000,
+        });
       }
     }
   }, [isOpen, epic, form]);
@@ -218,6 +227,7 @@ export function EpicsForm({
     try {
       const payload = {
         ...data,
+        description: data.description || null,
         initiativeId,
         startDate: data.startDate?.toISOString() || null,
         endDate: data.endDate?.toISOString() || null,
@@ -235,7 +245,10 @@ export function EpicsForm({
       });
 
       if (!response.ok) {
-        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || `Erreur ${response.status}: ${response.statusText}`
+        );
       }
 
       const result = await response.json();
@@ -318,8 +331,8 @@ export function EpicsForm({
                     <Textarea
                       placeholder="Décrivez l'objectif et le périmètre de cet épic..."
                       className="min-h-[100px] resize-none"
-                      value={field.value || ""}
-                      onChange={(e) => field.onChange(e.target.value || null)}
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.target.value)}
                     />
                   </FormControl>
                   <FormDescription>
@@ -525,10 +538,11 @@ export function EpicsForm({
                         max="100"
                         step="1"
                         placeholder="0"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(Number(e.target.value) || 0)
-                        }
+                        value={field.value}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          field.onChange(value === "" ? 0 : Number(value));
+                        }}
                       />
                     </FormControl>
                     <FormDescription>
@@ -551,10 +565,11 @@ export function EpicsForm({
                         min="1"
                         step="1"
                         placeholder="1000"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(Number(e.target.value) || 1000)
-                        }
+                        value={field.value}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          field.onChange(value === "" ? 1000 : Number(value));
+                        }}
                       />
                     </FormControl>
                     <FormDescription>

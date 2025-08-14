@@ -66,11 +66,18 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
       description: "Vue d'ensemble des projets et métriques clés",
     },
     {
-      name: "Sprint Actuel",
-      href: "/projects/sprint",
+      name: "Projects",
+      href: "/projects",
       icon: CalendarIcon,
       badge: 15,
-      description: "Sprint en cours avec tâches actives",
+      description: "gestion des projet",
+    },
+    {
+      name: "Teams",
+      href: "/teams",
+      icon: CalendarIcon,
+      badge: 15,
+      description: "gestion des projet",
     },
     {
       name: "Rapports",
@@ -104,6 +111,13 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
         "Fonctionnalités avec critères d'acceptation et valeur business",
     },
     {
+      name: "Sprint",
+      href: "/projects/sprint",
+      icon: SettingsIcon,
+      badge: 89,
+      description: "Tâches techniques avec estimation en heures",
+    },
+    {
       name: "User Stories",
       href: "/projects/userStories",
       icon: FileTextIcon,
@@ -113,6 +127,13 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
     {
       name: "Tasks",
       href: "/projects/tasks",
+      icon: SettingsIcon,
+      badge: 89,
+      description: "Tâches techniques avec estimation en heures",
+    },
+    {
+      name: "Files",
+      href: "/files",
       icon: SettingsIcon,
       badge: 89,
       description: "Tâches techniques avec estimation en heures",
