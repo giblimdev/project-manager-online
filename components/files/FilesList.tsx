@@ -1,42 +1,28 @@
-// components/files/FileList.tsx
+// @/components/files/FilesList.tsx
 
 /**
- * RÔLE : Composant principal de liste des fichiers avec boutons d'action et vues multiples
+ * RÔLE : Composant principal de liste des fichiers avec réorganisation
  * RESPONSABILITÉS :
- * - Affichage des fichiers selon le mode sélectionné (list/card/branch)
- * - Bouton d'ajout de fichiers avec accès rapide
- * - Actions rapides par fichier : edit, delete, up, down (réorganisation)
- * - Gestion des états loading, empty et error avec feedback visuel
- * - Intégration des trois vues : FilesViewList, FilesViewCard, FilesViewBranch
- * - Support de la sélection multiple avec actions en lot
- * - Navigation hiérarchique dans l'arborescence des dossiers
- * - Gestion responsive avec adaptation mobile/desktop
+ * - Affichage des boutons up/down pour chaque fichier
+ * - Gestion des appels API de réorganisation
+ * - Feedback visuel et désactivation pendant les actions
+ * - Rafraîchissement automatique après modification
  *
  * COMPOSANTS UTILISÉS :
- * - FilesViewList: Vue tableau détaillée avec colonnes triables
- * - FilesViewCard: Vue grille moderne avec cartes visuelles
- * - FilesViewBranch: Vue arborescente hiérarchique avec navigation
- * - Button: Boutons d'action avec variants et states
- * - Card, CardContent: Conteneurs structurants
- * - Skeleton: Composants de chargement animés
+ * - Button: Boutons d'action up/down avec states
+ * - ArrowUp, ArrowDown: Icônes lucide-react
  *
  * LIBS UTILISÉS :
- * - React 19 hooks: useState, useCallback, useMemo, JSX
- * - Next.js 15 client component avec TypeScript strict mode
- * - shadcn/ui: Button, Card, Skeleton components avec design cohérent
- * - lucide-react: Icons modernes pour actions et états
- * - Tailwind CSS: Design responsive avec animations et hover effects
- * - sonner: Toast notifications pour feedback utilisateur temps réel
+ * - React 19 hooks avec TypeScript strict
+ * - sonner: Toast notifications
  */
 
 "use client";
 
-import React, { JSX, useState, useCallback, useMemo } from "react";
+import React, { JSX, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 import {
-  Plus,
   ArrowUp,
   ArrowDown,
   Edit,
@@ -44,380 +30,301 @@ import {
   FileText,
   Folder,
   Loader2,
-  Search,
-  RefreshCw,
-  MoreHorizontal,
 } from "lucide-react";
-import { toast } from "sonner";
 
-// ✅ Import des vues spécialisées
-import FilesViewList from "@/components/files/views/FilesViewList";
-import FilesViewCard from "@/components/files/views/FilesViewCard";
-import FilesViewBranch from "@/components/files/views/FilesViewBranch";
+import type { FileWithRelations } from "@/types/files";
 
-// ✅ Import des types centralisés
-import type {
-  FileWithRelations,
-  ViewMode,
-  FilesViewProps,
-} from "@/types/files";
-
-// Interface pour les props du composant
-interface FileListProps {
-  files: FileWithRelations[];
-  viewMode: ViewMode;
-  currentFolder: string | null;
+interface FileListItemProps {
+  file: FileWithRelations;
+  index: number;
+  totalCount: number;
   onEdit: (file: FileWithRelations) => void;
   onDelete?: (file: FileWithRelations) => void;
   onRefresh: () => void;
-  onFolderNavigate: (folderId: string | null, folderName?: string) => void;
-  selectedFiles?: string[];
-  onToggleSelection?: (fileId: string) => void;
-  isLoading?: boolean;
-  onCreateNew?: () => void;
+  currentFolder: string | null;
+  isReorganizing: boolean;
+  onReorganizeStart: () => void;
+  onReorganizeEnd: () => void;
 }
 
-export default function FileList({
-  files,
-  viewMode,
-  currentFolder,
+function FileListItem({
+  file,
+  index,
+  totalCount,
   onEdit,
   onDelete,
   onRefresh,
-  onFolderNavigate,
-  selectedFiles = [],
-  onToggleSelection,
-  isLoading = false,
-  onCreateNew,
-}: FileListProps): JSX.Element {
-  // ✅ État local pour la réorganisation
-  const [isReorganizing, setIsReorganizing] = useState(false);
+  currentFolder,
+  isReorganizing,
+  onReorganizeStart,
+  onReorganizeEnd,
+}: FileListItemProps): JSX.Element {
+  // Fonction pour déplacer vers le haut
+  const handleMoveUp = useCallback(async () => {
+    if (isReorganizing || index === 0) return;
 
-  // ✅ Fonction pour déplacer un fichier vers le haut
-  const handleMoveUp = useCallback(
-    async (file: FileWithRelations) => {
-      if (isReorganizing) return;
+    onReorganizeStart();
+    try {
+      const response = await fetch(`/api/files/${file.id}/move`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          direction: "up",
+          currentFolder,
+        }),
+      });
 
-      setIsReorganizing(true);
-      try {
-        const response = await fetch(`/api/files/${file.id}/move`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            direction: "up",
-            currentFolder,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
-        if (!result.success) {
-          throw new Error(result.error || "Erreur lors du déplacement");
-        }
-
-        toast.success("Élément déplacé vers le haut");
-        onRefresh();
-      } catch (error) {
-        console.error("💥 Erreur lors du déplacement:", error);
-        toast.error("Erreur lors du déplacement");
-      } finally {
-        setIsReorganizing(false);
-      }
-    },
-    [currentFolder, onRefresh, isReorganizing]
-  );
-
-  // ✅ Fonction pour déplacer un fichier vers le bas
-  const handleMoveDown = useCallback(
-    async (file: FileWithRelations) => {
-      if (isReorganizing) return;
-
-      setIsReorganizing(true);
-      try {
-        const response = await fetch(`/api/files/${file.id}/move`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            direction: "down",
-            currentFolder,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
-        if (!result.success) {
-          throw new Error(result.error || "Erreur lors du déplacement");
-        }
-
-        toast.success("Élément déplacé vers le bas");
-        onRefresh();
-      } catch (error) {
-        console.error("💥 Erreur lors du déplacement:", error);
-        toast.error("Erreur lors du déplacement");
-      } finally {
-        setIsReorganizing(false);
-      }
-    },
-    [currentFolder, onRefresh, isReorganizing]
-  );
-
-  // ✅ Fonction pour obtenir l'icône du type de fichier
-  const getFileTypeIcon = useCallback(
-    (type: string, isFolder?: boolean): JSX.Element => {
-      if (isFolder) {
-        return <Folder className="h-4 w-4 text-blue-500" />;
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
       }
 
-      const iconProps = "h-4 w-4";
-
-      switch (type) {
-        case "PAGE":
-          return <FileText className={`${iconProps} text-blue-600`} />;
-        case "COMPONENT":
-          return <FileText className={`${iconProps} text-green-600`} />;
-        case "UTILS":
-          return <FileText className={`${iconProps} text-orange-600`} />;
-        case "LIB":
-          return <FileText className={`${iconProps} text-purple-600`} />;
-        case "STORE":
-          return <FileText className={`${iconProps} text-red-600`} />;
-        case "HOOK":
-          return <FileText className={`${iconProps} text-pink-600`} />;
-        case "ENV":
-          return <FileText className={`${iconProps} text-yellow-600`} />;
-        case "SYSTEM":
-          return <FileText className={`${iconProps} text-gray-600`} />;
-        case "TEST":
-          return <FileText className={`${iconProps} text-indigo-600`} />;
-        default:
-          return <FileText className={`${iconProps} text-gray-500`} />;
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || "Erreur lors du déplacement");
       }
-    },
-    []
-  );
 
-  // ✅ Fonction pour obtenir le label du type
-  const getTypeLabel = useCallback((type: string): string => {
-    switch (type) {
-      case "PAGE":
-        return "Page Next.js";
-      case "COMPONENT":
-        return "Composant React";
-      case "UTILS":
-        return "Utilitaires";
-      case "LIB":
-        return "Librairie";
-      case "STORE":
-        return "Store";
-      case "HOOK":
-        return "Hook React";
-      case "ENV":
-        return "Environment";
-      case "SYSTEM":
-        return "Système";
-      case "TEST":
-        return "Test";
-      default:
-        return "Autre";
+      toast.success("Déplacement réussi", {
+        description: `"${file.name}" déplacé vers le haut`,
+      });
+
+      onRefresh();
+    } catch (error) {
+      console.error("💥 Erreur lors du déplacement vers le haut:", error);
+      toast.error("Erreur de déplacement", {
+        description: error instanceof Error ? error.message : "Erreur inconnue",
+      });
+    } finally {
+      onReorganizeEnd();
     }
-  }, []);
-
-  // ✅ Fonction pour formater la taille des fichiers
-  const formatFileSize = useCallback((bytes: number | null): string => {
-    if (!bytes || bytes === 0) return "0 B";
-    const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  }, []);
-
-  // ✅ Actions étendues avec boutons up/down
-  const extendedActions = useMemo(() => {
-    return {
-      onEdit,
-      onDelete,
-      onMoveUp: handleMoveUp,
-      onMoveDown: handleMoveDown,
-      getFileTypeIcon,
-      getTypeLabel,
-      formatFileSize,
-    };
   }, [
-    onEdit,
-    onDelete,
-    handleMoveUp,
-    handleMoveDown,
-    getFileTypeIcon,
-    getTypeLabel,
-    formatFileSize,
+    file.id,
+    file.name,
+    currentFolder,
+    index,
+    isReorganizing,
+    onReorganizeStart,
+    onReorganizeEnd,
+    onRefresh,
   ]);
 
-  // ✅ Props communes pour toutes les vues
-  const commonProps: FilesViewProps = {
-    files,
-    viewMode,
+  // Fonction pour déplacer vers le bas
+  const handleMoveDown = useCallback(async () => {
+    if (isReorganizing || index === totalCount - 1) return;
+
+    onReorganizeStart();
+    try {
+      const response = await fetch(`/api/files/${file.id}/move`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          direction: "down",
+          currentFolder,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || "Erreur lors du déplacement");
+      }
+
+      toast.success("Déplacement réussi", {
+        description: `"${file.name}" déplacé vers le bas`,
+      });
+
+      onRefresh();
+    } catch (error) {
+      console.error("💥 Erreur lors du déplacement vers le bas:", error);
+      toast.error("Erreur de déplacement", {
+        description: error instanceof Error ? error.message : "Erreur inconnue",
+      });
+    } finally {
+      onReorganizeEnd();
+    }
+  }, [
+    file.id,
+    file.name,
     currentFolder,
+    index,
+    totalCount,
+    isReorganizing,
+    onReorganizeStart,
+    onReorganizeEnd,
     onRefresh,
-    onFolderNavigate,
-    selectedFiles,
-    onToggleSelection,
-    ...extendedActions,
-  };
-
-  // ✅ Composant de chargement
-  const LoadingSkeleton = (): JSX.Element => {
-    const skeletonCount = viewMode === "card" ? 6 : 5;
-
-    return (
-      <div className="space-y-4">
-        {viewMode === "card" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: skeletonCount }).map((_, i) => (
-              <Card key={i} className="p-4">
-                <div className="space-y-3">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-3 w-1/2" />
-                  <Skeleton className="h-8 w-full" />
-                </div>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {Array.from({ length: skeletonCount }).map((_, i) => (
-              <div
-                key={i}
-                className="flex items-center space-x-4 p-4 border rounded-lg"
-              >
-                <Skeleton className="h-4 w-4" />
-                <Skeleton className="h-4 flex-1" />
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-4 w-16" />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
+  ]);
 
   return (
-    <div className="space-y-4">
-      {/* ✅ Barre d'outils avec bouton d'ajout et actions */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              {currentFolder ? "Contenu du dossier" : "Fichiers du projet"}
-            </h2>
-            <div className="text-sm text-gray-500">
-              {files.length} élément{files.length !== 1 ? "s" : ""}
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            {/* Bouton d'actualisation */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onRefresh}
-              disabled={isLoading}
-              className="hidden sm:flex"
-            >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4 mr-2" />
-              )}
-              Actualiser
-            </Button>
-
-            {/* ✅ Bouton principal d'ajout de fichiers */}
-            <Button
-              onClick={onCreateNew}
-              className="shadow-sm"
-              disabled={isLoading}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Ajouter une référence
-            </Button>
-          </div>
+    <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+      {/* Informations du fichier */}
+      <div className="flex items-center space-x-3 flex-1">
+        <div className="flex-shrink-0">
+          {file.isFolder ? (
+            <Folder className="h-5 w-5 text-blue-500" />
+          ) : (
+            <FileText className="h-5 w-5 text-gray-500" />
+          )}
         </div>
 
-        {/* ✅ Indicateur de sélection multiple */}
-        {selectedFiles.length > 0 && (
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center justify-between text-sm">
-              <div className="text-blue-700">
-                {selectedFiles.length} fichier
-                {selectedFiles.length > 1 ? "s" : ""} sélectionné
-                {selectedFiles.length > 1 ? "s" : ""}
-              </div>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    selectedFiles.forEach(() => onToggleSelection?.(""))
-                  }
-                >
-                  Désélectionner tout
-                </Button>
-              </div>
-            </div>
-          </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium text-gray-900 truncate">
+            {file.name}
+          </p>
+          {file.description && (
+            <p className="text-xs text-gray-500 truncate">{file.description}</p>
+          )}
+        </div>
+
+        <div className="flex items-center space-x-1">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            {file.type}
+          </span>
+        </div>
+      </div>
+
+      {/* Actions de réorganisation */}
+      <div className="flex items-center space-x-2 ml-4">
+        {/* Bouton Up */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleMoveUp}
+          disabled={isReorganizing || index === 0}
+          className="h-8 w-8 p-0"
+          title={
+            index === 0 ? "Déjà en première position" : "Déplacer vers le haut"
+          }
+        >
+          {isReorganizing ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <ArrowUp className="h-3 w-3" />
+          )}
+        </Button>
+
+        {/* Bouton Down */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleMoveDown}
+          disabled={isReorganizing || index === totalCount - 1}
+          className="h-8 w-8 p-0"
+          title={
+            index === totalCount - 1
+              ? "Déjà en dernière position"
+              : "Déplacer vers le bas"
+          }
+        >
+          {isReorganizing ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <ArrowDown className="h-3 w-3" />
+          )}
+        </Button>
+
+        {/* Actions standard */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onEdit(file)}
+          className="h-8 w-8 p-0"
+          title="Modifier"
+        >
+          <Edit className="h-3 w-3" />
+        </Button>
+
+        {onDelete && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onDelete(file)}
+            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+            title="Supprimer"
+          >
+            <Trash2 className="h-3 w-3" />
+          </Button>
         )}
-      </Card>
+      </div>
+    </div>
+  );
+}
 
-      {/* ✅ Affichage conditionnel selon l'état */}
-      {isLoading ? (
-        <LoadingSkeleton />
-      ) : files.length === 0 ? (
-        <Card className="p-8 text-center">
-          <div className="max-w-md mx-auto">
-            <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {currentFolder ? "Dossier vide" : "Aucune référence de fichier"}
-            </h3>
-            <p className="text-gray-600 mb-6">
-              {currentFolder
-                ? "Ce dossier ne contient aucune référence pour le moment."
-                : "Commencez par ajouter des références de fichiers à votre projet."}
-            </p>
-            <Button onClick={onCreateNew} className="w-full sm:w-auto">
-              <Plus className="h-4 w-4 mr-2" />
-              Ajouter la première référence
-            </Button>
-          </div>
-        </Card>
-      ) : (
-        // ✅ Rendu conditionnel selon le mode de vue
-        <>
-          {viewMode === "list" && <FilesViewList {...commonProps} />}
-          {viewMode === "card" && <FilesViewCard {...commonProps} />}
-          {viewMode === "branch" && <FilesViewBranch {...commonProps} />}
-        </>
-      )}
+// Composant principal FilesList mis à jour
+interface FileListProps {
+  files: FileWithRelations[];
+  onEdit: (file: FileWithRelations) => void;
+  onDelete?: (file: FileWithRelations) => void;
+  onRefresh: () => void;
+  currentFolder: string | null;
+}
 
-      {/* ✅ Indicateur de réorganisation */}
+export default function FilesList({
+  files,
+  onEdit,
+  onDelete,
+  onRefresh,
+  currentFolder,
+}: FileListProps): JSX.Element {
+  const [isReorganizing, setIsReorganizing] = useState(false);
+
+  const handleReorganizeStart = useCallback(() => {
+    setIsReorganizing(true);
+  }, []);
+
+  const handleReorganizeEnd = useCallback(() => {
+    setIsReorganizing(false);
+  }, []);
+
+  if (files.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
+          Aucun fichier
+        </h3>
+        <p className="text-gray-500">
+          {currentFolder
+            ? "Ce dossier ne contient aucune référence pour le moment."
+            : "Commencez par ajouter des références de fichiers à votre projet."}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {/* En-tête avec indicateur de réorganisation */}
       {isReorganizing && (
-        <Card className="p-4 bg-yellow-50 border-yellow-200">
-          <div className="flex items-center text-yellow-700">
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+        <div className="flex items-center justify-center p-2 bg-blue-50 border border-blue-200 rounded-lg">
+          <Loader2 className="h-4 w-4 animate-spin mr-2 text-blue-600" />
+          <span className="text-sm text-blue-700">
             Réorganisation en cours...
-          </div>
-        </Card>
+          </span>
+        </div>
       )}
+
+      {/* Liste des fichiers */}
+      {files.map((file, index) => (
+        <FileListItem
+          key={file.id}
+          file={file}
+          index={index}
+          totalCount={files.length}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onRefresh={onRefresh}
+          currentFolder={currentFolder}
+          isReorganizing={isReorganizing}
+          onReorganizeStart={handleReorganizeStart}
+          onReorganizeEnd={handleReorganizeEnd}
+        />
+      ))}
     </div>
   );
 }
