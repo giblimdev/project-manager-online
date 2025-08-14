@@ -11,27 +11,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, X } from "lucide-react";
+import { Search, X, Filter } from "lucide-react";
 import { SprintStatus } from "@/lib/generated/prisma/client";
 
 interface SprintFilterProps {
   value: {
     search: string;
-    status: string;
-    priority?: string;
+    status: SprintStatus | "";
   };
-  onChange: (filter: {
-    search: string;
-    status: string;
-    priority?: string;
-  }) => void;
+  onChange: (filter: { search: string; status: SprintStatus | "" }) => void;
   disabled?: boolean;
+  resultCount?: number;
 }
 
 export default function SprintFilter({
   value,
   onChange,
   disabled = false,
+  resultCount,
 }: SprintFilterProps) {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({
@@ -43,14 +40,7 @@ export default function SprintFilter({
   const handleStatusChange = (status: string) => {
     onChange({
       ...value,
-      status,
-    });
-  };
-
-  const handlePriorityChange = (priority: string) => {
-    onChange({
-      ...value,
-      priority,
+      status: status as SprintStatus | "",
     });
   };
 
@@ -58,19 +48,35 @@ export default function SprintFilter({
     onChange({
       search: "",
       status: "",
-      priority: "",
     });
   };
 
-  const hasFilters = value.search || value.status || value.priority;
+  const hasFilters = value.search || value.status;
+
+  // Fonction pour traduire les statuts
+  const getStatusLabel = (status: SprintStatus) => {
+    switch (status) {
+      case SprintStatus.PLANNED:
+        return "📋 Planifié";
+      case SprintStatus.ACTIVE:
+        return "🚀 Actif";
+      case SprintStatus.COMPLETED:
+        return "✅ Terminé";
+      case SprintStatus.CANCELLED:
+        return "❌ Annulé";
+      default:
+        return status;
+    }
+  };
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="space-y-3">
+      {/* Barre de recherche principale */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Rechercher un sprint..."
-          className="pl-9 pr-9"
+          placeholder="Rechercher un sprint par nom, description ou objectif..."
+          className="w-80 pl-9 pr-9"
           value={value.search}
           onChange={handleSearchChange}
           disabled={disabled}
@@ -88,55 +94,54 @@ export default function SprintFilter({
         )}
       </div>
 
-      <Select
-        value={value.status}
-        onValueChange={handleStatusChange}
-        disabled={disabled}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Statut" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="">Tous les statuts</SelectItem>
-          {Object.values(SprintStatus).map((status) => (
-            <SelectItem key={status} value={status}>
-              {status === "PLANNED" && "Planifié"}
-              {status === "ACTIVE" && "Actif"}
-              {status === "COMPLETED" && "Terminé"}
-              {status === "CANCELLED" && "Annulé"}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {/* Filtres avancés */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <Filter className="h-4 w-4" />
+          Filtres :
+        </div>
 
-      <Select
-        value={value.priority || ""}
-        onValueChange={handlePriorityChange}
-        disabled={disabled}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Priorité" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="">Toutes priorités</SelectItem>
-          <SelectItem value="CRITICAL">Critique</SelectItem>
-          <SelectItem value="HIGH">Haute</SelectItem>
-          <SelectItem value="MEDIUM">Moyenne</SelectItem>
-          <SelectItem value="LOW">Basse</SelectItem>
-        </SelectContent>
-      </Select>
-
-      {hasFilters && (
-        <Button
-          variant="ghost"
-          onClick={resetFilters}
+        {/* Filtre par statut */}
+        <Select
+          value={value.status}
+          onValueChange={handleStatusChange}
           disabled={disabled}
-          className="flex items-center gap-1"
         >
-          <X className="h-4 w-4" />
-          Réinitialiser
-        </Button>
-      )}
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder="Statut" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">Tous les statuts</SelectItem>
+            {Object.values(SprintStatus).map((status) => (
+              <SelectItem key={status} value={status}>
+                {getStatusLabel(status)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Bouton de réinitialisation */}
+        {hasFilters && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={resetFilters}
+            disabled={disabled}
+            className="flex items-center gap-1"
+          >
+            <X className="h-4 w-4" />
+            Réinitialiser
+          </Button>
+        )}
+
+        {/* Compteur de résultats */}
+        {typeof resultCount === "number" && (
+          <div className="ml-auto text-sm text-muted-foreground">
+            {resultCount} sprint{resultCount > 1 ? "s" : ""}
+            {hasFilters && " trouvé" + (resultCount > 1 ? "s" : "")}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

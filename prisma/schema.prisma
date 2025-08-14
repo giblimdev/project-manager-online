@@ -377,7 +377,7 @@ model TaskDependency {
 model Sprint {
   id            String       @id @default(cuid())
   name          String
-  order         Int          @default(1000)
+  order         Int          @default(1000) // ordre d'affichage et priorité.
   goal          String?
   description   String?
   startDate     DateTime

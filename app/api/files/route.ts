@@ -23,7 +23,6 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { JSX } from "react";
 import { z } from "zod";
 import { PrismaClient } from "@/lib/generated/prisma";
 import type { FileWithRelations, ApiResponse, FilterType } from "@/types/files";

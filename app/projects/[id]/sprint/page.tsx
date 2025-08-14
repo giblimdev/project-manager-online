@@ -1,51 +1,7 @@
-//@/app/projects/[id]/sprint/page.tsx
-/**
- * RÔLE : Page de gestion des sprint d'un projet sélectionné avec architecture séparée
- * RESPONSABILITÉS :
- * - Affichage des sprint du projet sélectionné via le store Zustand
- * - Gestion des filtres par nom et priorité (LOW, MEDIUM, HIGH, CRITICAL) via sprintFilter si applicable.
- * - Basculement entre les modes d'affichage (list, card, tree) via EpicsDisplay
- * - SprintDisplay sélectionne le mode et transmet à EpicsList qui affiche selon le mode
- * - SprintList gère l'affichage des Sprint + boutons actions (edit, delete, up, down) + bouton ajouter
- * - SprintForm en modal pour création/édition de Sprint
- * - Vérification de la sélection du projet avec gestion d'erreur
- * - Interface responsive et moderne avec design cards et transitions
- * - Intégration avec le store useSelectedProjectStore pour la persistance
- * - Gestion des états de chargement et d'hydratation du store
- * - Protection contre les boucles infinies d'appels API
- *
- * COMPOSANTS UTILISÉS :
- * - SprintDisplay: Composant qui sélectionne le mode d'affichage et transmet à EpicsList
- * - SprintList: Affiche les épics selon le mode sélectionné + boutons d'actions + bouton ajouter
- * - SprintFilter: Composant de filtrage par nom et priorité
- * - SprintForm: Formulaire de création/édition de Sprint modale avec fond transparent et desingn moderne t coloré et professionnel.
- * - useSelectedProjectStore: Store Zustand pour le projet sélectionné
- * - useProjectStoreHydration: Hook d'hydratation sécurisée du store
- * - Card, CardContent, Button: Composants UI shadcn/ui
- * - Skeleton: Composant de loading state
- *
- * LIBS UTILISÉS :
- * - React 19 hooks: useState, useEffect, useCallback, useMemo, useRef, JSX
- * - Next.js 15 client component
- * - Zustand: Store management avec persistance localStorage
- * - TypeScript strict mode avec interfaces complètes
- * - Tailwind CSS: Design moderne responsive avec gradient et shadows
- * - lucide-react: Icons (RefreshCw, AlertTriangle, Folder, PlusCircle, Target)
- * - shadcn/ui: Card, Button, Skeleton components
- * - sonner: Toast notifications pour les actions utilisateur
- *
- * API :
- * - GET /api/sprint?projectId=[id] (liste des sprint d'un projet)
- * - POST /api/sprint (création d'un nouvel sprint)
- * - PUT /api/sprint/[id] (mise à jour d'un sprint)
- * - DELETE /api/sprint/[id] (suppression d'un sprint)
- * - Utilise les données du store chargées par /api/projects/[id]
- */
-
 // @/app/projects/[id]/sprint/page.tsx
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   useProjectStore,
   useProjectStoreHydration,
@@ -60,6 +16,21 @@ import SprintList from "@/components/sprints/SprintList";
 import SprintFilter from "@/components/sprints/SprintFilter";
 import SprintForm from "@/components/sprints/SprintForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Sprint, SprintStatus } from "@/lib/generated/prisma/client";
+
+// Interface pour les sprints avec stats
+interface SprintWithStats extends Sprint {
+  _count?: {
+    tasks: number;
+    userStories: number;
+  };
+}
+
+// Interface pour les filtres
+interface SprintFilter {
+  search: string;
+  status: SprintStatus | "";
+}
 
 export default function SprintPage() {
   // Hydratation du store
@@ -70,23 +41,20 @@ export default function SprintPage() {
     isLoading: isProjectLoading,
     error: projectError,
     loadProjectData,
-    refreshProject,
   } = useProjectStore();
 
   // Récupération des paramètres d'URL
   const searchParams = useSearchParams();
-  const viewMode =
-    (searchParams.get("view") as "list" | "card" | null) || "list";
-  const [isFormOpen, setIsFormOpen] = React.useState(false);
-  const [editingSprint, setEditingSprint] = React.useState<string | null>(null);
+  const viewMode = (searchParams.get("view") as "list" | "card") || "list";
 
-  // États pour les sprints
-  const [sprints, setSprints] = React.useState<any[]>([]);
-  const [isLoadingSprints, setIsLoadingSprints] = React.useState(true);
-  const [filter, setFilter] = React.useState({
+  // États locaux
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingSprint, setEditingSprint] = useState<Sprint | null>(null);
+  const [sprints, setSprints] = useState<SprintWithStats[]>([]);
+  const [isLoadingSprints, setIsLoadingSprints] = useState(true);
+  const [filter, setFilter] = useState<SprintFilter>({
     search: "",
     status: "",
-    priority: "",
   });
 
   // Chargement initial des données
@@ -116,14 +84,16 @@ export default function SprintPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        setSprints(data.data.sprints);
+        setSprints(data.data || []);
       } else {
         throw new Error(data.error || "Erreur lors du chargement des sprints");
       }
     } catch (error) {
+      console.error("Erreur fetchSprints:", error);
       toast.error("Erreur", {
         description: error instanceof Error ? error.message : "Erreur inconnue",
       });
+      setSprints([]);
     } finally {
       setIsLoadingSprints(false);
     }
@@ -136,7 +106,8 @@ export default function SprintPage() {
         ? sprint.name.toLowerCase().includes(filter.search.toLowerCase()) ||
           sprint.description
             ?.toLowerCase()
-            .includes(filter.search.toLowerCase())
+            .includes(filter.search.toLowerCase()) ||
+          sprint.goal?.toLowerCase().includes(filter.search.toLowerCase())
         : true;
 
       const matchesStatus = filter.status
@@ -153,14 +124,16 @@ export default function SprintPage() {
     setIsFormOpen(true);
   };
 
-  const handleEditSprint = (sprintId: string) => {
-    setEditingSprint(sprintId);
+  const handleEditSprint = (sprint: Sprint) => {
+    setEditingSprint(sprint);
     setIsFormOpen(true);
   };
 
   const handleDeleteSprint = async (sprintId: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce sprint ?")) return;
+
     try {
-      const res = await fetch(`/api/sprints?id=${sprintId}`, {
+      const res = await fetch(`/api/sprints/${sprintId}`, {
         method: "DELETE",
       });
 
@@ -168,13 +141,21 @@ export default function SprintPage() {
         toast.success("Sprint supprimé avec succès");
         fetchSprints();
       } else {
-        throw new Error("Échec de la suppression");
+        const data = await res.json();
+        throw new Error(data.error || "Échec de la suppression");
       }
     } catch (error) {
       toast.error("Erreur", {
         description: error instanceof Error ? error.message : "Erreur inconnue",
       });
     }
+  };
+
+  // Changement de vue
+  const handleViewModeChange = (mode: "list" | "card") => {
+    const params = new URLSearchParams(searchParams);
+    params.set("view", mode);
+    window.history.replaceState(null, "", `?${params.toString()}`);
   };
 
   // Affichage du chargement
@@ -227,7 +208,7 @@ export default function SprintPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => fetchSprints()} 
+            onClick={fetchSprints}
             disabled={isLoadingSprints}
           >
             <RefreshCw
@@ -251,16 +232,10 @@ export default function SprintPage() {
           value={filter}
           onChange={setFilter}
           disabled={isLoadingSprints}
+          resultCount={filteredSprints.length}
         />
 
-        <SprintDisplay
-          viewMode={viewMode}
-          onChange={(mode) => {
-            const params = new URLSearchParams(searchParams);
-            params.set("view", mode);
-            window.history.replaceState(null, "", `?${params.toString()}`);
-          }}
-        />
+        <SprintDisplay viewMode={viewMode} onChange={handleViewModeChange} />
       </div>
 
       {/* Liste des sprints */}
@@ -301,10 +276,11 @@ export default function SprintPage() {
         open={isFormOpen}
         onOpenChange={setIsFormOpen}
         projectId={selectedProjectId}
-        sprintId={editingSprint}
+        sprint={editingSprint}
         onSuccess={() => {
           fetchSprints();
           setIsFormOpen(false);
+          setEditingSprint(null);
         }}
       />
     </div>
