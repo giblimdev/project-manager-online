@@ -1,147 +1,309 @@
-// app/api/files/[id]/route.ts
+// @/app/api/files/[id]/route.ts
 
 /**
- * RÔLE : API route pour gestion CRUD individuelle des métadonnées de fichiers selon schéma Prisma EXACT
+ * RÔLE : API route Next.js 15 pour gestion CRUD individuelle des métadonnées de fichiers
  * RESPONSABILITÉS :
  * - GET /api/files/[id] : Récupération d'un fichier spécifique avec relations complètes
- * - PUT /api/files/[id] : Mise à jour des métadonnées d'un fichier avec validation
- * - DELETE /api/files/[id] : Suppression d'une référence de fichier avec cascade
- * - Validation des IDs avec format CUID selon Prisma
- * - Gestion des relations author[] multiples et cascade selon schéma
- * - Support des types FileType EXACTS selon schéma Prisma (DOSSIER, PAGE, COMPONENT, etc.)
- * - Support spécifique à l'aide au développement : import, export, use, script
- * - CORRECTION FINALE : Types Prisma JSON corrects et Next.js 15 params compatible
+ * - PUT /api/files/[id] : Mise à jour des métadonnées avec validation native TypeScript CORRIGÉE
+ * - DELETE /api/files/[id] : Suppression sécurisée avec vérification des dépendances
+ * - CORRECTION MAJEURE : Interface UpdateFileData avec types string appropriés
+ * - CORRECTION : Fonction validateUpdateData avec assignations correctes
+ * - CORRECTION : Types TypeScript stricts sans erreur d'assignation
+ * - Support des types FileType EXACTS selon schéma Prisma fourni
+ * - Gestion des relations hiérarchiques parent/enfant avec store Project
+ * - Compatible avec FilesForm.tsx, page.tsx et store useSelectedProjectStore
  *
  * COMPOSANTS UTILISÉS :
- * - PrismaClient: ORM pour base de données PostgreSQL avec relations
- * - NextRequest, NextResponse: APIs Next.js 15 pour gestion HTTP
- * - zod: Validation des données entrantes avec schémas stricts
- * - Prisma.InputJsonValue: Types JSON corrects pour metadata
+ * - NextRequest, NextResponse: API Next.js 15 pour requêtes/réponses HTTP
+ * - PrismaClient: ORM pour base de données PostgreSQL avec relations selon schéma fourni
+ * - Validation native TypeScript avec interfaces strictes
  *
  * LIBS UTILISÉS :
  * - Next.js 15 API routes avec TypeScript strict mode et paramètres Promise-based
- * - Prisma ORM depuis @/lib/generated/prisma avec types générés
- * - zod: Validation et sérialisation des données avec types stricts
- * - TypeScript: Types stricts pour sécurité et performance optimale
+ * - Prisma ORM avec types générés depuis schéma fourni (PJ9)
+ * - TypeScript strict : Types stricts pour sécurité et performance
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { JSX } from "react";
 import prisma from "@/lib/prisma";
 
-// ✅ Types corrigés pour les métadonnées JSON selon Prisma
-type MetadataValue =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: MetadataValue }
-  | MetadataValue[];
-
-// ✅ Interface pour les paramètres de route Next.js 15 (Promise-based)
+// ✅ Interface pour les paramètres Next.js 15 (Promise-based)
 interface RouteParams {
   params: Promise<{
     id: string;
   }>;
 }
 
-// ✅ Schema de validation pour l'ID de fichier avec CUID
-const fileIdSchema = z.string().cuid("ID fichier doit être un CUID valide");
+// ✅ Types FileType selon votre schéma Prisma EXACT
+type FileType =
+  | "DOSSIER"
+  | "PAGE"
+  | "COMPONENT"
+  | "UTILS"
+  | "LIB"
+  | "STORE"
+  | "HOOK"
+  | "ENV"
+  | "SYSTEM"
+  | "TEST"
+  | "OTHER";
 
-// ✅ Schema de validation pour mise à jour selon votre schéma Prisma EXACT
-const updateFileSchema = z.object({
-  name: z.string().min(1).max(255).optional(),
-  type: z
-    .enum([
-      "DOSSIER",
-      "PAGE",
-      "COMPONENT",
-      "UTILS",
-      "LIB",
-      "STORE",
-      "HOOK",
-      "ENV",
-      "SYSTEM",
-      "TEST",
-      "OTHER",
-    ])
-    .optional(),
-  path: z.string().optional(),
-  description: z.string().optional(),
-  import: z.string().optional(),
-  use: z.string().optional(),
-  export: z.string().optional(),
-  script: z.string().optional(),
-  isFolder: z.boolean().optional(),
-  tags: z.array(z.string()).optional(),
-  mimeType: z.string().optional(),
-  // ✅ CORRECTION : Schéma Zod pour metadata compatible avec Prisma
-  metadata: z.record(z.string(), z.any()).optional(),
-  parentId: z.string().cuid().optional(),
-});
+// ✅ CORRECTION MAJEURE : Interface UpdateFileData avec types corrects (string au lieu d'undefined)
+interface UpdateFileData {
+  name?: string;
+  type?: FileType;
+  // ✅ CORRECTION : Types string | null pour compatibilité (pas undefined)
+  mimeType?: string | null;
+  path?: string | null;
+  description?: string | null;
+  import?: string | null;
+  use?: string | null;
+  export?: string | null;
+  script?: string | null;
+  isFolder?: boolean;
+  tags?: string[];
+  metadata?: Record<string, any> | null;
+  // Relations optionnelles selon votre schéma - CORRIGÉES
+  parentId?: string | null;
+  featureId?: string | null;
+  userStoryId?: string | null;
+  taskId?: string | null;
+  sprintId?: string | null;
+}
 
-// ✅ Fonction utilitaire pour gérer les erreurs
-function handleError(error: unknown, context: string) {
-  console.error(`💥 Erreur ${context}:`, error);
+// ✅ Interface pour la réponse d'erreur
+interface ErrorResponse {
+  success: false;
+  error: string;
+  details?: string;
+  context?: string;
+  timestamp: string;
+}
 
-  if (error instanceof z.ZodError) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Données invalides",
-        details: error.issues.map((issue) => ({
-          field: issue.path.join("."),
-          message: issue.message,
-        })),
-        timestamp: new Date().toISOString(),
-      },
-      { status: 400 }
-    );
+// ✅ Interface pour la réponse de succès
+interface SuccessResponse<T = any> {
+  success: true;
+  data?: T;
+  message?: string;
+  timestamp: string;
+}
+
+// ✅ Fonction de validation CUID native
+function isValidCUID(id: string): boolean {
+  const cuidRegex = /^[cC][a-zA-Z0-9]{24,}$/;
+  return cuidRegex.test(id);
+}
+
+// ✅ Fonction de validation FileType native
+function isValidFileType(type: any): type is FileType {
+  const validTypes: FileType[] = [
+    "DOSSIER",
+    "PAGE",
+    "COMPONENT",
+    "UTILS",
+    "LIB",
+    "STORE",
+    "HOOK",
+    "ENV",
+    "SYSTEM",
+    "TEST",
+    "OTHER",
+  ];
+  return typeof type === "string" && validTypes.includes(type as FileType);
+}
+
+// ✅ CORRECTION : Fonction de validation avec assignations correctes
+function validateUpdateData(data: any): {
+  isValid: boolean;
+  errors: string[];
+  validData?: UpdateFileData;
+} {
+  const errors: string[] = [];
+  const validData: UpdateFileData = {};
+
+  // Validation du nom
+  if (data.name !== undefined) {
+    if (typeof data.name !== "string" || data.name.trim().length === 0) {
+      errors.push("Le nom doit être une chaîne non vide");
+    } else if (data.name.length > 255) {
+      errors.push("Le nom ne peut pas dépasser 255 caractères");
+    } else {
+      validData.name = data.name.trim(); // ✅ CORRECTION : string assigné à string
+    }
   }
 
-  if (error instanceof Error) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    );
+  // Validation du type
+  if (data.type !== undefined) {
+    if (!isValidFileType(data.type)) {
+      errors.push(
+        `Type invalide. Types acceptés: DOSSIER, PAGE, COMPONENT, UTILS, LIB, STORE, HOOK, ENV, SYSTEM, TEST, OTHER`
+      );
+    } else {
+      validData.type = data.type; // ✅ CORRECTION : FileType assigné à FileType
+    }
   }
 
-  return NextResponse.json(
-    {
-      success: false,
-      error: "Erreur interne du serveur",
-      timestamp: new Date().toISOString(),
-    },
-    { status: 500 }
-  );
+  // ✅ CORRECTION : Validation des champs string | null avec assignations correctes
+  const nullableStringFields: Array<{
+    key: keyof UpdateFileData;
+    fieldName: string;
+  }> = [
+    { key: "mimeType", fieldName: "mimeType" },
+    { key: "path", fieldName: "path" },
+    { key: "description", fieldName: "description" },
+    { key: "import", fieldName: "import" },
+    { key: "use", fieldName: "use" },
+    { key: "export", fieldName: "export" },
+    { key: "script", fieldName: "script" },
+  ];
+
+  nullableStringFields.forEach(({ key, fieldName }) => {
+    if (data[fieldName] !== undefined) {
+      if (data[fieldName] === null || typeof data[fieldName] === "string") {
+        // ✅ CORRECTION : Assignation avec type assertion approprié
+        (validData as any)[key] = data[fieldName];
+      } else {
+        errors.push(`${fieldName} doit être une chaîne ou null`);
+      }
+    }
+  });
+
+  // Validation isFolder
+  if (data.isFolder !== undefined) {
+    if (typeof data.isFolder !== "boolean") {
+      errors.push("isFolder doit être un booléen");
+    } else {
+      validData.isFolder = data.isFolder;
+    }
+  }
+
+  // Validation tags
+  if (data.tags !== undefined) {
+    if (!Array.isArray(data.tags)) {
+      errors.push("tags doit être un tableau");
+    } else if (!data.tags.every((tag: any) => typeof tag === "string")) {
+      errors.push("tous les tags doivent être des chaînes");
+    } else {
+      validData.tags = data.tags;
+    }
+  }
+
+  // Validation metadata
+  if (data.metadata !== undefined) {
+    if (
+      data.metadata === null ||
+      (typeof data.metadata === "object" && data.metadata !== null)
+    ) {
+      validData.metadata = data.metadata;
+    } else {
+      errors.push("metadata doit être un objet ou null");
+    }
+  }
+
+  // ✅ CORRECTION : Validation des relations avec assignations correctes
+  const relationFields: Array<{
+    key: keyof UpdateFileData;
+    fieldName: string;
+  }> = [
+    { key: "parentId", fieldName: "parentId" },
+    { key: "featureId", fieldName: "featureId" },
+    { key: "userStoryId", fieldName: "userStoryId" },
+    { key: "taskId", fieldName: "taskId" },
+    { key: "sprintId", fieldName: "sprintId" },
+  ];
+
+  relationFields.forEach(({ key, fieldName }) => {
+    if (data[fieldName] !== undefined) {
+      if (data[fieldName] === null) {
+        // ✅ CORRECTION : Assignation null avec type assertion
+        (validData as any)[key] = null;
+      } else if (
+        typeof data[fieldName] === "string" &&
+        isValidCUID(data[fieldName])
+      ) {
+        // ✅ CORRECTION : Assignation string avec type assertion
+        (validData as any)[key] = data[fieldName];
+      } else {
+        errors.push(`${fieldName} doit être un CUID valide ou null`);
+      }
+    }
+  });
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    validData: errors.length === 0 ? validData : undefined,
+  };
+}
+
+// ✅ Fonction utilitaire pour créer une réponse d'erreur
+function createErrorResponse(
+  error: string,
+  details?: string,
+  context?: string,
+  status: number = 500
+): NextResponse {
+  console.error(`💥 Erreur ${context || "inconnue"}:`, error, details);
+
+  const errorResponse: ErrorResponse = {
+    success: false,
+    error,
+    ...(details && { details }),
+    ...(context && { context }),
+    timestamp: new Date().toISOString(),
+  };
+
+  return NextResponse.json(errorResponse, { status });
+}
+
+// ✅ Fonction utilitaire pour créer une réponse de succès
+function createSuccessResponse<T>(
+  data?: T,
+  message?: string,
+  status: number = 200
+): NextResponse {
+  const successResponse: SuccessResponse<T> = {
+    success: true,
+    ...(data && { data }),
+    ...(message && { message }),
+    timestamp: new Date().toISOString(),
+  };
+
+  return NextResponse.json(successResponse, { status });
 }
 
 /**
- * GET /api/files/[id]
- * Récupère un fichier spécifique avec toutes ses relations selon schéma Prisma
+ * GET /api/files/[id] - Récupération d'un fichier spécifique selon votre schéma
  */
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
+  context: RouteParams
+): Promise<NextResponse> {
   try {
     console.log("📡 GET /api/files/[id] - Début");
 
-    // ✅ Résolution des paramètres Promise-based Next.js 15
-    const { id } = await context.params;
-    const fileId = fileIdSchema.parse(id);
+    // ✅ Résolution Promise des paramètres Next.js 15
+    const resolvedParams = await context.params;
+    const { id } = resolvedParams;
 
-    console.log("🔍 Recherche fichier ID:", fileId);
+    console.log("🔍 ID reçu:", id);
+
+    // Validation native de l'ID
+    if (!id || !isValidCUID(id)) {
+      return createErrorResponse(
+        "ID invalide",
+        "L'ID doit être un CUID valide",
+        "Validation ID",
+        400
+      );
+    }
 
     // ✅ Récupération avec relations complètes selon votre schéma Prisma EXACT
     const file = await prisma.file.findUnique({
-      where: { id: fileId },
+      where: { id },
       include: {
-        // Relations selon votre schéma Prisma[1] EXACT
+        // ✅ Relations selon votre schéma Prisma (PJ9) EXACT
         project: {
           select: {
             id: true,
@@ -158,6 +320,7 @@ export async function GET(
             name: true,
             description: true,
             priority: true,
+            status: true,
           },
         },
         userStory: {
@@ -167,6 +330,7 @@ export async function GET(
             description: true,
             priority: true,
             storyPoints: true,
+            status: true,
           },
         },
         task: {
@@ -176,6 +340,7 @@ export async function GET(
             description: true,
             priority: true,
             estimatedHours: true,
+            status: true,
           },
         },
         sprint: {
@@ -188,7 +353,7 @@ export async function GET(
             endDate: true,
           },
         },
-        // Relation author[] multiple selon schéma[1]
+        // ✅ Relation author[] multiple selon votre schéma
         author: {
           select: {
             id: true,
@@ -201,7 +366,7 @@ export async function GET(
             isActive: true,
           },
         },
-        // Hiérarchie des fichiers selon schéma[1]
+        // ✅ Hiérarchie des fichiers selon votre schéma
         parent: {
           select: {
             id: true,
@@ -223,7 +388,7 @@ export async function GET(
           },
           orderBy: [{ isFolder: "desc" }, { name: "asc" }],
         },
-        // Versions et commentaires selon schéma[1]
+        // ✅ Versions et commentaires selon votre schéma
         versions: {
           select: {
             id: true,
@@ -246,6 +411,7 @@ export async function GET(
         comments: {
           select: {
             id: true,
+            title: true,
             content: true,
             createdAt: true,
             updatedAt: true,
@@ -260,30 +426,38 @@ export async function GET(
           },
           orderBy: { createdAt: "desc" },
         },
+        // ✅ Relations items selon votre schéma
+        items: {
+          select: {
+            id: true,
+            name: true,
+            type: true,
+            status: true,
+          },
+        },
         _count: {
           select: {
             children: true,
             versions: true,
             comments: true,
+            items: true,
           },
         },
       },
     });
 
     if (!file) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Fichier non trouvé",
-          timestamp: new Date().toISOString(),
-        },
-        { status: 404 }
+      return createErrorResponse(
+        "Fichier non trouvé",
+        `Aucun fichier trouvé avec l'ID: ${id}`,
+        "GET /api/files/[id]",
+        404
       );
     }
 
     console.log("✅ Fichier trouvé:", file.name);
 
-    // ✅ Transformation des dates pour JSON avec protection contre undefined
+    // ✅ Transformation des dates pour JSON compatible avec votre architecture
     const serializedFile = {
       ...file,
       createdAt: file.createdAt.toISOString(),
@@ -314,44 +488,73 @@ export async function GET(
         : null,
     };
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: serializedFile,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 200 }
-    );
+    return createSuccessResponse(serializedFile);
   } catch (error) {
-    return handleError(error, "GET /api/files/[id]");
+    const errorMessage =
+      error instanceof Error ? error.message : "Erreur interne du serveur";
+    return createErrorResponse(errorMessage, undefined, "GET /api/files/[id]");
   }
 }
 
 /**
- * PUT /api/files/[id]
- * Met à jour un fichier avec validation selon schéma Prisma
+ * PUT /api/files/[id] - Mise à jour d'un fichier compatible avec votre FilesForm.tsx
  */
 export async function PUT(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
+  context: RouteParams
+): Promise<NextResponse> {
   try {
     console.log("📡 PUT /api/files/[id] - Début");
 
-    // ✅ Résolution des paramètres Next.js 15
-    const { id } = await context.params;
-    const fileId = fileIdSchema.parse(id);
+    // ✅ Résolution Promise des paramètres Next.js 15
+    const resolvedParams = await context.params;
+    const { id } = resolvedParams;
 
-    // ✅ Lecture et validation du body
-    const body = await request.json();
-    const validatedData = updateFileSchema.parse(body);
+    console.log("🔍 ID reçu:", id);
 
-    console.log("🔄 Mise à jour fichier ID:", fileId);
-    console.log("📥 Données à mettre à jour:", validatedData);
+    // Validation native de l'ID
+    if (!id || !isValidCUID(id)) {
+      return createErrorResponse(
+        "ID invalide",
+        "L'ID doit être un CUID valide",
+        "Validation ID",
+        400
+      );
+    }
 
-    // ✅ Vérification de l'existence du fichier
+    // ✅ Lecture et parsing sécurisé du body
+    let body: any;
+    try {
+      body = await request.json();
+      console.log("📥 Body reçu:", JSON.stringify(body, null, 2));
+    } catch (parseError) {
+      console.error("❌ Erreur parsing JSON:", parseError);
+      return createErrorResponse(
+        "Corps de la requête JSON invalide",
+        parseError instanceof Error ? parseError.message : "Erreur de parsing",
+        "Parsing JSON",
+        400
+      );
+    }
+
+    // ✅ Validation native des données avec types corrigés
+    const validation = validateUpdateData(body);
+    if (!validation.isValid || !validation.validData) {
+      console.error("❌ Validation échouée:", validation.errors);
+      return createErrorResponse(
+        "Données invalides",
+        validation.errors.join(", "),
+        "Validation données PUT",
+        400
+      );
+    }
+
+    const validatedData = validation.validData;
+    console.log("✅ Données validées:", validatedData);
+
+    // ✅ Vérification existence du fichier
     const existingFile = await prisma.file.findUnique({
-      where: { id: fileId },
+      where: { id },
       select: {
         id: true,
         name: true,
@@ -364,121 +567,166 @@ export async function PUT(
     });
 
     if (!existingFile) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Fichier non trouvé",
-          timestamp: new Date().toISOString(),
-        },
-        { status: 404 }
+      return createErrorResponse(
+        "Fichier non trouvé",
+        `Aucun fichier avec l'ID: ${id}`,
+        "PUT /api/files/[id]",
+        404
       );
     }
 
-    // ✅ Vérification de l'unicité du nom si modifié
+    console.log("✅ Fichier existant trouvé:", existingFile);
+
+    // ✅ Vérification unicité du nom si modifié
     if (validatedData.name && validatedData.name !== existingFile.name) {
-      const nameExists = await prisma.file.findFirst({
+      const duplicateName = await prisma.file.findFirst({
         where: {
           name: validatedData.name,
           projectId: existingFile.projectId,
           parentId: existingFile.parentId,
-          NOT: { id: fileId },
+          NOT: { id },
         },
       });
 
-      if (nameExists) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Un fichier avec ce nom existe déjà dans ce dossier",
-            timestamp: new Date().toISOString(),
-          },
-          { status: 409 }
+      if (duplicateName) {
+        return createErrorResponse(
+          "Conflit de nom",
+          `Un fichier nommé "${validatedData.name}" existe déjà dans ce dossier`,
+          "PUT /api/files/[id]",
+          409
         );
       }
     }
 
-    // ✅ Vérification du parent si modifié
+    // ✅ Validation du parent si modifié
     if (
       validatedData.parentId !== undefined &&
       validatedData.parentId !== existingFile.parentId
     ) {
       if (validatedData.parentId) {
-        const parent = await prisma.file.findUnique({
+        const parentFile = await prisma.file.findUnique({
           where: { id: validatedData.parentId },
-          select: { id: true, isFolder: true, projectId: true },
+          select: {
+            id: true,
+            isFolder: true,
+            projectId: true,
+            name: true,
+          },
         });
 
-        if (!parent) {
-          return NextResponse.json(
-            {
-              success: false,
-              error: "Dossier parent non trouvé",
-              timestamp: new Date().toISOString(),
-            },
-            { status: 404 }
+        if (!parentFile) {
+          return createErrorResponse(
+            "Parent non trouvé",
+            `Aucun dossier parent avec l'ID: ${validatedData.parentId}`,
+            "PUT /api/files/[id]",
+            404
           );
         }
 
-        if (!parent.isFolder) {
-          return NextResponse.json(
-            {
-              success: false,
-              error: "Le parent doit être un dossier",
-              timestamp: new Date().toISOString(),
-            },
-            { status: 400 }
+        if (!parentFile.isFolder) {
+          return createErrorResponse(
+            "Parent invalide",
+            `"${parentFile.name}" n'est pas un dossier`,
+            "PUT /api/files/[id]",
+            400
           );
         }
 
-        if (parent.projectId !== existingFile.projectId) {
-          return NextResponse.json(
-            {
-              success: false,
-              error: "Le parent doit être dans le même projet",
-              timestamp: new Date().toISOString(),
-            },
-            { status: 400 }
+        if (parentFile.projectId !== existingFile.projectId) {
+          return createErrorResponse(
+            "Parent invalide",
+            "Le parent doit être dans le même projet",
+            "PUT /api/files/[id]",
+            400
+          );
+        }
+
+        // Vérification référence circulaire
+        if (validatedData.parentId === id) {
+          return createErrorResponse(
+            "Référence circulaire",
+            "Un dossier ne peut pas être son propre parent",
+            "PUT /api/files/[id]",
+            400
           );
         }
       }
     }
 
-    // ✅ CORRECTION FINALE : Construction des données de mise à jour avec types compatibles
+    // ✅ CORRECTION : Construction données de mise à jour avec types corrects
     const updateData: Record<string, any> = {};
 
-    // Ajout conditionnel des champs avec types corrects
-    if (validatedData.name !== undefined) updateData.name = validatedData.name;
-    if (validatedData.type !== undefined) updateData.type = validatedData.type;
-    if (validatedData.path !== undefined) updateData.path = validatedData.path;
-    if (validatedData.description !== undefined)
-      updateData.description = validatedData.description;
-    if (validatedData.import !== undefined)
-      updateData.import = validatedData.import;
-    if (validatedData.use !== undefined) updateData.use = validatedData.use;
-    if (validatedData.export !== undefined)
-      updateData.export = validatedData.export;
-    if (validatedData.script !== undefined)
-      updateData.script = validatedData.script;
-    if (validatedData.isFolder !== undefined)
-      updateData.isFolder = validatedData.isFolder;
-    if (validatedData.tags !== undefined) updateData.tags = validatedData.tags;
-    if (validatedData.mimeType !== undefined)
+    // Champs de base - gestion explicite avec types corrects
+    if (validatedData.name !== undefined) {
+      updateData.name = validatedData.name;
+    }
+    if (validatedData.type !== undefined) {
+      updateData.type = validatedData.type;
+    }
+    if (validatedData.mimeType !== undefined) {
       updateData.mimeType = validatedData.mimeType;
-    if (validatedData.parentId !== undefined)
-      updateData.parentId = validatedData.parentId;
-
-    // ✅ CORRECTION : Gestion correcte des métadonnées JSON avec type compatible
+    }
+    if (validatedData.path !== undefined) {
+      updateData.path = validatedData.path;
+    }
+    if (validatedData.description !== undefined) {
+      updateData.description = validatedData.description;
+    }
+    if (validatedData.import !== undefined) {
+      updateData.import = validatedData.import;
+    }
+    if (validatedData.use !== undefined) {
+      updateData.use = validatedData.use;
+    }
+    if (validatedData.export !== undefined) {
+      updateData.export = validatedData.export;
+    }
+    if (validatedData.script !== undefined) {
+      updateData.script = validatedData.script;
+    }
+    if (validatedData.isFolder !== undefined) {
+      updateData.isFolder = validatedData.isFolder;
+    }
+    if (validatedData.tags !== undefined) {
+      updateData.tags = validatedData.tags;
+    }
     if (validatedData.metadata !== undefined) {
-      // Conversion explicite en type compatible avec Prisma
-      updateData.metadata =
-        validatedData.metadata === null ? null : validatedData.metadata;
+      updateData.metadata = validatedData.metadata;
     }
 
-    // Incrémentation de version
-    updateData.version = existingFile.version + 1;
+    // Relations optionnelles selon votre schéma
+    if (validatedData.parentId !== undefined) {
+      updateData.parentId = validatedData.parentId;
+    }
+    if (validatedData.featureId !== undefined) {
+      updateData.featureId = validatedData.featureId;
+    }
+    if (validatedData.userStoryId !== undefined) {
+      updateData.userStoryId = validatedData.userStoryId;
+    }
+    if (validatedData.taskId !== undefined) {
+      updateData.taskId = validatedData.taskId;
+    }
+    if (validatedData.sprintId !== undefined) {
+      updateData.sprintId = validatedData.sprintId;
+    }
 
+    // Incrémentation version selon votre logique
+    const shouldIncrementVersion =
+      validatedData.script !== undefined ||
+      validatedData.import !== undefined ||
+      validatedData.export !== undefined ||
+      validatedData.use !== undefined;
+
+    if (shouldIncrementVersion) {
+      updateData.version = existingFile.version + 1;
+    }
+
+    console.log("📤 Données de mise à jour:", updateData);
+
+    // ✅ Mise à jour avec Prisma
     const updatedFile = await prisma.file.update({
-      where: { id: fileId },
+      where: { id },
       data: updateData,
       include: {
         project: {
@@ -486,12 +734,35 @@ export async function PUT(
             id: true,
             name: true,
             key: true,
+            slug: true,
           },
         },
         feature: {
           select: {
             id: true,
             name: true,
+            status: true,
+          },
+        },
+        userStory: {
+          select: {
+            id: true,
+            title: true,
+            status: true,
+          },
+        },
+        task: {
+          select: {
+            id: true,
+            title: true,
+            status: true,
+          },
+        },
+        sprint: {
+          select: {
+            id: true,
+            name: true,
+            status: true,
           },
         },
         author: {
@@ -514,6 +785,7 @@ export async function PUT(
             children: true,
             versions: true,
             comments: true,
+            items: true,
           },
         },
       },
@@ -521,47 +793,54 @@ export async function PUT(
 
     console.log("✅ Fichier mis à jour:", updatedFile.name);
 
-    // ✅ Transformation des dates pour JSON
+    // ✅ Sérialisation pour JSON
     const serializedFile = {
       ...updatedFile,
       createdAt: updatedFile.createdAt.toISOString(),
       updatedAt: updatedFile.updatedAt.toISOString(),
     };
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: serializedFile,
-        message: `Référence "${updatedFile.name}" mise à jour avec succès (v${updatedFile.version})`,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 200 }
-    );
+    const message = `Référence "${updatedFile.name}" mise à jour avec succès${
+      shouldIncrementVersion ? ` (v${updatedFile.version})` : ""
+    }`;
+
+    return createSuccessResponse(serializedFile, message);
   } catch (error) {
-    return handleError(error, "PUT /api/files/[id]");
+    const errorMessage =
+      error instanceof Error ? error.message : "Erreur interne du serveur";
+    return createErrorResponse(errorMessage, undefined, "PUT /api/files/[id]");
   }
 }
 
 /**
- * DELETE /api/files/[id]
- * Supprime un fichier avec vérification des dépendances
+ * DELETE /api/files/[id] - Suppression d'un fichier selon votre logique
  */
 export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
+  context: RouteParams
+): Promise<NextResponse> {
   try {
     console.log("📡 DELETE /api/files/[id] - Début");
 
-    // ✅ Résolution des paramètres Next.js 15
-    const { id } = await context.params;
-    const fileId = fileIdSchema.parse(id);
+    // ✅ Résolution Promise des paramètres Next.js 15
+    const resolvedParams = await context.params;
+    const { id } = resolvedParams;
 
-    console.log("🗑️ Suppression fichier ID:", fileId);
+    // Validation native de l'ID
+    if (!id || !isValidCUID(id)) {
+      return createErrorResponse(
+        "ID invalide",
+        "L'ID doit être un CUID valide",
+        "Validation ID DELETE",
+        400
+      );
+    }
 
-    // ✅ Vérification de l'existence du fichier avec comptages
+    console.log("🗑️ Suppression fichier ID:", id);
+
+    // ✅ Vérification existence avec comptages
     const existingFile = await prisma.file.findUnique({
-      where: { id: fileId },
+      where: { id },
       select: {
         id: true,
         name: true,
@@ -573,75 +852,108 @@ export async function DELETE(
             children: true,
             versions: true,
             comments: true,
+            items: true,
           },
         },
       },
     });
 
     if (!existingFile) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Fichier non trouvé",
-          timestamp: new Date().toISOString(),
-        },
-        { status: 404 }
+      return createErrorResponse(
+        "Fichier non trouvé",
+        `Aucun fichier avec l'ID: ${id}`,
+        "DELETE /api/files/[id]",
+        404
       );
     }
 
-    // ✅ Vérification que le dossier est vide si c'est un dossier
+    // ✅ Vérification dossier vide
     if (existingFile.isFolder && existingFile._count.children > 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Impossible de supprimer un dossier non vide",
-          details: `Le dossier contient ${existingFile._count.children} élément(s)`,
-          timestamp: new Date().toISOString(),
-        },
-        { status: 400 }
+      return createErrorResponse(
+        "Dossier non vide",
+        `Le dossier "${existingFile.name}" contient ${existingFile._count.children} élément(s). Videz-le avant de le supprimer.`,
+        "DELETE /api/files/[id]",
+        400
       );
     }
 
-    // ✅ Suppression avec cascade automatique selon schéma Prisma
+    // ✅ Suppression avec cascade Prisma
     await prisma.file.delete({
-      where: { id: fileId },
+      where: { id },
     });
 
     console.log("✅ Fichier supprimé:", existingFile.name);
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: `Référence "${existingFile.name}" supprimée avec succès`,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 200 }
+    const responseData = {
+      id: existingFile.id,
+      name: existingFile.name,
+      type: existingFile.type,
+      isFolder: existingFile.isFolder,
+    };
+
+    return createSuccessResponse(
+      responseData,
+      `Référence "${existingFile.name}" supprimée avec succès`
     );
   } catch (error) {
-    return handleError(error, "DELETE /api/files/[id]");
+    const errorMessage =
+      error instanceof Error ? error.message : "Erreur interne du serveur";
+    return createErrorResponse(
+      errorMessage,
+      undefined,
+      "DELETE /api/files/[id]"
+    );
   }
 }
 
-// ✅ OPTIONS pour CORS et documentation des méthodes
-export async function OPTIONS(request: NextRequest) {
-  return NextResponse.json(
-    {
-      success: true,
-      methods: ["GET", "PUT", "DELETE"],
-      description: "API pour gestion individuelle des métadonnées de fichiers",
-      endpoints: {
-        GET: "Récupération d'un fichier avec toutes ses relations",
-        PUT: "Mise à jour des métadonnées d'un fichier",
-        DELETE: "Suppression d'une référence de fichier",
-      },
-      timestamp: new Date().toISOString(),
+// ✅ OPTIONS pour CORS et documentation selon votre architecture
+export async function OPTIONS(): Promise<NextResponse> {
+  const optionsResponse = {
+    success: true,
+    methods: ["GET", "PUT", "DELETE", "OPTIONS"],
+    description: "API pour gestion individuelle des métadonnées de fichiers",
+    endpoints: {
+      GET: "Récupération d'un fichier avec toutes ses relations",
+      PUT: "Mise à jour des métadonnées d'un fichier avec validation native corrigée",
+      DELETE: "Suppression d'une référence de fichier avec vérifications",
     },
-    {
-      status: 200,
-      headers: {
-        Allow: "GET, PUT, DELETE, OPTIONS",
-        "Cache-Control": "no-cache",
-      },
-    }
-  );
+    schema: {
+      fileTypes: [
+        "DOSSIER",
+        "PAGE",
+        "COMPONENT",
+        "UTILS",
+        "LIB",
+        "STORE",
+        "HOOK",
+        "ENV",
+        "SYSTEM",
+        "TEST",
+        "OTHER",
+      ],
+      relations: [
+        "project",
+        "feature",
+        "userStory",
+        "task",
+        "sprint",
+        "parent",
+        "children",
+        "author",
+        "versions",
+        "comments",
+        "items",
+      ],
+    },
+    timestamp: new Date().toISOString(),
+  };
+
+  return NextResponse.json(optionsResponse, {
+    status: 200,
+    headers: {
+      Allow: "GET, PUT, DELETE, OPTIONS",
+      "Cache-Control": "no-cache",
+      "Content-Type": "application/json",
+    },
+  });
 }

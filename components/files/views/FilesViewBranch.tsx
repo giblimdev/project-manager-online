@@ -1,13 +1,16 @@
-// components/files/views/FilesViewBranch.tsx
+// @/components/files/views/FilesViewBranch.tsx
 
 /**
- * RÔLE : Vue arborescente des fichiers avec hiérarchie et navigation interactive
+ * RÔLE : Vue arborescente des fichiers avec hiérarchie et navigation interactive CORRIGÉE
  * RESPONSABILITÉS :
  * - Affichage hiérarchique des fichiers et dossiers avec indentation visuelle
  * - Navigation dans l'arborescence avec expansion/collapse des nœuds
  * - Support du drag & drop pour réorganisation des éléments
  * - Filtrage et recherche dans l'arbre avec highlight des résultats
  * - Actions contextuelles par nœud (edit, delete, move, duplicate)
+ * - CORRECTION MAJEURE : Gestion correcte de la hiérarchie parent/enfant
+ * - CORRECTION : Affichage récursif des enfants dans l'arborescence
+ * - CORRECTION : Construction correcte de l'arbre hiérarchique
  * - Gestion des dossiers avec isFolder et navigation hiérarchique
  * - Support des nouveaux types de fichiers selon schéma Prisma mis à jour
  * - Gestion du mimeType nullable selon le nouveau schéma Prisma
@@ -101,12 +104,13 @@ import type {
   FileType,
 } from "@/types/files";
 
-// Interface pour les nœuds de l'arbre avec état d'expansion
+// ✅ CORRECTION : Interface pour les nœuds de l'arbre avec enfants
 interface TreeNode extends FileWithRelations {
   level: number;
   isExpanded: boolean;
   parentPath: string;
   hasChildren: boolean;
+  children: TreeNode[]; // ✅ AJOUT : Enfants directs du nœud
 }
 
 // Interface pour les options de vue
@@ -248,47 +252,75 @@ export default function FilesViewBranch({
     [formatFileSize]
   );
 
-  // ✅ Construction de l'arbre hiérarchique avec gestion des nœuds
+  // ✅ CORRECTION MAJEURE : Construction de l'arbre hiérarchique avec enfants
   const buildTree = useCallback(
     (files: FileWithRelations[]): TreeNode[] => {
-      const nodeMap = new Map<string, TreeNode>();
-      const rootNodes: TreeNode[] = [];
+      console.log(
+        "🌳 Construction de l'arbre hiérarchique avec",
+        files.length,
+        "fichiers"
+      );
 
-      // Première passe : créer tous les nœuds
+      // Créer une map pour accès rapide
+      const fileMap = new Map<string, FileWithRelations>();
       files.forEach((file) => {
+        fileMap.set(file.id, file);
+      });
+
+      // ✅ Fonction récursive pour construire les nœuds avec enfants
+      const buildNode = (
+        file: FileWithRelations,
+        level: number = 0,
+        parentPath: string = ""
+      ): TreeNode => {
+        // Trouver les enfants directs
+        const directChildren = files.filter((f) => f.parentId === file.id);
+
+        // Construire les nœuds enfants récursivement
+        const childNodes = directChildren.map((child) =>
+          buildNode(
+            child,
+            level + 1,
+            `${parentPath}/${file.name}`.replace(/^\/+/, "")
+          )
+        );
+
+        // Trier les enfants (dossiers en premier, puis alphabétique)
+        childNodes.sort((a, b) => {
+          if (a.isFolder && !b.isFolder) return -1;
+          if (!a.isFolder && b.isFolder) return 1;
+          return a.name.localeCompare(b.name, "fr", { numeric: true });
+        });
+
         const node: TreeNode = {
           ...file,
-          level: 0,
+          level,
           isExpanded: expandedNodes.has(file.id),
-          parentPath: "",
-          hasChildren: file.isFolder && (file._count?.children || 0) > 0,
+          parentPath: parentPath.replace(/^\/+/, ""),
+          hasChildren: directChildren.length > 0,
+          children: childNodes, // ✅ CORRECTION : Inclure les enfants dans le nœud
         };
-        nodeMap.set(file.id, node);
-      });
 
-      // Deuxième passe : construire la hiérarchie
-      files.forEach((file) => {
-        const node = nodeMap.get(file.id)!;
-        if (file.parent?.id) {
-          const parentNode = nodeMap.get(file.parent.id);
-          if (parentNode) {
-            node.level = parentNode.level + 1;
-            node.parentPath =
-              `${parentNode.parentPath}/${parentNode.name}`.replace(/^\/+/, "");
-          } else {
-            rootNodes.push(node);
-          }
-        } else {
-          rootNodes.push(node);
-        }
-      });
+        return node;
+      };
 
-      return rootNodes.sort((a, b) => {
-        // Dossiers en premier, puis tri alphabétique
+      // ✅ Construire l'arbre à partir des nœuds racine (parentId null ou undefined)
+      const rootFiles = files.filter((file) => !file.parentId);
+
+      console.log("📁 Fichiers racine trouvés:", rootFiles.length);
+
+      const rootNodes = rootFiles.map((file) => buildNode(file, 0, ""));
+
+      // Trier les nœuds racine
+      rootNodes.sort((a, b) => {
         if (a.isFolder && !b.isFolder) return -1;
         if (!a.isFolder && b.isFolder) return 1;
-        return a.name.localeCompare(b.name);
+        return a.name.localeCompare(b.name, "fr", { numeric: true });
       });
+
+      console.log("✅ Arbre construit avec", rootNodes.length, "nœuds racine");
+
+      return rootNodes;
     },
     [files, expandedNodes]
   );
@@ -296,11 +328,13 @@ export default function FilesViewBranch({
   // ✅ Filtrage des nœuds selon les critères
   const filteredTree = useMemo(() => {
     const tree = buildTree(files);
+
     if (!viewOptions.searchTerm && viewOptions.typeFilter.length === 0) {
       return tree;
     }
 
-    const filterNode = (node: TreeNode): boolean => {
+    // ✅ Fonction récursive pour filtrer l'arbre
+    const filterNode = (node: TreeNode): TreeNode | null => {
       let matches = true;
 
       // Filtrage par terme de recherche
@@ -318,10 +352,28 @@ export default function FilesViewBranch({
         matches = matches && viewOptions.typeFilter.includes(node.type);
       }
 
-      return matches;
+      // Filtrer les enfants récursivement
+      const filteredChildren = node.children
+        .map((child) => filterNode(child))
+        .filter((child): child is TreeNode => child !== null);
+
+      // Un nœud est inclus s'il correspond aux critères OU s'il a des enfants qui correspondent
+      if (matches || filteredChildren.length > 0) {
+        return {
+          ...node,
+          children: filteredChildren,
+          hasChildren: filteredChildren.length > 0,
+        };
+      }
+
+      return null;
     };
 
-    return tree.filter(filterNode);
+    const filteredNodes = tree
+      .map((node) => filterNode(node))
+      .filter((node): node is TreeNode => node !== null);
+
+    return filteredNodes;
   }, [buildTree, viewOptions]);
 
   // ✅ Gestion de l'expansion des nœuds
@@ -354,7 +406,7 @@ export default function FilesViewBranch({
     [onFolderNavigate, onEdit, toggleExpansion]
   );
 
-  // ✅ Actions par défaut si non fournies - CORRIGÉES
+  // ✅ Actions par défaut si non fournies
   const handleDelete = useCallback(
     (file: FileWithRelations) => {
       if (onDelete) {
@@ -371,7 +423,6 @@ export default function FilesViewBranch({
       if (onDownload) {
         onDownload(file);
       } else if (file.versions && file.versions.length > 0) {
-        // ✅ CORRECTION : Utiliser l'URL de la dernière version
         const latestVersion = file.versions[0];
         if (latestVersion.url) {
           window.open(latestVersion.url, "_blank");
@@ -379,7 +430,6 @@ export default function FilesViewBranch({
           toast.error("URL de téléchargement non disponible");
         }
       } else if (file.path) {
-        // ✅ CORRECTION : Fallback sur le path du fichier
         window.open(file.path, "_blank");
       } else {
         toast.error("Aucun chemin de téléchargement disponible");
@@ -395,16 +445,11 @@ export default function FilesViewBranch({
       } else {
         let shareUrl: string | undefined;
 
-        // ✅ CORRECTION : Priorité à l'URL de la dernière version
         if (file.versions && file.versions.length > 0 && file.versions[0].url) {
           shareUrl = file.versions[0].url;
-        }
-        // Fallback : construire une URL depuis le path
-        else if (file.path) {
+        } else if (file.path) {
           shareUrl = `${window.location.origin}/api/files/${file.id}/download`;
-        }
-        // Dernière option : URL vers la page du fichier
-        else {
+        } else {
           shareUrl = `${window.location.origin}/files/${file.id}`;
         }
 
@@ -441,13 +486,30 @@ export default function FilesViewBranch({
     if (viewOptions.expandAll) {
       setExpandedNodes(new Set());
     } else {
-      const allFolderIds = files.filter((f) => f.isFolder).map((f) => f.id);
+      const getAllFolderIds = (nodes: TreeNode[]): string[] => {
+        const ids: string[] = [];
+
+        const traverse = (nodeList: TreeNode[]) => {
+          nodeList.forEach((node) => {
+            if (node.isFolder) {
+              ids.push(node.id);
+              traverse(node.children);
+            }
+          });
+        };
+
+        traverse(nodes);
+        return ids;
+      };
+
+      const allFolderIds = getAllFolderIds(filteredTree);
       setExpandedNodes(new Set(allFolderIds));
     }
-    setViewOptions((prev) => ({ ...prev, expandAll: !prev.expandAll }));
-  }, [files, viewOptions.expandAll]);
 
-  // ✅ Rendu d'un nœud de l'arbre
+    setViewOptions((prev) => ({ ...prev, expandAll: !prev.expandAll }));
+  }, [filteredTree, viewOptions.expandAll]);
+
+  // ✅ CORRECTION MAJEURE : Rendu récursif d'un nœud avec ses enfants
   const renderNode = useCallback(
     (node: TreeNode, index: number): JSX.Element => {
       const isSelected = selectedFiles.includes(node.id);
@@ -455,20 +517,17 @@ export default function FilesViewBranch({
       const isExpanded = expandedNodes.has(node.id);
 
       return (
-        <div
-          key={node.id}
-          className={`
-            flex items-center justify-between p-3 rounded-lg border
-            hover:bg-gray-50 transition-colors cursor-pointer
-            ${
-              isSelected
-                ? "bg-blue-50 border-blue-200"
-                : "bg-white border-gray-200"
-            }
-          `}
-          style={{ marginLeft: `${node.level * 24}px` }}
-        >
-          <div className="flex items-center space-x-3 flex-1 min-w-0">
+        <div key={node.id} className="select-none">
+          {/* ✅ Nœud principal */}
+          <div
+            className={`
+              flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer
+              ${isSelected ? "bg-blue-50 border border-blue-200" : ""}
+              ${node.level > 0 ? `ml-${Math.min(node.level * 4, 20)}` : ""}
+            `}
+            style={{ marginLeft: `${node.level * 20}px` }}
+            onClick={() => handleNodeClick(node)}
+          >
             {/* Toggle d'expansion pour les dossiers */}
             {hasChildren ? (
               <Button
@@ -481,13 +540,13 @@ export default function FilesViewBranch({
                 className="p-0 h-auto hover:bg-transparent"
               >
                 {isExpanded ? (
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
                 ) : (
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4 text-gray-500" />
                 )}
               </Button>
             ) : (
-              <div className="w-4" />
+              <div className="w-4 h-4" />
             )}
 
             {/* Checkbox de sélection */}
@@ -505,11 +564,11 @@ export default function FilesViewBranch({
             {getFileIcon(node)}
 
             {/* Nom et informations principales */}
-            <div
-              className="flex-1 min-w-0"
-              onClick={() => handleNodeClick(node)}
-            >
-              <div className="flex items-center space-x-2">
+            <div className="flex-1 min-w-0">
+              <div
+                className="flex items-center space-x-2 cursor-pointer"
+                onClick={() => handleNodeClick(node)}
+              >
                 <span className="font-medium text-gray-900 truncate">
                   {node.name}
                 </span>
@@ -520,32 +579,38 @@ export default function FilesViewBranch({
                     v{node.version}
                   </Badge>
                 )}
-                <Badge variant="default" className="text-xs">
+
+                <Badge variant="secondary" className="text-xs">
                   {getLabel(node.type)}
                 </Badge>
               </div>
 
               {/* Informations secondaires */}
-              <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+              <div className="flex items-center space-x-3 mt-1 text-xs text-gray-500">
                 {!node.isFolder &&
                   node.versions &&
                   node.versions.length > 0 &&
                   node.versions[0].size && (
                     <span>{formatSize(node.versions[0].size)}</span>
                   )}
+
                 {node.isFolder && node._count?.children && (
                   <span>
                     {node._count.children} élément
                     {node._count.children > 1 ? "s" : ""}
                   </span>
                 )}
+
                 {node.mimeType && !node.isFolder && (
-                  <span className="text-xs">{node.mimeType}</span>
+                  <Badge variant="outline" className="text-xs">
+                    {node.mimeType}
+                  </Badge>
                 )}
+
                 <span>
                   {format(node.updatedAt, "dd/MM/yyyy", { locale: fr })}
                 </span>
-                {/* ✅ CORRECTION : Utilisation d'author au lieu d'uploader */}
+
                 {node.author && node.author.length > 0 && (
                   <span>par {node.author[0].name || node.author[0].email}</span>
                 )}
@@ -553,86 +618,77 @@ export default function FilesViewBranch({
 
               {/* Tags */}
               {node.tags.length > 0 && (
-                <div className="flex items-center space-x-1 mt-2">
+                <div className="flex flex-wrap gap-1 mt-2">
                   {node.tags.slice(0, 3).map((tag, i) => (
                     <Badge key={i} variant="outline" className="text-xs">
+                      <Tag className="h-3 w-3 mr-1" />
                       {tag}
                     </Badge>
                   ))}
                   {node.tags.length > 3 && (
-                    <span className="text-xs text-gray-400">
+                    <Badge variant="outline" className="text-xs">
                       +{node.tags.length - 3}
-                    </span>
+                    </Badge>
                   )}
                 </div>
               )}
             </div>
+
+            {/* Menu d'actions */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onEdit(node)}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Modifier
+                </DropdownMenuItem>
+
+                {!node.isFolder && (
+                  <DropdownMenuItem onClick={() => handleDownload(node)}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Télécharger
+                  </DropdownMenuItem>
+                )}
+
+                <DropdownMenuItem onClick={() => handleShare(node)}>
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Partager
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={() => handleDuplicate(node)}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Dupliquer
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  onClick={() => handleDelete(node)}
+                  className="text-red-600 focus:text-red-600"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Supprimer
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
-          {/* Menu d'actions */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(node)}>
-                <Edit className="h-4 w-4 mr-2" />
-                Modifier
-              </DropdownMenuItem>
-              {!node.isFolder && (
-                <DropdownMenuItem onClick={() => handleDownload(node)}>
-                  <Download className="h-4 w-4 mr-2" />
-                  Télécharger
-                </DropdownMenuItem>
+          {/* ✅ CORRECTION MAJEURE : Affichage récursif des enfants */}
+          {hasChildren && isExpanded && node.children.length > 0 && (
+            <div className="ml-4">
+              {node.children.map((childNode, childIndex) =>
+                renderNode(childNode, childIndex)
               )}
-              <DropdownMenuItem onClick={() => handleShare(node)}>
-                <Share2 className="h-4 w-4 mr-2" />
-                Partager
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDuplicate(node)}>
-                <Copy className="h-4 w-4 mr-2" />
-                Dupliquer
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => handleDelete(node)}
-                className="text-red-600 focus:text-red-600"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Supprimer
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Enfants (si dossier expansé) */}
-          {hasChildren && isExpanded && (
-            <Collapsible open={isExpanded}>
-              <CollapsibleContent className="mt-2">
-                {files
-                  .filter((f) => f.parent?.id === node.id)
-                  .map((childFile, childIndex) => {
-                    const childNode: TreeNode = {
-                      ...childFile,
-                      level: node.level + 1,
-                      isExpanded: expandedNodes.has(childFile.id),
-                      parentPath: `${node.parentPath}/${node.name}`.replace(
-                        /^\/+/,
-                        ""
-                      ),
-                      hasChildren:
-                        childFile.isFolder &&
-                        (childFile._count?.children || 0) > 0,
-                    };
-                    return renderNode(childNode, childIndex);
-                  })}
-              </CollapsibleContent>
-            </Collapsible>
+            </div>
           )}
         </div>
       );
@@ -640,7 +696,6 @@ export default function FilesViewBranch({
     [
       selectedFiles,
       expandedNodes,
-      files,
       onToggleSelection,
       getFileIcon,
       getLabel,
@@ -661,9 +716,9 @@ export default function FilesViewBranch({
       <Card className="w-full">
         <CardContent className="p-6">
           {/* Barre d'outils */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             {/* Recherche */}
-            <div className="relative flex-1 max-w-md">
+            <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Rechercher dans l'arbre..."
@@ -681,8 +736,14 @@ export default function FilesViewBranch({
             {/* Actions globales */}
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" onClick={handleExpandAll}>
+                {viewOptions.expandAll ? (
+                  <ChevronDown className="h-4 w-4 mr-2" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 mr-2" />
+                )}
                 {viewOptions.expandAll ? "Tout replier" : "Tout déplier"}
               </Button>
+
               <Button variant="outline" size="sm" onClick={onRefresh}>
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Actualiser
@@ -690,13 +751,13 @@ export default function FilesViewBranch({
             </div>
           </div>
 
-          {/* Arbre des fichiers */}
-          <div className="space-y-2">
+          {/* ✅ Arbre des fichiers avec affichage récursif */}
+          <div className="space-y-1">
             {filteredTree.length > 0 ? (
               filteredTree.map((node, index) => renderNode(node, index))
             ) : (
-              <div className="text-center py-12">
-                <Folder className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+              <div className="text-center py-8">
+                <FolderOpen className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   {viewOptions.searchTerm
                     ? "Aucun résultat trouvé"
@@ -708,7 +769,7 @@ export default function FilesViewBranch({
                     : "Les fichiers et dossiers apparaîtront ici"}
                 </p>
                 {(viewOptions.searchTerm ||
-                  viewOptions.typeFilter.length > 0) && (
+                  viewOptions.typeFilter.length > 0) && ( 
                   <Button
                     variant="outline"
                     onClick={() =>
