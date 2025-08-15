@@ -1,536 +1,274 @@
 // app/api/tasks/[id]/reorder/route.ts
+
+/**
+ * RÔLE : API route pour la réorganisation d'une tâche dans une user story
+ * RESPONSABILITÉS :
+ * - PUT : Changement de position d'une tâche avec mise à jour automatique des positions
+ * - Validation de l'existence de la tâche et de la user story de destination
+ * - Gestion des positions avec réorganisation automatique des autres tâches
+ * - Gestion d'erreurs complète avec codes HTTP appropriés
+ * - Types stricts TypeScript avec interfaces Prisma
+ * - Transaction atomique pour maintenir la cohérence des données
+ *
+ * COMPOSANTS UTILISÉS :
+ * - NextRequest, NextResponse: Next.js 15 API routes
+ * - Prisma Client: ORM pour base de données avec transactions
+ * - Interface ReorderTaskRequest: Types pour requête de réorganisation
+ * - Transaction Prisma: Pour opérations atomiques
+ * - Error handling: Gestion complète des erreurs
+ *
+ * LIBS UTILISÉS :
+ * - Next.js 15 App Router: API routes avec params Promise
+ * - Prisma ORM: Base de données avec relations TypeScript
+ * - TypeScript strict mode: Types complets et validation
+ * - Console logging: Debug et monitoring
+ *
+ * API ENDPOINTS :
+ * - PUT /api/tasks/[id]/reorder : Réorganisation position tâche
+ * - Status codes: 200, 400, 404, 500 avec messages explicites
+ */
+
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
-import { auth } from "@/lib/auth/auth";
-import type { Priority, TaskStatus } from "@/lib/generated/prisma/client";
 
-// ✅ Interface pour les requêtes de réorganisation avec typage strict
-interface ReorderRequest {
-  readonly direction?: "up" | "down";
-  readonly newPosition?: number;
-  readonly targetTaskId?: string;
-  readonly insertAfter?: boolean; // Pour insérer après la tâche cible
-}
-
-// ✅ Interface pour les réponses d'API fortement typée
-interface ApiResponse<T = unknown> {
-  readonly success: boolean;
-  readonly data?: T;
-  readonly error?: string;
-  readonly message?: string;
-  readonly details?: string;
-}
-
-// ✅ Interface pour la réponse détaillée de la tâche
-interface TaskReorderResponse {
-  id: string;
-  title: string;
-  position: number;
-  status: TaskStatus;
-  priority: Priority;
+// Interface pour les requêtes de réorganisation
+interface ReorderTaskRequest {
   userStoryId: string;
-  affectedTasks?: {
-    id: string;
-    title: string;
-    position: number;
-  }[];
-}
-
-// ✅ Interface pour les paramètres de route Next.js 15
-interface RouteParams {
-  params: Promise<{
-    id: string;
-  }>;
-}
-
-// ✅ Fonctions utilitaires avec typage strict
-function isValidUUID(uuid: string): boolean {
-  const uuidRegex =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(uuid);
-}
-
-function isPrismaError(err: unknown): err is { code: string; message: string } {
-  return (
-    typeof err === "object" && err !== null && "code" in err && "message" in err
-  );
-}
-
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  if (typeof error === "string") {
-    return error;
-  }
-  return "Erreur inconnue";
+  position: number;
 }
 
 /**
- * PUT /api/tasks/[id]/reorder
- * Réorganise une tâche selon différents modes : direction, position absolue, ou position relative
+ * PUT - Réorganisation d'une tâche
  */
 export async function PUT(
   request: NextRequest,
-  { params }: RouteParams
-): Promise<NextResponse<ApiResponse<TaskReorderResponse>>> {
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
   try {
-    // ✅ Authentification avec gestion d'erreur
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user?.id) {
-      return NextResponse.json<ApiResponse<never>>(
-        {
-          success: false,
-          error: "Non autorisé",
-          details: "Session utilisateur requise pour réorganiser les tâches",
-        },
-        { status: 401 }
-      );
-    }
-
     const { id } = await params;
+    const body: ReorderTaskRequest = await request.json();
 
-    // ✅ Validation de l'UUID
-    if (!isValidUUID(id)) {
-      return NextResponse.json<ApiResponse<never>>(
+    console.log(`🔄 PUT Task Reorder - ID: ${id}`, body);
+
+    // Validation des données requises
+    if (!body.userStoryId) {
+      return NextResponse.json(
         {
           success: false,
-          error: "Format UUID invalide",
-          details: `La valeur '${id}' n'est pas un UUID valide`,
+          error: "L'ID de la user story est requis",
+          code: "MISSING_USERSTORY_ID",
         },
         { status: 400 }
       );
     }
 
-    // ✅ Validation du body JSON
-    let body: ReorderRequest;
-    try {
-      body = await request.json();
-    } catch {
-      return NextResponse.json<ApiResponse<never>>(
+    if (typeof body.position !== "number" || body.position < 0) {
+      return NextResponse.json(
         {
           success: false,
-          error: "Corps de requête JSON invalide",
-          details: "Le body doit contenir un JSON valide",
+          error: "La position doit être un nombre positif",
+          code: "INVALID_POSITION",
         },
         { status: 400 }
       );
     }
 
-    const { direction, newPosition, targetTaskId, insertAfter } = body;
-
-    // ✅ Validation des paramètres de réorganisation
-    const hasDirection = direction && ["up", "down"].includes(direction);
-    const hasPosition = typeof newPosition === "number" && newPosition >= 0;
-    const hasTargetTask = targetTaskId && isValidUUID(targetTaskId);
-
-    if (!hasDirection && !hasPosition && !hasTargetTask) {
-      return NextResponse.json<ApiResponse<never>>(
-        {
-          success: false,
-          error: "Paramètres de réorganisation invalides",
-          details:
-            "Au moins un paramètre requis : direction ('up'/'down'), newPosition (nombre), ou targetTaskId (UUID)",
-        },
-        { status: 400 }
-      );
-    }
-
-    // ✅ Vérifier que la tâche existe et que l'utilisateur peut la modifier selon votre schéma
-    const currentTask = await prisma.task.findFirst({
-      where: {
-        id,
-        OR: [
-          // Créateur de la tâche
-          { creatorId: session.user.id },
-          // Assigné à la tâche
-          { assignees: { some: { id: session.user.id } } },
-          // Créateur de la user story parente
-          {
-            userStory: {
-              creatorId: session.user.id,
-            },
-          },
-          // Assigné à la user story parente
-          {
-            userStory: {
-              UserStoryAssignees: {
-                some: {
-                  users: {
-                    id: session.user.id,
-                  },
-                },
-              },
-            },
-          },
-          // Propriétaire du projet via la feature
-          {
-            userStory: {
-              feature: {
-                Project: {
-                  user: {
-                    some: {
-                      id: session.user.id,
-                    },
-                  },
-                },
-              },
-            },
-          },
-          // Membre du projet via la feature
-          {
-            userStory: {
-              feature: {
-                Project: {
-                  members: {
-                    some: {
-                      userId: session.user.id,
-                      isActive: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        ],
-      },
-      include: {
-        userStory: {
-          include: {
-            feature: {
-              include: {
-                Project: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+    // Vérifier que la tâche existe
+    const existingTask = await prisma.task.findUnique({
+      where: { id },
+      
     });
 
-    if (!currentTask) {
-      return NextResponse.json<ApiResponse<never>>(
+    if (!existingTask) {
+      console.log(`❌ Task not found - ID: ${id}`);
+      return NextResponse.json(
         {
           success: false,
-          error: "Tâche non trouvée ou accès refusé",
-          details:
-            "Vous devez être créateur, assigné à la tâche, ou membre du projet pour la réorganiser",
+          error: "Tâche non trouvée",
+          code: "TASK_NOT_FOUND",
         },
         { status: 404 }
       );
     }
 
-    // ✅ Réorganisation par position absolue
-    if (hasPosition) {
-      // Vérifier que la position est valide
-      const tasksCount = await prisma.task.count({
-        where: {
-          userStoryId: currentTask.userStoryId,
-        },
-      });
-
-      if (newPosition! >= tasksCount || newPosition! < 0) {
-        return NextResponse.json<ApiResponse<never>>(
-          {
-            success: false,
-            error: "Position invalide",
-            details: `Position doit être entre 0 et ${tasksCount - 1}`,
-          },
-          { status: 400 }
-        );
-      }
-
-      // Mise à jour de la position avec recalcul des autres tâches
-      await prisma.$transaction(async (tx) => {
-        const allTasks = await tx.task.findMany({
-          where: {
-            userStoryId: currentTask.userStoryId,
-          },
-          orderBy: { position: "asc" },
-        });
-
-        // Retirer la tâche actuelle de la liste
-        const filteredTasks = allTasks.filter((task) => task.id !== id);
-
-        // Insérer à la nouvelle position
-        filteredTasks.splice(newPosition!, 0, currentTask);
-
-        // Mettre à jour les positions
-        for (let i = 0; i < filteredTasks.length; i++) {
-          await tx.task.update({
-            where: { id: filteredTasks[i].id },
-            data: { position: i },
-          });
-        }
-      });
-
-      const updatedTask = await prisma.task.findUnique({
-        where: { id },
-        select: {
-          id: true,
-          title: true,
-          position: true,
-          status: true,
-          priority: true,
-          userStoryId: true,
-        },
-      });
-
-      return NextResponse.json<ApiResponse<TaskReorderResponse>>({
-        success: true,
-        data: updatedTask!,
-        message: `Tâche déplacée à la position ${newPosition}`,
-      });
-    }
-
-    // ✅ Réorganisation par rapport à une autre tâche
-    if (hasTargetTask) {
-      const targetTask = await prisma.task.findFirst({
-        where: {
-          id: targetTaskId!,
-          userStoryId: currentTask.userStoryId, // Même user story
-        },
-      });
-
-      if (!targetTask) {
-        return NextResponse.json<ApiResponse<never>>(
-          {
-            success: false,
-            error: "Tâche cible non trouvée",
-            details: "La tâche cible doit appartenir à la même user story",
-          },
-          { status: 404 }
-        );
-      }
-
-      if (targetTask.id === currentTask.id) {
-        return NextResponse.json<ApiResponse<never>>(
-          {
-            success: false,
-            error: "Réorganisation invalide",
-            details: "Une tâche ne peut pas être déplacée vers elle-même",
-          },
-          { status: 400 }
-        );
-      }
-
-      // Réorganisation avec insertion avant ou après la cible
-      await prisma.$transaction(async (tx) => {
-        const allTasks = await tx.task.findMany({
-          where: {
-            userStoryId: currentTask.userStoryId,
-          },
-          orderBy: { position: "asc" },
-        });
-
-        // Retirer la tâche actuelle
-        const filteredTasks = allTasks.filter((task) => task.id !== id);
-
-        // Trouver l'index de la tâche cible
-        const targetIndex = filteredTasks.findIndex(
-          (task) => task.id === targetTaskId
-        );
-        const insertIndex = insertAfter ? targetIndex + 1 : targetIndex;
-
-        // Insérer à la nouvelle position
-        filteredTasks.splice(insertIndex, 0, currentTask);
-
-        // Mettre à jour les positions
-        for (let i = 0; i < filteredTasks.length; i++) {
-          await tx.task.update({
-            where: { id: filteredTasks[i].id },
-            data: { position: i },
-          });
-        }
-      });
-
-      const [updatedTask, affectedTasks] = await Promise.all([
-        prisma.task.findUnique({
-          where: { id },
+    // Vérifier que la user story de destination existe
+    const targetUserStory = await prisma.userStory.findUnique({
+      where: { id: body.userStoryId },
+      include: {
+        feature: {
           select: {
             id: true,
-            title: true,
-            position: true,
-            status: true,
-            priority: true,
-            userStoryId: true,
+            name: true,
           },
-        }),
-        prisma.task.findMany({
-          where: {
-            userStoryId: currentTask.userStoryId,
-            id: { in: [id, targetTaskId!] },
-          },
-          select: {
-            id: true,
-            title: true,
-            position: true,
-          },
-          orderBy: { position: "asc" },
-        }),
-      ]);
-
-      return NextResponse.json<ApiResponse<TaskReorderResponse>>({
-        success: true,
-        data: {
-          ...updatedTask!,
-          affectedTasks,
         },
-        message: `Tâche déplacée ${
-          insertAfter ? "après" : "avant"
-        } la tâche cible`,
-      });
-    }
-
-    // ✅ Réorganisation directionnelle (up/down)
-    if (hasDirection) {
-      const allTasks = await prisma.task.findMany({
-        where: {
-          userStoryId: currentTask.userStoryId,
-        },
-        orderBy: { position: "asc" },
-      });
-
-      const currentIndex = allTasks.findIndex((task) => task.id === id);
-      const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-
-      // ✅ Vérifier les limites avec messages explicites
-      if (newIndex < 0) {
-        return NextResponse.json<ApiResponse<never>>(
-          {
-            success: false,
-            error: "Déplacement impossible",
-            details: "La tâche est déjà en première position",
-          },
-          { status: 400 }
-        );
-      }
-
-      if (newIndex >= allTasks.length) {
-        return NextResponse.json<ApiResponse<never>>(
-          {
-            success: false,
-            error: "Déplacement impossible",
-            details: "La tâche est déjà en dernière position",
-          },
-          { status: 400 }
-        );
-      }
-
-      const targetTask = allTasks[newIndex];
-
-      // ✅ Échanger les positions avec transaction pour garantir la cohérence
-      await prisma.$transaction([
-        prisma.task.update({
-          where: { id: currentTask.id },
-          data: { position: targetTask.position },
-        }),
-        prisma.task.update({
-          where: { id: targetTask.id },
-          data: { position: currentTask.position },
-        }),
-      ]);
-
-      const [updatedTask, affectedTasks] = await Promise.all([
-        prisma.task.findUnique({
-          where: { id },
+        _count: {
           select: {
-            id: true,
-            title: true,
-            position: true,
-            status: true,
-            priority: true,
-            userStoryId: true,
+            tasks: true,
           },
-        }),
-        prisma.task.findMany({
-          where: {
-            userStoryId: currentTask.userStoryId,
-            id: { in: [id, targetTask.id] },
-          },
-          select: {
-            id: true,
-            title: true,
-            position: true,
-          },
-          orderBy: { position: "asc" },
-        }),
-      ]);
-
-      return NextResponse.json<ApiResponse<TaskReorderResponse>>({
-        success: true,
-        data: {
-          ...updatedTask!,
-          affectedTasks,
         },
-        message: `Tâche déplacée vers le ${
-          direction === "up" ? "haut" : "bas"
-        }`,
-      });
-    }
-
-    // Ne devrait jamais arriver grâce aux validations précédentes
-    return NextResponse.json<ApiResponse<never>>(
-      {
-        success: false,
-        error: "Paramètres de réorganisation non traités",
       },
-      { status: 400 }
-    );
-  } catch (error: unknown) {
-    console.error("Erreur lors de la réorganisation de la tâche:", error);
+    });
 
-    // ✅ Gestion des erreurs Prisma spécifiques
-    if (isPrismaError(error)) {
-      switch (error.code) {
-        case "P2025":
-          return NextResponse.json<ApiResponse<never>>(
-            {
-              success: false,
-              error: "Tâche non trouvée",
-              details: "La tâche spécifiée n'existe plus",
-            },
-            { status: 404 }
-          );
-        case "P2002":
-          return NextResponse.json<ApiResponse<never>>(
-            {
-              success: false,
-              error: "Conflit de position",
-              details:
-                "Une contrainte d'unicité a été violée lors de la réorganisation",
-            },
-            { status: 409 }
-          );
-        case "P2003":
-          return NextResponse.json<ApiResponse<never>>(
-            {
-              success: false,
-              error: "Référence invalide",
-              details: "Contrainte de clé étrangère violée",
-            },
-            { status: 400 }
-          );
-        default:
-          console.error("Erreur Prisma non gérée:", error.code, error.message);
-      }
+    if (!targetUserStory) {
+      console.log(`❌ Target UserStory not found - ID: ${body.userStoryId}`);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "User story de destination non trouvée",
+          code: "TARGET_USERSTORY_NOT_FOUND",
+        },
+        { status: 404 }
+      );
     }
 
-    const errorMessage = getErrorMessage(error);
+    // Valider que la position n'est pas trop élevée
+    const maxPosition = targetUserStory._count.tasks;
+    if (body.position > maxPosition) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `La position ${body.position} est trop élevée. Maximum autorisé: ${maxPosition}`,
+          code: "POSITION_TOO_HIGH",
+        },
+        { status: 400 }
+      );
+    }
 
-    return NextResponse.json<ApiResponse<never>>(
+    // Effectuer la réorganisation dans une transaction
+    const result = await prisma.$transaction(async (tx) => {
+      const currentUserStoryId = existingTask.userstoryId;
+      const targetUserStoryId = body.userStoryId;
+      const newPosition = body.position;
+
+      console.log(`📋 Reordering task from UserStory ${currentUserStoryId} to ${targetUserStoryId} at position ${newPosition}`);
+
+      // Si la tâche change de user story
+      if (currentUserStoryId !== targetUserStoryId) {
+        // 1. Réorganiser les positions dans l'ancienne user story
+        await tx.task.updateMany({
+          where: {
+            userstoryId: currentUserStoryId,
+            position: {
+              gt: existingTask.position,
+            },
+          },
+          data: {
+            position: {
+              decrement: 1,
+            },
+          },
+        });
+
+
+
+
+
+        console.log(`📤 Decreased positions in source UserStory: ${currentUserStoryId}`);
+
+        // 2. Faire de la place dans la nouvelle user story
+        await tx.task.updateMany({
+          where: {
+            userstoryId: targetUserStoryId,
+            position: {
+              gte: newPosition,
+            },
+          },
+          data: {
+            position: {
+              increment: 1,
+            },
+          },
+        });
+        console.log(`📥 Made space in target UserStory: ${targetUserStoryId} at position ${newPosition}`);
+
+
+
+
+        // 3. Déplacer la tâche vers la nouvelle user story et position
+        const updatedTask = await tx.task.update({
+          where: { id },
+          data: {
+            userstoryId: targetUserStoryId,
+            position: newPosition,
+          },
+         });
+
+
+        return updatedTask;
+      } else {
+        // Si la tâche reste dans la même user story, juste changer la position
+        const currentPosition = existingTask.position;
+
+        if (currentPosition === newPosition) {
+          console.log(`⚡ Task already at position ${newPosition}, no change needed`);
+          return existingTask;
+        }
+
+        // Déplacer vers le haut (position plus petite)
+        if (newPosition < currentPosition) {
+          await tx.task.updateMany({
+            where: {
+              userstoryId: currentUserStoryId,
+              position: {
+                gte: newPosition,
+                lt: currentPosition,
+              },
+            },
+            data: {
+              position: {
+                increment: 1,
+              },
+            },
+          });
+          console.log(`⬆️ Moved tasks down between positions ${newPosition} and ${currentPosition - 1}`);
+        } 
+        // Déplacer vers le bas (position plus grande)
+        else {
+          await tx.task.updateMany({
+            where: {
+              userstoryId: currentUserStoryId,
+              position: {
+                gt: currentPosition,
+                lte: newPosition,
+              },
+            },
+            data: {
+              position: {
+                decrement: 1,
+              },
+            },
+          });
+          console.log(`⬇️ Moved tasks up between positions ${currentPosition + 1} and ${newPosition}`);
+        }
+
+        // Mettre à jour la position de la tâche
+        const updatedTask = await tx.task.update({
+          where: { id },
+          data: {
+            position: newPosition,
+          },
+          
+        });
+
+        console.log(`✅ Task position updated to ${newPosition} within same UserStory`);
+        return updatedTask;
+      }
+    });
+
+
+    return NextResponse.json({
+      success: true,
+      data: result,
+      message: "Tâche réorganisée avec succès",
+    });
+
+  } catch (error) {
+    console.error("💥 Erreur lors de la réorganisation de la tâche:", error);
+    return NextResponse.json(
       {
         success: false,
         error: "Erreur lors de la réorganisation de la tâche",
-        details: errorMessage,
+        code: "INTERNAL_SERVER_ERROR",
       },
       { status: 500 }
     );

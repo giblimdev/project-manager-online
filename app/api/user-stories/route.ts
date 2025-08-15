@@ -377,7 +377,7 @@ export async function GET(request: NextRequest) {
               startDate: "desc",
             },
           },
-          Epic: {
+          epic: {
             select: {
               id: true,
               name: true,

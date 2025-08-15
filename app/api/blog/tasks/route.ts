@@ -6,7 +6,7 @@ export async function GET() {
   try {
     const tasks = await prisma.task.findMany({
       include: {
-        assignees: true,
+        assignees: true, 
         userStory: true,
       },
       orderBy: { position: "asc" },

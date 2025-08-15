@@ -4225,6 +4225,7 @@ export namespace Prisma {
     sprints: number
     templates: number
     user: number
+    Task: number
   }
 
   export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4237,6 +4238,7 @@ export namespace Prisma {
     sprints?: boolean | ProjectCountOutputTypeCountSprintsArgs
     templates?: boolean | ProjectCountOutputTypeCountTemplatesArgs
     user?: boolean | ProjectCountOutputTypeCountUserArgs
+    Task?: boolean | ProjectCountOutputTypeCountTaskArgs
   }
 
   // Custom InputTypes
@@ -4313,6 +4315,13 @@ export namespace Prisma {
     where?: UserWhereInput
   }
 
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountTaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskWhereInput
+  }
+
 
   /**
    * Count Type InitiativeCountOutputType
@@ -4352,11 +4361,13 @@ export namespace Prisma {
   export type EpicCountOutputType = {
     features: number
     userstories: number
+    tasks: number
   }
 
   export type EpicCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     features?: boolean | EpicCountOutputTypeCountFeaturesArgs
     userstories?: boolean | EpicCountOutputTypeCountUserstoriesArgs
+    tasks?: boolean | EpicCountOutputTypeCountTasksArgs
   }
 
   // Custom InputTypes
@@ -4384,6 +4395,13 @@ export namespace Prisma {
     where?: UserStoryWhereInput
   }
 
+  /**
+   * EpicCountOutputType without action
+   */
+  export type EpicCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskWhereInput
+  }
+
 
   /**
    * Count Type FeatureCountOutputType
@@ -4392,6 +4410,7 @@ export namespace Prisma {
   export type FeatureCountOutputType = {
     dependencies: number
     dependents: number
+    Tasks: number
     children: number
     files: number
     userStories: number
@@ -4400,6 +4419,7 @@ export namespace Prisma {
   export type FeatureCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dependencies?: boolean | FeatureCountOutputTypeCountDependenciesArgs
     dependents?: boolean | FeatureCountOutputTypeCountDependentsArgs
+    Tasks?: boolean | FeatureCountOutputTypeCountTasksArgs
     children?: boolean | FeatureCountOutputTypeCountChildrenArgs
     files?: boolean | FeatureCountOutputTypeCountFilesArgs
     userStories?: boolean | FeatureCountOutputTypeCountUserStoriesArgs
@@ -4433,6 +4453,13 @@ export namespace Prisma {
   /**
    * FeatureCountOutputType without action
    */
+  export type FeatureCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskWhereInput
+  }
+
+  /**
+   * FeatureCountOutputType without action
+   */
   export type FeatureCountOutputTypeCountChildrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FeatureWhereInput
   }
@@ -4460,24 +4487,24 @@ export namespace Prisma {
     UserStoryAssignees: number
     comments: number
     files: number
-    tasks: number
     timeEntries: number
     dependencies: number
     dependents: number
     sprints: number
-    Epic: number
+    epic: number
+    tasks: number
   }
 
   export type UserStoryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     UserStoryAssignees?: boolean | UserStoryCountOutputTypeCountUserStoryAssigneesArgs
     comments?: boolean | UserStoryCountOutputTypeCountCommentsArgs
     files?: boolean | UserStoryCountOutputTypeCountFilesArgs
-    tasks?: boolean | UserStoryCountOutputTypeCountTasksArgs
     timeEntries?: boolean | UserStoryCountOutputTypeCountTimeEntriesArgs
     dependencies?: boolean | UserStoryCountOutputTypeCountDependenciesArgs
     dependents?: boolean | UserStoryCountOutputTypeCountDependentsArgs
     sprints?: boolean | UserStoryCountOutputTypeCountSprintsArgs
-    Epic?: boolean | UserStoryCountOutputTypeCountEpicArgs
+    epic?: boolean | UserStoryCountOutputTypeCountEpicArgs
+    tasks?: boolean | UserStoryCountOutputTypeCountTasksArgs
   }
 
   // Custom InputTypes
@@ -4515,13 +4542,6 @@ export namespace Prisma {
   /**
    * UserStoryCountOutputType without action
    */
-  export type UserStoryCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TaskWhereInput
-  }
-
-  /**
-   * UserStoryCountOutputType without action
-   */
   export type UserStoryCountOutputTypeCountTimeEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TimeEntryWhereInput
   }
@@ -4554,6 +4574,13 @@ export namespace Prisma {
     where?: EpicWhereInput
   }
 
+  /**
+   * UserStoryCountOutputType without action
+   */
+  export type UserStoryCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskWhereInput
+  }
+
 
   /**
    * Count Type TaskCountOutputType
@@ -4562,19 +4589,27 @@ export namespace Prisma {
   export type TaskCountOutputType = {
     comments: number
     files: number
+    features: number
+    sprints: number
     dependencies: number
-    dependents: number
     timeEntries: number
     assignees: number
+    askDependency: number
+    userStory: number
+    epic: number
   }
 
   export type TaskCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     comments?: boolean | TaskCountOutputTypeCountCommentsArgs
     files?: boolean | TaskCountOutputTypeCountFilesArgs
+    features?: boolean | TaskCountOutputTypeCountFeaturesArgs
+    sprints?: boolean | TaskCountOutputTypeCountSprintsArgs
     dependencies?: boolean | TaskCountOutputTypeCountDependenciesArgs
-    dependents?: boolean | TaskCountOutputTypeCountDependentsArgs
     timeEntries?: boolean | TaskCountOutputTypeCountTimeEntriesArgs
     assignees?: boolean | TaskCountOutputTypeCountAssigneesArgs
+    askDependency?: boolean | TaskCountOutputTypeCountAskDependencyArgs
+    userStory?: boolean | TaskCountOutputTypeCountUserStoryArgs
+    epic?: boolean | TaskCountOutputTypeCountEpicArgs
   }
 
   // Custom InputTypes
@@ -4605,14 +4640,21 @@ export namespace Prisma {
   /**
    * TaskCountOutputType without action
    */
-  export type TaskCountOutputTypeCountDependenciesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TaskDependencyWhereInput
+  export type TaskCountOutputTypeCountFeaturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FeatureWhereInput
   }
 
   /**
    * TaskCountOutputType without action
    */
-  export type TaskCountOutputTypeCountDependentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TaskCountOutputTypeCountSprintsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SprintWhereInput
+  }
+
+  /**
+   * TaskCountOutputType without action
+   */
+  export type TaskCountOutputTypeCountDependenciesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TaskDependencyWhereInput
   }
 
@@ -4630,6 +4672,27 @@ export namespace Prisma {
     where?: UserWhereInput
   }
 
+  /**
+   * TaskCountOutputType without action
+   */
+  export type TaskCountOutputTypeCountAskDependencyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskDependencyWhereInput
+  }
+
+  /**
+   * TaskCountOutputType without action
+   */
+  export type TaskCountOutputTypeCountUserStoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserStoryWhereInput
+  }
+
+  /**
+   * TaskCountOutputType without action
+   */
+  export type TaskCountOutputTypeCountEpicArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EpicWhereInput
+  }
+
 
   /**
    * Count Type SprintCountOutputType
@@ -4641,6 +4704,7 @@ export namespace Prisma {
     timeEntries: number
     users: number
     userStories: number
+    Tasks: number
   }
 
   export type SprintCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4649,6 +4713,7 @@ export namespace Prisma {
     timeEntries?: boolean | SprintCountOutputTypeCountTimeEntriesArgs
     users?: boolean | SprintCountOutputTypeCountUsersArgs
     userStories?: boolean | SprintCountOutputTypeCountUserStoriesArgs
+    Tasks?: boolean | SprintCountOutputTypeCountTasksArgs
   }
 
   // Custom InputTypes
@@ -4697,6 +4762,13 @@ export namespace Prisma {
     where?: UserStoryWhereInput
   }
 
+  /**
+   * SprintCountOutputType without action
+   */
+  export type SprintCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskWhereInput
+  }
+
 
   /**
    * Count Type FileCountOutputType
@@ -4706,6 +4778,7 @@ export namespace Prisma {
     comments: number
     versions: number
     children: number
+    task: number
     author: number
     items: number
   }
@@ -4714,6 +4787,7 @@ export namespace Prisma {
     comments?: boolean | FileCountOutputTypeCountCommentsArgs
     versions?: boolean | FileCountOutputTypeCountVersionsArgs
     children?: boolean | FileCountOutputTypeCountChildrenArgs
+    task?: boolean | FileCountOutputTypeCountTaskArgs
     author?: boolean | FileCountOutputTypeCountAuthorArgs
     items?: boolean | FileCountOutputTypeCountItemsArgs
   }
@@ -4748,6 +4822,13 @@ export namespace Prisma {
    */
   export type FileCountOutputTypeCountChildrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FileWhereInput
+  }
+
+  /**
+   * FileCountOutputType without action
+   */
+  export type FileCountOutputTypeCountTaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskWhereInput
   }
 
   /**
@@ -12835,6 +12916,7 @@ export namespace Prisma {
     sprints?: boolean | Project$sprintsArgs<ExtArgs>
     templates?: boolean | Project$templatesArgs<ExtArgs>
     user?: boolean | Project$userArgs<ExtArgs>
+    Task?: boolean | Project$TaskArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -12903,6 +12985,7 @@ export namespace Prisma {
     sprints?: boolean | Project$sprintsArgs<ExtArgs>
     templates?: boolean | Project$templatesArgs<ExtArgs>
     user?: boolean | Project$userArgs<ExtArgs>
+    Task?: boolean | Project$TaskArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -12929,6 +13012,7 @@ export namespace Prisma {
        * Propriétaires du projet
        */
       user: Prisma.$UserPayload<ExtArgs>[]
+      Task: Prisma.$TaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -13361,6 +13445,7 @@ export namespace Prisma {
     sprints<T extends Project$sprintsArgs<ExtArgs> = {}>(args?: Subset<T, Project$sprintsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SprintPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     templates<T extends Project$templatesArgs<ExtArgs> = {}>(args?: Subset<T, Project$templatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     user<T extends Project$userArgs<ExtArgs> = {}>(args?: Subset<T, Project$userArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Task<T extends Project$TaskArgs<ExtArgs> = {}>(args?: Subset<T, Project$TaskArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14006,6 +14091,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
+   * Project.Task
+   */
+  export type Project$TaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Task
+     */
+    select?: TaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Task
+     */
+    omit?: TaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskInclude<ExtArgs> | null
+    where?: TaskWhereInput
+    orderBy?: TaskOrderByWithRelationInput | TaskOrderByWithRelationInput[]
+    cursor?: TaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
   }
 
   /**
@@ -16721,6 +16830,7 @@ export namespace Prisma {
     initiative?: boolean | InitiativeDefaultArgs<ExtArgs>
     features?: boolean | Epic$featuresArgs<ExtArgs>
     userstories?: boolean | Epic$userstoriesArgs<ExtArgs>
+    tasks?: boolean | Epic$tasksArgs<ExtArgs>
     _count?: boolean | EpicCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["epic"]>
 
@@ -16776,6 +16886,7 @@ export namespace Prisma {
     initiative?: boolean | InitiativeDefaultArgs<ExtArgs>
     features?: boolean | Epic$featuresArgs<ExtArgs>
     userstories?: boolean | Epic$userstoriesArgs<ExtArgs>
+    tasks?: boolean | Epic$tasksArgs<ExtArgs>
     _count?: boolean | EpicCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EpicIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16791,6 +16902,7 @@ export namespace Prisma {
       initiative: Prisma.$InitiativePayload<ExtArgs>
       features: Prisma.$FeaturePayload<ExtArgs>[]
       userstories: Prisma.$UserStoryPayload<ExtArgs>[]
+      tasks: Prisma.$TaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -17202,6 +17314,7 @@ export namespace Prisma {
     initiative<T extends InitiativeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, InitiativeDefaultArgs<ExtArgs>>): Prisma__InitiativeClient<$Result.GetResult<Prisma.$InitiativePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     features<T extends Epic$featuresArgs<ExtArgs> = {}>(args?: Subset<T, Epic$featuresArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userstories<T extends Epic$userstoriesArgs<ExtArgs> = {}>(args?: Subset<T, Epic$userstoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserStoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tasks<T extends Epic$tasksArgs<ExtArgs> = {}>(args?: Subset<T, Epic$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17687,6 +17800,30 @@ export namespace Prisma {
   }
 
   /**
+   * Epic.tasks
+   */
+  export type Epic$tasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Task
+     */
+    select?: TaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Task
+     */
+    omit?: TaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskInclude<ExtArgs> | null
+    where?: TaskWhereInput
+    orderBy?: TaskOrderByWithRelationInput | TaskOrderByWithRelationInput[]
+    cursor?: TaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
+  }
+
+  /**
    * Epic without action
    */
   export type EpicDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -18057,6 +18194,7 @@ export namespace Prisma {
     userId?: boolean
     dependencies?: boolean | Feature$dependenciesArgs<ExtArgs>
     dependents?: boolean | Feature$dependentsArgs<ExtArgs>
+    Tasks?: boolean | Feature$TasksArgs<ExtArgs>
     epic?: boolean | EpicDefaultArgs<ExtArgs>
     parent?: boolean | Feature$parentArgs<ExtArgs>
     children?: boolean | Feature$childrenArgs<ExtArgs>
@@ -18151,6 +18289,7 @@ export namespace Prisma {
   export type FeatureInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dependencies?: boolean | Feature$dependenciesArgs<ExtArgs>
     dependents?: boolean | Feature$dependentsArgs<ExtArgs>
+    Tasks?: boolean | Feature$TasksArgs<ExtArgs>
     epic?: boolean | EpicDefaultArgs<ExtArgs>
     parent?: boolean | Feature$parentArgs<ExtArgs>
     children?: boolean | Feature$childrenArgs<ExtArgs>
@@ -18178,6 +18317,7 @@ export namespace Prisma {
     objects: {
       dependencies: Prisma.$FeatureDependencyPayload<ExtArgs>[]
       dependents: Prisma.$FeatureDependencyPayload<ExtArgs>[]
+      Tasks: Prisma.$TaskPayload<ExtArgs>[]
       epic: Prisma.$EpicPayload<ExtArgs>
       parent: Prisma.$FeaturePayload<ExtArgs> | null
       children: Prisma.$FeaturePayload<ExtArgs>[]
@@ -18604,6 +18744,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     dependencies<T extends Feature$dependenciesArgs<ExtArgs> = {}>(args?: Subset<T, Feature$dependenciesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeatureDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     dependents<T extends Feature$dependentsArgs<ExtArgs> = {}>(args?: Subset<T, Feature$dependentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeatureDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Tasks<T extends Feature$TasksArgs<ExtArgs> = {}>(args?: Subset<T, Feature$TasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     epic<T extends EpicDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EpicDefaultArgs<ExtArgs>>): Prisma__EpicClient<$Result.GetResult<Prisma.$EpicPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     parent<T extends Feature$parentArgs<ExtArgs> = {}>(args?: Subset<T, Feature$parentArgs<ExtArgs>>): Prisma__FeatureClient<$Result.GetResult<Prisma.$FeaturePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     children<T extends Feature$childrenArgs<ExtArgs> = {}>(args?: Subset<T, Feature$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -19102,6 +19243,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FeatureDependencyScalarFieldEnum | FeatureDependencyScalarFieldEnum[]
+  }
+
+  /**
+   * Feature.Tasks
+   */
+  export type Feature$TasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Task
+     */
+    select?: TaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Task
+     */
+    omit?: TaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskInclude<ExtArgs> | null
+    where?: TaskWhereInput
+    orderBy?: TaskOrderByWithRelationInput | TaskOrderByWithRelationInput[]
+    cursor?: TaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
   }
 
   /**
@@ -20722,14 +20887,14 @@ export namespace Prisma {
     UserStoryAssignees?: boolean | UserStory$UserStoryAssigneesArgs<ExtArgs>
     comments?: boolean | UserStory$commentsArgs<ExtArgs>
     files?: boolean | UserStory$filesArgs<ExtArgs>
-    tasks?: boolean | UserStory$tasksArgs<ExtArgs>
     timeEntries?: boolean | UserStory$timeEntriesArgs<ExtArgs>
     creator?: boolean | UserDefaultArgs<ExtArgs>
     feature?: boolean | FeatureDefaultArgs<ExtArgs>
     dependencies?: boolean | UserStory$dependenciesArgs<ExtArgs>
     dependents?: boolean | UserStory$dependentsArgs<ExtArgs>
     sprints?: boolean | UserStory$sprintsArgs<ExtArgs>
-    Epic?: boolean | UserStory$EpicArgs<ExtArgs>
+    epic?: boolean | UserStory$epicArgs<ExtArgs>
+    tasks?: boolean | UserStory$tasksArgs<ExtArgs>
     _count?: boolean | UserStoryCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userStory"]>
 
@@ -20811,14 +20976,14 @@ export namespace Prisma {
     UserStoryAssignees?: boolean | UserStory$UserStoryAssigneesArgs<ExtArgs>
     comments?: boolean | UserStory$commentsArgs<ExtArgs>
     files?: boolean | UserStory$filesArgs<ExtArgs>
-    tasks?: boolean | UserStory$tasksArgs<ExtArgs>
     timeEntries?: boolean | UserStory$timeEntriesArgs<ExtArgs>
     creator?: boolean | UserDefaultArgs<ExtArgs>
     feature?: boolean | FeatureDefaultArgs<ExtArgs>
     dependencies?: boolean | UserStory$dependenciesArgs<ExtArgs>
     dependents?: boolean | UserStory$dependentsArgs<ExtArgs>
     sprints?: boolean | UserStory$sprintsArgs<ExtArgs>
-    Epic?: boolean | UserStory$EpicArgs<ExtArgs>
+    epic?: boolean | UserStory$epicArgs<ExtArgs>
+    tasks?: boolean | UserStory$tasksArgs<ExtArgs>
     _count?: boolean | UserStoryCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserStoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -20836,14 +21001,14 @@ export namespace Prisma {
       UserStoryAssignees: Prisma.$UserStoryAssigneesPayload<ExtArgs>[]
       comments: Prisma.$CommentPayload<ExtArgs>[]
       files: Prisma.$FilePayload<ExtArgs>[]
-      tasks: Prisma.$TaskPayload<ExtArgs>[]
       timeEntries: Prisma.$TimeEntryPayload<ExtArgs>[]
       creator: Prisma.$UserPayload<ExtArgs>
       feature: Prisma.$FeaturePayload<ExtArgs>
       dependencies: Prisma.$UserStoryDependencyPayload<ExtArgs>[]
       dependents: Prisma.$UserStoryDependencyPayload<ExtArgs>[]
       sprints: Prisma.$SprintPayload<ExtArgs>[]
-      Epic: Prisma.$EpicPayload<ExtArgs>[]
+      epic: Prisma.$EpicPayload<ExtArgs>[]
+      tasks: Prisma.$TaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -21263,14 +21428,14 @@ export namespace Prisma {
     UserStoryAssignees<T extends UserStory$UserStoryAssigneesArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$UserStoryAssigneesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserStoryAssigneesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     comments<T extends UserStory$commentsArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     files<T extends UserStory$filesArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    tasks<T extends UserStory$tasksArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     timeEntries<T extends UserStory$timeEntriesArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$timeEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     creator<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     feature<T extends FeatureDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FeatureDefaultArgs<ExtArgs>>): Prisma__FeatureClient<$Result.GetResult<Prisma.$FeaturePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     dependencies<T extends UserStory$dependenciesArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$dependenciesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserStoryDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     dependents<T extends UserStory$dependentsArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$dependentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserStoryDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sprints<T extends UserStory$sprintsArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$sprintsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SprintPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    Epic<T extends UserStory$EpicArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$EpicArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EpicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    epic<T extends UserStory$epicArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$epicArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EpicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tasks<T extends UserStory$tasksArgs<ExtArgs> = {}>(args?: Subset<T, UserStory$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -21788,30 +21953,6 @@ export namespace Prisma {
   }
 
   /**
-   * UserStory.tasks
-   */
-  export type UserStory$tasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Task
-     */
-    select?: TaskSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Task
-     */
-    omit?: TaskOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TaskInclude<ExtArgs> | null
-    where?: TaskWhereInput
-    orderBy?: TaskOrderByWithRelationInput | TaskOrderByWithRelationInput[]
-    cursor?: TaskWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
-  }
-
-  /**
    * UserStory.timeEntries
    */
   export type UserStory$timeEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21908,9 +22049,9 @@ export namespace Prisma {
   }
 
   /**
-   * UserStory.Epic
+   * UserStory.epic
    */
-  export type UserStory$EpicArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserStory$epicArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Epic
      */
@@ -21929,6 +22070,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EpicScalarFieldEnum | EpicScalarFieldEnum[]
+  }
+
+  /**
+   * UserStory.tasks
+   */
+  export type UserStory$tasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Task
+     */
+    select?: TaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Task
+     */
+    omit?: TaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskInclude<ExtArgs> | null
+    where?: TaskWhereInput
+    orderBy?: TaskOrderByWithRelationInput | TaskOrderByWithRelationInput[]
+    cursor?: TaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
   }
 
   /**
@@ -23118,8 +23283,9 @@ export namespace Prisma {
     completedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
-    userStoryId: string | null
+    projectId: string | null
     creatorId: string | null
+    userstoryId: string | null
   }
 
   export type TaskMaxAggregateOutputType = {
@@ -23138,8 +23304,9 @@ export namespace Prisma {
     completedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
-    userStoryId: string | null
+    projectId: string | null
     creatorId: string | null
+    userstoryId: string | null
   }
 
   export type TaskCountAggregateOutputType = {
@@ -23160,8 +23327,9 @@ export namespace Prisma {
     completedAt: number
     createdAt: number
     updatedAt: number
-    userStoryId: number
+    projectId: number
     creatorId: number
+    userstoryId: number
     _all: number
   }
 
@@ -23196,8 +23364,9 @@ export namespace Prisma {
     completedAt?: true
     createdAt?: true
     updatedAt?: true
-    userStoryId?: true
+    projectId?: true
     creatorId?: true
+    userstoryId?: true
   }
 
   export type TaskMaxAggregateInputType = {
@@ -23216,8 +23385,9 @@ export namespace Prisma {
     completedAt?: true
     createdAt?: true
     updatedAt?: true
-    userStoryId?: true
+    projectId?: true
     creatorId?: true
+    userstoryId?: true
   }
 
   export type TaskCountAggregateInputType = {
@@ -23238,8 +23408,9 @@ export namespace Prisma {
     completedAt?: true
     createdAt?: true
     updatedAt?: true
-    userStoryId?: true
+    projectId?: true
     creatorId?: true
+    userstoryId?: true
     _all?: true
   }
 
@@ -23347,8 +23518,9 @@ export namespace Prisma {
     completedAt: Date | null
     createdAt: Date
     updatedAt: Date
-    userStoryId: string
+    projectId: string | null
     creatorId: string
+    userstoryId: string | null
     _count: TaskCountAggregateOutputType | null
     _avg: TaskAvgAggregateOutputType | null
     _sum: TaskSumAggregateOutputType | null
@@ -23388,16 +23560,21 @@ export namespace Prisma {
     completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userStoryId?: boolean
+    projectId?: boolean
     creatorId?: boolean
+    userstoryId?: boolean
     comments?: boolean | Task$commentsArgs<ExtArgs>
     files?: boolean | Task$filesArgs<ExtArgs>
+    features?: boolean | Task$featuresArgs<ExtArgs>
+    sprints?: boolean | Task$sprintsArgs<ExtArgs>
     dependencies?: boolean | Task$dependenciesArgs<ExtArgs>
-    dependents?: boolean | Task$dependentsArgs<ExtArgs>
     creator?: boolean | UserDefaultArgs<ExtArgs>
-    userStory?: boolean | UserStoryDefaultArgs<ExtArgs>
+    project?: boolean | Task$projectArgs<ExtArgs>
     timeEntries?: boolean | Task$timeEntriesArgs<ExtArgs>
     assignees?: boolean | Task$assigneesArgs<ExtArgs>
+    askDependency?: boolean | Task$askDependencyArgs<ExtArgs>
+    userStory?: boolean | Task$userStoryArgs<ExtArgs>
+    epic?: boolean | Task$epicArgs<ExtArgs>
     _count?: boolean | TaskCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
@@ -23419,10 +23596,11 @@ export namespace Prisma {
     completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userStoryId?: boolean
+    projectId?: boolean
     creatorId?: boolean
+    userstoryId?: boolean
     creator?: boolean | UserDefaultArgs<ExtArgs>
-    userStory?: boolean | UserStoryDefaultArgs<ExtArgs>
+    project?: boolean | Task$projectArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
   export type TaskSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -23443,10 +23621,11 @@ export namespace Prisma {
     completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userStoryId?: boolean
+    projectId?: boolean
     creatorId?: boolean
+    userstoryId?: boolean
     creator?: boolean | UserDefaultArgs<ExtArgs>
-    userStory?: boolean | UserStoryDefaultArgs<ExtArgs>
+    project?: boolean | Task$projectArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
   export type TaskSelectScalar = {
@@ -23467,29 +23646,34 @@ export namespace Prisma {
     completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userStoryId?: boolean
+    projectId?: boolean
     creatorId?: boolean
+    userstoryId?: boolean
   }
 
-  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "order" | "description" | "priority" | "status" | "type" | "position" | "labels" | "tags" | "estimatedHours" | "actualHours" | "dueDate" | "startDate" | "completedAt" | "createdAt" | "updatedAt" | "userStoryId" | "creatorId", ExtArgs["result"]["task"]>
+  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "order" | "description" | "priority" | "status" | "type" | "position" | "labels" | "tags" | "estimatedHours" | "actualHours" | "dueDate" | "startDate" | "completedAt" | "createdAt" | "updatedAt" | "projectId" | "creatorId" | "userstoryId", ExtArgs["result"]["task"]>
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     comments?: boolean | Task$commentsArgs<ExtArgs>
     files?: boolean | Task$filesArgs<ExtArgs>
+    features?: boolean | Task$featuresArgs<ExtArgs>
+    sprints?: boolean | Task$sprintsArgs<ExtArgs>
     dependencies?: boolean | Task$dependenciesArgs<ExtArgs>
-    dependents?: boolean | Task$dependentsArgs<ExtArgs>
     creator?: boolean | UserDefaultArgs<ExtArgs>
-    userStory?: boolean | UserStoryDefaultArgs<ExtArgs>
+    project?: boolean | Task$projectArgs<ExtArgs>
     timeEntries?: boolean | Task$timeEntriesArgs<ExtArgs>
     assignees?: boolean | Task$assigneesArgs<ExtArgs>
+    askDependency?: boolean | Task$askDependencyArgs<ExtArgs>
+    userStory?: boolean | Task$userStoryArgs<ExtArgs>
+    epic?: boolean | Task$epicArgs<ExtArgs>
     _count?: boolean | TaskCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     creator?: boolean | UserDefaultArgs<ExtArgs>
-    userStory?: boolean | UserStoryDefaultArgs<ExtArgs>
+    project?: boolean | Task$projectArgs<ExtArgs>
   }
   export type TaskIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     creator?: boolean | UserDefaultArgs<ExtArgs>
-    userStory?: boolean | UserStoryDefaultArgs<ExtArgs>
+    project?: boolean | Task$projectArgs<ExtArgs>
   }
 
   export type $TaskPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -23497,12 +23681,16 @@ export namespace Prisma {
     objects: {
       comments: Prisma.$CommentPayload<ExtArgs>[]
       files: Prisma.$FilePayload<ExtArgs>[]
+      features: Prisma.$FeaturePayload<ExtArgs>[]
+      sprints: Prisma.$SprintPayload<ExtArgs>[]
       dependencies: Prisma.$TaskDependencyPayload<ExtArgs>[]
-      dependents: Prisma.$TaskDependencyPayload<ExtArgs>[]
       creator: Prisma.$UserPayload<ExtArgs>
-      userStory: Prisma.$UserStoryPayload<ExtArgs>
+      project: Prisma.$ProjectPayload<ExtArgs> | null
       timeEntries: Prisma.$TimeEntryPayload<ExtArgs>[]
       assignees: Prisma.$UserPayload<ExtArgs>[]
+      askDependency: Prisma.$TaskDependencyPayload<ExtArgs>[]
+      userStory: Prisma.$UserStoryPayload<ExtArgs>[]
+      epic: Prisma.$EpicPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -23525,8 +23713,9 @@ export namespace Prisma {
       completedAt: Date | null
       createdAt: Date
       updatedAt: Date
-      userStoryId: string
+      projectId: string | null
       creatorId: string
+      userstoryId: string | null
     }, ExtArgs["result"]["task"]>
     composites: {}
   }
@@ -23923,12 +24112,16 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     comments<T extends Task$commentsArgs<ExtArgs> = {}>(args?: Subset<T, Task$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     files<T extends Task$filesArgs<ExtArgs> = {}>(args?: Subset<T, Task$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    features<T extends Task$featuresArgs<ExtArgs> = {}>(args?: Subset<T, Task$featuresArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    sprints<T extends Task$sprintsArgs<ExtArgs> = {}>(args?: Subset<T, Task$sprintsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SprintPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     dependencies<T extends Task$dependenciesArgs<ExtArgs> = {}>(args?: Subset<T, Task$dependenciesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    dependents<T extends Task$dependentsArgs<ExtArgs> = {}>(args?: Subset<T, Task$dependentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     creator<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    userStory<T extends UserStoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserStoryDefaultArgs<ExtArgs>>): Prisma__UserStoryClient<$Result.GetResult<Prisma.$UserStoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    project<T extends Task$projectArgs<ExtArgs> = {}>(args?: Subset<T, Task$projectArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     timeEntries<T extends Task$timeEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Task$timeEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     assignees<T extends Task$assigneesArgs<ExtArgs> = {}>(args?: Subset<T, Task$assigneesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    askDependency<T extends Task$askDependencyArgs<ExtArgs> = {}>(args?: Subset<T, Task$askDependencyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    userStory<T extends Task$userStoryArgs<ExtArgs> = {}>(args?: Subset<T, Task$userStoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserStoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    epic<T extends Task$epicArgs<ExtArgs> = {}>(args?: Subset<T, Task$epicArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EpicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -23975,8 +24168,9 @@ export namespace Prisma {
     readonly completedAt: FieldRef<"Task", 'DateTime'>
     readonly createdAt: FieldRef<"Task", 'DateTime'>
     readonly updatedAt: FieldRef<"Task", 'DateTime'>
-    readonly userStoryId: FieldRef<"Task", 'String'>
+    readonly projectId: FieldRef<"Task", 'String'>
     readonly creatorId: FieldRef<"Task", 'String'>
+    readonly userstoryId: FieldRef<"Task", 'String'>
   }
     
 
@@ -24421,6 +24615,54 @@ export namespace Prisma {
   }
 
   /**
+   * Task.features
+   */
+  export type Task$featuresArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Feature
+     */
+    select?: FeatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Feature
+     */
+    omit?: FeatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeatureInclude<ExtArgs> | null
+    where?: FeatureWhereInput
+    orderBy?: FeatureOrderByWithRelationInput | FeatureOrderByWithRelationInput[]
+    cursor?: FeatureWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FeatureScalarFieldEnum | FeatureScalarFieldEnum[]
+  }
+
+  /**
+   * Task.sprints
+   */
+  export type Task$sprintsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sprint
+     */
+    select?: SprintSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sprint
+     */
+    omit?: SprintOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SprintInclude<ExtArgs> | null
+    where?: SprintWhereInput
+    orderBy?: SprintOrderByWithRelationInput | SprintOrderByWithRelationInput[]
+    cursor?: SprintWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SprintScalarFieldEnum | SprintScalarFieldEnum[]
+  }
+
+  /**
    * Task.dependencies
    */
   export type Task$dependenciesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -24445,27 +24687,22 @@ export namespace Prisma {
   }
 
   /**
-   * Task.dependents
+   * Task.project
    */
-  export type Task$dependentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Task$projectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the TaskDependency
+     * Select specific fields to fetch from the Project
      */
-    select?: TaskDependencySelect<ExtArgs> | null
+    select?: ProjectSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the TaskDependency
+     * Omit specific fields from the Project
      */
-    omit?: TaskDependencyOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: TaskDependencyInclude<ExtArgs> | null
-    where?: TaskDependencyWhereInput
-    orderBy?: TaskDependencyOrderByWithRelationInput | TaskDependencyOrderByWithRelationInput[]
-    cursor?: TaskDependencyWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: TaskDependencyScalarFieldEnum | TaskDependencyScalarFieldEnum[]
+    include?: ProjectInclude<ExtArgs> | null
+    where?: ProjectWhereInput
   }
 
   /**
@@ -24514,6 +24751,78 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
+   * Task.askDependency
+   */
+  export type Task$askDependencyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskDependency
+     */
+    select?: TaskDependencySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TaskDependency
+     */
+    omit?: TaskDependencyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskDependencyInclude<ExtArgs> | null
+    where?: TaskDependencyWhereInput
+    orderBy?: TaskDependencyOrderByWithRelationInput | TaskDependencyOrderByWithRelationInput[]
+    cursor?: TaskDependencyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskDependencyScalarFieldEnum | TaskDependencyScalarFieldEnum[]
+  }
+
+  /**
+   * Task.userStory
+   */
+  export type Task$userStoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserStory
+     */
+    select?: UserStorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserStory
+     */
+    omit?: UserStoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserStoryInclude<ExtArgs> | null
+    where?: UserStoryWhereInput
+    orderBy?: UserStoryOrderByWithRelationInput | UserStoryOrderByWithRelationInput[]
+    cursor?: UserStoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserStoryScalarFieldEnum | UserStoryScalarFieldEnum[]
+  }
+
+  /**
+   * Task.epic
+   */
+  export type Task$epicArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Epic
+     */
+    select?: EpicSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Epic
+     */
+    omit?: EpicOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EpicInclude<ExtArgs> | null
+    where?: EpicWhereInput
+    orderBy?: EpicOrderByWithRelationInput | EpicOrderByWithRelationInput[]
+    cursor?: EpicWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EpicScalarFieldEnum | EpicScalarFieldEnum[]
   }
 
   /**
@@ -25948,6 +26257,7 @@ export namespace Prisma {
     timeEntries?: boolean | Sprint$timeEntriesArgs<ExtArgs>
     users?: boolean | Sprint$usersArgs<ExtArgs>
     userStories?: boolean | Sprint$userStoriesArgs<ExtArgs>
+    Tasks?: boolean | Sprint$TasksArgs<ExtArgs>
     _count?: boolean | SprintCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["sprint"]>
 
@@ -26015,6 +26325,7 @@ export namespace Prisma {
     timeEntries?: boolean | Sprint$timeEntriesArgs<ExtArgs>
     users?: boolean | Sprint$usersArgs<ExtArgs>
     userStories?: boolean | Sprint$userStoriesArgs<ExtArgs>
+    Tasks?: boolean | Sprint$TasksArgs<ExtArgs>
     _count?: boolean | SprintCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SprintIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -26033,6 +26344,7 @@ export namespace Prisma {
       timeEntries: Prisma.$TimeEntryPayload<ExtArgs>[]
       users: Prisma.$UserPayload<ExtArgs>[]
       userStories: Prisma.$UserStoryPayload<ExtArgs>[]
+      Tasks: Prisma.$TaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -26456,6 +26768,7 @@ export namespace Prisma {
     timeEntries<T extends Sprint$timeEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Sprint$timeEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     users<T extends Sprint$usersArgs<ExtArgs> = {}>(args?: Subset<T, Sprint$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userStories<T extends Sprint$userStoriesArgs<ExtArgs> = {}>(args?: Subset<T, Sprint$userStoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserStoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Tasks<T extends Sprint$TasksArgs<ExtArgs> = {}>(args?: Subset<T, Sprint$TasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -27016,6 +27329,30 @@ export namespace Prisma {
   }
 
   /**
+   * Sprint.Tasks
+   */
+  export type Sprint$TasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Task
+     */
+    select?: TaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Task
+     */
+    omit?: TaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskInclude<ExtArgs> | null
+    where?: TaskWhereInput
+    orderBy?: TaskOrderByWithRelationInput | TaskOrderByWithRelationInput[]
+    cursor?: TaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
+  }
+
+  /**
    * Sprint without action
    */
   export type SprintDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -27076,7 +27413,6 @@ export namespace Prisma {
     projectId: string | null
     featureId: string | null
     userStoryId: string | null
-    taskId: string | null
     sprintId: string | null
   }
 
@@ -27100,7 +27436,6 @@ export namespace Prisma {
     projectId: string | null
     featureId: string | null
     userStoryId: string | null
-    taskId: string | null
     sprintId: string | null
   }
 
@@ -27126,7 +27461,6 @@ export namespace Prisma {
     projectId: number
     featureId: number
     userStoryId: number
-    taskId: number
     sprintId: number
     _all: number
   }
@@ -27162,7 +27496,6 @@ export namespace Prisma {
     projectId?: true
     featureId?: true
     userStoryId?: true
-    taskId?: true
     sprintId?: true
   }
 
@@ -27186,7 +27519,6 @@ export namespace Prisma {
     projectId?: true
     featureId?: true
     userStoryId?: true
-    taskId?: true
     sprintId?: true
   }
 
@@ -27212,7 +27544,6 @@ export namespace Prisma {
     projectId?: true
     featureId?: true
     userStoryId?: true
-    taskId?: true
     sprintId?: true
     _all?: true
   }
@@ -27325,7 +27656,6 @@ export namespace Prisma {
     projectId: string
     featureId: string | null
     userStoryId: string | null
-    taskId: string | null
     sprintId: string | null
     _count: FileCountAggregateOutputType | null
     _avg: FileAvgAggregateOutputType | null
@@ -27370,7 +27700,6 @@ export namespace Prisma {
     projectId?: boolean
     featureId?: boolean
     userStoryId?: boolean
-    taskId?: boolean
     sprintId?: boolean
     comments?: boolean | File$commentsArgs<ExtArgs>
     versions?: boolean | File$versionsArgs<ExtArgs>
@@ -27408,13 +27737,11 @@ export namespace Prisma {
     projectId?: boolean
     featureId?: boolean
     userStoryId?: boolean
-    taskId?: boolean
     sprintId?: boolean
     feature?: boolean | File$featureArgs<ExtArgs>
     parent?: boolean | File$parentArgs<ExtArgs>
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     sprint?: boolean | File$sprintArgs<ExtArgs>
-    task?: boolean | File$taskArgs<ExtArgs>
     userStory?: boolean | File$userStoryArgs<ExtArgs>
   }, ExtArgs["result"]["file"]>
 
@@ -27440,13 +27767,11 @@ export namespace Prisma {
     projectId?: boolean
     featureId?: boolean
     userStoryId?: boolean
-    taskId?: boolean
     sprintId?: boolean
     feature?: boolean | File$featureArgs<ExtArgs>
     parent?: boolean | File$parentArgs<ExtArgs>
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     sprint?: boolean | File$sprintArgs<ExtArgs>
-    task?: boolean | File$taskArgs<ExtArgs>
     userStory?: boolean | File$userStoryArgs<ExtArgs>
   }, ExtArgs["result"]["file"]>
 
@@ -27472,11 +27797,10 @@ export namespace Prisma {
     projectId?: boolean
     featureId?: boolean
     userStoryId?: boolean
-    taskId?: boolean
     sprintId?: boolean
   }
 
-  export type FileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "type" | "mimeType" | "path" | "description" | "import" | "use" | "export" | "script" | "version" | "isFolder" | "metadata" | "tags" | "createdAt" | "updatedAt" | "parentId" | "projectId" | "featureId" | "userStoryId" | "taskId" | "sprintId", ExtArgs["result"]["file"]>
+  export type FileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "type" | "mimeType" | "path" | "description" | "import" | "use" | "export" | "script" | "version" | "isFolder" | "metadata" | "tags" | "createdAt" | "updatedAt" | "parentId" | "projectId" | "featureId" | "userStoryId" | "sprintId", ExtArgs["result"]["file"]>
   export type FileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     comments?: boolean | File$commentsArgs<ExtArgs>
     versions?: boolean | File$versionsArgs<ExtArgs>
@@ -27496,7 +27820,6 @@ export namespace Prisma {
     parent?: boolean | File$parentArgs<ExtArgs>
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     sprint?: boolean | File$sprintArgs<ExtArgs>
-    task?: boolean | File$taskArgs<ExtArgs>
     userStory?: boolean | File$userStoryArgs<ExtArgs>
   }
   export type FileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -27504,7 +27827,6 @@ export namespace Prisma {
     parent?: boolean | File$parentArgs<ExtArgs>
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     sprint?: boolean | File$sprintArgs<ExtArgs>
-    task?: boolean | File$taskArgs<ExtArgs>
     userStory?: boolean | File$userStoryArgs<ExtArgs>
   }
 
@@ -27518,7 +27840,7 @@ export namespace Prisma {
       children: Prisma.$FilePayload<ExtArgs>[]
       project: Prisma.$ProjectPayload<ExtArgs>
       sprint: Prisma.$SprintPayload<ExtArgs> | null
-      task: Prisma.$TaskPayload<ExtArgs> | null
+      task: Prisma.$TaskPayload<ExtArgs>[]
       author: Prisma.$UserPayload<ExtArgs>[]
       userStory: Prisma.$UserStoryPayload<ExtArgs> | null
       items: Prisma.$ItemPayload<ExtArgs>[]
@@ -27548,7 +27870,6 @@ export namespace Prisma {
       projectId: string
       featureId: string | null
       userStoryId: string | null
-      taskId: string | null
       sprintId: string | null
     }, ExtArgs["result"]["file"]>
     composites: {}
@@ -27951,7 +28272,7 @@ export namespace Prisma {
     children<T extends File$childrenArgs<ExtArgs> = {}>(args?: Subset<T, File$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     sprint<T extends File$sprintArgs<ExtArgs> = {}>(args?: Subset<T, File$sprintArgs<ExtArgs>>): Prisma__SprintClient<$Result.GetResult<Prisma.$SprintPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    task<T extends File$taskArgs<ExtArgs> = {}>(args?: Subset<T, File$taskArgs<ExtArgs>>): Prisma__TaskClient<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    task<T extends File$taskArgs<ExtArgs> = {}>(args?: Subset<T, File$taskArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     author<T extends File$authorArgs<ExtArgs> = {}>(args?: Subset<T, File$authorArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userStory<T extends File$userStoryArgs<ExtArgs> = {}>(args?: Subset<T, File$userStoryArgs<ExtArgs>>): Prisma__UserStoryClient<$Result.GetResult<Prisma.$UserStoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     items<T extends File$itemsArgs<ExtArgs> = {}>(args?: Subset<T, File$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -28005,7 +28326,6 @@ export namespace Prisma {
     readonly projectId: FieldRef<"File", 'String'>
     readonly featureId: FieldRef<"File", 'String'>
     readonly userStoryId: FieldRef<"File", 'String'>
-    readonly taskId: FieldRef<"File", 'String'>
     readonly sprintId: FieldRef<"File", 'String'>
   }
     
@@ -28548,6 +28868,11 @@ export namespace Prisma {
      */
     include?: TaskInclude<ExtArgs> | null
     where?: TaskWhereInput
+    orderBy?: TaskOrderByWithRelationInput | TaskOrderByWithRelationInput[]
+    cursor?: TaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
   }
 
   /**
@@ -47679,8 +48004,9 @@ export namespace Prisma {
     completedAt: 'completedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    userStoryId: 'userStoryId',
-    creatorId: 'creatorId'
+    projectId: 'projectId',
+    creatorId: 'creatorId',
+    userstoryId: 'userstoryId'
   };
 
   export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
@@ -47742,7 +48068,6 @@ export namespace Prisma {
     projectId: 'projectId',
     featureId: 'featureId',
     userStoryId: 'userStoryId',
-    taskId: 'taskId',
     sprintId: 'sprintId'
   };
 
@@ -48878,6 +49203,7 @@ export namespace Prisma {
     sprints?: SprintListRelationFilter
     templates?: TemplateListRelationFilter
     user?: UserListRelationFilter
+    Task?: TaskListRelationFilter
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -48905,6 +49231,7 @@ export namespace Prisma {
     sprints?: SprintOrderByRelationAggregateInput
     templates?: TemplateOrderByRelationAggregateInput
     user?: UserOrderByRelationAggregateInput
+    Task?: TaskOrderByRelationAggregateInput
   }
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -48935,6 +49262,7 @@ export namespace Prisma {
     sprints?: SprintListRelationFilter
     templates?: TemplateListRelationFilter
     user?: UserListRelationFilter
+    Task?: TaskListRelationFilter
   }, "id">
 
   export type ProjectOrderByWithAggregationInput = {
@@ -49189,6 +49517,7 @@ export namespace Prisma {
     initiative?: XOR<InitiativeScalarRelationFilter, InitiativeWhereInput>
     features?: FeatureListRelationFilter
     userstories?: UserStoryListRelationFilter
+    tasks?: TaskListRelationFilter
   }
 
   export type EpicOrderByWithRelationInput = {
@@ -49207,6 +49536,7 @@ export namespace Prisma {
     initiative?: InitiativeOrderByWithRelationInput
     features?: FeatureOrderByRelationAggregateInput
     userstories?: UserStoryOrderByRelationAggregateInput
+    tasks?: TaskOrderByRelationAggregateInput
   }
 
   export type EpicWhereUniqueInput = Prisma.AtLeast<{
@@ -49228,6 +49558,7 @@ export namespace Prisma {
     initiative?: XOR<InitiativeScalarRelationFilter, InitiativeWhereInput>
     features?: FeatureListRelationFilter
     userstories?: UserStoryListRelationFilter
+    tasks?: TaskListRelationFilter
   }, "id">
 
   export type EpicOrderByWithAggregationInput = {
@@ -49295,6 +49626,7 @@ export namespace Prisma {
     userId?: StringNullableFilter<"Feature"> | string | null
     dependencies?: FeatureDependencyListRelationFilter
     dependents?: FeatureDependencyListRelationFilter
+    Tasks?: TaskListRelationFilter
     epic?: XOR<EpicScalarRelationFilter, EpicWhereInput>
     parent?: XOR<FeatureNullableScalarRelationFilter, FeatureWhereInput> | null
     children?: FeatureListRelationFilter
@@ -49328,6 +49660,7 @@ export namespace Prisma {
     userId?: SortOrderInput | SortOrder
     dependencies?: FeatureDependencyOrderByRelationAggregateInput
     dependents?: FeatureDependencyOrderByRelationAggregateInput
+    Tasks?: TaskOrderByRelationAggregateInput
     epic?: EpicOrderByWithRelationInput
     parent?: FeatureOrderByWithRelationInput
     children?: FeatureOrderByRelationAggregateInput
@@ -49364,6 +49697,7 @@ export namespace Prisma {
     userId?: StringNullableFilter<"Feature"> | string | null
     dependencies?: FeatureDependencyListRelationFilter
     dependents?: FeatureDependencyListRelationFilter
+    Tasks?: TaskListRelationFilter
     epic?: XOR<EpicScalarRelationFilter, EpicWhereInput>
     parent?: XOR<FeatureNullableScalarRelationFilter, FeatureWhereInput> | null
     children?: FeatureListRelationFilter
@@ -49527,14 +49861,14 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesListRelationFilter
     comments?: CommentListRelationFilter
     files?: FileListRelationFilter
-    tasks?: TaskListRelationFilter
     timeEntries?: TimeEntryListRelationFilter
     creator?: XOR<UserScalarRelationFilter, UserWhereInput>
     feature?: XOR<FeatureScalarRelationFilter, FeatureWhereInput>
     dependencies?: UserStoryDependencyListRelationFilter
     dependents?: UserStoryDependencyListRelationFilter
     sprints?: SprintListRelationFilter
-    Epic?: EpicListRelationFilter
+    epic?: EpicListRelationFilter
+    tasks?: TaskListRelationFilter
   }
 
   export type UserStoryOrderByWithRelationInput = {
@@ -49561,14 +49895,14 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesOrderByRelationAggregateInput
     comments?: CommentOrderByRelationAggregateInput
     files?: FileOrderByRelationAggregateInput
-    tasks?: TaskOrderByRelationAggregateInput
     timeEntries?: TimeEntryOrderByRelationAggregateInput
     creator?: UserOrderByWithRelationInput
     feature?: FeatureOrderByWithRelationInput
     dependencies?: UserStoryDependencyOrderByRelationAggregateInput
     dependents?: UserStoryDependencyOrderByRelationAggregateInput
     sprints?: SprintOrderByRelationAggregateInput
-    Epic?: EpicOrderByRelationAggregateInput
+    epic?: EpicOrderByRelationAggregateInput
+    tasks?: TaskOrderByRelationAggregateInput
   }
 
   export type UserStoryWhereUniqueInput = Prisma.AtLeast<{
@@ -49598,14 +49932,14 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesListRelationFilter
     comments?: CommentListRelationFilter
     files?: FileListRelationFilter
-    tasks?: TaskListRelationFilter
     timeEntries?: TimeEntryListRelationFilter
     creator?: XOR<UserScalarRelationFilter, UserWhereInput>
     feature?: XOR<FeatureScalarRelationFilter, FeatureWhereInput>
     dependencies?: UserStoryDependencyListRelationFilter
     dependents?: UserStoryDependencyListRelationFilter
     sprints?: SprintListRelationFilter
-    Epic?: EpicListRelationFilter
+    epic?: EpicListRelationFilter
+    tasks?: TaskListRelationFilter
   }, "id">
 
   export type UserStoryOrderByWithAggregationInput = {
@@ -49754,16 +50088,21 @@ export namespace Prisma {
     completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
-    userStoryId?: StringFilter<"Task"> | string
+    projectId?: StringNullableFilter<"Task"> | string | null
     creatorId?: StringFilter<"Task"> | string
+    userstoryId?: StringNullableFilter<"Task"> | string | null
     comments?: CommentListRelationFilter
     files?: FileListRelationFilter
+    features?: FeatureListRelationFilter
+    sprints?: SprintListRelationFilter
     dependencies?: TaskDependencyListRelationFilter
-    dependents?: TaskDependencyListRelationFilter
     creator?: XOR<UserScalarRelationFilter, UserWhereInput>
-    userStory?: XOR<UserStoryScalarRelationFilter, UserStoryWhereInput>
+    project?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
     timeEntries?: TimeEntryListRelationFilter
     assignees?: UserListRelationFilter
+    askDependency?: TaskDependencyListRelationFilter
+    userStory?: UserStoryListRelationFilter
+    epic?: EpicListRelationFilter
   }
 
   export type TaskOrderByWithRelationInput = {
@@ -49784,16 +50123,21 @@ export namespace Prisma {
     completedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userStoryId?: SortOrder
+    projectId?: SortOrderInput | SortOrder
     creatorId?: SortOrder
+    userstoryId?: SortOrderInput | SortOrder
     comments?: CommentOrderByRelationAggregateInput
     files?: FileOrderByRelationAggregateInput
+    features?: FeatureOrderByRelationAggregateInput
+    sprints?: SprintOrderByRelationAggregateInput
     dependencies?: TaskDependencyOrderByRelationAggregateInput
-    dependents?: TaskDependencyOrderByRelationAggregateInput
     creator?: UserOrderByWithRelationInput
-    userStory?: UserStoryOrderByWithRelationInput
+    project?: ProjectOrderByWithRelationInput
     timeEntries?: TimeEntryOrderByRelationAggregateInput
     assignees?: UserOrderByRelationAggregateInput
+    askDependency?: TaskDependencyOrderByRelationAggregateInput
+    userStory?: UserStoryOrderByRelationAggregateInput
+    epic?: EpicOrderByRelationAggregateInput
   }
 
   export type TaskWhereUniqueInput = Prisma.AtLeast<{
@@ -49817,16 +50161,21 @@ export namespace Prisma {
     completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
-    userStoryId?: StringFilter<"Task"> | string
+    projectId?: StringNullableFilter<"Task"> | string | null
     creatorId?: StringFilter<"Task"> | string
+    userstoryId?: StringNullableFilter<"Task"> | string | null
     comments?: CommentListRelationFilter
     files?: FileListRelationFilter
+    features?: FeatureListRelationFilter
+    sprints?: SprintListRelationFilter
     dependencies?: TaskDependencyListRelationFilter
-    dependents?: TaskDependencyListRelationFilter
     creator?: XOR<UserScalarRelationFilter, UserWhereInput>
-    userStory?: XOR<UserStoryScalarRelationFilter, UserStoryWhereInput>
+    project?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
     timeEntries?: TimeEntryListRelationFilter
     assignees?: UserListRelationFilter
+    askDependency?: TaskDependencyListRelationFilter
+    userStory?: UserStoryListRelationFilter
+    epic?: EpicListRelationFilter
   }, "id">
 
   export type TaskOrderByWithAggregationInput = {
@@ -49847,8 +50196,9 @@ export namespace Prisma {
     completedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userStoryId?: SortOrder
+    projectId?: SortOrderInput | SortOrder
     creatorId?: SortOrder
+    userstoryId?: SortOrderInput | SortOrder
     _count?: TaskCountOrderByAggregateInput
     _avg?: TaskAvgOrderByAggregateInput
     _max?: TaskMaxOrderByAggregateInput
@@ -49877,8 +50227,9 @@ export namespace Prisma {
     completedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
-    userStoryId?: StringWithAggregatesFilter<"Task"> | string
+    projectId?: StringNullableWithAggregatesFilter<"Task"> | string | null
     creatorId?: StringWithAggregatesFilter<"Task"> | string
+    userstoryId?: StringNullableWithAggregatesFilter<"Task"> | string | null
   }
 
   export type TaskDependencyWhereInput = {
@@ -49977,6 +50328,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryListRelationFilter
     users?: UserListRelationFilter
     userStories?: UserStoryListRelationFilter
+    Tasks?: TaskListRelationFilter
   }
 
   export type SprintOrderByWithRelationInput = {
@@ -50001,6 +50353,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryOrderByRelationAggregateInput
     users?: UserOrderByRelationAggregateInput
     userStories?: UserStoryOrderByRelationAggregateInput
+    Tasks?: TaskOrderByRelationAggregateInput
   }
 
   export type SprintWhereUniqueInput = Prisma.AtLeast<{
@@ -50028,6 +50381,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryListRelationFilter
     users?: UserListRelationFilter
     userStories?: UserStoryListRelationFilter
+    Tasks?: TaskListRelationFilter
   }, "id">
 
   export type SprintOrderByWithAggregationInput = {
@@ -50099,7 +50453,6 @@ export namespace Prisma {
     projectId?: StringFilter<"File"> | string
     featureId?: StringNullableFilter<"File"> | string | null
     userStoryId?: StringNullableFilter<"File"> | string | null
-    taskId?: StringNullableFilter<"File"> | string | null
     sprintId?: StringNullableFilter<"File"> | string | null
     comments?: CommentListRelationFilter
     versions?: FileVersionListRelationFilter
@@ -50108,7 +50461,7 @@ export namespace Prisma {
     children?: FileListRelationFilter
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     sprint?: XOR<SprintNullableScalarRelationFilter, SprintWhereInput> | null
-    task?: XOR<TaskNullableScalarRelationFilter, TaskWhereInput> | null
+    task?: TaskListRelationFilter
     author?: UserListRelationFilter
     userStory?: XOR<UserStoryNullableScalarRelationFilter, UserStoryWhereInput> | null
     items?: ItemListRelationFilter
@@ -50136,7 +50489,6 @@ export namespace Prisma {
     projectId?: SortOrder
     featureId?: SortOrderInput | SortOrder
     userStoryId?: SortOrderInput | SortOrder
-    taskId?: SortOrderInput | SortOrder
     sprintId?: SortOrderInput | SortOrder
     comments?: CommentOrderByRelationAggregateInput
     versions?: FileVersionOrderByRelationAggregateInput
@@ -50145,7 +50497,7 @@ export namespace Prisma {
     children?: FileOrderByRelationAggregateInput
     project?: ProjectOrderByWithRelationInput
     sprint?: SprintOrderByWithRelationInput
-    task?: TaskOrderByWithRelationInput
+    task?: TaskOrderByRelationAggregateInput
     author?: UserOrderByRelationAggregateInput
     userStory?: UserStoryOrderByWithRelationInput
     items?: ItemOrderByRelationAggregateInput
@@ -50176,7 +50528,6 @@ export namespace Prisma {
     projectId?: StringFilter<"File"> | string
     featureId?: StringNullableFilter<"File"> | string | null
     userStoryId?: StringNullableFilter<"File"> | string | null
-    taskId?: StringNullableFilter<"File"> | string | null
     sprintId?: StringNullableFilter<"File"> | string | null
     comments?: CommentListRelationFilter
     versions?: FileVersionListRelationFilter
@@ -50185,7 +50536,7 @@ export namespace Prisma {
     children?: FileListRelationFilter
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     sprint?: XOR<SprintNullableScalarRelationFilter, SprintWhereInput> | null
-    task?: XOR<TaskNullableScalarRelationFilter, TaskWhereInput> | null
+    task?: TaskListRelationFilter
     author?: UserListRelationFilter
     userStory?: XOR<UserStoryNullableScalarRelationFilter, UserStoryWhereInput> | null
     items?: ItemListRelationFilter
@@ -50213,7 +50564,6 @@ export namespace Prisma {
     projectId?: SortOrder
     featureId?: SortOrderInput | SortOrder
     userStoryId?: SortOrderInput | SortOrder
-    taskId?: SortOrderInput | SortOrder
     sprintId?: SortOrderInput | SortOrder
     _count?: FileCountOrderByAggregateInput
     _avg?: FileAvgOrderByAggregateInput
@@ -50247,7 +50597,6 @@ export namespace Prisma {
     projectId?: StringWithAggregatesFilter<"File"> | string
     featureId?: StringNullableWithAggregatesFilter<"File"> | string | null
     userStoryId?: StringNullableWithAggregatesFilter<"File"> | string | null
-    taskId?: StringNullableWithAggregatesFilter<"File"> | string | null
     sprintId?: StringNullableWithAggregatesFilter<"File"> | string | null
   }
 
@@ -52506,6 +52855,7 @@ export namespace Prisma {
     sprints?: SprintCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
     user?: UserCreateNestedManyWithoutProjectsInput
+    Task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -52533,6 +52883,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUpdateInput = {
@@ -52560,6 +52911,7 @@ export namespace Prisma {
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -52587,6 +52939,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyInput = {
@@ -52861,6 +53214,7 @@ export namespace Prisma {
     initiative: InitiativeCreateNestedOneWithoutEpicsInput
     features?: FeatureCreateNestedManyWithoutEpicInput
     userstories?: UserStoryCreateNestedManyWithoutEpicInput
+    tasks?: TaskCreateNestedManyWithoutEpicInput
   }
 
   export type EpicUncheckedCreateInput = {
@@ -52878,6 +53232,7 @@ export namespace Prisma {
     initiativeId: string
     features?: FeatureUncheckedCreateNestedManyWithoutEpicInput
     userstories?: UserStoryUncheckedCreateNestedManyWithoutEpicInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutEpicInput
   }
 
   export type EpicUpdateInput = {
@@ -52895,6 +53250,7 @@ export namespace Prisma {
     initiative?: InitiativeUpdateOneRequiredWithoutEpicsNestedInput
     features?: FeatureUpdateManyWithoutEpicNestedInput
     userstories?: UserStoryUpdateManyWithoutEpicNestedInput
+    tasks?: TaskUpdateManyWithoutEpicNestedInput
   }
 
   export type EpicUncheckedUpdateInput = {
@@ -52912,6 +53268,7 @@ export namespace Prisma {
     initiativeId?: StringFieldUpdateOperationsInput | string
     features?: FeatureUncheckedUpdateManyWithoutEpicNestedInput
     userstories?: UserStoryUncheckedUpdateManyWithoutEpicNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutEpicNestedInput
   }
 
   export type EpicCreateManyInput = {
@@ -52978,6 +53335,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskCreateNestedManyWithoutFeaturesInput
     epic: EpicCreateNestedOneWithoutFeaturesInput
     parent?: FeatureCreateNestedOneWithoutChildrenInput
     children?: FeatureCreateNestedManyWithoutParentInput
@@ -53011,6 +53369,7 @@ export namespace Prisma {
     userId?: string | null
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutFeaturesInput
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     files?: FileUncheckedCreateNestedManyWithoutFeatureInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
@@ -53036,6 +53395,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUpdateManyWithoutFeaturesNestedInput
     epic?: EpicUpdateOneRequiredWithoutFeaturesNestedInput
     parent?: FeatureUpdateOneWithoutChildrenNestedInput
     children?: FeatureUpdateManyWithoutParentNestedInput
@@ -53069,6 +53429,7 @@ export namespace Prisma {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutFeaturesNestedInput
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     files?: FileUncheckedUpdateManyWithoutFeatureNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
@@ -53232,14 +53593,14 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
     comments?: CommentCreateNestedManyWithoutUserStoryInput
     files?: FileCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
     creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryUncheckedCreateInput = {
@@ -53266,12 +53627,12 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
     files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryUpdateInput = {
@@ -53296,14 +53657,14 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUpdateManyWithoutUserStoryNestedInput
     files?: FileUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateInput = {
@@ -53330,12 +53691,12 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
     files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryCreateManyInput = {
@@ -53491,14 +53852,19 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    userstoryId?: string | null
     comments?: CommentCreateNestedManyWithoutTaskInput
     files?: FileCreateNestedManyWithoutTaskInput
+    features?: FeatureCreateNestedManyWithoutTasksInput
+    sprints?: SprintCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
     creator: UserCreateNestedOneWithoutCreatedTasksInput
-    userStory: UserStoryCreateNestedOneWithoutTasksInput
+    project?: ProjectCreateNestedOneWithoutTaskInput
     timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     assignees?: UserCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryCreateNestedManyWithoutTasksInput
+    epic?: EpicCreateNestedManyWithoutTasksInput
   }
 
   export type TaskUncheckedCreateInput = {
@@ -53519,14 +53885,19 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userStoryId: string
+    projectId?: string | null
     creatorId: string
+    userstoryId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
     files?: FileUncheckedCreateNestedManyWithoutTaskInput
+    features?: FeatureUncheckedCreateNestedManyWithoutTasksInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutTasksInput
+    epic?: EpicUncheckedCreateNestedManyWithoutTasksInput
   }
 
   export type TaskUpdateInput = {
@@ -53547,14 +53918,19 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUpdateManyWithoutTaskNestedInput
     files?: FileUpdateManyWithoutTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
     dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
-    userStory?: UserStoryUpdateOneRequiredWithoutTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
   }
 
   export type TaskUncheckedUpdateInput = {
@@ -53575,14 +53951,19 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userStoryId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
     files?: FileUncheckedUpdateManyWithoutTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
     dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
   }
 
   export type TaskCreateManyInput = {
@@ -53603,8 +53984,9 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userStoryId: string
+    projectId?: string | null
     creatorId: string
+    userstoryId?: string | null
   }
 
   export type TaskUpdateManyMutationInput = {
@@ -53625,6 +54007,7 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TaskUncheckedUpdateManyInput = {
@@ -53645,8 +54028,9 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userStoryId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TaskDependencyCreateInput = {
@@ -53656,7 +54040,7 @@ export namespace Prisma {
     description?: string | null
     createdAt?: Date | string
     dependentTask: TaskCreateNestedOneWithoutDependenciesInput
-    dependsOnTask: TaskCreateNestedOneWithoutDependentsInput
+    dependsOnTask: TaskCreateNestedOneWithoutAskDependencyInput
   }
 
   export type TaskDependencyUncheckedCreateInput = {
@@ -53676,7 +54060,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependentTask?: TaskUpdateOneRequiredWithoutDependenciesNestedInput
-    dependsOnTask?: TaskUpdateOneRequiredWithoutDependentsNestedInput
+    dependsOnTask?: TaskUpdateOneRequiredWithoutAskDependencyNestedInput
   }
 
   export type TaskDependencyUncheckedUpdateInput = {
@@ -53738,6 +54122,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryCreateNestedManyWithoutSprintInput
     users?: UserCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintUncheckedCreateInput = {
@@ -53761,6 +54146,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutSprintInput
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintUpdateInput = {
@@ -53784,6 +54170,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUpdateManyWithoutSprintNestedInput
     users?: UserUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUpdateManyWithoutSprintsNestedInput
   }
 
   export type SprintUncheckedUpdateInput = {
@@ -53807,6 +54194,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutSprintNestedInput
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
   }
 
   export type SprintCreateManyInput = {
@@ -53887,7 +54275,7 @@ export namespace Prisma {
     children?: FileCreateNestedManyWithoutParentInput
     project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
-    task?: TaskCreateNestedOneWithoutFilesInput
+    task?: TaskCreateNestedManyWithoutFilesInput
     author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
@@ -53915,11 +54303,11 @@ export namespace Prisma {
     projectId: string
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
     author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
@@ -53949,7 +54337,7 @@ export namespace Prisma {
     children?: FileUpdateManyWithoutParentNestedInput
     project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
-    task?: TaskUpdateOneWithoutFilesNestedInput
+    task?: TaskUpdateManyWithoutFilesNestedInput
     author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
@@ -53977,11 +54365,11 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
     author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
@@ -54008,7 +54396,6 @@ export namespace Prisma {
     projectId: string
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
   }
 
@@ -54054,7 +54441,6 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -57276,8 +57662,9 @@ export namespace Prisma {
     completedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userStoryId?: SortOrder
+    projectId?: SortOrder
     creatorId?: SortOrder
+    userstoryId?: SortOrder
   }
 
   export type TaskAvgOrderByAggregateInput = {
@@ -57303,8 +57690,9 @@ export namespace Prisma {
     completedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userStoryId?: SortOrder
+    projectId?: SortOrder
     creatorId?: SortOrder
+    userstoryId?: SortOrder
   }
 
   export type TaskMinOrderByAggregateInput = {
@@ -57323,8 +57711,9 @@ export namespace Prisma {
     completedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userStoryId?: SortOrder
+    projectId?: SortOrder
     creatorId?: SortOrder
+    userstoryId?: SortOrder
   }
 
   export type TaskSumOrderByAggregateInput = {
@@ -57478,11 +57867,6 @@ export namespace Prisma {
     isNot?: SprintWhereInput | null
   }
 
-  export type TaskNullableScalarRelationFilter = {
-    is?: TaskWhereInput | null
-    isNot?: TaskWhereInput | null
-  }
-
   export type UserStoryNullableScalarRelationFilter = {
     is?: UserStoryWhereInput | null
     isNot?: UserStoryWhereInput | null
@@ -57510,7 +57894,6 @@ export namespace Prisma {
     projectId?: SortOrder
     featureId?: SortOrder
     userStoryId?: SortOrder
-    taskId?: SortOrder
     sprintId?: SortOrder
   }
 
@@ -57539,7 +57922,6 @@ export namespace Prisma {
     projectId?: SortOrder
     featureId?: SortOrder
     userStoryId?: SortOrder
-    taskId?: SortOrder
     sprintId?: SortOrder
   }
 
@@ -57563,7 +57945,6 @@ export namespace Prisma {
     projectId?: SortOrder
     featureId?: SortOrder
     userStoryId?: SortOrder
-    taskId?: SortOrder
     sprintId?: SortOrder
   }
 
@@ -57653,6 +58034,11 @@ export namespace Prisma {
   export type CommentNullableScalarRelationFilter = {
     is?: CommentWhereInput | null
     isNot?: CommentWhereInput | null
+  }
+
+  export type TaskNullableScalarRelationFilter = {
+    is?: TaskWhereInput | null
+    isNot?: TaskWhereInput | null
   }
 
   export type Blog_tagsListRelationFilter = {
@@ -59876,6 +60262,13 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
+  export type TaskCreateNestedManyWithoutProjectInput = {
+    create?: XOR<TaskCreateWithoutProjectInput, TaskUncheckedCreateWithoutProjectInput> | TaskCreateWithoutProjectInput[] | TaskUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutProjectInput | TaskCreateOrConnectWithoutProjectInput[]
+    createMany?: TaskCreateManyProjectInputEnvelope
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
   export type ChannelUncheckedCreateNestedManyWithoutProjectInput = {
     create?: XOR<ChannelCreateWithoutProjectInput, ChannelUncheckedCreateWithoutProjectInput> | ChannelCreateWithoutProjectInput[] | ChannelUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ChannelCreateOrConnectWithoutProjectInput | ChannelCreateOrConnectWithoutProjectInput[]
@@ -59936,6 +60329,13 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput> | UserCreateWithoutProjectsInput[] | UserUncheckedCreateWithoutProjectsInput[]
     connectOrCreate?: UserCreateOrConnectWithoutProjectsInput | UserCreateOrConnectWithoutProjectsInput[]
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type TaskUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<TaskCreateWithoutProjectInput, TaskUncheckedCreateWithoutProjectInput> | TaskCreateWithoutProjectInput[] | TaskUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutProjectInput | TaskCreateOrConnectWithoutProjectInput[]
+    createMany?: TaskCreateManyProjectInputEnvelope
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
   export type ChannelUpdateManyWithoutProjectNestedInput = {
@@ -60063,6 +60463,20 @@ export namespace Prisma {
     deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
+  export type TaskUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<TaskCreateWithoutProjectInput, TaskUncheckedCreateWithoutProjectInput> | TaskCreateWithoutProjectInput[] | TaskUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutProjectInput | TaskCreateOrConnectWithoutProjectInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutProjectInput | TaskUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: TaskCreateManyProjectInputEnvelope
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutProjectInput | TaskUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutProjectInput | TaskUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
   export type ChannelUncheckedUpdateManyWithoutProjectNestedInput = {
     create?: XOR<ChannelCreateWithoutProjectInput, ChannelUncheckedCreateWithoutProjectInput> | ChannelCreateWithoutProjectInput[] | ChannelUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ChannelCreateOrConnectWithoutProjectInput | ChannelCreateOrConnectWithoutProjectInput[]
@@ -60186,6 +60600,20 @@ export namespace Prisma {
     update?: UserUpdateWithWhereUniqueWithoutProjectsInput | UserUpdateWithWhereUniqueWithoutProjectsInput[]
     updateMany?: UserUpdateManyWithWhereWithoutProjectsInput | UserUpdateManyWithWhereWithoutProjectsInput[]
     deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type TaskUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<TaskCreateWithoutProjectInput, TaskUncheckedCreateWithoutProjectInput> | TaskCreateWithoutProjectInput[] | TaskUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutProjectInput | TaskCreateOrConnectWithoutProjectInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutProjectInput | TaskUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: TaskCreateManyProjectInputEnvelope
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutProjectInput | TaskUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutProjectInput | TaskUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
   export type ProjectCreateNestedOneWithoutMembersInput = {
@@ -60327,6 +60755,12 @@ export namespace Prisma {
     connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
   }
 
+  export type TaskCreateNestedManyWithoutEpicInput = {
+    create?: XOR<TaskCreateWithoutEpicInput, TaskUncheckedCreateWithoutEpicInput> | TaskCreateWithoutEpicInput[] | TaskUncheckedCreateWithoutEpicInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutEpicInput | TaskCreateOrConnectWithoutEpicInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
   export type FeatureUncheckedCreateNestedManyWithoutEpicInput = {
     create?: XOR<FeatureCreateWithoutEpicInput, FeatureUncheckedCreateWithoutEpicInput> | FeatureCreateWithoutEpicInput[] | FeatureUncheckedCreateWithoutEpicInput[]
     connectOrCreate?: FeatureCreateOrConnectWithoutEpicInput | FeatureCreateOrConnectWithoutEpicInput[]
@@ -60338,6 +60772,12 @@ export namespace Prisma {
     create?: XOR<UserStoryCreateWithoutEpicInput, UserStoryUncheckedCreateWithoutEpicInput> | UserStoryCreateWithoutEpicInput[] | UserStoryUncheckedCreateWithoutEpicInput[]
     connectOrCreate?: UserStoryCreateOrConnectWithoutEpicInput | UserStoryCreateOrConnectWithoutEpicInput[]
     connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+  }
+
+  export type TaskUncheckedCreateNestedManyWithoutEpicInput = {
+    create?: XOR<TaskCreateWithoutEpicInput, TaskUncheckedCreateWithoutEpicInput> | TaskCreateWithoutEpicInput[] | TaskUncheckedCreateWithoutEpicInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutEpicInput | TaskCreateOrConnectWithoutEpicInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
   export type InitiativeUpdateOneRequiredWithoutEpicsNestedInput = {
@@ -60375,6 +60815,19 @@ export namespace Prisma {
     deleteMany?: UserStoryScalarWhereInput | UserStoryScalarWhereInput[]
   }
 
+  export type TaskUpdateManyWithoutEpicNestedInput = {
+    create?: XOR<TaskCreateWithoutEpicInput, TaskUncheckedCreateWithoutEpicInput> | TaskCreateWithoutEpicInput[] | TaskUncheckedCreateWithoutEpicInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutEpicInput | TaskCreateOrConnectWithoutEpicInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutEpicInput | TaskUpsertWithWhereUniqueWithoutEpicInput[]
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutEpicInput | TaskUpdateWithWhereUniqueWithoutEpicInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutEpicInput | TaskUpdateManyWithWhereWithoutEpicInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
   export type FeatureUncheckedUpdateManyWithoutEpicNestedInput = {
     create?: XOR<FeatureCreateWithoutEpicInput, FeatureUncheckedCreateWithoutEpicInput> | FeatureCreateWithoutEpicInput[] | FeatureUncheckedCreateWithoutEpicInput[]
     connectOrCreate?: FeatureCreateOrConnectWithoutEpicInput | FeatureCreateOrConnectWithoutEpicInput[]
@@ -60402,6 +60855,19 @@ export namespace Prisma {
     deleteMany?: UserStoryScalarWhereInput | UserStoryScalarWhereInput[]
   }
 
+  export type TaskUncheckedUpdateManyWithoutEpicNestedInput = {
+    create?: XOR<TaskCreateWithoutEpicInput, TaskUncheckedCreateWithoutEpicInput> | TaskCreateWithoutEpicInput[] | TaskUncheckedCreateWithoutEpicInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutEpicInput | TaskCreateOrConnectWithoutEpicInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutEpicInput | TaskUpsertWithWhereUniqueWithoutEpicInput[]
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutEpicInput | TaskUpdateWithWhereUniqueWithoutEpicInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutEpicInput | TaskUpdateManyWithWhereWithoutEpicInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
   export type FeatureDependencyCreateNestedManyWithoutDependentFeatureInput = {
     create?: XOR<FeatureDependencyCreateWithoutDependentFeatureInput, FeatureDependencyUncheckedCreateWithoutDependentFeatureInput> | FeatureDependencyCreateWithoutDependentFeatureInput[] | FeatureDependencyUncheckedCreateWithoutDependentFeatureInput[]
     connectOrCreate?: FeatureDependencyCreateOrConnectWithoutDependentFeatureInput | FeatureDependencyCreateOrConnectWithoutDependentFeatureInput[]
@@ -60414,6 +60880,12 @@ export namespace Prisma {
     connectOrCreate?: FeatureDependencyCreateOrConnectWithoutDependsOnFeatureInput | FeatureDependencyCreateOrConnectWithoutDependsOnFeatureInput[]
     createMany?: FeatureDependencyCreateManyDependsOnFeatureInputEnvelope
     connect?: FeatureDependencyWhereUniqueInput | FeatureDependencyWhereUniqueInput[]
+  }
+
+  export type TaskCreateNestedManyWithoutFeaturesInput = {
+    create?: XOR<TaskCreateWithoutFeaturesInput, TaskUncheckedCreateWithoutFeaturesInput> | TaskCreateWithoutFeaturesInput[] | TaskUncheckedCreateWithoutFeaturesInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutFeaturesInput | TaskCreateOrConnectWithoutFeaturesInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
   export type EpicCreateNestedOneWithoutFeaturesInput = {
@@ -60475,6 +60947,12 @@ export namespace Prisma {
     connect?: FeatureDependencyWhereUniqueInput | FeatureDependencyWhereUniqueInput[]
   }
 
+  export type TaskUncheckedCreateNestedManyWithoutFeaturesInput = {
+    create?: XOR<TaskCreateWithoutFeaturesInput, TaskUncheckedCreateWithoutFeaturesInput> | TaskCreateWithoutFeaturesInput[] | TaskUncheckedCreateWithoutFeaturesInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutFeaturesInput | TaskCreateOrConnectWithoutFeaturesInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
   export type FeatureUncheckedCreateNestedManyWithoutParentInput = {
     create?: XOR<FeatureCreateWithoutParentInput, FeatureUncheckedCreateWithoutParentInput> | FeatureCreateWithoutParentInput[] | FeatureUncheckedCreateWithoutParentInput[]
     connectOrCreate?: FeatureCreateOrConnectWithoutParentInput | FeatureCreateOrConnectWithoutParentInput[]
@@ -60530,6 +61008,19 @@ export namespace Prisma {
     update?: FeatureDependencyUpdateWithWhereUniqueWithoutDependsOnFeatureInput | FeatureDependencyUpdateWithWhereUniqueWithoutDependsOnFeatureInput[]
     updateMany?: FeatureDependencyUpdateManyWithWhereWithoutDependsOnFeatureInput | FeatureDependencyUpdateManyWithWhereWithoutDependsOnFeatureInput[]
     deleteMany?: FeatureDependencyScalarWhereInput | FeatureDependencyScalarWhereInput[]
+  }
+
+  export type TaskUpdateManyWithoutFeaturesNestedInput = {
+    create?: XOR<TaskCreateWithoutFeaturesInput, TaskUncheckedCreateWithoutFeaturesInput> | TaskCreateWithoutFeaturesInput[] | TaskUncheckedCreateWithoutFeaturesInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutFeaturesInput | TaskCreateOrConnectWithoutFeaturesInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutFeaturesInput | TaskUpsertWithWhereUniqueWithoutFeaturesInput[]
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutFeaturesInput | TaskUpdateWithWhereUniqueWithoutFeaturesInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutFeaturesInput | TaskUpdateManyWithWhereWithoutFeaturesInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
   export type EpicUpdateOneRequiredWithoutFeaturesNestedInput = {
@@ -60640,6 +61131,19 @@ export namespace Prisma {
     deleteMany?: FeatureDependencyScalarWhereInput | FeatureDependencyScalarWhereInput[]
   }
 
+  export type TaskUncheckedUpdateManyWithoutFeaturesNestedInput = {
+    create?: XOR<TaskCreateWithoutFeaturesInput, TaskUncheckedCreateWithoutFeaturesInput> | TaskCreateWithoutFeaturesInput[] | TaskUncheckedCreateWithoutFeaturesInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutFeaturesInput | TaskCreateOrConnectWithoutFeaturesInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutFeaturesInput | TaskUpsertWithWhereUniqueWithoutFeaturesInput[]
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutFeaturesInput | TaskUpdateWithWhereUniqueWithoutFeaturesInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutFeaturesInput | TaskUpdateManyWithWhereWithoutFeaturesInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
   export type FeatureUncheckedUpdateManyWithoutParentNestedInput = {
     create?: XOR<FeatureCreateWithoutParentInput, FeatureUncheckedCreateWithoutParentInput> | FeatureCreateWithoutParentInput[] | FeatureUncheckedCreateWithoutParentInput[]
     connectOrCreate?: FeatureCreateOrConnectWithoutParentInput | FeatureCreateOrConnectWithoutParentInput[]
@@ -60739,13 +61243,6 @@ export namespace Prisma {
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
-  export type TaskCreateNestedManyWithoutUserStoryInput = {
-    create?: XOR<TaskCreateWithoutUserStoryInput, TaskUncheckedCreateWithoutUserStoryInput> | TaskCreateWithoutUserStoryInput[] | TaskUncheckedCreateWithoutUserStoryInput[]
-    connectOrCreate?: TaskCreateOrConnectWithoutUserStoryInput | TaskCreateOrConnectWithoutUserStoryInput[]
-    createMany?: TaskCreateManyUserStoryInputEnvelope
-    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-  }
-
   export type TimeEntryCreateNestedManyWithoutUserStoryInput = {
     create?: XOR<TimeEntryCreateWithoutUserStoryInput, TimeEntryUncheckedCreateWithoutUserStoryInput> | TimeEntryCreateWithoutUserStoryInput[] | TimeEntryUncheckedCreateWithoutUserStoryInput[]
     connectOrCreate?: TimeEntryCreateOrConnectWithoutUserStoryInput | TimeEntryCreateOrConnectWithoutUserStoryInput[]
@@ -60791,6 +61288,12 @@ export namespace Prisma {
     connect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
   }
 
+  export type TaskCreateNestedManyWithoutUserStoryInput = {
+    create?: XOR<TaskCreateWithoutUserStoryInput, TaskUncheckedCreateWithoutUserStoryInput> | TaskCreateWithoutUserStoryInput[] | TaskUncheckedCreateWithoutUserStoryInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutUserStoryInput | TaskCreateOrConnectWithoutUserStoryInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
   export type UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput = {
     create?: XOR<UserStoryAssigneesCreateWithoutUser_storiesInput, UserStoryAssigneesUncheckedCreateWithoutUser_storiesInput> | UserStoryAssigneesCreateWithoutUser_storiesInput[] | UserStoryAssigneesUncheckedCreateWithoutUser_storiesInput[]
     connectOrCreate?: UserStoryAssigneesCreateOrConnectWithoutUser_storiesInput | UserStoryAssigneesCreateOrConnectWithoutUser_storiesInput[]
@@ -60810,13 +61313,6 @@ export namespace Prisma {
     connectOrCreate?: FileCreateOrConnectWithoutUserStoryInput | FileCreateOrConnectWithoutUserStoryInput[]
     createMany?: FileCreateManyUserStoryInputEnvelope
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
-  }
-
-  export type TaskUncheckedCreateNestedManyWithoutUserStoryInput = {
-    create?: XOR<TaskCreateWithoutUserStoryInput, TaskUncheckedCreateWithoutUserStoryInput> | TaskCreateWithoutUserStoryInput[] | TaskUncheckedCreateWithoutUserStoryInput[]
-    connectOrCreate?: TaskCreateOrConnectWithoutUserStoryInput | TaskCreateOrConnectWithoutUserStoryInput[]
-    createMany?: TaskCreateManyUserStoryInputEnvelope
-    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
   export type TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput = {
@@ -60850,6 +61346,12 @@ export namespace Prisma {
     create?: XOR<EpicCreateWithoutUserstoriesInput, EpicUncheckedCreateWithoutUserstoriesInput> | EpicCreateWithoutUserstoriesInput[] | EpicUncheckedCreateWithoutUserstoriesInput[]
     connectOrCreate?: EpicCreateOrConnectWithoutUserstoriesInput | EpicCreateOrConnectWithoutUserstoriesInput[]
     connect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+  }
+
+  export type TaskUncheckedCreateNestedManyWithoutUserStoryInput = {
+    create?: XOR<TaskCreateWithoutUserStoryInput, TaskUncheckedCreateWithoutUserStoryInput> | TaskCreateWithoutUserStoryInput[] | TaskUncheckedCreateWithoutUserStoryInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutUserStoryInput | TaskCreateOrConnectWithoutUserStoryInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
   export type EnumTaskStatusFieldUpdateOperationsInput = {
@@ -60906,20 +61408,6 @@ export namespace Prisma {
     update?: FileUpdateWithWhereUniqueWithoutUserStoryInput | FileUpdateWithWhereUniqueWithoutUserStoryInput[]
     updateMany?: FileUpdateManyWithWhereWithoutUserStoryInput | FileUpdateManyWithWhereWithoutUserStoryInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
-  }
-
-  export type TaskUpdateManyWithoutUserStoryNestedInput = {
-    create?: XOR<TaskCreateWithoutUserStoryInput, TaskUncheckedCreateWithoutUserStoryInput> | TaskCreateWithoutUserStoryInput[] | TaskUncheckedCreateWithoutUserStoryInput[]
-    connectOrCreate?: TaskCreateOrConnectWithoutUserStoryInput | TaskCreateOrConnectWithoutUserStoryInput[]
-    upsert?: TaskUpsertWithWhereUniqueWithoutUserStoryInput | TaskUpsertWithWhereUniqueWithoutUserStoryInput[]
-    createMany?: TaskCreateManyUserStoryInputEnvelope
-    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    update?: TaskUpdateWithWhereUniqueWithoutUserStoryInput | TaskUpdateWithWhereUniqueWithoutUserStoryInput[]
-    updateMany?: TaskUpdateManyWithWhereWithoutUserStoryInput | TaskUpdateManyWithWhereWithoutUserStoryInput[]
-    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
   export type TimeEntryUpdateManyWithoutUserStoryNestedInput = {
@@ -61006,6 +61494,19 @@ export namespace Prisma {
     deleteMany?: EpicScalarWhereInput | EpicScalarWhereInput[]
   }
 
+  export type TaskUpdateManyWithoutUserStoryNestedInput = {
+    create?: XOR<TaskCreateWithoutUserStoryInput, TaskUncheckedCreateWithoutUserStoryInput> | TaskCreateWithoutUserStoryInput[] | TaskUncheckedCreateWithoutUserStoryInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutUserStoryInput | TaskCreateOrConnectWithoutUserStoryInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutUserStoryInput | TaskUpsertWithWhereUniqueWithoutUserStoryInput[]
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutUserStoryInput | TaskUpdateWithWhereUniqueWithoutUserStoryInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutUserStoryInput | TaskUpdateManyWithWhereWithoutUserStoryInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
   export type UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput = {
     create?: XOR<UserStoryAssigneesCreateWithoutUser_storiesInput, UserStoryAssigneesUncheckedCreateWithoutUser_storiesInput> | UserStoryAssigneesCreateWithoutUser_storiesInput[] | UserStoryAssigneesUncheckedCreateWithoutUser_storiesInput[]
     connectOrCreate?: UserStoryAssigneesCreateOrConnectWithoutUser_storiesInput | UserStoryAssigneesCreateOrConnectWithoutUser_storiesInput[]
@@ -61046,20 +61547,6 @@ export namespace Prisma {
     update?: FileUpdateWithWhereUniqueWithoutUserStoryInput | FileUpdateWithWhereUniqueWithoutUserStoryInput[]
     updateMany?: FileUpdateManyWithWhereWithoutUserStoryInput | FileUpdateManyWithWhereWithoutUserStoryInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
-  }
-
-  export type TaskUncheckedUpdateManyWithoutUserStoryNestedInput = {
-    create?: XOR<TaskCreateWithoutUserStoryInput, TaskUncheckedCreateWithoutUserStoryInput> | TaskCreateWithoutUserStoryInput[] | TaskUncheckedCreateWithoutUserStoryInput[]
-    connectOrCreate?: TaskCreateOrConnectWithoutUserStoryInput | TaskCreateOrConnectWithoutUserStoryInput[]
-    upsert?: TaskUpsertWithWhereUniqueWithoutUserStoryInput | TaskUpsertWithWhereUniqueWithoutUserStoryInput[]
-    createMany?: TaskCreateManyUserStoryInputEnvelope
-    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    update?: TaskUpdateWithWhereUniqueWithoutUserStoryInput | TaskUpdateWithWhereUniqueWithoutUserStoryInput[]
-    updateMany?: TaskUpdateManyWithWhereWithoutUserStoryInput | TaskUpdateManyWithWhereWithoutUserStoryInput[]
-    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
   export type TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput = {
@@ -61130,6 +61617,19 @@ export namespace Prisma {
     deleteMany?: EpicScalarWhereInput | EpicScalarWhereInput[]
   }
 
+  export type TaskUncheckedUpdateManyWithoutUserStoryNestedInput = {
+    create?: XOR<TaskCreateWithoutUserStoryInput, TaskUncheckedCreateWithoutUserStoryInput> | TaskCreateWithoutUserStoryInput[] | TaskUncheckedCreateWithoutUserStoryInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutUserStoryInput | TaskCreateOrConnectWithoutUserStoryInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutUserStoryInput | TaskUpsertWithWhereUniqueWithoutUserStoryInput[]
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutUserStoryInput | TaskUpdateWithWhereUniqueWithoutUserStoryInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutUserStoryInput | TaskUpdateManyWithWhereWithoutUserStoryInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
   export type UserStoryCreateNestedOneWithoutDependenciesInput = {
     create?: XOR<UserStoryCreateWithoutDependenciesInput, UserStoryUncheckedCreateWithoutDependenciesInput>
     connectOrCreate?: UserStoryCreateOrConnectWithoutDependenciesInput
@@ -61176,8 +61676,19 @@ export namespace Prisma {
   export type FileCreateNestedManyWithoutTaskInput = {
     create?: XOR<FileCreateWithoutTaskInput, FileUncheckedCreateWithoutTaskInput> | FileCreateWithoutTaskInput[] | FileUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: FileCreateOrConnectWithoutTaskInput | FileCreateOrConnectWithoutTaskInput[]
-    createMany?: FileCreateManyTaskInputEnvelope
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+  }
+
+  export type FeatureCreateNestedManyWithoutTasksInput = {
+    create?: XOR<FeatureCreateWithoutTasksInput, FeatureUncheckedCreateWithoutTasksInput> | FeatureCreateWithoutTasksInput[] | FeatureUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: FeatureCreateOrConnectWithoutTasksInput | FeatureCreateOrConnectWithoutTasksInput[]
+    connect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+  }
+
+  export type SprintCreateNestedManyWithoutTasksInput = {
+    create?: XOR<SprintCreateWithoutTasksInput, SprintUncheckedCreateWithoutTasksInput> | SprintCreateWithoutTasksInput[] | SprintUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: SprintCreateOrConnectWithoutTasksInput | SprintCreateOrConnectWithoutTasksInput[]
+    connect?: SprintWhereUniqueInput | SprintWhereUniqueInput[]
   }
 
   export type TaskDependencyCreateNestedManyWithoutDependentTaskInput = {
@@ -61187,23 +61698,16 @@ export namespace Prisma {
     connect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
   }
 
-  export type TaskDependencyCreateNestedManyWithoutDependsOnTaskInput = {
-    create?: XOR<TaskDependencyCreateWithoutDependsOnTaskInput, TaskDependencyUncheckedCreateWithoutDependsOnTaskInput> | TaskDependencyCreateWithoutDependsOnTaskInput[] | TaskDependencyUncheckedCreateWithoutDependsOnTaskInput[]
-    connectOrCreate?: TaskDependencyCreateOrConnectWithoutDependsOnTaskInput | TaskDependencyCreateOrConnectWithoutDependsOnTaskInput[]
-    createMany?: TaskDependencyCreateManyDependsOnTaskInputEnvelope
-    connect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
-  }
-
   export type UserCreateNestedOneWithoutCreatedTasksInput = {
     create?: XOR<UserCreateWithoutCreatedTasksInput, UserUncheckedCreateWithoutCreatedTasksInput>
     connectOrCreate?: UserCreateOrConnectWithoutCreatedTasksInput
     connect?: UserWhereUniqueInput
   }
 
-  export type UserStoryCreateNestedOneWithoutTasksInput = {
-    create?: XOR<UserStoryCreateWithoutTasksInput, UserStoryUncheckedCreateWithoutTasksInput>
-    connectOrCreate?: UserStoryCreateOrConnectWithoutTasksInput
-    connect?: UserStoryWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutTaskInput = {
+    create?: XOR<ProjectCreateWithoutTaskInput, ProjectUncheckedCreateWithoutTaskInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutTaskInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type TimeEntryCreateNestedManyWithoutTaskInput = {
@@ -61219,6 +61723,25 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
+  export type TaskDependencyCreateNestedManyWithoutDependsOnTaskInput = {
+    create?: XOR<TaskDependencyCreateWithoutDependsOnTaskInput, TaskDependencyUncheckedCreateWithoutDependsOnTaskInput> | TaskDependencyCreateWithoutDependsOnTaskInput[] | TaskDependencyUncheckedCreateWithoutDependsOnTaskInput[]
+    connectOrCreate?: TaskDependencyCreateOrConnectWithoutDependsOnTaskInput | TaskDependencyCreateOrConnectWithoutDependsOnTaskInput[]
+    createMany?: TaskDependencyCreateManyDependsOnTaskInputEnvelope
+    connect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
+  }
+
+  export type UserStoryCreateNestedManyWithoutTasksInput = {
+    create?: XOR<UserStoryCreateWithoutTasksInput, UserStoryUncheckedCreateWithoutTasksInput> | UserStoryCreateWithoutTasksInput[] | UserStoryUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: UserStoryCreateOrConnectWithoutTasksInput | UserStoryCreateOrConnectWithoutTasksInput[]
+    connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+  }
+
+  export type EpicCreateNestedManyWithoutTasksInput = {
+    create?: XOR<EpicCreateWithoutTasksInput, EpicUncheckedCreateWithoutTasksInput> | EpicCreateWithoutTasksInput[] | EpicUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: EpicCreateOrConnectWithoutTasksInput | EpicCreateOrConnectWithoutTasksInput[]
+    connect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+  }
+
   export type CommentUncheckedCreateNestedManyWithoutTaskInput = {
     create?: XOR<CommentCreateWithoutTaskInput, CommentUncheckedCreateWithoutTaskInput> | CommentCreateWithoutTaskInput[] | CommentUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutTaskInput | CommentCreateOrConnectWithoutTaskInput[]
@@ -61229,21 +61752,25 @@ export namespace Prisma {
   export type FileUncheckedCreateNestedManyWithoutTaskInput = {
     create?: XOR<FileCreateWithoutTaskInput, FileUncheckedCreateWithoutTaskInput> | FileCreateWithoutTaskInput[] | FileUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: FileCreateOrConnectWithoutTaskInput | FileCreateOrConnectWithoutTaskInput[]
-    createMany?: FileCreateManyTaskInputEnvelope
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+  }
+
+  export type FeatureUncheckedCreateNestedManyWithoutTasksInput = {
+    create?: XOR<FeatureCreateWithoutTasksInput, FeatureUncheckedCreateWithoutTasksInput> | FeatureCreateWithoutTasksInput[] | FeatureUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: FeatureCreateOrConnectWithoutTasksInput | FeatureCreateOrConnectWithoutTasksInput[]
+    connect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+  }
+
+  export type SprintUncheckedCreateNestedManyWithoutTasksInput = {
+    create?: XOR<SprintCreateWithoutTasksInput, SprintUncheckedCreateWithoutTasksInput> | SprintCreateWithoutTasksInput[] | SprintUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: SprintCreateOrConnectWithoutTasksInput | SprintCreateOrConnectWithoutTasksInput[]
+    connect?: SprintWhereUniqueInput | SprintWhereUniqueInput[]
   }
 
   export type TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput = {
     create?: XOR<TaskDependencyCreateWithoutDependentTaskInput, TaskDependencyUncheckedCreateWithoutDependentTaskInput> | TaskDependencyCreateWithoutDependentTaskInput[] | TaskDependencyUncheckedCreateWithoutDependentTaskInput[]
     connectOrCreate?: TaskDependencyCreateOrConnectWithoutDependentTaskInput | TaskDependencyCreateOrConnectWithoutDependentTaskInput[]
     createMany?: TaskDependencyCreateManyDependentTaskInputEnvelope
-    connect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
-  }
-
-  export type TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput = {
-    create?: XOR<TaskDependencyCreateWithoutDependsOnTaskInput, TaskDependencyUncheckedCreateWithoutDependsOnTaskInput> | TaskDependencyCreateWithoutDependsOnTaskInput[] | TaskDependencyUncheckedCreateWithoutDependsOnTaskInput[]
-    connectOrCreate?: TaskDependencyCreateOrConnectWithoutDependsOnTaskInput | TaskDependencyCreateOrConnectWithoutDependsOnTaskInput[]
-    createMany?: TaskDependencyCreateManyDependsOnTaskInputEnvelope
     connect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
   }
 
@@ -61258,6 +61785,25 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutAssignedTasksInput, UserUncheckedCreateWithoutAssignedTasksInput> | UserCreateWithoutAssignedTasksInput[] | UserUncheckedCreateWithoutAssignedTasksInput[]
     connectOrCreate?: UserCreateOrConnectWithoutAssignedTasksInput | UserCreateOrConnectWithoutAssignedTasksInput[]
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput = {
+    create?: XOR<TaskDependencyCreateWithoutDependsOnTaskInput, TaskDependencyUncheckedCreateWithoutDependsOnTaskInput> | TaskDependencyCreateWithoutDependsOnTaskInput[] | TaskDependencyUncheckedCreateWithoutDependsOnTaskInput[]
+    connectOrCreate?: TaskDependencyCreateOrConnectWithoutDependsOnTaskInput | TaskDependencyCreateOrConnectWithoutDependsOnTaskInput[]
+    createMany?: TaskDependencyCreateManyDependsOnTaskInputEnvelope
+    connect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
+  }
+
+  export type UserStoryUncheckedCreateNestedManyWithoutTasksInput = {
+    create?: XOR<UserStoryCreateWithoutTasksInput, UserStoryUncheckedCreateWithoutTasksInput> | UserStoryCreateWithoutTasksInput[] | UserStoryUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: UserStoryCreateOrConnectWithoutTasksInput | UserStoryCreateOrConnectWithoutTasksInput[]
+    connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+  }
+
+  export type EpicUncheckedCreateNestedManyWithoutTasksInput = {
+    create?: XOR<EpicCreateWithoutTasksInput, EpicUncheckedCreateWithoutTasksInput> | EpicCreateWithoutTasksInput[] | EpicUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: EpicCreateOrConnectWithoutTasksInput | EpicCreateOrConnectWithoutTasksInput[]
+    connect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
   }
 
   export type TaskUpdatelabelsInput = {
@@ -61288,7 +61834,6 @@ export namespace Prisma {
     create?: XOR<FileCreateWithoutTaskInput, FileUncheckedCreateWithoutTaskInput> | FileCreateWithoutTaskInput[] | FileUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: FileCreateOrConnectWithoutTaskInput | FileCreateOrConnectWithoutTaskInput[]
     upsert?: FileUpsertWithWhereUniqueWithoutTaskInput | FileUpsertWithWhereUniqueWithoutTaskInput[]
-    createMany?: FileCreateManyTaskInputEnvelope
     set?: FileWhereUniqueInput | FileWhereUniqueInput[]
     disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
     delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
@@ -61296,6 +61841,32 @@ export namespace Prisma {
     update?: FileUpdateWithWhereUniqueWithoutTaskInput | FileUpdateWithWhereUniqueWithoutTaskInput[]
     updateMany?: FileUpdateManyWithWhereWithoutTaskInput | FileUpdateManyWithWhereWithoutTaskInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
+  }
+
+  export type FeatureUpdateManyWithoutTasksNestedInput = {
+    create?: XOR<FeatureCreateWithoutTasksInput, FeatureUncheckedCreateWithoutTasksInput> | FeatureCreateWithoutTasksInput[] | FeatureUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: FeatureCreateOrConnectWithoutTasksInput | FeatureCreateOrConnectWithoutTasksInput[]
+    upsert?: FeatureUpsertWithWhereUniqueWithoutTasksInput | FeatureUpsertWithWhereUniqueWithoutTasksInput[]
+    set?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    disconnect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    delete?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    connect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    update?: FeatureUpdateWithWhereUniqueWithoutTasksInput | FeatureUpdateWithWhereUniqueWithoutTasksInput[]
+    updateMany?: FeatureUpdateManyWithWhereWithoutTasksInput | FeatureUpdateManyWithWhereWithoutTasksInput[]
+    deleteMany?: FeatureScalarWhereInput | FeatureScalarWhereInput[]
+  }
+
+  export type SprintUpdateManyWithoutTasksNestedInput = {
+    create?: XOR<SprintCreateWithoutTasksInput, SprintUncheckedCreateWithoutTasksInput> | SprintCreateWithoutTasksInput[] | SprintUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: SprintCreateOrConnectWithoutTasksInput | SprintCreateOrConnectWithoutTasksInput[]
+    upsert?: SprintUpsertWithWhereUniqueWithoutTasksInput | SprintUpsertWithWhereUniqueWithoutTasksInput[]
+    set?: SprintWhereUniqueInput | SprintWhereUniqueInput[]
+    disconnect?: SprintWhereUniqueInput | SprintWhereUniqueInput[]
+    delete?: SprintWhereUniqueInput | SprintWhereUniqueInput[]
+    connect?: SprintWhereUniqueInput | SprintWhereUniqueInput[]
+    update?: SprintUpdateWithWhereUniqueWithoutTasksInput | SprintUpdateWithWhereUniqueWithoutTasksInput[]
+    updateMany?: SprintUpdateManyWithWhereWithoutTasksInput | SprintUpdateManyWithWhereWithoutTasksInput[]
+    deleteMany?: SprintScalarWhereInput | SprintScalarWhereInput[]
   }
 
   export type TaskDependencyUpdateManyWithoutDependentTaskNestedInput = {
@@ -61312,20 +61883,6 @@ export namespace Prisma {
     deleteMany?: TaskDependencyScalarWhereInput | TaskDependencyScalarWhereInput[]
   }
 
-  export type TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput = {
-    create?: XOR<TaskDependencyCreateWithoutDependsOnTaskInput, TaskDependencyUncheckedCreateWithoutDependsOnTaskInput> | TaskDependencyCreateWithoutDependsOnTaskInput[] | TaskDependencyUncheckedCreateWithoutDependsOnTaskInput[]
-    connectOrCreate?: TaskDependencyCreateOrConnectWithoutDependsOnTaskInput | TaskDependencyCreateOrConnectWithoutDependsOnTaskInput[]
-    upsert?: TaskDependencyUpsertWithWhereUniqueWithoutDependsOnTaskInput | TaskDependencyUpsertWithWhereUniqueWithoutDependsOnTaskInput[]
-    createMany?: TaskDependencyCreateManyDependsOnTaskInputEnvelope
-    set?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
-    disconnect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
-    delete?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
-    connect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
-    update?: TaskDependencyUpdateWithWhereUniqueWithoutDependsOnTaskInput | TaskDependencyUpdateWithWhereUniqueWithoutDependsOnTaskInput[]
-    updateMany?: TaskDependencyUpdateManyWithWhereWithoutDependsOnTaskInput | TaskDependencyUpdateManyWithWhereWithoutDependsOnTaskInput[]
-    deleteMany?: TaskDependencyScalarWhereInput | TaskDependencyScalarWhereInput[]
-  }
-
   export type UserUpdateOneRequiredWithoutCreatedTasksNestedInput = {
     create?: XOR<UserCreateWithoutCreatedTasksInput, UserUncheckedCreateWithoutCreatedTasksInput>
     connectOrCreate?: UserCreateOrConnectWithoutCreatedTasksInput
@@ -61334,12 +61891,14 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedTasksInput, UserUpdateWithoutCreatedTasksInput>, UserUncheckedUpdateWithoutCreatedTasksInput>
   }
 
-  export type UserStoryUpdateOneRequiredWithoutTasksNestedInput = {
-    create?: XOR<UserStoryCreateWithoutTasksInput, UserStoryUncheckedCreateWithoutTasksInput>
-    connectOrCreate?: UserStoryCreateOrConnectWithoutTasksInput
-    upsert?: UserStoryUpsertWithoutTasksInput
-    connect?: UserStoryWhereUniqueInput
-    update?: XOR<XOR<UserStoryUpdateToOneWithWhereWithoutTasksInput, UserStoryUpdateWithoutTasksInput>, UserStoryUncheckedUpdateWithoutTasksInput>
+  export type ProjectUpdateOneWithoutTaskNestedInput = {
+    create?: XOR<ProjectCreateWithoutTaskInput, ProjectUncheckedCreateWithoutTaskInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutTaskInput
+    upsert?: ProjectUpsertWithoutTaskInput
+    disconnect?: ProjectWhereInput | boolean
+    delete?: ProjectWhereInput | boolean
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutTaskInput, ProjectUpdateWithoutTaskInput>, ProjectUncheckedUpdateWithoutTaskInput>
   }
 
   export type TimeEntryUpdateManyWithoutTaskNestedInput = {
@@ -61369,6 +61928,46 @@ export namespace Prisma {
     deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
+  export type TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput = {
+    create?: XOR<TaskDependencyCreateWithoutDependsOnTaskInput, TaskDependencyUncheckedCreateWithoutDependsOnTaskInput> | TaskDependencyCreateWithoutDependsOnTaskInput[] | TaskDependencyUncheckedCreateWithoutDependsOnTaskInput[]
+    connectOrCreate?: TaskDependencyCreateOrConnectWithoutDependsOnTaskInput | TaskDependencyCreateOrConnectWithoutDependsOnTaskInput[]
+    upsert?: TaskDependencyUpsertWithWhereUniqueWithoutDependsOnTaskInput | TaskDependencyUpsertWithWhereUniqueWithoutDependsOnTaskInput[]
+    createMany?: TaskDependencyCreateManyDependsOnTaskInputEnvelope
+    set?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
+    disconnect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
+    delete?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
+    connect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
+    update?: TaskDependencyUpdateWithWhereUniqueWithoutDependsOnTaskInput | TaskDependencyUpdateWithWhereUniqueWithoutDependsOnTaskInput[]
+    updateMany?: TaskDependencyUpdateManyWithWhereWithoutDependsOnTaskInput | TaskDependencyUpdateManyWithWhereWithoutDependsOnTaskInput[]
+    deleteMany?: TaskDependencyScalarWhereInput | TaskDependencyScalarWhereInput[]
+  }
+
+  export type UserStoryUpdateManyWithoutTasksNestedInput = {
+    create?: XOR<UserStoryCreateWithoutTasksInput, UserStoryUncheckedCreateWithoutTasksInput> | UserStoryCreateWithoutTasksInput[] | UserStoryUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: UserStoryCreateOrConnectWithoutTasksInput | UserStoryCreateOrConnectWithoutTasksInput[]
+    upsert?: UserStoryUpsertWithWhereUniqueWithoutTasksInput | UserStoryUpsertWithWhereUniqueWithoutTasksInput[]
+    set?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    disconnect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    delete?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    update?: UserStoryUpdateWithWhereUniqueWithoutTasksInput | UserStoryUpdateWithWhereUniqueWithoutTasksInput[]
+    updateMany?: UserStoryUpdateManyWithWhereWithoutTasksInput | UserStoryUpdateManyWithWhereWithoutTasksInput[]
+    deleteMany?: UserStoryScalarWhereInput | UserStoryScalarWhereInput[]
+  }
+
+  export type EpicUpdateManyWithoutTasksNestedInput = {
+    create?: XOR<EpicCreateWithoutTasksInput, EpicUncheckedCreateWithoutTasksInput> | EpicCreateWithoutTasksInput[] | EpicUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: EpicCreateOrConnectWithoutTasksInput | EpicCreateOrConnectWithoutTasksInput[]
+    upsert?: EpicUpsertWithWhereUniqueWithoutTasksInput | EpicUpsertWithWhereUniqueWithoutTasksInput[]
+    set?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    disconnect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    delete?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    connect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    update?: EpicUpdateWithWhereUniqueWithoutTasksInput | EpicUpdateWithWhereUniqueWithoutTasksInput[]
+    updateMany?: EpicUpdateManyWithWhereWithoutTasksInput | EpicUpdateManyWithWhereWithoutTasksInput[]
+    deleteMany?: EpicScalarWhereInput | EpicScalarWhereInput[]
+  }
+
   export type CommentUncheckedUpdateManyWithoutTaskNestedInput = {
     create?: XOR<CommentCreateWithoutTaskInput, CommentUncheckedCreateWithoutTaskInput> | CommentCreateWithoutTaskInput[] | CommentUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutTaskInput | CommentCreateOrConnectWithoutTaskInput[]
@@ -61387,7 +61986,6 @@ export namespace Prisma {
     create?: XOR<FileCreateWithoutTaskInput, FileUncheckedCreateWithoutTaskInput> | FileCreateWithoutTaskInput[] | FileUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: FileCreateOrConnectWithoutTaskInput | FileCreateOrConnectWithoutTaskInput[]
     upsert?: FileUpsertWithWhereUniqueWithoutTaskInput | FileUpsertWithWhereUniqueWithoutTaskInput[]
-    createMany?: FileCreateManyTaskInputEnvelope
     set?: FileWhereUniqueInput | FileWhereUniqueInput[]
     disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
     delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
@@ -61395,6 +61993,32 @@ export namespace Prisma {
     update?: FileUpdateWithWhereUniqueWithoutTaskInput | FileUpdateWithWhereUniqueWithoutTaskInput[]
     updateMany?: FileUpdateManyWithWhereWithoutTaskInput | FileUpdateManyWithWhereWithoutTaskInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
+  }
+
+  export type FeatureUncheckedUpdateManyWithoutTasksNestedInput = {
+    create?: XOR<FeatureCreateWithoutTasksInput, FeatureUncheckedCreateWithoutTasksInput> | FeatureCreateWithoutTasksInput[] | FeatureUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: FeatureCreateOrConnectWithoutTasksInput | FeatureCreateOrConnectWithoutTasksInput[]
+    upsert?: FeatureUpsertWithWhereUniqueWithoutTasksInput | FeatureUpsertWithWhereUniqueWithoutTasksInput[]
+    set?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    disconnect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    delete?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    connect?: FeatureWhereUniqueInput | FeatureWhereUniqueInput[]
+    update?: FeatureUpdateWithWhereUniqueWithoutTasksInput | FeatureUpdateWithWhereUniqueWithoutTasksInput[]
+    updateMany?: FeatureUpdateManyWithWhereWithoutTasksInput | FeatureUpdateManyWithWhereWithoutTasksInput[]
+    deleteMany?: FeatureScalarWhereInput | FeatureScalarWhereInput[]
+  }
+
+  export type SprintUncheckedUpdateManyWithoutTasksNestedInput = {
+    create?: XOR<SprintCreateWithoutTasksInput, SprintUncheckedCreateWithoutTasksInput> | SprintCreateWithoutTasksInput[] | SprintUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: SprintCreateOrConnectWithoutTasksInput | SprintCreateOrConnectWithoutTasksInput[]
+    upsert?: SprintUpsertWithWhereUniqueWithoutTasksInput | SprintUpsertWithWhereUniqueWithoutTasksInput[]
+    set?: SprintWhereUniqueInput | SprintWhereUniqueInput[]
+    disconnect?: SprintWhereUniqueInput | SprintWhereUniqueInput[]
+    delete?: SprintWhereUniqueInput | SprintWhereUniqueInput[]
+    connect?: SprintWhereUniqueInput | SprintWhereUniqueInput[]
+    update?: SprintUpdateWithWhereUniqueWithoutTasksInput | SprintUpdateWithWhereUniqueWithoutTasksInput[]
+    updateMany?: SprintUpdateManyWithWhereWithoutTasksInput | SprintUpdateManyWithWhereWithoutTasksInput[]
+    deleteMany?: SprintScalarWhereInput | SprintScalarWhereInput[]
   }
 
   export type TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput = {
@@ -61408,20 +62032,6 @@ export namespace Prisma {
     connect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
     update?: TaskDependencyUpdateWithWhereUniqueWithoutDependentTaskInput | TaskDependencyUpdateWithWhereUniqueWithoutDependentTaskInput[]
     updateMany?: TaskDependencyUpdateManyWithWhereWithoutDependentTaskInput | TaskDependencyUpdateManyWithWhereWithoutDependentTaskInput[]
-    deleteMany?: TaskDependencyScalarWhereInput | TaskDependencyScalarWhereInput[]
-  }
-
-  export type TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput = {
-    create?: XOR<TaskDependencyCreateWithoutDependsOnTaskInput, TaskDependencyUncheckedCreateWithoutDependsOnTaskInput> | TaskDependencyCreateWithoutDependsOnTaskInput[] | TaskDependencyUncheckedCreateWithoutDependsOnTaskInput[]
-    connectOrCreate?: TaskDependencyCreateOrConnectWithoutDependsOnTaskInput | TaskDependencyCreateOrConnectWithoutDependsOnTaskInput[]
-    upsert?: TaskDependencyUpsertWithWhereUniqueWithoutDependsOnTaskInput | TaskDependencyUpsertWithWhereUniqueWithoutDependsOnTaskInput[]
-    createMany?: TaskDependencyCreateManyDependsOnTaskInputEnvelope
-    set?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
-    disconnect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
-    delete?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
-    connect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
-    update?: TaskDependencyUpdateWithWhereUniqueWithoutDependsOnTaskInput | TaskDependencyUpdateWithWhereUniqueWithoutDependsOnTaskInput[]
-    updateMany?: TaskDependencyUpdateManyWithWhereWithoutDependsOnTaskInput | TaskDependencyUpdateManyWithWhereWithoutDependsOnTaskInput[]
     deleteMany?: TaskDependencyScalarWhereInput | TaskDependencyScalarWhereInput[]
   }
 
@@ -61452,15 +62062,55 @@ export namespace Prisma {
     deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
+  export type TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput = {
+    create?: XOR<TaskDependencyCreateWithoutDependsOnTaskInput, TaskDependencyUncheckedCreateWithoutDependsOnTaskInput> | TaskDependencyCreateWithoutDependsOnTaskInput[] | TaskDependencyUncheckedCreateWithoutDependsOnTaskInput[]
+    connectOrCreate?: TaskDependencyCreateOrConnectWithoutDependsOnTaskInput | TaskDependencyCreateOrConnectWithoutDependsOnTaskInput[]
+    upsert?: TaskDependencyUpsertWithWhereUniqueWithoutDependsOnTaskInput | TaskDependencyUpsertWithWhereUniqueWithoutDependsOnTaskInput[]
+    createMany?: TaskDependencyCreateManyDependsOnTaskInputEnvelope
+    set?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
+    disconnect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
+    delete?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
+    connect?: TaskDependencyWhereUniqueInput | TaskDependencyWhereUniqueInput[]
+    update?: TaskDependencyUpdateWithWhereUniqueWithoutDependsOnTaskInput | TaskDependencyUpdateWithWhereUniqueWithoutDependsOnTaskInput[]
+    updateMany?: TaskDependencyUpdateManyWithWhereWithoutDependsOnTaskInput | TaskDependencyUpdateManyWithWhereWithoutDependsOnTaskInput[]
+    deleteMany?: TaskDependencyScalarWhereInput | TaskDependencyScalarWhereInput[]
+  }
+
+  export type UserStoryUncheckedUpdateManyWithoutTasksNestedInput = {
+    create?: XOR<UserStoryCreateWithoutTasksInput, UserStoryUncheckedCreateWithoutTasksInput> | UserStoryCreateWithoutTasksInput[] | UserStoryUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: UserStoryCreateOrConnectWithoutTasksInput | UserStoryCreateOrConnectWithoutTasksInput[]
+    upsert?: UserStoryUpsertWithWhereUniqueWithoutTasksInput | UserStoryUpsertWithWhereUniqueWithoutTasksInput[]
+    set?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    disconnect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    delete?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    update?: UserStoryUpdateWithWhereUniqueWithoutTasksInput | UserStoryUpdateWithWhereUniqueWithoutTasksInput[]
+    updateMany?: UserStoryUpdateManyWithWhereWithoutTasksInput | UserStoryUpdateManyWithWhereWithoutTasksInput[]
+    deleteMany?: UserStoryScalarWhereInput | UserStoryScalarWhereInput[]
+  }
+
+  export type EpicUncheckedUpdateManyWithoutTasksNestedInput = {
+    create?: XOR<EpicCreateWithoutTasksInput, EpicUncheckedCreateWithoutTasksInput> | EpicCreateWithoutTasksInput[] | EpicUncheckedCreateWithoutTasksInput[]
+    connectOrCreate?: EpicCreateOrConnectWithoutTasksInput | EpicCreateOrConnectWithoutTasksInput[]
+    upsert?: EpicUpsertWithWhereUniqueWithoutTasksInput | EpicUpsertWithWhereUniqueWithoutTasksInput[]
+    set?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    disconnect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    delete?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    connect?: EpicWhereUniqueInput | EpicWhereUniqueInput[]
+    update?: EpicUpdateWithWhereUniqueWithoutTasksInput | EpicUpdateWithWhereUniqueWithoutTasksInput[]
+    updateMany?: EpicUpdateManyWithWhereWithoutTasksInput | EpicUpdateManyWithWhereWithoutTasksInput[]
+    deleteMany?: EpicScalarWhereInput | EpicScalarWhereInput[]
+  }
+
   export type TaskCreateNestedOneWithoutDependenciesInput = {
     create?: XOR<TaskCreateWithoutDependenciesInput, TaskUncheckedCreateWithoutDependenciesInput>
     connectOrCreate?: TaskCreateOrConnectWithoutDependenciesInput
     connect?: TaskWhereUniqueInput
   }
 
-  export type TaskCreateNestedOneWithoutDependentsInput = {
-    create?: XOR<TaskCreateWithoutDependentsInput, TaskUncheckedCreateWithoutDependentsInput>
-    connectOrCreate?: TaskCreateOrConnectWithoutDependentsInput
+  export type TaskCreateNestedOneWithoutAskDependencyInput = {
+    create?: XOR<TaskCreateWithoutAskDependencyInput, TaskUncheckedCreateWithoutAskDependencyInput>
+    connectOrCreate?: TaskCreateOrConnectWithoutAskDependencyInput
     connect?: TaskWhereUniqueInput
   }
 
@@ -61472,12 +62122,12 @@ export namespace Prisma {
     update?: XOR<XOR<TaskUpdateToOneWithWhereWithoutDependenciesInput, TaskUpdateWithoutDependenciesInput>, TaskUncheckedUpdateWithoutDependenciesInput>
   }
 
-  export type TaskUpdateOneRequiredWithoutDependentsNestedInput = {
-    create?: XOR<TaskCreateWithoutDependentsInput, TaskUncheckedCreateWithoutDependentsInput>
-    connectOrCreate?: TaskCreateOrConnectWithoutDependentsInput
-    upsert?: TaskUpsertWithoutDependentsInput
+  export type TaskUpdateOneRequiredWithoutAskDependencyNestedInput = {
+    create?: XOR<TaskCreateWithoutAskDependencyInput, TaskUncheckedCreateWithoutAskDependencyInput>
+    connectOrCreate?: TaskCreateOrConnectWithoutAskDependencyInput
+    upsert?: TaskUpsertWithoutAskDependencyInput
     connect?: TaskWhereUniqueInput
-    update?: XOR<XOR<TaskUpdateToOneWithWhereWithoutDependentsInput, TaskUpdateWithoutDependentsInput>, TaskUncheckedUpdateWithoutDependentsInput>
+    update?: XOR<XOR<TaskUpdateToOneWithWhereWithoutAskDependencyInput, TaskUpdateWithoutAskDependencyInput>, TaskUncheckedUpdateWithoutAskDependencyInput>
   }
 
   export type FileCreateNestedManyWithoutSprintInput = {
@@ -61519,6 +62169,12 @@ export namespace Prisma {
     connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
   }
 
+  export type TaskCreateNestedManyWithoutSprintsInput = {
+    create?: XOR<TaskCreateWithoutSprintsInput, TaskUncheckedCreateWithoutSprintsInput> | TaskCreateWithoutSprintsInput[] | TaskUncheckedCreateWithoutSprintsInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutSprintsInput | TaskCreateOrConnectWithoutSprintsInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
   export type FileUncheckedCreateNestedManyWithoutSprintInput = {
     create?: XOR<FileCreateWithoutSprintInput, FileUncheckedCreateWithoutSprintInput> | FileCreateWithoutSprintInput[] | FileUncheckedCreateWithoutSprintInput[]
     connectOrCreate?: FileCreateOrConnectWithoutSprintInput | FileCreateOrConnectWithoutSprintInput[]
@@ -61550,6 +62206,12 @@ export namespace Prisma {
     create?: XOR<UserStoryCreateWithoutSprintsInput, UserStoryUncheckedCreateWithoutSprintsInput> | UserStoryCreateWithoutSprintsInput[] | UserStoryUncheckedCreateWithoutSprintsInput[]
     connectOrCreate?: UserStoryCreateOrConnectWithoutSprintsInput | UserStoryCreateOrConnectWithoutSprintsInput[]
     connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+  }
+
+  export type TaskUncheckedCreateNestedManyWithoutSprintsInput = {
+    create?: XOR<TaskCreateWithoutSprintsInput, TaskUncheckedCreateWithoutSprintsInput> | TaskCreateWithoutSprintsInput[] | TaskUncheckedCreateWithoutSprintsInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutSprintsInput | TaskCreateOrConnectWithoutSprintsInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
   export type EnumSprintStatusFieldUpdateOperationsInput = {
@@ -61632,6 +62294,19 @@ export namespace Prisma {
     deleteMany?: UserStoryScalarWhereInput | UserStoryScalarWhereInput[]
   }
 
+  export type TaskUpdateManyWithoutSprintsNestedInput = {
+    create?: XOR<TaskCreateWithoutSprintsInput, TaskUncheckedCreateWithoutSprintsInput> | TaskCreateWithoutSprintsInput[] | TaskUncheckedCreateWithoutSprintsInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutSprintsInput | TaskCreateOrConnectWithoutSprintsInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutSprintsInput | TaskUpsertWithWhereUniqueWithoutSprintsInput[]
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutSprintsInput | TaskUpdateWithWhereUniqueWithoutSprintsInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutSprintsInput | TaskUpdateManyWithWhereWithoutSprintsInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
   export type FileUncheckedUpdateManyWithoutSprintNestedInput = {
     create?: XOR<FileCreateWithoutSprintInput, FileUncheckedCreateWithoutSprintInput> | FileCreateWithoutSprintInput[] | FileUncheckedCreateWithoutSprintInput[]
     connectOrCreate?: FileCreateOrConnectWithoutSprintInput | FileCreateOrConnectWithoutSprintInput[]
@@ -61700,6 +62375,19 @@ export namespace Prisma {
     deleteMany?: UserStoryScalarWhereInput | UserStoryScalarWhereInput[]
   }
 
+  export type TaskUncheckedUpdateManyWithoutSprintsNestedInput = {
+    create?: XOR<TaskCreateWithoutSprintsInput, TaskUncheckedCreateWithoutSprintsInput> | TaskCreateWithoutSprintsInput[] | TaskUncheckedCreateWithoutSprintsInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutSprintsInput | TaskCreateOrConnectWithoutSprintsInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutSprintsInput | TaskUpsertWithWhereUniqueWithoutSprintsInput[]
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutSprintsInput | TaskUpdateWithWhereUniqueWithoutSprintsInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutSprintsInput | TaskUpdateManyWithWhereWithoutSprintsInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
   export type FileCreatetagsInput = {
     set: string[]
   }
@@ -61749,10 +62437,10 @@ export namespace Prisma {
     connect?: SprintWhereUniqueInput
   }
 
-  export type TaskCreateNestedOneWithoutFilesInput = {
-    create?: XOR<TaskCreateWithoutFilesInput, TaskUncheckedCreateWithoutFilesInput>
-    connectOrCreate?: TaskCreateOrConnectWithoutFilesInput
-    connect?: TaskWhereUniqueInput
+  export type TaskCreateNestedManyWithoutFilesInput = {
+    create?: XOR<TaskCreateWithoutFilesInput, TaskUncheckedCreateWithoutFilesInput> | TaskCreateWithoutFilesInput[] | TaskUncheckedCreateWithoutFilesInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutFilesInput | TaskCreateOrConnectWithoutFilesInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
   export type UserCreateNestedManyWithoutFileUploadsInput = {
@@ -61792,6 +62480,12 @@ export namespace Prisma {
     connectOrCreate?: FileCreateOrConnectWithoutParentInput | FileCreateOrConnectWithoutParentInput[]
     createMany?: FileCreateManyParentInputEnvelope
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+  }
+
+  export type TaskUncheckedCreateNestedManyWithoutFilesInput = {
+    create?: XOR<TaskCreateWithoutFilesInput, TaskUncheckedCreateWithoutFilesInput> | TaskCreateWithoutFilesInput[] | TaskUncheckedCreateWithoutFilesInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutFilesInput | TaskCreateOrConnectWithoutFilesInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
   export type UserUncheckedCreateNestedManyWithoutFileUploadsInput = {
@@ -61895,14 +62589,17 @@ export namespace Prisma {
     update?: XOR<XOR<SprintUpdateToOneWithWhereWithoutFilesInput, SprintUpdateWithoutFilesInput>, SprintUncheckedUpdateWithoutFilesInput>
   }
 
-  export type TaskUpdateOneWithoutFilesNestedInput = {
-    create?: XOR<TaskCreateWithoutFilesInput, TaskUncheckedCreateWithoutFilesInput>
-    connectOrCreate?: TaskCreateOrConnectWithoutFilesInput
-    upsert?: TaskUpsertWithoutFilesInput
-    disconnect?: TaskWhereInput | boolean
-    delete?: TaskWhereInput | boolean
-    connect?: TaskWhereUniqueInput
-    update?: XOR<XOR<TaskUpdateToOneWithWhereWithoutFilesInput, TaskUpdateWithoutFilesInput>, TaskUncheckedUpdateWithoutFilesInput>
+  export type TaskUpdateManyWithoutFilesNestedInput = {
+    create?: XOR<TaskCreateWithoutFilesInput, TaskUncheckedCreateWithoutFilesInput> | TaskCreateWithoutFilesInput[] | TaskUncheckedCreateWithoutFilesInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutFilesInput | TaskCreateOrConnectWithoutFilesInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutFilesInput | TaskUpsertWithWhereUniqueWithoutFilesInput[]
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutFilesInput | TaskUpdateWithWhereUniqueWithoutFilesInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutFilesInput | TaskUpdateManyWithWhereWithoutFilesInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
   export type UserUpdateManyWithoutFileUploadsNestedInput = {
@@ -61981,6 +62678,19 @@ export namespace Prisma {
     update?: FileUpdateWithWhereUniqueWithoutParentInput | FileUpdateWithWhereUniqueWithoutParentInput[]
     updateMany?: FileUpdateManyWithWhereWithoutParentInput | FileUpdateManyWithWhereWithoutParentInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
+  }
+
+  export type TaskUncheckedUpdateManyWithoutFilesNestedInput = {
+    create?: XOR<TaskCreateWithoutFilesInput, TaskUncheckedCreateWithoutFilesInput> | TaskCreateWithoutFilesInput[] | TaskUncheckedCreateWithoutFilesInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutFilesInput | TaskCreateOrConnectWithoutFilesInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutFilesInput | TaskUpsertWithWhereUniqueWithoutFilesInput[]
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutFilesInput | TaskUpdateWithWhereUniqueWithoutFilesInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutFilesInput | TaskUpdateManyWithWhereWithoutFilesInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
   export type UserUncheckedUpdateManyWithoutFileUploadsNestedInput = {
@@ -63803,6 +64513,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskCreateNestedManyWithoutFeaturesInput
     epic: EpicCreateNestedOneWithoutFeaturesInput
     parent?: FeatureCreateNestedOneWithoutChildrenInput
     children?: FeatureCreateNestedManyWithoutParentInput
@@ -63834,6 +64545,7 @@ export namespace Prisma {
     projectId?: string | null
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutFeaturesInput
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     files?: FileUncheckedCreateNestedManyWithoutFeatureInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
@@ -63988,7 +64700,7 @@ export namespace Prisma {
     children?: FileCreateNestedManyWithoutParentInput
     project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
-    task?: TaskCreateNestedOneWithoutFilesInput
+    task?: TaskCreateNestedManyWithoutFilesInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
@@ -64015,11 +64727,11 @@ export namespace Prisma {
     projectId: string
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
@@ -64306,13 +65018,18 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    userstoryId?: string | null
     comments?: CommentCreateNestedManyWithoutTaskInput
     files?: FileCreateNestedManyWithoutTaskInput
+    features?: FeatureCreateNestedManyWithoutTasksInput
+    sprints?: SprintCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
-    userStory: UserStoryCreateNestedOneWithoutTasksInput
+    project?: ProjectCreateNestedOneWithoutTaskInput
     timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     assignees?: UserCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryCreateNestedManyWithoutTasksInput
+    epic?: EpicCreateNestedManyWithoutTasksInput
   }
 
   export type TaskUncheckedCreateWithoutCreatorInput = {
@@ -64333,13 +65050,18 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userStoryId: string
+    projectId?: string | null
+    userstoryId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
     files?: FileUncheckedCreateNestedManyWithoutTaskInput
+    features?: FeatureUncheckedCreateNestedManyWithoutTasksInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutTasksInput
+    epic?: EpicUncheckedCreateNestedManyWithoutTasksInput
   }
 
   export type TaskCreateOrConnectWithoutCreatorInput = {
@@ -64444,13 +65166,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
     comments?: CommentCreateNestedManyWithoutUserStoryInput
     files?: FileCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryUncheckedCreateWithoutCreatorInput = {
@@ -64476,12 +65198,12 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
     files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryCreateOrConnectWithoutCreatorInput = {
@@ -64601,6 +65323,7 @@ export namespace Prisma {
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
     sprints?: SprintCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
+    Task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutUserInput = {
@@ -64627,6 +65350,7 @@ export namespace Prisma {
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
+    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutUserInput = {
@@ -64654,6 +65378,7 @@ export namespace Prisma {
     project: ProjectCreateNestedOneWithoutSprintsInput
     timeEntries?: TimeEntryCreateNestedManyWithoutSprintInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintUncheckedCreateWithoutUsersInput = {
@@ -64676,6 +65401,7 @@ export namespace Prisma {
     items?: ItemUncheckedCreateNestedManyWithoutSprintInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutSprintInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintCreateOrConnectWithoutUsersInput = {
@@ -64701,13 +65427,18 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    userstoryId?: string | null
     comments?: CommentCreateNestedManyWithoutTaskInput
     files?: FileCreateNestedManyWithoutTaskInput
+    features?: FeatureCreateNestedManyWithoutTasksInput
+    sprints?: SprintCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
     creator: UserCreateNestedOneWithoutCreatedTasksInput
-    userStory: UserStoryCreateNestedOneWithoutTasksInput
+    project?: ProjectCreateNestedOneWithoutTaskInput
     timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
+    askDependency?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryCreateNestedManyWithoutTasksInput
+    epic?: EpicCreateNestedManyWithoutTasksInput
   }
 
   export type TaskUncheckedCreateWithoutAssigneesInput = {
@@ -64728,13 +65459,18 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userStoryId: string
+    projectId?: string | null
     creatorId: string
+    userstoryId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
     files?: FileUncheckedCreateNestedManyWithoutTaskInput
+    features?: FeatureUncheckedCreateNestedManyWithoutTasksInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
+    askDependency?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutTasksInput
+    epic?: EpicUncheckedCreateNestedManyWithoutTasksInput
   }
 
   export type TaskCreateOrConnectWithoutAssigneesInput = {
@@ -65078,7 +65814,6 @@ export namespace Prisma {
     projectId?: StringFilter<"File"> | string
     featureId?: StringNullableFilter<"File"> | string | null
     userStoryId?: StringNullableFilter<"File"> | string | null
-    taskId?: StringNullableFilter<"File"> | string | null
     sprintId?: StringNullableFilter<"File"> | string | null
   }
 
@@ -65333,8 +66068,9 @@ export namespace Prisma {
     completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
-    userStoryId?: StringFilter<"Task"> | string
+    projectId?: StringNullableFilter<"Task"> | string | null
     creatorId?: StringFilter<"Task"> | string
+    userstoryId?: StringNullableFilter<"Task"> | string | null
   }
 
   export type TeamMemberUpsertWithWhereUniqueWithoutUserInput = {
@@ -66602,6 +67338,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskCreateNestedManyWithoutFeaturesInput
     epic: EpicCreateNestedOneWithoutFeaturesInput
     parent?: FeatureCreateNestedOneWithoutChildrenInput
     children?: FeatureCreateNestedManyWithoutParentInput
@@ -66633,6 +67370,7 @@ export namespace Prisma {
     userId?: string | null
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutFeaturesInput
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     files?: FileUncheckedCreateNestedManyWithoutFeatureInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
@@ -66754,7 +67492,7 @@ export namespace Prisma {
     parent?: FileCreateNestedOneWithoutChildrenInput
     children?: FileCreateNestedManyWithoutParentInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
-    task?: TaskCreateNestedOneWithoutFilesInput
+    task?: TaskCreateNestedManyWithoutFilesInput
     author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
@@ -66781,11 +67519,11 @@ export namespace Prisma {
     parentId?: string | null
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
     author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
@@ -66896,6 +67634,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryCreateNestedManyWithoutSprintInput
     users?: UserCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintUncheckedCreateWithoutProjectInput = {
@@ -66918,6 +67657,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutSprintInput
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintCreateOrConnectWithoutProjectInput = {
@@ -67057,6 +67797,80 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutProjectsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type TaskCreateWithoutProjectInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    type?: string
+    position?: number
+    labels?: TaskCreatelabelsInput | string[]
+    tags?: TaskCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    dueDate?: Date | string | null
+    startDate?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userstoryId?: string | null
+    comments?: CommentCreateNestedManyWithoutTaskInput
+    files?: FileCreateNestedManyWithoutTaskInput
+    features?: FeatureCreateNestedManyWithoutTasksInput
+    sprints?: SprintCreateNestedManyWithoutTasksInput
+    dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
+    creator: UserCreateNestedOneWithoutCreatedTasksInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
+    assignees?: UserCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryCreateNestedManyWithoutTasksInput
+    epic?: EpicCreateNestedManyWithoutTasksInput
+  }
+
+  export type TaskUncheckedCreateWithoutProjectInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    type?: string
+    position?: number
+    labels?: TaskCreatelabelsInput | string[]
+    tags?: TaskCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    dueDate?: Date | string | null
+    startDate?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    creatorId: string
+    userstoryId?: string | null
+    comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
+    files?: FileUncheckedCreateNestedManyWithoutTaskInput
+    features?: FeatureUncheckedCreateNestedManyWithoutTasksInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutTasksInput
+    dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
+    assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutTasksInput
+    epic?: EpicUncheckedCreateNestedManyWithoutTasksInput
+  }
+
+  export type TaskCreateOrConnectWithoutProjectInput = {
+    where: TaskWhereUniqueInput
+    create: XOR<TaskCreateWithoutProjectInput, TaskUncheckedCreateWithoutProjectInput>
+  }
+
+  export type TaskCreateManyProjectInputEnvelope = {
+    data: TaskCreateManyProjectInput | TaskCreateManyProjectInput[]
+    skipDuplicates?: boolean
   }
 
   export type ChannelUpsertWithWhereUniqueWithoutProjectInput = {
@@ -67241,6 +68055,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
   }
 
+  export type TaskUpsertWithWhereUniqueWithoutProjectInput = {
+    where: TaskWhereUniqueInput
+    update: XOR<TaskUpdateWithoutProjectInput, TaskUncheckedUpdateWithoutProjectInput>
+    create: XOR<TaskCreateWithoutProjectInput, TaskUncheckedCreateWithoutProjectInput>
+  }
+
+  export type TaskUpdateWithWhereUniqueWithoutProjectInput = {
+    where: TaskWhereUniqueInput
+    data: XOR<TaskUpdateWithoutProjectInput, TaskUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type TaskUpdateManyWithWhereWithoutProjectInput = {
+    where: TaskScalarWhereInput
+    data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutProjectInput>
+  }
+
   export type ProjectCreateWithoutMembersInput = {
     id?: string
     name: string
@@ -67265,6 +68095,7 @@ export namespace Prisma {
     sprints?: SprintCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
     user?: UserCreateNestedManyWithoutProjectsInput
+    Task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutMembersInput = {
@@ -67291,6 +68122,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutMembersInput = {
@@ -67420,6 +68252,7 @@ export namespace Prisma {
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutMembersInput = {
@@ -67446,6 +68279,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutProjectMembershipsInput = {
@@ -67555,6 +68389,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     features?: FeatureCreateNestedManyWithoutEpicInput
     userstories?: UserStoryCreateNestedManyWithoutEpicInput
+    tasks?: TaskCreateNestedManyWithoutEpicInput
   }
 
   export type EpicUncheckedCreateWithoutInitiativeInput = {
@@ -67571,6 +68406,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     features?: FeatureUncheckedCreateNestedManyWithoutEpicInput
     userstories?: UserStoryUncheckedCreateNestedManyWithoutEpicInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutEpicInput
   }
 
   export type EpicCreateOrConnectWithoutInitiativeInput = {
@@ -67607,6 +68443,7 @@ export namespace Prisma {
     sprints?: SprintCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
     user?: UserCreateNestedManyWithoutProjectsInput
+    Task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutInitiativesInput = {
@@ -67633,6 +68470,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutInitiativesInput = {
@@ -67796,6 +68634,7 @@ export namespace Prisma {
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutInitiativesInput = {
@@ -67822,6 +68661,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutInitiativesInput = {
@@ -67980,6 +68820,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskCreateNestedManyWithoutFeaturesInput
     parent?: FeatureCreateNestedOneWithoutChildrenInput
     children?: FeatureCreateNestedManyWithoutParentInput
     Project?: ProjectCreateNestedOneWithoutFeaturesInput
@@ -68011,6 +68852,7 @@ export namespace Prisma {
     userId?: string | null
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutFeaturesInput
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     files?: FileUncheckedCreateNestedManyWithoutFeatureInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
@@ -68048,13 +68890,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
     comments?: CommentCreateNestedManyWithoutUserStoryInput
     files?: FileCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
     creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+    tasks?: TaskCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryUncheckedCreateWithoutEpicInput = {
@@ -68081,16 +68923,85 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
     files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryCreateOrConnectWithoutEpicInput = {
     where: UserStoryWhereUniqueInput
     create: XOR<UserStoryCreateWithoutEpicInput, UserStoryUncheckedCreateWithoutEpicInput>
+  }
+
+  export type TaskCreateWithoutEpicInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    type?: string
+    position?: number
+    labels?: TaskCreatelabelsInput | string[]
+    tags?: TaskCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    dueDate?: Date | string | null
+    startDate?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userstoryId?: string | null
+    comments?: CommentCreateNestedManyWithoutTaskInput
+    files?: FileCreateNestedManyWithoutTaskInput
+    features?: FeatureCreateNestedManyWithoutTasksInput
+    sprints?: SprintCreateNestedManyWithoutTasksInput
+    dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
+    creator: UserCreateNestedOneWithoutCreatedTasksInput
+    project?: ProjectCreateNestedOneWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
+    assignees?: UserCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryCreateNestedManyWithoutTasksInput
+  }
+
+  export type TaskUncheckedCreateWithoutEpicInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    type?: string
+    position?: number
+    labels?: TaskCreatelabelsInput | string[]
+    tags?: TaskCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    dueDate?: Date | string | null
+    startDate?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectId?: string | null
+    creatorId: string
+    userstoryId?: string | null
+    comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
+    files?: FileUncheckedCreateNestedManyWithoutTaskInput
+    features?: FeatureUncheckedCreateNestedManyWithoutTasksInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutTasksInput
+    dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
+    assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutTasksInput
+  }
+
+  export type TaskCreateOrConnectWithoutEpicInput = {
+    where: TaskWhereUniqueInput
+    create: XOR<TaskCreateWithoutEpicInput, TaskUncheckedCreateWithoutEpicInput>
   }
 
   export type InitiativeUpsertWithoutEpicsInput = {
@@ -68174,6 +69085,22 @@ export namespace Prisma {
     data: XOR<UserStoryUpdateManyMutationInput, UserStoryUncheckedUpdateManyWithoutEpicInput>
   }
 
+  export type TaskUpsertWithWhereUniqueWithoutEpicInput = {
+    where: TaskWhereUniqueInput
+    update: XOR<TaskUpdateWithoutEpicInput, TaskUncheckedUpdateWithoutEpicInput>
+    create: XOR<TaskCreateWithoutEpicInput, TaskUncheckedCreateWithoutEpicInput>
+  }
+
+  export type TaskUpdateWithWhereUniqueWithoutEpicInput = {
+    where: TaskWhereUniqueInput
+    data: XOR<TaskUpdateWithoutEpicInput, TaskUncheckedUpdateWithoutEpicInput>
+  }
+
+  export type TaskUpdateManyWithWhereWithoutEpicInput = {
+    where: TaskScalarWhereInput
+    data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutEpicInput>
+  }
+
   export type FeatureDependencyCreateWithoutDependentFeatureInput = {
     id?: string
     type?: string
@@ -68230,6 +69157,75 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TaskCreateWithoutFeaturesInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    type?: string
+    position?: number
+    labels?: TaskCreatelabelsInput | string[]
+    tags?: TaskCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    dueDate?: Date | string | null
+    startDate?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userstoryId?: string | null
+    comments?: CommentCreateNestedManyWithoutTaskInput
+    files?: FileCreateNestedManyWithoutTaskInput
+    sprints?: SprintCreateNestedManyWithoutTasksInput
+    dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
+    creator: UserCreateNestedOneWithoutCreatedTasksInput
+    project?: ProjectCreateNestedOneWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
+    assignees?: UserCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryCreateNestedManyWithoutTasksInput
+    epic?: EpicCreateNestedManyWithoutTasksInput
+  }
+
+  export type TaskUncheckedCreateWithoutFeaturesInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    type?: string
+    position?: number
+    labels?: TaskCreatelabelsInput | string[]
+    tags?: TaskCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    dueDate?: Date | string | null
+    startDate?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectId?: string | null
+    creatorId: string
+    userstoryId?: string | null
+    comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
+    files?: FileUncheckedCreateNestedManyWithoutTaskInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutTasksInput
+    dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
+    assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutTasksInput
+    epic?: EpicUncheckedCreateNestedManyWithoutTasksInput
+  }
+
+  export type TaskCreateOrConnectWithoutFeaturesInput = {
+    where: TaskWhereUniqueInput
+    create: XOR<TaskCreateWithoutFeaturesInput, TaskUncheckedCreateWithoutFeaturesInput>
+  }
+
   export type EpicCreateWithoutFeaturesInput = {
     id?: string
     name: string
@@ -68244,6 +69240,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     initiative: InitiativeCreateNestedOneWithoutEpicsInput
     userstories?: UserStoryCreateNestedManyWithoutEpicInput
+    tasks?: TaskCreateNestedManyWithoutEpicInput
   }
 
   export type EpicUncheckedCreateWithoutFeaturesInput = {
@@ -68260,6 +69257,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     initiativeId: string
     userstories?: UserStoryUncheckedCreateNestedManyWithoutEpicInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutEpicInput
   }
 
   export type EpicCreateOrConnectWithoutFeaturesInput = {
@@ -68287,6 +69285,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskCreateNestedManyWithoutFeaturesInput
     epic: EpicCreateNestedOneWithoutFeaturesInput
     parent?: FeatureCreateNestedOneWithoutChildrenInput
     Project?: ProjectCreateNestedOneWithoutFeaturesInput
@@ -68319,6 +69318,7 @@ export namespace Prisma {
     userId?: string | null
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutFeaturesInput
     files?: FileUncheckedCreateNestedManyWithoutFeatureInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
   }
@@ -68348,6 +69348,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskCreateNestedManyWithoutFeaturesInput
     epic: EpicCreateNestedOneWithoutFeaturesInput
     children?: FeatureCreateNestedManyWithoutParentInput
     Project?: ProjectCreateNestedOneWithoutFeaturesInput
@@ -68379,6 +69380,7 @@ export namespace Prisma {
     userId?: string | null
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutFeaturesInput
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     files?: FileUncheckedCreateNestedManyWithoutFeatureInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
@@ -68418,6 +69420,7 @@ export namespace Prisma {
     sprints?: SprintCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
     user?: UserCreateNestedManyWithoutProjectsInput
+    Task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutFeaturesInput = {
@@ -68444,6 +69447,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutFeaturesInput = {
@@ -68562,7 +69566,7 @@ export namespace Prisma {
     children?: FileCreateNestedManyWithoutParentInput
     project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
-    task?: TaskCreateNestedOneWithoutFilesInput
+    task?: TaskCreateNestedManyWithoutFilesInput
     author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
@@ -68589,11 +69593,11 @@ export namespace Prisma {
     parentId?: string | null
     projectId: string
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
     author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
@@ -68630,13 +69634,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
     comments?: CommentCreateNestedManyWithoutUserStoryInput
     files?: FileCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
     creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryUncheckedCreateWithoutFeatureInput = {
@@ -68662,12 +69666,12 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
     files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryCreateOrConnectWithoutFeatureInput = {
@@ -68725,6 +69729,22 @@ export namespace Prisma {
     data: XOR<FeatureDependencyUpdateManyMutationInput, FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureInput>
   }
 
+  export type TaskUpsertWithWhereUniqueWithoutFeaturesInput = {
+    where: TaskWhereUniqueInput
+    update: XOR<TaskUpdateWithoutFeaturesInput, TaskUncheckedUpdateWithoutFeaturesInput>
+    create: XOR<TaskCreateWithoutFeaturesInput, TaskUncheckedCreateWithoutFeaturesInput>
+  }
+
+  export type TaskUpdateWithWhereUniqueWithoutFeaturesInput = {
+    where: TaskWhereUniqueInput
+    data: XOR<TaskUpdateWithoutFeaturesInput, TaskUncheckedUpdateWithoutFeaturesInput>
+  }
+
+  export type TaskUpdateManyWithWhereWithoutFeaturesInput = {
+    where: TaskScalarWhereInput
+    data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutFeaturesInput>
+  }
+
   export type EpicUpsertWithoutFeaturesInput = {
     update: XOR<EpicUpdateWithoutFeaturesInput, EpicUncheckedUpdateWithoutFeaturesInput>
     create: XOR<EpicCreateWithoutFeaturesInput, EpicUncheckedCreateWithoutFeaturesInput>
@@ -68750,6 +69770,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     initiative?: InitiativeUpdateOneRequiredWithoutEpicsNestedInput
     userstories?: UserStoryUpdateManyWithoutEpicNestedInput
+    tasks?: TaskUpdateManyWithoutEpicNestedInput
   }
 
   export type EpicUncheckedUpdateWithoutFeaturesInput = {
@@ -68766,6 +69787,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     initiativeId?: StringFieldUpdateOperationsInput | string
     userstories?: UserStoryUncheckedUpdateManyWithoutEpicNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutEpicNestedInput
   }
 
   export type FeatureUpsertWithoutChildrenInput = {
@@ -68799,6 +69821,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUpdateManyWithoutFeaturesNestedInput
     epic?: EpicUpdateOneRequiredWithoutFeaturesNestedInput
     parent?: FeatureUpdateOneWithoutChildrenNestedInput
     Project?: ProjectUpdateOneWithoutFeaturesNestedInput
@@ -68831,6 +69854,7 @@ export namespace Prisma {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutFeaturesNestedInput
     files?: FileUncheckedUpdateManyWithoutFeatureNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
   }
@@ -68886,6 +69910,7 @@ export namespace Prisma {
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutFeaturesInput = {
@@ -68912,6 +69937,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutFeaturesInput = {
@@ -69058,6 +70084,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskCreateNestedManyWithoutFeaturesInput
     epic: EpicCreateNestedOneWithoutFeaturesInput
     parent?: FeatureCreateNestedOneWithoutChildrenInput
     children?: FeatureCreateNestedManyWithoutParentInput
@@ -69090,6 +70117,7 @@ export namespace Prisma {
     projectId?: string | null
     userId?: string | null
     dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutFeaturesInput
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     files?: FileUncheckedCreateNestedManyWithoutFeatureInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
@@ -69119,6 +70147,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
+    Tasks?: TaskCreateNestedManyWithoutFeaturesInput
     epic: EpicCreateNestedOneWithoutFeaturesInput
     parent?: FeatureCreateNestedOneWithoutChildrenInput
     children?: FeatureCreateNestedManyWithoutParentInput
@@ -69151,6 +70180,7 @@ export namespace Prisma {
     projectId?: string | null
     userId?: string | null
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutFeaturesInput
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     files?: FileUncheckedCreateNestedManyWithoutFeatureInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
@@ -69191,6 +70221,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUpdateManyWithoutFeaturesNestedInput
     epic?: EpicUpdateOneRequiredWithoutFeaturesNestedInput
     parent?: FeatureUpdateOneWithoutChildrenNestedInput
     children?: FeatureUpdateManyWithoutParentNestedInput
@@ -69223,6 +70254,7 @@ export namespace Prisma {
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutFeaturesNestedInput
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     files?: FileUncheckedUpdateManyWithoutFeatureNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
@@ -69258,6 +70290,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
+    Tasks?: TaskUpdateManyWithoutFeaturesNestedInput
     epic?: EpicUpdateOneRequiredWithoutFeaturesNestedInput
     parent?: FeatureUpdateOneWithoutChildrenNestedInput
     children?: FeatureUpdateManyWithoutParentNestedInput
@@ -69290,6 +70323,7 @@ export namespace Prisma {
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutFeaturesNestedInput
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     files?: FileUncheckedUpdateManyWithoutFeatureNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
@@ -69406,7 +70440,7 @@ export namespace Prisma {
     children?: FileCreateNestedManyWithoutParentInput
     project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
-    task?: TaskCreateNestedOneWithoutFilesInput
+    task?: TaskCreateNestedManyWithoutFilesInput
     author?: UserCreateNestedManyWithoutFileUploadsInput
     items?: ItemCreateNestedManyWithoutFilesInput
   }
@@ -69432,11 +70466,11 @@ export namespace Prisma {
     parentId?: string | null
     projectId: string
     featureId?: string | null
-    taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
     author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
@@ -69448,70 +70482,6 @@ export namespace Prisma {
 
   export type FileCreateManyUserStoryInputEnvelope = {
     data: FileCreateManyUserStoryInput | FileCreateManyUserStoryInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type TaskCreateWithoutUserStoryInput = {
-    id?: string
-    title: string
-    order?: number
-    description?: string | null
-    priority?: $Enums.Priority
-    status?: $Enums.TaskStatus
-    type?: string
-    position?: number
-    labels?: TaskCreatelabelsInput | string[]
-    tags?: TaskCreatetagsInput | string[]
-    estimatedHours?: number | null
-    actualHours?: number | null
-    dueDate?: Date | string | null
-    startDate?: Date | string | null
-    completedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    comments?: CommentCreateNestedManyWithoutTaskInput
-    files?: FileCreateNestedManyWithoutTaskInput
-    dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
-    creator: UserCreateNestedOneWithoutCreatedTasksInput
-    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
-    assignees?: UserCreateNestedManyWithoutAssignedTasksInput
-  }
-
-  export type TaskUncheckedCreateWithoutUserStoryInput = {
-    id?: string
-    title: string
-    order?: number
-    description?: string | null
-    priority?: $Enums.Priority
-    status?: $Enums.TaskStatus
-    type?: string
-    position?: number
-    labels?: TaskCreatelabelsInput | string[]
-    tags?: TaskCreatetagsInput | string[]
-    estimatedHours?: number | null
-    actualHours?: number | null
-    dueDate?: Date | string | null
-    startDate?: Date | string | null
-    completedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    creatorId: string
-    comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
-    files?: FileUncheckedCreateNestedManyWithoutTaskInput
-    dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
-    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
-    assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
-  }
-
-  export type TaskCreateOrConnectWithoutUserStoryInput = {
-    where: TaskWhereUniqueInput
-    create: XOR<TaskCreateWithoutUserStoryInput, TaskUncheckedCreateWithoutUserStoryInput>
-  }
-
-  export type TaskCreateManyUserStoryInputEnvelope = {
-    data: TaskCreateManyUserStoryInput | TaskCreateManyUserStoryInput[]
     skipDuplicates?: boolean
   }
 
@@ -69664,6 +70634,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskCreateNestedManyWithoutFeaturesInput
     epic: EpicCreateNestedOneWithoutFeaturesInput
     parent?: FeatureCreateNestedOneWithoutChildrenInput
     children?: FeatureCreateNestedManyWithoutParentInput
@@ -69696,6 +70667,7 @@ export namespace Prisma {
     userId?: string | null
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutFeaturesInput
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     files?: FileUncheckedCreateNestedManyWithoutFeatureInput
   }
@@ -69781,6 +70753,7 @@ export namespace Prisma {
     project: ProjectCreateNestedOneWithoutSprintsInput
     timeEntries?: TimeEntryCreateNestedManyWithoutSprintInput
     users?: UserCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintUncheckedCreateWithoutUserStoriesInput = {
@@ -69803,6 +70776,7 @@ export namespace Prisma {
     items?: ItemUncheckedCreateNestedManyWithoutSprintInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutSprintInput
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintCreateOrConnectWithoutUserStoriesInput = {
@@ -69824,6 +70798,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     initiative: InitiativeCreateNestedOneWithoutEpicsInput
     features?: FeatureCreateNestedManyWithoutEpicInput
+    tasks?: TaskCreateNestedManyWithoutEpicInput
   }
 
   export type EpicUncheckedCreateWithoutUserstoriesInput = {
@@ -69840,11 +70815,81 @@ export namespace Prisma {
     updatedAt?: Date | string
     initiativeId: string
     features?: FeatureUncheckedCreateNestedManyWithoutEpicInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutEpicInput
   }
 
   export type EpicCreateOrConnectWithoutUserstoriesInput = {
     where: EpicWhereUniqueInput
     create: XOR<EpicCreateWithoutUserstoriesInput, EpicUncheckedCreateWithoutUserstoriesInput>
+  }
+
+  export type TaskCreateWithoutUserStoryInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    type?: string
+    position?: number
+    labels?: TaskCreatelabelsInput | string[]
+    tags?: TaskCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    dueDate?: Date | string | null
+    startDate?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userstoryId?: string | null
+    comments?: CommentCreateNestedManyWithoutTaskInput
+    files?: FileCreateNestedManyWithoutTaskInput
+    features?: FeatureCreateNestedManyWithoutTasksInput
+    sprints?: SprintCreateNestedManyWithoutTasksInput
+    dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
+    creator: UserCreateNestedOneWithoutCreatedTasksInput
+    project?: ProjectCreateNestedOneWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
+    assignees?: UserCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    epic?: EpicCreateNestedManyWithoutTasksInput
+  }
+
+  export type TaskUncheckedCreateWithoutUserStoryInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    type?: string
+    position?: number
+    labels?: TaskCreatelabelsInput | string[]
+    tags?: TaskCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    dueDate?: Date | string | null
+    startDate?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectId?: string | null
+    creatorId: string
+    userstoryId?: string | null
+    comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
+    files?: FileUncheckedCreateNestedManyWithoutTaskInput
+    features?: FeatureUncheckedCreateNestedManyWithoutTasksInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutTasksInput
+    dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
+    assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    epic?: EpicUncheckedCreateNestedManyWithoutTasksInput
+  }
+
+  export type TaskCreateOrConnectWithoutUserStoryInput = {
+    where: TaskWhereUniqueInput
+    create: XOR<TaskCreateWithoutUserStoryInput, TaskUncheckedCreateWithoutUserStoryInput>
   }
 
   export type UserStoryAssigneesUpsertWithWhereUniqueWithoutUser_storiesInput = {
@@ -69893,22 +70938,6 @@ export namespace Prisma {
   export type FileUpdateManyWithWhereWithoutUserStoryInput = {
     where: FileScalarWhereInput
     data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutUserStoryInput>
-  }
-
-  export type TaskUpsertWithWhereUniqueWithoutUserStoryInput = {
-    where: TaskWhereUniqueInput
-    update: XOR<TaskUpdateWithoutUserStoryInput, TaskUncheckedUpdateWithoutUserStoryInput>
-    create: XOR<TaskCreateWithoutUserStoryInput, TaskUncheckedCreateWithoutUserStoryInput>
-  }
-
-  export type TaskUpdateWithWhereUniqueWithoutUserStoryInput = {
-    where: TaskWhereUniqueInput
-    data: XOR<TaskUpdateWithoutUserStoryInput, TaskUncheckedUpdateWithoutUserStoryInput>
-  }
-
-  export type TaskUpdateManyWithWhereWithoutUserStoryInput = {
-    where: TaskScalarWhereInput
-    data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutUserStoryInput>
   }
 
   export type TimeEntryUpsertWithWhereUniqueWithoutUserStoryInput = {
@@ -70051,6 +71080,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUpdateManyWithoutFeaturesNestedInput
     epic?: EpicUpdateOneRequiredWithoutFeaturesNestedInput
     parent?: FeatureUpdateOneWithoutChildrenNestedInput
     children?: FeatureUpdateManyWithoutParentNestedInput
@@ -70083,6 +71113,7 @@ export namespace Prisma {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutFeaturesNestedInput
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     files?: FileUncheckedUpdateManyWithoutFeatureNestedInput
   }
@@ -70164,6 +71195,22 @@ export namespace Prisma {
     data: XOR<EpicUpdateManyMutationInput, EpicUncheckedUpdateManyWithoutUserstoriesInput>
   }
 
+  export type TaskUpsertWithWhereUniqueWithoutUserStoryInput = {
+    where: TaskWhereUniqueInput
+    update: XOR<TaskUpdateWithoutUserStoryInput, TaskUncheckedUpdateWithoutUserStoryInput>
+    create: XOR<TaskCreateWithoutUserStoryInput, TaskUncheckedCreateWithoutUserStoryInput>
+  }
+
+  export type TaskUpdateWithWhereUniqueWithoutUserStoryInput = {
+    where: TaskWhereUniqueInput
+    data: XOR<TaskUpdateWithoutUserStoryInput, TaskUncheckedUpdateWithoutUserStoryInput>
+  }
+
+  export type TaskUpdateManyWithWhereWithoutUserStoryInput = {
+    where: TaskScalarWhereInput
+    data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutUserStoryInput>
+  }
+
   export type UserStoryCreateWithoutDependenciesInput = {
     id?: string
     title: string
@@ -70186,13 +71233,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
     comments?: CommentCreateNestedManyWithoutUserStoryInput
     files?: FileCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
     creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryUncheckedCreateWithoutDependenciesInput = {
@@ -70219,11 +71266,11 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
     files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryCreateOrConnectWithoutDependenciesInput = {
@@ -70253,13 +71300,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
     comments?: CommentCreateNestedManyWithoutUserStoryInput
     files?: FileCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
     creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryUncheckedCreateWithoutDependentsInput = {
@@ -70286,11 +71333,11 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
     files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryCreateOrConnectWithoutDependentsInput = {
@@ -70331,13 +71378,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUpdateManyWithoutUserStoryNestedInput
     files?: FileUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutDependenciesInput = {
@@ -70364,11 +71411,11 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
     files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUpsertWithoutDependentsInput = {
@@ -70404,13 +71451,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUpdateManyWithoutUserStoryNestedInput
     files?: FileUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutDependentsInput = {
@@ -70437,11 +71484,11 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
     files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
   }
 
   export type CommentCreateWithoutTaskInput = {
@@ -70577,9 +71624,118 @@ export namespace Prisma {
     create: XOR<FileCreateWithoutTaskInput, FileUncheckedCreateWithoutTaskInput>
   }
 
-  export type FileCreateManyTaskInputEnvelope = {
-    data: FileCreateManyTaskInput | FileCreateManyTaskInput[]
-    skipDuplicates?: boolean
+  export type FeatureCreateWithoutTasksInput = {
+    id?: string
+    name: string
+    order?: number
+    description?: string | null
+    acceptanceCriteria?: string | null
+    priority?: $Enums.Priority
+    status?: string
+    storyPoints?: number | null
+    businessValue?: number | null
+    technicalRisk?: number | null
+    effort?: number | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    progress?: number
+    position?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
+    dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
+    epic: EpicCreateNestedOneWithoutFeaturesInput
+    parent?: FeatureCreateNestedOneWithoutChildrenInput
+    children?: FeatureCreateNestedManyWithoutParentInput
+    Project?: ProjectCreateNestedOneWithoutFeaturesInput
+    users?: UserCreateNestedOneWithoutFeaturesInput
+    files?: FileCreateNestedManyWithoutFeatureInput
+    userStories?: UserStoryCreateNestedManyWithoutFeatureInput
+  }
+
+  export type FeatureUncheckedCreateWithoutTasksInput = {
+    id?: string
+    name: string
+    order?: number
+    description?: string | null
+    acceptanceCriteria?: string | null
+    priority?: $Enums.Priority
+    status?: string
+    storyPoints?: number | null
+    businessValue?: number | null
+    technicalRisk?: number | null
+    effort?: number | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    progress?: number
+    position?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    epicId: string
+    parentId?: string | null
+    projectId?: string | null
+    userId?: string | null
+    dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
+    dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
+    children?: FeatureUncheckedCreateNestedManyWithoutParentInput
+    files?: FileUncheckedCreateNestedManyWithoutFeatureInput
+    userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
+  }
+
+  export type FeatureCreateOrConnectWithoutTasksInput = {
+    where: FeatureWhereUniqueInput
+    create: XOR<FeatureCreateWithoutTasksInput, FeatureUncheckedCreateWithoutTasksInput>
+  }
+
+  export type SprintCreateWithoutTasksInput = {
+    id?: string
+    name: string
+    order?: number
+    goal?: string | null
+    description?: string | null
+    startDate: Date | string
+    endDate: Date | string
+    status?: $Enums.SprintStatus
+    capacity?: number | null
+    velocity?: number | null
+    burndownData?: NullableJsonNullValueInput | InputJsonValue
+    retrospective?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    files?: FileCreateNestedManyWithoutSprintInput
+    items?: ItemCreateNestedManyWithoutSprintInput
+    project: ProjectCreateNestedOneWithoutSprintsInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutSprintInput
+    users?: UserCreateNestedManyWithoutSprintsInput
+    userStories?: UserStoryCreateNestedManyWithoutSprintsInput
+  }
+
+  export type SprintUncheckedCreateWithoutTasksInput = {
+    id?: string
+    name: string
+    order?: number
+    goal?: string | null
+    description?: string | null
+    startDate: Date | string
+    endDate: Date | string
+    status?: $Enums.SprintStatus
+    capacity?: number | null
+    velocity?: number | null
+    burndownData?: NullableJsonNullValueInput | InputJsonValue
+    retrospective?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectId: string
+    files?: FileUncheckedCreateNestedManyWithoutSprintInput
+    items?: ItemUncheckedCreateNestedManyWithoutSprintInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutSprintInput
+    users?: UserUncheckedCreateNestedManyWithoutSprintsInput
+    userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
+  }
+
+  export type SprintCreateOrConnectWithoutTasksInput = {
+    where: SprintWhereUniqueInput
+    create: XOR<SprintCreateWithoutTasksInput, SprintUncheckedCreateWithoutTasksInput>
   }
 
   export type TaskDependencyCreateWithoutDependentTaskInput = {
@@ -70588,7 +71744,7 @@ export namespace Prisma {
     order?: number
     description?: string | null
     createdAt?: Date | string
-    dependsOnTask: TaskCreateNestedOneWithoutDependentsInput
+    dependsOnTask: TaskCreateNestedOneWithoutAskDependencyInput
   }
 
   export type TaskDependencyUncheckedCreateWithoutDependentTaskInput = {
@@ -70607,34 +71763,6 @@ export namespace Prisma {
 
   export type TaskDependencyCreateManyDependentTaskInputEnvelope = {
     data: TaskDependencyCreateManyDependentTaskInput | TaskDependencyCreateManyDependentTaskInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type TaskDependencyCreateWithoutDependsOnTaskInput = {
-    id?: string
-    type?: string
-    order?: number
-    description?: string | null
-    createdAt?: Date | string
-    dependentTask: TaskCreateNestedOneWithoutDependenciesInput
-  }
-
-  export type TaskDependencyUncheckedCreateWithoutDependsOnTaskInput = {
-    id?: string
-    type?: string
-    order?: number
-    description?: string | null
-    createdAt?: Date | string
-    dependentTaskId: string
-  }
-
-  export type TaskDependencyCreateOrConnectWithoutDependsOnTaskInput = {
-    where: TaskDependencyWhereUniqueInput
-    create: XOR<TaskDependencyCreateWithoutDependsOnTaskInput, TaskDependencyUncheckedCreateWithoutDependsOnTaskInput>
-  }
-
-  export type TaskDependencyCreateManyDependsOnTaskInputEnvelope = {
-    data: TaskDependencyCreateManyDependsOnTaskInput | TaskDependencyCreateManyDependsOnTaskInput[]
     skipDuplicates?: boolean
   }
 
@@ -70725,71 +71853,63 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutCreatedTasksInput, UserUncheckedCreateWithoutCreatedTasksInput>
   }
 
-  export type UserStoryCreateWithoutTasksInput = {
+  export type ProjectCreateWithoutTaskInput = {
     id?: string
-    title: string
-    order?: number
+    name: string
     description?: string | null
-    acceptanceCriteria?: string | null
-    priority?: $Enums.Priority
-    status?: $Enums.TaskStatus
-    storyPoints?: number | null
-    businessValue?: number | null
-    technicalRisk?: number | null
-    effort?: number | null
-    position?: number
-    labels?: UserStoryCreatelabelsInput | string[]
-    tags?: UserStoryCreatetagsInput | string[]
-    estimatedHours?: number | null
-    actualHours?: number | null
+    slug: string
+    key: string
+    order?: number
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    status?: string
+    visibility?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
-    comments?: CommentCreateNestedManyWithoutUserStoryInput
-    files?: FileCreateNestedManyWithoutUserStoryInput
-    timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
-    creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
-    feature: FeatureCreateNestedOneWithoutUserStoriesInput
-    dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
-    dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
-    sprints?: SprintCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    channels?: ChannelCreateNestedManyWithoutProjectInput
+    features?: FeatureCreateNestedManyWithoutProjectInput
+    fields?: fieldsCreateNestedManyWithoutProjectsInput
+    files?: FileCreateNestedManyWithoutProjectInput
+    initiatives?: InitiativeCreateNestedManyWithoutProjectInput
+    members?: ProjectMemberCreateNestedManyWithoutProjectInput
+    sprints?: SprintCreateNestedManyWithoutProjectInput
+    templates?: TemplateCreateNestedManyWithoutProjectInput
+    user?: UserCreateNestedManyWithoutProjectsInput
   }
 
-  export type UserStoryUncheckedCreateWithoutTasksInput = {
+  export type ProjectUncheckedCreateWithoutTaskInput = {
     id?: string
-    title: string
-    order?: number
+    name: string
     description?: string | null
-    acceptanceCriteria?: string | null
-    priority?: $Enums.Priority
-    status?: $Enums.TaskStatus
-    storyPoints?: number | null
-    businessValue?: number | null
-    technicalRisk?: number | null
-    effort?: number | null
-    position?: number
-    labels?: UserStoryCreatelabelsInput | string[]
-    tags?: UserStoryCreatetagsInput | string[]
-    estimatedHours?: number | null
-    actualHours?: number | null
+    slug: string
+    key: string
+    order?: number
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    status?: string
+    visibility?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    featureId: string
-    creatorId: string
-    UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
-    comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
-    files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
-    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
-    dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
-    dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
-    sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
+    features?: FeatureUncheckedCreateNestedManyWithoutProjectInput
+    fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
+    files?: FileUncheckedCreateNestedManyWithoutProjectInput
+    initiatives?: InitiativeUncheckedCreateNestedManyWithoutProjectInput
+    members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
+    templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
+    user?: UserUncheckedCreateNestedManyWithoutProjectsInput
   }
 
-  export type UserStoryCreateOrConnectWithoutTasksInput = {
-    where: UserStoryWhereUniqueInput
-    create: XOR<UserStoryCreateWithoutTasksInput, UserStoryUncheckedCreateWithoutTasksInput>
+  export type ProjectCreateOrConnectWithoutTaskInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutTaskInput, ProjectUncheckedCreateWithoutTaskInput>
   }
 
   export type TimeEntryCreateWithoutTaskInput = {
@@ -70921,6 +72041,140 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutAssignedTasksInput, UserUncheckedCreateWithoutAssignedTasksInput>
   }
 
+  export type TaskDependencyCreateWithoutDependsOnTaskInput = {
+    id?: string
+    type?: string
+    order?: number
+    description?: string | null
+    createdAt?: Date | string
+    dependentTask: TaskCreateNestedOneWithoutDependenciesInput
+  }
+
+  export type TaskDependencyUncheckedCreateWithoutDependsOnTaskInput = {
+    id?: string
+    type?: string
+    order?: number
+    description?: string | null
+    createdAt?: Date | string
+    dependentTaskId: string
+  }
+
+  export type TaskDependencyCreateOrConnectWithoutDependsOnTaskInput = {
+    where: TaskDependencyWhereUniqueInput
+    create: XOR<TaskDependencyCreateWithoutDependsOnTaskInput, TaskDependencyUncheckedCreateWithoutDependsOnTaskInput>
+  }
+
+  export type TaskDependencyCreateManyDependsOnTaskInputEnvelope = {
+    data: TaskDependencyCreateManyDependsOnTaskInput | TaskDependencyCreateManyDependsOnTaskInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserStoryCreateWithoutTasksInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    acceptanceCriteria?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    storyPoints?: number | null
+    businessValue?: number | null
+    technicalRisk?: number | null
+    effort?: number | null
+    position?: number
+    labels?: UserStoryCreatelabelsInput | string[]
+    tags?: UserStoryCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
+    comments?: CommentCreateNestedManyWithoutUserStoryInput
+    files?: FileCreateNestedManyWithoutUserStoryInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
+    creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
+    feature: FeatureCreateNestedOneWithoutUserStoriesInput
+    dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
+    dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
+    sprints?: SprintCreateNestedManyWithoutUserStoriesInput
+    epic?: EpicCreateNestedManyWithoutUserstoriesInput
+  }
+
+  export type UserStoryUncheckedCreateWithoutTasksInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    acceptanceCriteria?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    storyPoints?: number | null
+    businessValue?: number | null
+    technicalRisk?: number | null
+    effort?: number | null
+    position?: number
+    labels?: UserStoryCreatelabelsInput | string[]
+    tags?: UserStoryCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    featureId: string
+    creatorId: string
+    UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
+    comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
+    files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
+    dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
+    dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
+    epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+  }
+
+  export type UserStoryCreateOrConnectWithoutTasksInput = {
+    where: UserStoryWhereUniqueInput
+    create: XOR<UserStoryCreateWithoutTasksInput, UserStoryUncheckedCreateWithoutTasksInput>
+  }
+
+  export type EpicCreateWithoutTasksInput = {
+    id?: string
+    name: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    progress?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiative: InitiativeCreateNestedOneWithoutEpicsInput
+    features?: FeatureCreateNestedManyWithoutEpicInput
+    userstories?: UserStoryCreateNestedManyWithoutEpicInput
+  }
+
+  export type EpicUncheckedCreateWithoutTasksInput = {
+    id?: string
+    name: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    progress?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiativeId: string
+    features?: FeatureUncheckedCreateNestedManyWithoutEpicInput
+    userstories?: UserStoryUncheckedCreateNestedManyWithoutEpicInput
+  }
+
+  export type EpicCreateOrConnectWithoutTasksInput = {
+    where: EpicWhereUniqueInput
+    create: XOR<EpicCreateWithoutTasksInput, EpicUncheckedCreateWithoutTasksInput>
+  }
+
   export type CommentUpsertWithWhereUniqueWithoutTaskInput = {
     where: CommentWhereUniqueInput
     update: XOR<CommentUpdateWithoutTaskInput, CommentUncheckedUpdateWithoutTaskInput>
@@ -70953,6 +72207,38 @@ export namespace Prisma {
     data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutTaskInput>
   }
 
+  export type FeatureUpsertWithWhereUniqueWithoutTasksInput = {
+    where: FeatureWhereUniqueInput
+    update: XOR<FeatureUpdateWithoutTasksInput, FeatureUncheckedUpdateWithoutTasksInput>
+    create: XOR<FeatureCreateWithoutTasksInput, FeatureUncheckedCreateWithoutTasksInput>
+  }
+
+  export type FeatureUpdateWithWhereUniqueWithoutTasksInput = {
+    where: FeatureWhereUniqueInput
+    data: XOR<FeatureUpdateWithoutTasksInput, FeatureUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type FeatureUpdateManyWithWhereWithoutTasksInput = {
+    where: FeatureScalarWhereInput
+    data: XOR<FeatureUpdateManyMutationInput, FeatureUncheckedUpdateManyWithoutTasksInput>
+  }
+
+  export type SprintUpsertWithWhereUniqueWithoutTasksInput = {
+    where: SprintWhereUniqueInput
+    update: XOR<SprintUpdateWithoutTasksInput, SprintUncheckedUpdateWithoutTasksInput>
+    create: XOR<SprintCreateWithoutTasksInput, SprintUncheckedCreateWithoutTasksInput>
+  }
+
+  export type SprintUpdateWithWhereUniqueWithoutTasksInput = {
+    where: SprintWhereUniqueInput
+    data: XOR<SprintUpdateWithoutTasksInput, SprintUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type SprintUpdateManyWithWhereWithoutTasksInput = {
+    where: SprintScalarWhereInput
+    data: XOR<SprintUpdateManyMutationInput, SprintUncheckedUpdateManyWithoutTasksInput>
+  }
+
   export type TaskDependencyUpsertWithWhereUniqueWithoutDependentTaskInput = {
     where: TaskDependencyWhereUniqueInput
     update: XOR<TaskDependencyUpdateWithoutDependentTaskInput, TaskDependencyUncheckedUpdateWithoutDependentTaskInput>
@@ -70980,22 +72266,6 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"TaskDependency"> | Date | string
     dependentTaskId?: StringFilter<"TaskDependency"> | string
     dependsOnTaskId?: StringFilter<"TaskDependency"> | string
-  }
-
-  export type TaskDependencyUpsertWithWhereUniqueWithoutDependsOnTaskInput = {
-    where: TaskDependencyWhereUniqueInput
-    update: XOR<TaskDependencyUpdateWithoutDependsOnTaskInput, TaskDependencyUncheckedUpdateWithoutDependsOnTaskInput>
-    create: XOR<TaskDependencyCreateWithoutDependsOnTaskInput, TaskDependencyUncheckedCreateWithoutDependsOnTaskInput>
-  }
-
-  export type TaskDependencyUpdateWithWhereUniqueWithoutDependsOnTaskInput = {
-    where: TaskDependencyWhereUniqueInput
-    data: XOR<TaskDependencyUpdateWithoutDependsOnTaskInput, TaskDependencyUncheckedUpdateWithoutDependsOnTaskInput>
-  }
-
-  export type TaskDependencyUpdateManyWithWhereWithoutDependsOnTaskInput = {
-    where: TaskDependencyScalarWhereInput
-    data: XOR<TaskDependencyUpdateManyMutationInput, TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskInput>
   }
 
   export type UserUpsertWithoutCreatedTasksInput = {
@@ -71091,77 +72361,69 @@ export namespace Prisma {
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
   }
 
-  export type UserStoryUpsertWithoutTasksInput = {
-    update: XOR<UserStoryUpdateWithoutTasksInput, UserStoryUncheckedUpdateWithoutTasksInput>
-    create: XOR<UserStoryCreateWithoutTasksInput, UserStoryUncheckedCreateWithoutTasksInput>
-    where?: UserStoryWhereInput
+  export type ProjectUpsertWithoutTaskInput = {
+    update: XOR<ProjectUpdateWithoutTaskInput, ProjectUncheckedUpdateWithoutTaskInput>
+    create: XOR<ProjectCreateWithoutTaskInput, ProjectUncheckedCreateWithoutTaskInput>
+    where?: ProjectWhereInput
   }
 
-  export type UserStoryUpdateToOneWithWhereWithoutTasksInput = {
-    where?: UserStoryWhereInput
-    data: XOR<UserStoryUpdateWithoutTasksInput, UserStoryUncheckedUpdateWithoutTasksInput>
+  export type ProjectUpdateToOneWithWhereWithoutTaskInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutTaskInput, ProjectUncheckedUpdateWithoutTaskInput>
   }
 
-  export type UserStoryUpdateWithoutTasksInput = {
+  export type ProjectUpdateWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
-    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
-    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
-    effort?: NullableIntFieldUpdateOperationsInput | number | null
-    position?: IntFieldUpdateOperationsInput | number
-    labels?: UserStoryUpdatelabelsInput | string[]
-    tags?: UserStoryUpdatetagsInput | string[]
-    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    slug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
-    comments?: CommentUpdateManyWithoutUserStoryNestedInput
-    files?: FileUpdateManyWithoutUserStoryNestedInput
-    timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
-    creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
-    feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
-    dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
-    dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
-    sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    channels?: ChannelUpdateManyWithoutProjectNestedInput
+    features?: FeatureUpdateManyWithoutProjectNestedInput
+    fields?: fieldsUpdateManyWithoutProjectsNestedInput
+    files?: FileUpdateManyWithoutProjectNestedInput
+    initiatives?: InitiativeUpdateManyWithoutProjectNestedInput
+    members?: ProjectMemberUpdateManyWithoutProjectNestedInput
+    sprints?: SprintUpdateManyWithoutProjectNestedInput
+    templates?: TemplateUpdateManyWithoutProjectNestedInput
+    user?: UserUpdateManyWithoutProjectsNestedInput
   }
 
-  export type UserStoryUncheckedUpdateWithoutTasksInput = {
+  export type ProjectUncheckedUpdateWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
-    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
-    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
-    effort?: NullableIntFieldUpdateOperationsInput | number | null
-    position?: IntFieldUpdateOperationsInput | number
-    labels?: UserStoryUpdatelabelsInput | string[]
-    tags?: UserStoryUpdatetagsInput | string[]
-    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    slug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    featureId?: StringFieldUpdateOperationsInput | string
-    creatorId?: StringFieldUpdateOperationsInput | string
-    UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
-    comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
-    files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
-    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
-    dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
-    dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
-    sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutProjectNestedInput
+    fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
+    files?: FileUncheckedUpdateManyWithoutProjectNestedInput
+    initiatives?: InitiativeUncheckedUpdateManyWithoutProjectNestedInput
+    members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
+    templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
+    user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
   }
 
   export type TimeEntryUpsertWithWhereUniqueWithoutTaskInput = {
@@ -71196,6 +72458,54 @@ export namespace Prisma {
     data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutAssignedTasksInput>
   }
 
+  export type TaskDependencyUpsertWithWhereUniqueWithoutDependsOnTaskInput = {
+    where: TaskDependencyWhereUniqueInput
+    update: XOR<TaskDependencyUpdateWithoutDependsOnTaskInput, TaskDependencyUncheckedUpdateWithoutDependsOnTaskInput>
+    create: XOR<TaskDependencyCreateWithoutDependsOnTaskInput, TaskDependencyUncheckedCreateWithoutDependsOnTaskInput>
+  }
+
+  export type TaskDependencyUpdateWithWhereUniqueWithoutDependsOnTaskInput = {
+    where: TaskDependencyWhereUniqueInput
+    data: XOR<TaskDependencyUpdateWithoutDependsOnTaskInput, TaskDependencyUncheckedUpdateWithoutDependsOnTaskInput>
+  }
+
+  export type TaskDependencyUpdateManyWithWhereWithoutDependsOnTaskInput = {
+    where: TaskDependencyScalarWhereInput
+    data: XOR<TaskDependencyUpdateManyMutationInput, TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskInput>
+  }
+
+  export type UserStoryUpsertWithWhereUniqueWithoutTasksInput = {
+    where: UserStoryWhereUniqueInput
+    update: XOR<UserStoryUpdateWithoutTasksInput, UserStoryUncheckedUpdateWithoutTasksInput>
+    create: XOR<UserStoryCreateWithoutTasksInput, UserStoryUncheckedCreateWithoutTasksInput>
+  }
+
+  export type UserStoryUpdateWithWhereUniqueWithoutTasksInput = {
+    where: UserStoryWhereUniqueInput
+    data: XOR<UserStoryUpdateWithoutTasksInput, UserStoryUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type UserStoryUpdateManyWithWhereWithoutTasksInput = {
+    where: UserStoryScalarWhereInput
+    data: XOR<UserStoryUpdateManyMutationInput, UserStoryUncheckedUpdateManyWithoutTasksInput>
+  }
+
+  export type EpicUpsertWithWhereUniqueWithoutTasksInput = {
+    where: EpicWhereUniqueInput
+    update: XOR<EpicUpdateWithoutTasksInput, EpicUncheckedUpdateWithoutTasksInput>
+    create: XOR<EpicCreateWithoutTasksInput, EpicUncheckedCreateWithoutTasksInput>
+  }
+
+  export type EpicUpdateWithWhereUniqueWithoutTasksInput = {
+    where: EpicWhereUniqueInput
+    data: XOR<EpicUpdateWithoutTasksInput, EpicUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type EpicUpdateManyWithWhereWithoutTasksInput = {
+    where: EpicScalarWhereInput
+    data: XOR<EpicUpdateManyMutationInput, EpicUncheckedUpdateManyWithoutTasksInput>
+  }
+
   export type TaskCreateWithoutDependenciesInput = {
     id?: string
     title: string
@@ -71214,13 +72524,18 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    userstoryId?: string | null
     comments?: CommentCreateNestedManyWithoutTaskInput
     files?: FileCreateNestedManyWithoutTaskInput
-    dependents?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    features?: FeatureCreateNestedManyWithoutTasksInput
+    sprints?: SprintCreateNestedManyWithoutTasksInput
     creator: UserCreateNestedOneWithoutCreatedTasksInput
-    userStory: UserStoryCreateNestedOneWithoutTasksInput
+    project?: ProjectCreateNestedOneWithoutTaskInput
     timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     assignees?: UserCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryCreateNestedManyWithoutTasksInput
+    epic?: EpicCreateNestedManyWithoutTasksInput
   }
 
   export type TaskUncheckedCreateWithoutDependenciesInput = {
@@ -71241,13 +72556,18 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userStoryId: string
+    projectId?: string | null
     creatorId: string
+    userstoryId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
     files?: FileUncheckedCreateNestedManyWithoutTaskInput
-    dependents?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    features?: FeatureUncheckedCreateNestedManyWithoutTasksInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutTasksInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutTasksInput
+    epic?: EpicUncheckedCreateNestedManyWithoutTasksInput
   }
 
   export type TaskCreateOrConnectWithoutDependenciesInput = {
@@ -71255,7 +72575,7 @@ export namespace Prisma {
     create: XOR<TaskCreateWithoutDependenciesInput, TaskUncheckedCreateWithoutDependenciesInput>
   }
 
-  export type TaskCreateWithoutDependentsInput = {
+  export type TaskCreateWithoutAskDependencyInput = {
     id?: string
     title: string
     order?: number
@@ -71273,16 +72593,21 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    userstoryId?: string | null
     comments?: CommentCreateNestedManyWithoutTaskInput
     files?: FileCreateNestedManyWithoutTaskInput
+    features?: FeatureCreateNestedManyWithoutTasksInput
+    sprints?: SprintCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
     creator: UserCreateNestedOneWithoutCreatedTasksInput
-    userStory: UserStoryCreateNestedOneWithoutTasksInput
+    project?: ProjectCreateNestedOneWithoutTaskInput
     timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     assignees?: UserCreateNestedManyWithoutAssignedTasksInput
+    userStory?: UserStoryCreateNestedManyWithoutTasksInput
+    epic?: EpicCreateNestedManyWithoutTasksInput
   }
 
-  export type TaskUncheckedCreateWithoutDependentsInput = {
+  export type TaskUncheckedCreateWithoutAskDependencyInput = {
     id?: string
     title: string
     order?: number
@@ -71300,18 +72625,23 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userStoryId: string
+    projectId?: string | null
     creatorId: string
+    userstoryId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
     files?: FileUncheckedCreateNestedManyWithoutTaskInput
+    features?: FeatureUncheckedCreateNestedManyWithoutTasksInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutTasksInput
+    epic?: EpicUncheckedCreateNestedManyWithoutTasksInput
   }
 
-  export type TaskCreateOrConnectWithoutDependentsInput = {
+  export type TaskCreateOrConnectWithoutAskDependencyInput = {
     where: TaskWhereUniqueInput
-    create: XOR<TaskCreateWithoutDependentsInput, TaskUncheckedCreateWithoutDependentsInput>
+    create: XOR<TaskCreateWithoutAskDependencyInput, TaskUncheckedCreateWithoutAskDependencyInput>
   }
 
   export type TaskUpsertWithoutDependenciesInput = {
@@ -71343,13 +72673,18 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUpdateManyWithoutTaskNestedInput
     files?: FileUpdateManyWithoutTaskNestedInput
-    dependents?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
-    userStory?: UserStoryUpdateOneRequiredWithoutTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
   }
 
   export type TaskUncheckedUpdateWithoutDependenciesInput = {
@@ -71370,27 +72705,32 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userStoryId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
     files?: FileUncheckedUpdateManyWithoutTaskNestedInput
-    dependents?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
   }
 
-  export type TaskUpsertWithoutDependentsInput = {
-    update: XOR<TaskUpdateWithoutDependentsInput, TaskUncheckedUpdateWithoutDependentsInput>
-    create: XOR<TaskCreateWithoutDependentsInput, TaskUncheckedCreateWithoutDependentsInput>
+  export type TaskUpsertWithoutAskDependencyInput = {
+    update: XOR<TaskUpdateWithoutAskDependencyInput, TaskUncheckedUpdateWithoutAskDependencyInput>
+    create: XOR<TaskCreateWithoutAskDependencyInput, TaskUncheckedCreateWithoutAskDependencyInput>
     where?: TaskWhereInput
   }
 
-  export type TaskUpdateToOneWithWhereWithoutDependentsInput = {
+  export type TaskUpdateToOneWithWhereWithoutAskDependencyInput = {
     where?: TaskWhereInput
-    data: XOR<TaskUpdateWithoutDependentsInput, TaskUncheckedUpdateWithoutDependentsInput>
+    data: XOR<TaskUpdateWithoutAskDependencyInput, TaskUncheckedUpdateWithoutAskDependencyInput>
   }
 
-  export type TaskUpdateWithoutDependentsInput = {
+  export type TaskUpdateWithoutAskDependencyInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
@@ -71408,16 +72748,21 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUpdateManyWithoutTaskNestedInput
     files?: FileUpdateManyWithoutTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
     dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
-    userStory?: UserStoryUpdateOneRequiredWithoutTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
   }
 
-  export type TaskUncheckedUpdateWithoutDependentsInput = {
+  export type TaskUncheckedUpdateWithoutAskDependencyInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
@@ -71435,13 +72780,18 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userStoryId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
     files?: FileUncheckedUpdateManyWithoutTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
     dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
   }
 
   export type FileCreateWithoutSprintInput = {
@@ -71468,7 +72818,7 @@ export namespace Prisma {
     parent?: FileCreateNestedOneWithoutChildrenInput
     children?: FileCreateNestedManyWithoutParentInput
     project: ProjectCreateNestedOneWithoutFilesInput
-    task?: TaskCreateNestedOneWithoutFilesInput
+    task?: TaskCreateNestedManyWithoutFilesInput
     author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
@@ -71496,10 +72846,10 @@ export namespace Prisma {
     projectId: string
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
     author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
@@ -71626,6 +72976,7 @@ export namespace Prisma {
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
     user?: UserCreateNestedManyWithoutProjectsInput
+    Task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutSprintsInput = {
@@ -71652,6 +73003,7 @@ export namespace Prisma {
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutSprintsInput = {
@@ -71810,13 +73162,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
     comments?: CommentCreateNestedManyWithoutUserStoryInput
     files?: FileCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
     creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
-    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryUncheckedCreateWithoutSprintsInput = {
@@ -71843,16 +73195,85 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
     files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
-    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryCreateOrConnectWithoutSprintsInput = {
     where: UserStoryWhereUniqueInput
     create: XOR<UserStoryCreateWithoutSprintsInput, UserStoryUncheckedCreateWithoutSprintsInput>
+  }
+
+  export type TaskCreateWithoutSprintsInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    type?: string
+    position?: number
+    labels?: TaskCreatelabelsInput | string[]
+    tags?: TaskCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    dueDate?: Date | string | null
+    startDate?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userstoryId?: string | null
+    comments?: CommentCreateNestedManyWithoutTaskInput
+    files?: FileCreateNestedManyWithoutTaskInput
+    features?: FeatureCreateNestedManyWithoutTasksInput
+    dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
+    creator: UserCreateNestedOneWithoutCreatedTasksInput
+    project?: ProjectCreateNestedOneWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
+    assignees?: UserCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryCreateNestedManyWithoutTasksInput
+    epic?: EpicCreateNestedManyWithoutTasksInput
+  }
+
+  export type TaskUncheckedCreateWithoutSprintsInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    type?: string
+    position?: number
+    labels?: TaskCreatelabelsInput | string[]
+    tags?: TaskCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    dueDate?: Date | string | null
+    startDate?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectId?: string | null
+    creatorId: string
+    userstoryId?: string | null
+    comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
+    files?: FileUncheckedCreateNestedManyWithoutTaskInput
+    features?: FeatureUncheckedCreateNestedManyWithoutTasksInput
+    dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
+    assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutTasksInput
+    epic?: EpicUncheckedCreateNestedManyWithoutTasksInput
+  }
+
+  export type TaskCreateOrConnectWithoutSprintsInput = {
+    where: TaskWhereUniqueInput
+    create: XOR<TaskCreateWithoutSprintsInput, TaskUncheckedCreateWithoutSprintsInput>
   }
 
   export type FileUpsertWithWhereUniqueWithoutSprintInput = {
@@ -71922,6 +73343,7 @@ export namespace Prisma {
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutSprintsInput = {
@@ -71948,6 +73370,7 @@ export namespace Prisma {
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TimeEntryUpsertWithWhereUniqueWithoutSprintInput = {
@@ -71996,6 +73419,22 @@ export namespace Prisma {
   export type UserStoryUpdateManyWithWhereWithoutSprintsInput = {
     where: UserStoryScalarWhereInput
     data: XOR<UserStoryUpdateManyMutationInput, UserStoryUncheckedUpdateManyWithoutSprintsInput>
+  }
+
+  export type TaskUpsertWithWhereUniqueWithoutSprintsInput = {
+    where: TaskWhereUniqueInput
+    update: XOR<TaskUpdateWithoutSprintsInput, TaskUncheckedUpdateWithoutSprintsInput>
+    create: XOR<TaskCreateWithoutSprintsInput, TaskUncheckedCreateWithoutSprintsInput>
+  }
+
+  export type TaskUpdateWithWhereUniqueWithoutSprintsInput = {
+    where: TaskWhereUniqueInput
+    data: XOR<TaskUpdateWithoutSprintsInput, TaskUncheckedUpdateWithoutSprintsInput>
+  }
+
+  export type TaskUpdateManyWithWhereWithoutSprintsInput = {
+    where: TaskScalarWhereInput
+    data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutSprintsInput>
   }
 
   export type CommentCreateWithoutFileInput = {
@@ -72118,6 +73557,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     dependencies?: FeatureDependencyCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskCreateNestedManyWithoutFeaturesInput
     epic: EpicCreateNestedOneWithoutFeaturesInput
     parent?: FeatureCreateNestedOneWithoutChildrenInput
     children?: FeatureCreateNestedManyWithoutParentInput
@@ -72150,6 +73590,7 @@ export namespace Prisma {
     userId?: string | null
     dependencies?: FeatureDependencyUncheckedCreateNestedManyWithoutDependentFeatureInput
     dependents?: FeatureDependencyUncheckedCreateNestedManyWithoutDependsOnFeatureInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutFeaturesInput
     children?: FeatureUncheckedCreateNestedManyWithoutParentInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutFeatureInput
   }
@@ -72183,7 +73624,7 @@ export namespace Prisma {
     parent?: FileCreateNestedOneWithoutChildrenInput
     project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
-    task?: TaskCreateNestedOneWithoutFilesInput
+    task?: TaskCreateNestedManyWithoutFilesInput
     author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
@@ -72211,10 +73652,10 @@ export namespace Prisma {
     projectId: string
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
+    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
     author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
@@ -72248,7 +73689,7 @@ export namespace Prisma {
     children?: FileCreateNestedManyWithoutParentInput
     project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
-    task?: TaskCreateNestedOneWithoutFilesInput
+    task?: TaskCreateNestedManyWithoutFilesInput
     author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
@@ -72275,11 +73716,11 @@ export namespace Prisma {
     projectId: string
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
     author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
@@ -72318,6 +73759,7 @@ export namespace Prisma {
     sprints?: SprintCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
     user?: UserCreateNestedManyWithoutProjectsInput
+    Task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutFilesInput = {
@@ -72344,6 +73786,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutFilesInput = {
@@ -72371,6 +73814,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryCreateNestedManyWithoutSprintInput
     users?: UserCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintUncheckedCreateWithoutFilesInput = {
@@ -72393,6 +73837,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutSprintInput
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintCreateOrConnectWithoutFilesInput = {
@@ -72418,13 +73863,18 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    userstoryId?: string | null
     comments?: CommentCreateNestedManyWithoutTaskInput
+    features?: FeatureCreateNestedManyWithoutTasksInput
+    sprints?: SprintCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
     creator: UserCreateNestedOneWithoutCreatedTasksInput
-    userStory: UserStoryCreateNestedOneWithoutTasksInput
+    project?: ProjectCreateNestedOneWithoutTaskInput
     timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     assignees?: UserCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryCreateNestedManyWithoutTasksInput
+    epic?: EpicCreateNestedManyWithoutTasksInput
   }
 
   export type TaskUncheckedCreateWithoutFilesInput = {
@@ -72445,13 +73895,18 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userStoryId: string
+    projectId?: string | null
     creatorId: string
+    userstoryId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
+    features?: FeatureUncheckedCreateNestedManyWithoutTasksInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutTasksInput
+    epic?: EpicUncheckedCreateNestedManyWithoutTasksInput
   }
 
   export type TaskCreateOrConnectWithoutFilesInput = {
@@ -72567,14 +74022,14 @@ export namespace Prisma {
     updatedAt?: Date | string
     UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
     comments?: CommentCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
     creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryUncheckedCreateWithoutFilesInput = {
@@ -72600,12 +74055,12 @@ export namespace Prisma {
     creatorId: string
     UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryCreateOrConnectWithoutFilesInput = {
@@ -72759,6 +74214,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUpdateManyWithoutFeaturesNestedInput
     epic?: EpicUpdateOneRequiredWithoutFeaturesNestedInput
     parent?: FeatureUpdateOneWithoutChildrenNestedInput
     children?: FeatureUpdateManyWithoutParentNestedInput
@@ -72791,6 +74247,7 @@ export namespace Prisma {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutFeaturesNestedInput
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
   }
@@ -72830,7 +74287,7 @@ export namespace Prisma {
     parent?: FileUpdateOneWithoutChildrenNestedInput
     project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
-    task?: TaskUpdateOneWithoutFilesNestedInput
+    task?: TaskUpdateManyWithoutFilesNestedInput
     author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
@@ -72858,10 +74315,10 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
+    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
     author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
@@ -72917,6 +74374,7 @@ export namespace Prisma {
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutFilesInput = {
@@ -72943,6 +74401,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type SprintUpsertWithoutFilesInput = {
@@ -72976,6 +74435,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUpdateManyWithoutSprintNestedInput
     users?: UserUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUpdateManyWithoutSprintsNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutFilesInput = {
@@ -72998,71 +74458,23 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutSprintNestedInput
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
   }
 
-  export type TaskUpsertWithoutFilesInput = {
+  export type TaskUpsertWithWhereUniqueWithoutFilesInput = {
+    where: TaskWhereUniqueInput
     update: XOR<TaskUpdateWithoutFilesInput, TaskUncheckedUpdateWithoutFilesInput>
     create: XOR<TaskCreateWithoutFilesInput, TaskUncheckedCreateWithoutFilesInput>
-    where?: TaskWhereInput
   }
 
-  export type TaskUpdateToOneWithWhereWithoutFilesInput = {
-    where?: TaskWhereInput
+  export type TaskUpdateWithWhereUniqueWithoutFilesInput = {
+    where: TaskWhereUniqueInput
     data: XOR<TaskUpdateWithoutFilesInput, TaskUncheckedUpdateWithoutFilesInput>
   }
 
-  export type TaskUpdateWithoutFilesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    type?: StringFieldUpdateOperationsInput | string
-    position?: IntFieldUpdateOperationsInput | number
-    labels?: TaskUpdatelabelsInput | string[]
-    tags?: TaskUpdatetagsInput | string[]
-    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    comments?: CommentUpdateManyWithoutTaskNestedInput
-    dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
-    creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
-    userStory?: UserStoryUpdateOneRequiredWithoutTasksNestedInput
-    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
-    assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
-  }
-
-  export type TaskUncheckedUpdateWithoutFilesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    type?: StringFieldUpdateOperationsInput | string
-    position?: IntFieldUpdateOperationsInput | number
-    labels?: TaskUpdatelabelsInput | string[]
-    tags?: TaskUpdatetagsInput | string[]
-    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userStoryId?: StringFieldUpdateOperationsInput | string
-    creatorId?: StringFieldUpdateOperationsInput | string
-    comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
-    dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
-    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
-    assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+  export type TaskUpdateManyWithWhereWithoutFilesInput = {
+    where: TaskScalarWhereInput
+    data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutFilesInput>
   }
 
   export type UserUpsertWithWhereUniqueWithoutFileUploadsInput = {
@@ -73113,14 +74525,14 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutFilesInput = {
@@ -73146,12 +74558,12 @@ export namespace Prisma {
     creatorId?: StringFieldUpdateOperationsInput | string
     UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
   }
 
   export type ItemUpsertWithWhereUniqueWithoutFilesInput = {
@@ -73281,7 +74693,7 @@ export namespace Prisma {
     children?: FileCreateNestedManyWithoutParentInput
     project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
-    task?: TaskCreateNestedOneWithoutFilesInput
+    task?: TaskCreateNestedManyWithoutFilesInput
     author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
@@ -73309,10 +74721,10 @@ export namespace Prisma {
     projectId: string
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
     author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
@@ -73450,7 +74862,7 @@ export namespace Prisma {
     children?: FileUpdateManyWithoutParentNestedInput
     project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
-    task?: TaskUpdateOneWithoutFilesNestedInput
+    task?: TaskUpdateManyWithoutFilesNestedInput
     author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
@@ -73478,10 +74890,10 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
     author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
@@ -73597,7 +75009,7 @@ export namespace Prisma {
     children?: FileCreateNestedManyWithoutParentInput
     project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
-    task?: TaskCreateNestedOneWithoutFilesInput
+    task?: TaskCreateNestedManyWithoutFilesInput
     author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
     items?: ItemCreateNestedManyWithoutFilesInput
@@ -73625,10 +75037,10 @@ export namespace Prisma {
     projectId: string
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
     author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
     items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
@@ -73870,13 +75282,18 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    userstoryId?: string | null
     files?: FileCreateNestedManyWithoutTaskInput
+    features?: FeatureCreateNestedManyWithoutTasksInput
+    sprints?: SprintCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
     creator: UserCreateNestedOneWithoutCreatedTasksInput
-    userStory: UserStoryCreateNestedOneWithoutTasksInput
+    project?: ProjectCreateNestedOneWithoutTaskInput
     timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     assignees?: UserCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryCreateNestedManyWithoutTasksInput
+    epic?: EpicCreateNestedManyWithoutTasksInput
   }
 
   export type TaskUncheckedCreateWithoutCommentsInput = {
@@ -73897,13 +75314,18 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userStoryId: string
+    projectId?: string | null
     creatorId: string
+    userstoryId?: string | null
     files?: FileUncheckedCreateNestedManyWithoutTaskInput
+    features?: FeatureUncheckedCreateNestedManyWithoutTasksInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutTasksInput
+    epic?: EpicUncheckedCreateNestedManyWithoutTasksInput
   }
 
   export type TaskCreateOrConnectWithoutCommentsInput = {
@@ -73932,14 +75354,14 @@ export namespace Prisma {
     updatedAt?: Date | string
     UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
     files?: FileCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
     creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryUncheckedCreateWithoutCommentsInput = {
@@ -73965,12 +75387,12 @@ export namespace Prisma {
     creatorId: string
     UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
     files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryCreateOrConnectWithoutCommentsInput = {
@@ -74168,7 +75590,7 @@ export namespace Prisma {
     children?: FileUpdateManyWithoutParentNestedInput
     project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
-    task?: TaskUpdateOneWithoutFilesNestedInput
+    task?: TaskUpdateManyWithoutFilesNestedInput
     author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
@@ -74196,10 +75618,10 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
     author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
@@ -74407,13 +75829,18 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     files?: FileUpdateManyWithoutTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
     dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
-    userStory?: UserStoryUpdateOneRequiredWithoutTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
   }
 
   export type TaskUncheckedUpdateWithoutCommentsInput = {
@@ -74434,13 +75861,18 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userStoryId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     files?: FileUncheckedUpdateManyWithoutTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
     dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
   }
 
   export type UserStoryUpsertWithoutCommentsInput = {
@@ -74475,14 +75907,14 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
     files?: FileUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutCommentsInput = {
@@ -74508,12 +75940,12 @@ export namespace Prisma {
     creatorId?: StringFieldUpdateOperationsInput | string
     UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
     files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
   }
 
   export type blog_tagsUpsertWithWhereUniqueWithoutCommentsInput = {
@@ -74628,6 +76060,7 @@ export namespace Prisma {
     sprints?: SprintCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
     user?: UserCreateNestedManyWithoutProjectsInput
+    Task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutChannelsInput = {
@@ -74654,6 +76087,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutChannelsInput = {
@@ -74746,6 +76180,7 @@ export namespace Prisma {
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutChannelsInput = {
@@ -74772,6 +76207,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type MessageUpsertWithWhereUniqueWithoutChannelInput = {
@@ -75318,6 +76754,7 @@ export namespace Prisma {
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
     sprints?: SprintCreateNestedManyWithoutProjectInput
     user?: UserCreateNestedManyWithoutProjectsInput
+    Task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutTemplatesInput = {
@@ -75344,6 +76781,7 @@ export namespace Prisma {
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutTemplatesInput = {
@@ -75423,6 +76861,7 @@ export namespace Prisma {
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutTemplatesInput = {
@@ -75449,6 +76888,7 @@ export namespace Prisma {
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TeamUpsertWithoutTemplatesInput = {
@@ -75597,6 +77037,7 @@ export namespace Prisma {
     project: ProjectCreateNestedOneWithoutSprintsInput
     users?: UserCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintUncheckedCreateWithoutTimeEntriesInput = {
@@ -75619,6 +77060,7 @@ export namespace Prisma {
     items?: ItemUncheckedCreateNestedManyWithoutSprintInput
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintCreateOrConnectWithoutTimeEntriesInput = {
@@ -75644,13 +77086,18 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    userstoryId?: string | null
     comments?: CommentCreateNestedManyWithoutTaskInput
     files?: FileCreateNestedManyWithoutTaskInput
+    features?: FeatureCreateNestedManyWithoutTasksInput
+    sprints?: SprintCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
     creator: UserCreateNestedOneWithoutCreatedTasksInput
-    userStory: UserStoryCreateNestedOneWithoutTasksInput
+    project?: ProjectCreateNestedOneWithoutTaskInput
     assignees?: UserCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryCreateNestedManyWithoutTasksInput
+    epic?: EpicCreateNestedManyWithoutTasksInput
   }
 
   export type TaskUncheckedCreateWithoutTimeEntriesInput = {
@@ -75671,13 +77118,18 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userStoryId: string
+    projectId?: string | null
     creatorId: string
+    userstoryId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
     files?: FileUncheckedCreateNestedManyWithoutTaskInput
+    features?: FeatureUncheckedCreateNestedManyWithoutTasksInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutTasksInput
     dependencies?: TaskDependencyUncheckedCreateNestedManyWithoutDependentTaskInput
-    dependents?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
     assignees?: UserUncheckedCreateNestedManyWithoutAssignedTasksInput
+    askDependency?: TaskDependencyUncheckedCreateNestedManyWithoutDependsOnTaskInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutTasksInput
+    epic?: EpicUncheckedCreateNestedManyWithoutTasksInput
   }
 
   export type TaskCreateOrConnectWithoutTimeEntriesInput = {
@@ -75794,13 +77246,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUser_storiesInput
     comments?: CommentCreateNestedManyWithoutUserStoryInput
     files?: FileCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskCreateNestedManyWithoutUserStoryInput
     creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryUncheckedCreateWithoutTimeEntriesInput = {
@@ -75827,11 +77279,11 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUser_storiesInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
     files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryCreateOrConnectWithoutTimeEntriesInput = {
@@ -75959,6 +77411,7 @@ export namespace Prisma {
     project?: ProjectUpdateOneRequiredWithoutSprintsNestedInput
     users?: UserUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUpdateManyWithoutSprintsNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutTimeEntriesInput = {
@@ -75981,6 +77434,7 @@ export namespace Prisma {
     items?: ItemUncheckedUpdateManyWithoutSprintNestedInput
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
   }
 
   export type TaskUpsertWithoutTimeEntriesInput = {
@@ -76012,13 +77466,18 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUpdateManyWithoutTaskNestedInput
     files?: FileUpdateManyWithoutTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
     dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
-    userStory?: UserStoryUpdateOneRequiredWithoutTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
     assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
   }
 
   export type TaskUncheckedUpdateWithoutTimeEntriesInput = {
@@ -76039,13 +77498,18 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userStoryId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
     files?: FileUncheckedUpdateManyWithoutTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
     dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
     assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
   }
 
   export type UserUpsertWithoutTimeEntriesInput = {
@@ -76174,13 +77638,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUpdateManyWithoutUserStoryNestedInput
     files?: FileUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutTimeEntriesInput = {
@@ -76207,11 +77671,11 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
     files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserCreateWithoutNotificationsInput = {
@@ -76833,6 +78297,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryCreateNestedManyWithoutSprintInput
     users?: UserCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintUncheckedCreateWithoutItemsInput = {
@@ -76855,6 +78320,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutSprintInput
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
   }
 
   export type SprintCreateOrConnectWithoutItemsInput = {
@@ -77016,7 +78482,7 @@ export namespace Prisma {
     children?: FileCreateNestedManyWithoutParentInput
     project: ProjectCreateNestedOneWithoutFilesInput
     sprint?: SprintCreateNestedOneWithoutFilesInput
-    task?: TaskCreateNestedOneWithoutFilesInput
+    task?: TaskCreateNestedManyWithoutFilesInput
     author?: UserCreateNestedManyWithoutFileUploadsInput
     userStory?: UserStoryCreateNestedOneWithoutFilesInput
   }
@@ -77043,11 +78509,11 @@ export namespace Prisma {
     projectId: string
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
     comments?: CommentUncheckedCreateNestedManyWithoutFileInput
     versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
     children?: FileUncheckedCreateNestedManyWithoutParentInput
+    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
     author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
   }
 
@@ -77295,6 +78761,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUpdateManyWithoutSprintNestedInput
     users?: UserUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUpdateManyWithoutSprintsNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutItemsInput = {
@@ -77317,6 +78784,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutSprintNestedInput
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
   }
 
   export type UserUpsertWithoutOwnedItemsInput = {
@@ -77568,14 +79036,14 @@ export namespace Prisma {
     updatedAt?: Date | string
     comments?: CommentCreateNestedManyWithoutUserStoryInput
     files?: FileCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryCreateNestedManyWithoutUserStoryInput
     creator: UserCreateNestedOneWithoutCreatedUserStoriesInput
     feature: FeatureCreateNestedOneWithoutUserStoriesInput
     dependencies?: UserStoryDependencyCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryUncheckedCreateWithoutUserStoryAssigneesInput = {
@@ -77601,12 +79069,12 @@ export namespace Prisma {
     creatorId: string
     comments?: CommentUncheckedCreateNestedManyWithoutUserStoryInput
     files?: FileUncheckedCreateNestedManyWithoutUserStoryInput
-    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserStoryInput
     dependencies?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependentUserStoryInput
     dependents?: UserStoryDependencyUncheckedCreateNestedManyWithoutDependsOnUserStoryInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUserStoriesInput
-    Epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    epic?: EpicUncheckedCreateNestedManyWithoutUserstoriesInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserStoryInput
   }
 
   export type UserStoryCreateOrConnectWithoutUserStoryAssigneesInput = {
@@ -77739,14 +79207,14 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUpdateManyWithoutUserStoryNestedInput
     files?: FileUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutUserStoryAssigneesInput = {
@@ -77772,12 +79240,12 @@ export namespace Prisma {
     creatorId?: StringFieldUpdateOperationsInput | string
     comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
     files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
   }
 
   export type categoriesCreateWithoutBlog_tagsInput = {
@@ -78464,6 +79932,7 @@ export namespace Prisma {
     sprints?: SprintCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
     user?: UserCreateNestedManyWithoutProjectsInput
+    Task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutFieldsInput = {
@@ -78490,6 +79959,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutFieldsInput = {
@@ -78761,6 +80231,7 @@ export namespace Prisma {
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutFieldsInput = {
@@ -78787,6 +80258,7 @@ export namespace Prisma {
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TeamUpsertWithoutFieldsInput = {
@@ -79079,7 +80551,8 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userStoryId: string
+    projectId?: string | null
+    userstoryId?: string | null
   }
 
   export type TeamMemberCreateManyUserInput = {
@@ -79353,6 +80826,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUpdateManyWithoutFeaturesNestedInput
     epic?: EpicUpdateOneRequiredWithoutFeaturesNestedInput
     parent?: FeatureUpdateOneWithoutChildrenNestedInput
     children?: FeatureUpdateManyWithoutParentNestedInput
@@ -79384,6 +80858,7 @@ export namespace Prisma {
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutFeaturesNestedInput
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     files?: FileUncheckedUpdateManyWithoutFeatureNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
@@ -79577,7 +81052,7 @@ export namespace Prisma {
     children?: FileUpdateManyWithoutParentNestedInput
     project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
-    task?: TaskUpdateOneWithoutFilesNestedInput
+    task?: TaskUpdateManyWithoutFilesNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
@@ -79604,11 +81079,11 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
@@ -79634,7 +81109,6 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -79950,13 +81424,18 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUpdateManyWithoutTaskNestedInput
     files?: FileUpdateManyWithoutTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
     dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
-    userStory?: UserStoryUpdateOneRequiredWithoutTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
   }
 
   export type TaskUncheckedUpdateWithoutCreatorInput = {
@@ -79977,13 +81456,18 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userStoryId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
     files?: FileUncheckedUpdateManyWithoutTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
     dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
   }
 
   export type TaskUncheckedUpdateManyWithoutCreatorInput = {
@@ -80004,7 +81488,8 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userStoryId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TeamMemberUpdateWithoutUserInput = {
@@ -80104,13 +81589,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUpdateManyWithoutUserStoryNestedInput
     files?: FileUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutCreatorInput = {
@@ -80136,12 +81621,12 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
     files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateManyWithoutCreatorInput = {
@@ -80303,6 +81788,7 @@ export namespace Prisma {
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
     sprints?: SprintUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
+    Task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -80329,6 +81815,7 @@ export namespace Prisma {
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutUserInput = {
@@ -80369,6 +81856,7 @@ export namespace Prisma {
     project?: ProjectUpdateOneRequiredWithoutSprintsNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutSprintNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUpdateManyWithoutSprintsNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutUsersInput = {
@@ -80391,6 +81879,7 @@ export namespace Prisma {
     items?: ItemUncheckedUpdateManyWithoutSprintNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutSprintNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
   }
 
   export type SprintUncheckedUpdateManyWithoutUsersInput = {
@@ -80429,13 +81918,18 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUpdateManyWithoutTaskNestedInput
     files?: FileUpdateManyWithoutTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
     dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
-    userStory?: UserStoryUpdateOneRequiredWithoutTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
   }
 
   export type TaskUncheckedUpdateWithoutAssigneesInput = {
@@ -80456,13 +81950,18 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userStoryId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
     files?: FileUncheckedUpdateManyWithoutTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
     dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
   }
 
   export type TaskUncheckedUpdateManyWithoutAssigneesInput = {
@@ -80483,8 +81982,9 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userStoryId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type fieldsCreateManyTeamsInput = {
@@ -80876,7 +82376,6 @@ export namespace Prisma {
     parentId?: string | null
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
   }
 
@@ -80940,6 +82439,28 @@ export namespace Prisma {
     teamId: string
   }
 
+  export type TaskCreateManyProjectInput = {
+    id?: string
+    title: string
+    order?: number
+    description?: string | null
+    priority?: $Enums.Priority
+    status?: $Enums.TaskStatus
+    type?: string
+    position?: number
+    labels?: TaskCreatelabelsInput | string[]
+    tags?: TaskCreatetagsInput | string[]
+    estimatedHours?: number | null
+    actualHours?: number | null
+    dueDate?: Date | string | null
+    startDate?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    creatorId: string
+    userstoryId?: string | null
+  }
+
   export type ChannelUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -81000,6 +82521,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUpdateManyWithoutFeaturesNestedInput
     epic?: EpicUpdateOneRequiredWithoutFeaturesNestedInput
     parent?: FeatureUpdateOneWithoutChildrenNestedInput
     children?: FeatureUpdateManyWithoutParentNestedInput
@@ -81031,6 +82553,7 @@ export namespace Prisma {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutFeaturesNestedInput
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     files?: FileUncheckedUpdateManyWithoutFeatureNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
@@ -81190,7 +82713,7 @@ export namespace Prisma {
     parent?: FileUpdateOneWithoutChildrenNestedInput
     children?: FileUpdateManyWithoutParentNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
-    task?: TaskUpdateOneWithoutFilesNestedInput
+    task?: TaskUpdateManyWithoutFilesNestedInput
     author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
@@ -81217,11 +82740,11 @@ export namespace Prisma {
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
     author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
@@ -81247,7 +82770,6 @@ export namespace Prisma {
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -81354,6 +82876,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUpdateManyWithoutSprintNestedInput
     users?: UserUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUpdateManyWithoutSprintsNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutProjectInput = {
@@ -81376,6 +82899,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutSprintNestedInput
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
   }
 
   export type SprintUncheckedUpdateManyWithoutProjectInput = {
@@ -81544,6 +83068,92 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TaskUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    comments?: CommentUpdateManyWithoutTaskNestedInput
+    files?: FileUpdateManyWithoutTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
+    creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
+    assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
+    files?: FileUncheckedUpdateManyWithoutTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
+    assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type EpicCreateManyInitiativeInput = {
     id?: string
     name: string
@@ -81572,6 +83182,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     features?: FeatureUpdateManyWithoutEpicNestedInput
     userstories?: UserStoryUpdateManyWithoutEpicNestedInput
+    tasks?: TaskUpdateManyWithoutEpicNestedInput
   }
 
   export type EpicUncheckedUpdateWithoutInitiativeInput = {
@@ -81588,6 +83199,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     features?: FeatureUncheckedUpdateManyWithoutEpicNestedInput
     userstories?: UserStoryUncheckedUpdateManyWithoutEpicNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutEpicNestedInput
   }
 
   export type EpicUncheckedUpdateManyWithoutInitiativeInput = {
@@ -81647,6 +83259,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUpdateManyWithoutFeaturesNestedInput
     parent?: FeatureUpdateOneWithoutChildrenNestedInput
     children?: FeatureUpdateManyWithoutParentNestedInput
     Project?: ProjectUpdateOneWithoutFeaturesNestedInput
@@ -81678,6 +83291,7 @@ export namespace Prisma {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutFeaturesNestedInput
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     files?: FileUncheckedUpdateManyWithoutFeatureNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
@@ -81728,13 +83342,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUpdateManyWithoutUserStoryNestedInput
     files?: FileUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutEpicInput = {
@@ -81761,11 +83375,11 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
     files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateManyWithoutEpicInput = {
@@ -81789,6 +83403,93 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     featureId?: StringFieldUpdateOperationsInput | string
     creatorId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TaskUpdateWithoutEpicInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    comments?: CommentUpdateManyWithoutTaskNestedInput
+    files?: FileUpdateManyWithoutTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
+    creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
+    assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutEpicInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
+    files?: FileUncheckedUpdateManyWithoutTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
+    assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateManyWithoutEpicInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FeatureDependencyCreateManyDependentFeatureInput = {
@@ -81853,7 +83554,6 @@ export namespace Prisma {
     parentId?: string | null
     projectId: string
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
   }
 
@@ -81933,6 +83633,93 @@ export namespace Prisma {
     dependentFeatureId?: StringFieldUpdateOperationsInput | string
   }
 
+  export type TaskUpdateWithoutFeaturesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    comments?: CommentUpdateManyWithoutTaskNestedInput
+    files?: FileUpdateManyWithoutTaskNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
+    creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
+    assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutFeaturesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
+    files?: FileUncheckedUpdateManyWithoutTaskNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
+    assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateManyWithoutFeaturesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type FeatureUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -81953,6 +83740,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUpdateManyWithoutFeaturesNestedInput
     epic?: EpicUpdateOneRequiredWithoutFeaturesNestedInput
     children?: FeatureUpdateManyWithoutParentNestedInput
     Project?: ProjectUpdateOneWithoutFeaturesNestedInput
@@ -81984,6 +83772,7 @@ export namespace Prisma {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
     dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutFeaturesNestedInput
     children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
     files?: FileUncheckedUpdateManyWithoutFeatureNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
@@ -82036,7 +83825,7 @@ export namespace Prisma {
     children?: FileUpdateManyWithoutParentNestedInput
     project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
-    task?: TaskUpdateOneWithoutFilesNestedInput
+    task?: TaskUpdateManyWithoutFilesNestedInput
     author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
@@ -82063,11 +83852,11 @@ export namespace Prisma {
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     projectId?: StringFieldUpdateOperationsInput | string
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
     author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
@@ -82093,7 +83882,6 @@ export namespace Prisma {
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     projectId?: StringFieldUpdateOperationsInput | string
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -82119,13 +83907,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUpdateManyWithoutUserStoryNestedInput
     files?: FileUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutFeatureInput = {
@@ -82151,12 +83939,12 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
     files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
-    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateManyWithoutFeatureInput = {
@@ -82232,29 +84020,7 @@ export namespace Prisma {
     parentId?: string | null
     projectId: string
     featureId?: string | null
-    taskId?: string | null
     sprintId?: string | null
-  }
-
-  export type TaskCreateManyUserStoryInput = {
-    id?: string
-    title: string
-    order?: number
-    description?: string | null
-    priority?: $Enums.Priority
-    status?: $Enums.TaskStatus
-    type?: string
-    position?: number
-    labels?: TaskCreatelabelsInput | string[]
-    tags?: TaskCreatetagsInput | string[]
-    estimatedHours?: number | null
-    actualHours?: number | null
-    dueDate?: Date | string | null
-    startDate?: Date | string | null
-    completedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    creatorId: string
   }
 
   export type TimeEntryCreateManyUserStoryInput = {
@@ -82412,7 +84178,7 @@ export namespace Prisma {
     children?: FileUpdateManyWithoutParentNestedInput
     project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
-    task?: TaskUpdateOneWithoutFilesNestedInput
+    task?: TaskUpdateManyWithoutFilesNestedInput
     author?: UserUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
   }
@@ -82438,11 +84204,11 @@ export namespace Prisma {
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
     author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
@@ -82468,83 +84234,7 @@ export namespace Prisma {
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type TaskUpdateWithoutUserStoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    type?: StringFieldUpdateOperationsInput | string
-    position?: IntFieldUpdateOperationsInput | number
-    labels?: TaskUpdatelabelsInput | string[]
-    tags?: TaskUpdatetagsInput | string[]
-    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    comments?: CommentUpdateManyWithoutTaskNestedInput
-    files?: FileUpdateManyWithoutTaskNestedInput
-    dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
-    creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
-    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
-    assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
-  }
-
-  export type TaskUncheckedUpdateWithoutUserStoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    type?: StringFieldUpdateOperationsInput | string
-    position?: IntFieldUpdateOperationsInput | number
-    labels?: TaskUpdatelabelsInput | string[]
-    tags?: TaskUpdatetagsInput | string[]
-    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    creatorId?: StringFieldUpdateOperationsInput | string
-    comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
-    files?: FileUncheckedUpdateManyWithoutTaskNestedInput
-    dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
-    dependents?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
-    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
-    assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
-  }
-
-  export type TaskUncheckedUpdateManyWithoutUserStoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    type?: StringFieldUpdateOperationsInput | string
-    position?: IntFieldUpdateOperationsInput | number
-    labels?: TaskUpdatelabelsInput | string[]
-    tags?: TaskUpdatetagsInput | string[]
-    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    creatorId?: StringFieldUpdateOperationsInput | string
   }
 
   export type TimeEntryUpdateWithoutUserStoryInput = {
@@ -82669,6 +84359,7 @@ export namespace Prisma {
     project?: ProjectUpdateOneRequiredWithoutSprintsNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutSprintNestedInput
     users?: UserUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUpdateManyWithoutSprintsNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutUserStoriesInput = {
@@ -82691,6 +84382,7 @@ export namespace Prisma {
     items?: ItemUncheckedUpdateManyWithoutSprintNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutSprintNestedInput
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
   }
 
   export type SprintUncheckedUpdateManyWithoutUserStoriesInput = {
@@ -82725,6 +84417,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     initiative?: InitiativeUpdateOneRequiredWithoutEpicsNestedInput
     features?: FeatureUpdateManyWithoutEpicNestedInput
+    tasks?: TaskUpdateManyWithoutEpicNestedInput
   }
 
   export type EpicUncheckedUpdateWithoutUserstoriesInput = {
@@ -82741,6 +84434,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     initiativeId?: StringFieldUpdateOperationsInput | string
     features?: FeatureUncheckedUpdateManyWithoutEpicNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutEpicNestedInput
   }
 
   export type EpicUncheckedUpdateManyWithoutUserstoriesInput = {
@@ -82756,6 +84450,93 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     initiativeId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TaskUpdateWithoutUserStoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    comments?: CommentUpdateManyWithoutTaskNestedInput
+    files?: FileUpdateManyWithoutTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
+    creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
+    assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutUserStoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
+    files?: FileUncheckedUpdateManyWithoutTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
+    assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateManyWithoutUserStoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CommentCreateManyTaskInput = {
@@ -82784,31 +84565,6 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
   }
 
-  export type FileCreateManyTaskInput = {
-    id?: string
-    name: string
-    order?: number
-    type: $Enums.FileType
-    mimeType?: string | null
-    path?: string | null
-    description?: string | null
-    import?: string | null
-    use?: string | null
-    export?: string | null
-    script?: string | null
-    version?: number
-    isFolder?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    tags?: FileCreatetagsInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    parentId?: string | null
-    projectId: string
-    featureId?: string | null
-    userStoryId?: string | null
-    sprintId?: string | null
-  }
-
   export type TaskDependencyCreateManyDependentTaskInput = {
     id?: string
     type?: string
@@ -82816,15 +84572,6 @@ export namespace Prisma {
     description?: string | null
     createdAt?: Date | string
     dependsOnTaskId: string
-  }
-
-  export type TaskDependencyCreateManyDependsOnTaskInput = {
-    id?: string
-    type?: string
-    order?: number
-    description?: string | null
-    createdAt?: Date | string
-    dependentTaskId: string
   }
 
   export type TimeEntryCreateManyTaskInput = {
@@ -82841,6 +84588,15 @@ export namespace Prisma {
     userStoryId?: string | null
     sprintId?: string | null
     itemId?: string | null
+  }
+
+  export type TaskDependencyCreateManyDependsOnTaskInput = {
+    id?: string
+    type?: string
+    order?: number
+    description?: string | null
+    createdAt?: Date | string
+    dependentTaskId: string
   }
 
   export type CommentUpdateWithoutTaskInput = {
@@ -83012,13 +84768,159 @@ export namespace Prisma {
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type FeatureUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: StringFieldUpdateOperationsInput | string
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: FloatFieldUpdateOperationsInput | number
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dependencies?: FeatureDependencyUpdateManyWithoutDependentFeatureNestedInput
+    dependents?: FeatureDependencyUpdateManyWithoutDependsOnFeatureNestedInput
+    epic?: EpicUpdateOneRequiredWithoutFeaturesNestedInput
+    parent?: FeatureUpdateOneWithoutChildrenNestedInput
+    children?: FeatureUpdateManyWithoutParentNestedInput
+    Project?: ProjectUpdateOneWithoutFeaturesNestedInput
+    users?: UserUpdateOneWithoutFeaturesNestedInput
+    files?: FileUpdateManyWithoutFeatureNestedInput
+    userStories?: UserStoryUpdateManyWithoutFeatureNestedInput
+  }
+
+  export type FeatureUncheckedUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: StringFieldUpdateOperationsInput | string
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: FloatFieldUpdateOperationsInput | number
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    epicId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    dependencies?: FeatureDependencyUncheckedUpdateManyWithoutDependentFeatureNestedInput
+    dependents?: FeatureDependencyUncheckedUpdateManyWithoutDependsOnFeatureNestedInput
+    children?: FeatureUncheckedUpdateManyWithoutParentNestedInput
+    files?: FileUncheckedUpdateManyWithoutFeatureNestedInput
+    userStories?: UserStoryUncheckedUpdateManyWithoutFeatureNestedInput
+  }
+
+  export type FeatureUncheckedUpdateManyWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: StringFieldUpdateOperationsInput | string
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: FloatFieldUpdateOperationsInput | number
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    epicId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type SprintUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    goal?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumSprintStatusFieldUpdateOperationsInput | $Enums.SprintStatus
+    capacity?: NullableIntFieldUpdateOperationsInput | number | null
+    velocity?: NullableFloatFieldUpdateOperationsInput | number | null
+    burndownData?: NullableJsonNullValueInput | InputJsonValue
+    retrospective?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    files?: FileUpdateManyWithoutSprintNestedInput
+    items?: ItemUpdateManyWithoutSprintNestedInput
+    project?: ProjectUpdateOneRequiredWithoutSprintsNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutSprintNestedInput
+    users?: UserUpdateManyWithoutSprintsNestedInput
+    userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
+  }
+
+  export type SprintUncheckedUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    goal?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumSprintStatusFieldUpdateOperationsInput | $Enums.SprintStatus
+    capacity?: NullableIntFieldUpdateOperationsInput | number | null
+    velocity?: NullableFloatFieldUpdateOperationsInput | number | null
+    burndownData?: NullableJsonNullValueInput | InputJsonValue
+    retrospective?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    files?: FileUncheckedUpdateManyWithoutSprintNestedInput
+    items?: ItemUncheckedUpdateManyWithoutSprintNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutSprintNestedInput
+    users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
+    userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
+  }
+
+  export type SprintUncheckedUpdateManyWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    goal?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumSprintStatusFieldUpdateOperationsInput | $Enums.SprintStatus
+    capacity?: NullableIntFieldUpdateOperationsInput | number | null
+    velocity?: NullableFloatFieldUpdateOperationsInput | number | null
+    burndownData?: NullableJsonNullValueInput | InputJsonValue
+    retrospective?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: StringFieldUpdateOperationsInput | string
+  }
+
   export type TaskDependencyUpdateWithoutDependentTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dependsOnTask?: TaskUpdateOneRequiredWithoutDependentsNestedInput
+    dependsOnTask?: TaskUpdateOneRequiredWithoutAskDependencyNestedInput
   }
 
   export type TaskDependencyUncheckedUpdateWithoutDependentTaskInput = {
@@ -83037,33 +84939,6 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dependsOnTaskId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type TaskDependencyUpdateWithoutDependsOnTaskInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dependentTask?: TaskUpdateOneRequiredWithoutDependenciesNestedInput
-  }
-
-  export type TaskDependencyUncheckedUpdateWithoutDependsOnTaskInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dependentTaskId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dependentTaskId?: StringFieldUpdateOperationsInput | string
   }
 
   export type TimeEntryUpdateWithoutTaskInput = {
@@ -83215,6 +85090,167 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TaskDependencyUpdateWithoutDependsOnTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dependentTask?: TaskUpdateOneRequiredWithoutDependenciesNestedInput
+  }
+
+  export type TaskDependencyUncheckedUpdateWithoutDependsOnTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dependentTaskId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dependentTaskId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type UserStoryUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: UserStoryUpdatelabelsInput | string[]
+    tags?: UserStoryUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
+    comments?: CommentUpdateManyWithoutUserStoryNestedInput
+    files?: FileUpdateManyWithoutUserStoryNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
+    creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
+    feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
+    dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
+    dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
+    sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+  }
+
+  export type UserStoryUncheckedUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: UserStoryUpdatelabelsInput | string[]
+    tags?: UserStoryUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    featureId?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
+    UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
+    files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
+    dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
+    dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+  }
+
+  export type UserStoryUncheckedUpdateManyWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: UserStoryUpdatelabelsInput | string[]
+    tags?: UserStoryUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    featureId?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type EpicUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiative?: InitiativeUpdateOneRequiredWithoutEpicsNestedInput
+    features?: FeatureUpdateManyWithoutEpicNestedInput
+    userstories?: UserStoryUpdateManyWithoutEpicNestedInput
+  }
+
+  export type EpicUncheckedUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiativeId?: StringFieldUpdateOperationsInput | string
+    features?: FeatureUncheckedUpdateManyWithoutEpicNestedInput
+    userstories?: UserStoryUncheckedUpdateManyWithoutEpicNestedInput
+  }
+
+  export type EpicUncheckedUpdateManyWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiativeId?: StringFieldUpdateOperationsInput | string
+  }
+
   export type FileCreateManySprintInput = {
     id?: string
     name: string
@@ -83237,7 +85273,6 @@ export namespace Prisma {
     projectId: string
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
   }
 
   export type ItemCreateManySprintInput = {
@@ -83314,7 +85349,7 @@ export namespace Prisma {
     parent?: FileUpdateOneWithoutChildrenNestedInput
     children?: FileUpdateManyWithoutParentNestedInput
     project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
-    task?: TaskUpdateOneWithoutFilesNestedInput
+    task?: TaskUpdateManyWithoutFilesNestedInput
     author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
@@ -83342,10 +85377,10 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
     author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
@@ -83372,7 +85407,6 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ItemUpdateWithoutSprintInput = {
@@ -83658,13 +85692,13 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUpdateManyWithoutUserStoryNestedInput
     files?: FileUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
     creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
     feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
     dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
-    Epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateWithoutSprintsInput = {
@@ -83691,11 +85725,11 @@ export namespace Prisma {
     UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserStoryNestedInput
     files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
-    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
     dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
     dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
-    Epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
   }
 
   export type UserStoryUncheckedUpdateManyWithoutSprintsInput = {
@@ -83719,6 +85753,93 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     featureId?: StringFieldUpdateOperationsInput | string
     creatorId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TaskUpdateWithoutSprintsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    comments?: CommentUpdateManyWithoutTaskNestedInput
+    files?: FileUpdateManyWithoutTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
+    creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
+    assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutSprintsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
+    files?: FileUncheckedUpdateManyWithoutTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
+    assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateManyWithoutSprintsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CommentCreateManyFileInput = {
@@ -83779,7 +85900,6 @@ export namespace Prisma {
     projectId: string
     featureId?: string | null
     userStoryId?: string | null
-    taskId?: string | null
     sprintId?: string | null
   }
 
@@ -83924,7 +86044,7 @@ export namespace Prisma {
     children?: FileUpdateManyWithoutParentNestedInput
     project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
-    task?: TaskUpdateOneWithoutFilesNestedInput
+    task?: TaskUpdateManyWithoutFilesNestedInput
     author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
     items?: ItemUpdateManyWithoutFilesNestedInput
@@ -83951,11 +86071,11 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
     author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
@@ -83981,8 +86101,94 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TaskUpdateWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    comments?: CommentUpdateManyWithoutTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
+    creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
+    assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
+    assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateManyWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUpdateWithoutFileUploadsInput = {
@@ -84810,7 +87016,7 @@ export namespace Prisma {
     children?: FileUpdateManyWithoutParentNestedInput
     project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
     sprint?: SprintUpdateOneWithoutFilesNestedInput
-    task?: TaskUpdateOneWithoutFilesNestedInput
+    task?: TaskUpdateManyWithoutFilesNestedInput
     author?: UserUpdateManyWithoutFileUploadsNestedInput
     userStory?: UserStoryUpdateOneWithoutFilesNestedInput
   }
@@ -84837,11 +87043,11 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
     comments?: CommentUncheckedUpdateManyWithoutFileNestedInput
     versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
     children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
     author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
   }
 
@@ -84867,7 +87073,6 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     featureId?: NullableStringFieldUpdateOperationsInput | string | null
     userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
     sprintId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 

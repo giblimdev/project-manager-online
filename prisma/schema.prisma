@@ -165,6 +165,7 @@ model Project {
   user        User[]          @relation("ProjectOwner") /// Propriétaires du projet
 
   @@map("projects")
+  Task Task[]
 }
 
 model ProjectMember {
@@ -222,7 +223,7 @@ model Epic {
   initiative   Initiative  @relation(fields: [initiativeId], references: [id], onDelete: Cascade)
   features     Feature[]
   userstories  UserStory[]
-
+tasks Task[]
   @@map("epics")
 }
 
@@ -250,6 +251,7 @@ model Feature {
   userId             String?
   dependencies       FeatureDependency[] @relation("DependentFeature")
   dependents         FeatureDependency[] @relation("DependsOnFeature")
+  Tasks Task[]
   epic               Epic                @relation(fields: [epicId], references: [id], onDelete: Cascade)
   parent             Feature?            @relation("FeatureHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
   children           Feature[]           @relation("FeatureHierarchy")
@@ -259,6 +261,7 @@ model Feature {
   userStories        UserStory[]
 
   @@map("features")
+  
 }
 
 model FeatureDependency {
@@ -300,15 +303,14 @@ model UserStory {
   UserStoryAssignees UserStoryAssignees[]
   comments           Comment[]
   files              File[]
-  tasks              Task[]
   timeEntries        TimeEntry[]
   creator            User                  @relation("UserStoryCreator", fields: [creatorId], references: [id])
   feature            Feature               @relation(fields: [featureId], references: [id], onDelete: Cascade)
   dependencies       UserStoryDependency[] @relation("DependentUserStory")
   dependents         UserStoryDependency[] @relation("DependsOnUserStory")
   sprints            Sprint[]              @relation("SprintUserStories")
-  Epic               Epic[]
-
+  epic               Epic[]
+  tasks Task[]
   @@map("user_stories")
 }
 
@@ -345,19 +347,24 @@ model Task {
   completedAt    DateTime?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  userStoryId    String
+  projectId          String?
   creatorId      String
   comments       Comment[]
   files          File[]
+  userstoryId       String?
+  features  Feature[]
+  sprints Sprint[]
   dependencies   TaskDependency[] @relation("DependentTask")
-  dependents     TaskDependency[] @relation("DependsOnTask")
   creator        User             @relation("TaskCreator", fields: [creatorId], references: [id])
-  userStory      UserStory        @relation(fields: [userStoryId], references: [id], onDelete: Cascade)
+ project            Project?            @relation(fields: [projectId], references: [id])
   timeEntries    TimeEntry[]
   assignees      User[]           @relation("TaskAssignees")
+askDependency TaskDependency[] @relation("DependsOnTask")
+  userStory UserStory[]
+  epic Epic[]
 
-  @@map("tasks")
-}
+  @@map("tasks") 
+  }
 
 model TaskDependency {
   id              String   @id @default(cuid())
@@ -396,8 +403,10 @@ model Sprint {
   timeEntries   TimeEntry[]
   users         User[]       @relation("SprintToUser")
   userStories   UserStory[]  @relation("SprintUserStories")
-
+  Tasks Task[]
+  
   @@map("sprints")
+  
 }
 
 model File {
@@ -422,7 +431,6 @@ model File {
   projectId   String
   featureId   String?
   userStoryId String?
-  taskId      String?
   sprintId    String?
   comments    Comment[]
   versions    FileVersion[] // Historique des versions
@@ -431,7 +439,7 @@ model File {
   children    File[]        @relation("FileHierarchy")
   project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   sprint      Sprint?       @relation(fields: [sprintId], references: [id], onDelete: Cascade)
-  task        Task?         @relation(fields: [taskId], references: [id], onDelete: Cascade)
+            task        Task[]
   author      User[] // ✅ AUTEURS/DÉVELOPPEURS (pas uploaders)
   userStory   UserStory?    @relation(fields: [userStoryId], references: [id], onDelete: Cascade)
   items       Item[]        @relation("FileToItem")

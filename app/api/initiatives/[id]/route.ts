@@ -429,11 +429,8 @@ export async function DELETE(
             for (const story of feature.userStories) {
               if (story.tasks.length > 0) {
                 await tx.task.deleteMany({
-                  where: { userStoryId: story.id },
+                  where: { userstoryId: story.id }, // CORRECTION ICI : userstoryId au lieu de userStoryId
                 });
-                console.log(
-                  `  🗑️ Deleted ${story.tasks.length} tasks from story }`
-                );
               }
             }
           }

@@ -114,20 +114,20 @@ model Team {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   parentTeamId String?
-  fields       fields[]
+  fields       fields[] /// Champs personnalisés
   members      TeamMember[]
   parentTeam   Team?        @relation("TeamHierarchy", fields: [parentTeamId], references: [id])
   children     Team[]       @relation("TeamHierarchy")
-  templates    Template[]
+  templates    Template[] /// Templates associés
 
   @@map("teams")
 }
 
 model TeamMember {
   id       String   @id @default(cuid())
-  role     UserRole @default(DEVELOPER)
+  role     UserRole @default(DEVELOPER) /// Rôle dans l'équipe
   order    Int      @default(1000)
-  joinedAt DateTime @default(now())
+  joinedAt DateTime @default(now()) /// Date d'adhésion
   isActive Boolean  @default(true)
   teamId   String
   userId   String
@@ -143,28 +143,29 @@ model Project {
   name        String
   description String?
   slug        String
-  key         String
+  key         String /// Clé unique (ex: PROJ)
   order       Int             @default(1000)
   startDate   DateTime?
   endDate     DateTime?
   status      String          @default("ACTIVE")
-  visibility  String          @default("PRIVATE")
-  settings    Json?           @default("{}")
-  metadata    Json?           @default("{}")
+  visibility  String          @default("PRIVATE") /// Visibilité (PUBLIC, PRIVATE, INT, ERNAL)
+  settings    Json?           @default("{}") /// Paramètres spécifiques
+  metadata    Json?           @default("{}") /// Métadonnées personnalisées
   isActive    Boolean         @default(true)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
-  channels    Channel[]
+  channels    Channel[] /// Canaux de discussion
   features    Feature[]
-  fields      fields[]
+  fields      fields[] /// Champs personnalisés
   files       File[]
   initiatives Initiative[]
   members     ProjectMember[]
   sprints     Sprint[]
   templates   Template[]
-  user        User[]          @relation("ProjectOwner")
+  user        User[]          @relation("ProjectOwner") /// Propriétaires du projet
 
   @@map("projects")
+  Task Task[]
 }
 
 model ProjectMember {
@@ -187,7 +188,7 @@ model Initiative {
   name        String
   order       Int       @default(1000)
   description String?
-  objective   String?
+  objective   String? /// Objectif stratégique
   priority    Priority  @default(MEDIUM)
   status      String    @default("ACTIVE")
   startDate   DateTime?
@@ -222,7 +223,7 @@ model Epic {
   initiative   Initiative  @relation(fields: [initiativeId], references: [id], onDelete: Cascade)
   features     Feature[]
   userstories  UserStory[]
-
+tasks Task[]
   @@map("epics")
 }
 
@@ -250,6 +251,7 @@ model Feature {
   userId             String?
   dependencies       FeatureDependency[] @relation("DependentFeature")
   dependents         FeatureDependency[] @relation("DependsOnFeature")
+  Tasks Task[]
   epic               Epic                @relation(fields: [epicId], references: [id], onDelete: Cascade)
   parent             Feature?            @relation("FeatureHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
   children           Feature[]           @relation("FeatureHierarchy")
@@ -259,11 +261,12 @@ model Feature {
   userStories        UserStory[]
 
   @@map("features")
+  
 }
 
 model FeatureDependency {
   id                 String   @id @default(cuid())
-  type               String   @default("DEPENDS_ON")
+  type               String   @default("DEPENDS_ON") /// Type de dépendance
   order              Int      @default(1000)
   description        String?
   createdAt          DateTime @default(now())
@@ -281,12 +284,12 @@ model UserStory {
   title              String
   order              Int                   @default(1000)
   description        String?
-  acceptanceCriteria String?
+  acceptanceCriteria String? // Critères d'acceptation
   priority           Priority              @default(MEDIUM)
   status             TaskStatus            @default(TODO)
   storyPoints        Int?
-  businessValue      Int?
-  technicalRisk      Int?
+  businessValue      Int? // Valeur métier
+  technicalRisk      Int? // Risque technique
   effort             Int?
   position           Int                   @default(0)
   labels             String[]              @default([])
@@ -300,15 +303,14 @@ model UserStory {
   UserStoryAssignees UserStoryAssignees[]
   comments           Comment[]
   files              File[]
-  tasks              Task[]
   timeEntries        TimeEntry[]
   creator            User                  @relation("UserStoryCreator", fields: [creatorId], references: [id])
   feature            Feature               @relation(fields: [featureId], references: [id], onDelete: Cascade)
   dependencies       UserStoryDependency[] @relation("DependentUserStory")
   dependents         UserStoryDependency[] @relation("DependsOnUserStory")
   sprints            Sprint[]              @relation("SprintUserStories")
-  Epic               Epic[]
-
+  epic               Epic[]
+  tasks Task[]
   @@map("user_stories")
 }
 
@@ -334,8 +336,8 @@ model Task {
   description    String?
   priority       Priority         @default(MEDIUM)
   status         TaskStatus       @default(TODO)
-  type           String           @default("TASK")
-  position       Int              @default(0)
+  type           String           @default("TASK") /// Type (TASK, BUG, etc.)
+  position       Int              @default(0) // Position dans le backlog
   labels         String[]         @default([])
   tags           String[]         @default([])
   estimatedHours Float?
@@ -345,18 +347,23 @@ model Task {
   completedAt    DateTime?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  userStoryId    String
+  projectId          String?
   creatorId      String
   comments       Comment[]
   files          File[]
+  userstoryId       String?
+  features  Feature[]
+  sprints Sprint[]
   dependencies   TaskDependency[] @relation("DependentTask")
-  dependents     TaskDependency[] @relation("DependsOnTask")
   creator        User             @relation("TaskCreator", fields: [creatorId], references: [id])
-  userStory      UserStory        @relation(fields: [userStoryId], references: [id], onDelete: Cascade)
+ project            Project?            @relation(fields: [projectId], references: [id])
   timeEntries    TimeEntry[]
   assignees      User[]           @relation("TaskAssignees")
 
   @@map("tasks")
+  TaskDependency TaskDependency[] @relation("DependsOnTask")
+  UserStory UserStory[]
+  Epic Epic[]
 }
 
 model TaskDependency {
@@ -366,7 +373,7 @@ model TaskDependency {
   description     String?
   createdAt       DateTime @default(now())
   dependentTaskId String
-  dependsOnTaskId String
+  dependsOnTaskId String /// Tâche requise
   dependentTask   Task     @relation("DependentTask", fields: [dependentTaskId], references: [id], onDelete: Cascade)
   dependsOnTask   Task     @relation("DependsOnTask", fields: [dependsOnTaskId], references: [id], onDelete: Cascade)
 
@@ -377,42 +384,44 @@ model TaskDependency {
 model Sprint {
   id            String       @id @default(cuid())
   name          String
-  order         Int          @default(1000)
+  order         Int          @default(1000) // ordre d'affichage et priorité.
   goal          String?
   description   String?
   startDate     DateTime
   endDate       DateTime
-  status        SprintStatus @default(PLANNED)
-  capacity      Int?
-  velocity      Float?
-  burndownData  Json?        @default("{}")
-  retrospective Json?        @default("{}")
+  status        SprintStatus @default(PLANNED) // Statut (PLANNED, ACTIVE, etc.)
+  capacity      Int? /// Capacité (en points/heures)
+  velocity      Float? /// Vélocité moyenne
+  burndownData  Json?        @default("{}") // Données du burndown chart
+  retrospective Json?        @default("{}") // Notes de rétrospective
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   projectId     String
   files         File[]
-  items         Item[]
+  items         Item[] // Éléments du backlog inclus
   project       Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   timeEntries   TimeEntry[]
   users         User[]       @relation("SprintToUser")
   userStories   UserStory[]  @relation("SprintUserStories")
-
+  Tasks Task[]
+  
   @@map("sprints")
+  
 }
 
 model File {
   id          String        @id @default(cuid())
   name        String
   order       Int           @default(1000)
-  type        FileType
+  type        FileType // Type (DOSSIER, PAGE, COMPONENT, etc.)
   mimeType    String?
-  path        String?
+  path        String? /// Chemin dans l'application
   description String?
   import      String?
-  use         String? //biblioteque, lib, utils, store, hook, ...
+  use         String? // Cas d'usage (bibliothèque, lib, utils, store, hook, ...)
   export      String?
-  script      String?
-  version     Int           @default(1)
+  script      String? // script du fichier
+  version     Int           @default(1) // Version actuelle
   isFolder    Boolean       @default(false)
   metadata    Json?         @default("{}")
   tags        String[]      @default([])
@@ -422,16 +431,15 @@ model File {
   projectId   String
   featureId   String?
   userStoryId String?
-  taskId      String?
   sprintId    String?
   comments    Comment[]
-  versions    FileVersion[]
+  versions    FileVersion[] // Historique des versions
   feature     Feature?      @relation(fields: [featureId], references: [id], onDelete: Cascade)
   parent      File?         @relation("FileHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
   children    File[]        @relation("FileHierarchy")
   project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   sprint      Sprint?       @relation(fields: [sprintId], references: [id], onDelete: Cascade)
-  task        Task?         @relation(fields: [taskId], references: [id], onDelete: Cascade)
+            task        Task[]
   author      User[] // ✅ AUTEURS/DÉVELOPPEURS (pas uploaders)
   userStory   UserStory?    @relation(fields: [userStoryId], references: [id], onDelete: Cascade)
   items       Item[]        @relation("FileToItem")
@@ -496,10 +504,10 @@ model Comment {
 
 model Channel {
   id          String          @id @default(cuid())
-  name        String
+  name        String /// Nom du canal
   order       Int             @default(1000)
   description String?
-  type        String          @default("TEXT")
+  type        String          @default("TEXT") // Type (TEXT, VOICE, VIDEO)
   isPrivate   Boolean         @default(false)
   isArchived  Boolean         @default(false)
   createdAt   DateTime        @default(now())
@@ -594,10 +602,10 @@ model Notification {
   title     String
   message   String
   data      Json?            @default("{}")
-  read      Boolean          @default(false)
-  readAt    DateTime?
+  read      Boolean          @default(false) // Lu ?
+  readAt    DateTime? /// Date de lecture
   createdAt DateTime         @default(now())
-  userId    String
+  userId    String // Destinataire
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
@@ -670,7 +678,8 @@ model Glossary {
   term        String //titre
   order       Int      @default(1000)
   description String?
-  type        String   @default("TERM")
+  type        String   @default("TERM") // "TERM" "ACRONYM" "CONCEPT" "TOOL" "PROCESS" "ROLE" "METHODOLOGY" "FRAMEWORK" "TECHNOLOGY"
+  category    String?  @default("") // champ libre ('SCRUM'...) 
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
