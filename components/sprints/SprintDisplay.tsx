@@ -1,7 +1,7 @@
 // 📄 /components/sprints/SprintDisplay.tsx
 // 🎯 Rôle : Composant qui permet de sélectionner le mode d'affichage des sprints
 // - Pas de logique métier
-// - Juste un sélecteur entre vue liste et vue carte
+// - Juste un sélecteur entre vue liste et vue carte 
 // - Utilise shadcn/ui et icônes Lucide
 
 import { Button } from "@/components/ui/button";

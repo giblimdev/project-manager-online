@@ -337,7 +337,7 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Label className="text-lg font-semibold">Hiérarchie Actuelle</Label>
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-xs"> 
               Lecture seule
             </Badge>
           </div>

@@ -54,6 +54,7 @@ import {
   SimpleFeature,
   ReorderRequest,
 } from "@/types/feature";
+import Link from "next/link";
 
 export default function FeaturesPage(): React.JSX.Element {
   const {
@@ -411,10 +412,10 @@ export default function FeaturesPage(): React.JSX.Element {
             onSubmit={handleFormSubmit}
             onCancel={handleFormCancel}
             isSubmitting={isSubmitting}
-            showHierarchy={true}
+            showHierarchy={true} 
             className="py-4"
           />
-        </DialogContent>
+        </DialogContent> 
       </Dialog>
 
       {/* Dialog de confirmation de suppression */}
@@ -427,16 +428,16 @@ export default function FeaturesPage(): React.JSX.Element {
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-2">
               <p>
-                Êtes-vous sûr de vouloir supprimer la feature{" "}
+                Êtes-vous sûr de vouloir supprimer la feature{" "} 
                 <span className="font-medium text-gray-900">
                   "{selectedFeature?.name}"
                 </span>{" "}
                 ?
               </p>
-              <p className="text-sm text-red-600">
+              <div className="text-sm text-red-600">
                 Cette action est irréversible et supprimera également toutes les
                 données associées.
-              </p>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -456,6 +457,10 @@ export default function FeaturesPage(): React.JSX.Element {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <div><Button>
+        <Link href='/projects/sprints'>Sprint</Link></Button>
+        
+      </div>
     </div>
   );
 }

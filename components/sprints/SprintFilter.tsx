@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, X, Filter } from "lucide-react";
-import { SprintStatus } from "@/lib/generated/prisma/client";
+import { SprintStatus } from "@/lib/generated/prisma/client"; 
 
 interface SprintFilterProps {
   value: {

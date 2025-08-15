@@ -15,7 +15,7 @@
  * @param {(sprint: Sprint) => void} onEdit - Handler pour l'édition avec objet complet
  * @param {(sprintId: string) => void} onDelete - Handler pour la suppression
  *
- * STYLES :
+ * STYLES : 
  * - Liste verticale avec séparateurs
  * - Cartes avec ombres légères
  * - Badges colorés pour les statuts selon SprintStatus
