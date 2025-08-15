@@ -79,8 +79,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import type { FileWithRelations, ApiResponse, FileType } from "@/types/files";
-
+import type { FileWithRelations, ApiResponse } from "@/types/files";
+import type {FileType} from "@/lib/generated/prisma/client"
 interface FileFormData {
   name: string;
   type: FileType;

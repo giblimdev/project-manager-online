@@ -1,6 +1,9 @@
 // app/api/epics/[id]/route.ts
-import { NextRequest, NextResponse } from "next/server"; 
+// Route API pour gérer un épic spécifique par son ID : récupération, mise à jour et suppression
+
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+
 import type { Priority } from "@/lib/generated/prisma/client";
 
 interface UpdateEpicRequest {
@@ -8,28 +11,18 @@ interface UpdateEpicRequest {
   description?: string | null;
   priority?: Priority;
   status?: string;
-  startDate?: Date | string | null;
-  endDate?: Date | string | null;
-  progress?: number; 
-}
-
-function isError(err: unknown): err is Error {
-  return err instanceof Error;
+  startDate?: string | null;
+  endDate?: string | null;
+  progress?: number;
 }
 
 function isPrismaError(err: unknown): err is { code: string; message: string } {
-  return (
-    typeof err === "object" && err !== null && "code" in err && "message" in err
-  );
+  return typeof err === "object" && err !== null && "code" in err && "message" in err;
 }
 
 function getErrorMessage(error: unknown): string {
-  if (isError(error)) {
-    return error.message;
-  }
-  if (typeof error === "string") {
-    return error;
-  }
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
   return "Erreur inconnue";
 }
 
@@ -73,17 +66,16 @@ export async function GET(
     });
 
     if (!epic) {
-      return NextResponse.json({ error: "Épic non trouvé" }, { status: 404 });
+      return NextResponse.json({ success: false, error: "Épic non trouvé" }, { status: 404 });
     }
 
-    return NextResponse.json(epic);
-  } catch (error: unknown) {
-    console.error("Erreur lors de la récupération de l'épic:", error);
-
+    return NextResponse.json({ success: true, data: epic });
+  } catch (error) {
     const errorMessage = getErrorMessage(error);
-
+    console.error("Erreur lors de la récupération de l'épic:", errorMessage);
     return NextResponse.json(
       {
+        success: false,
         error: "Erreur lors de la récupération de l'épic",
         details: errorMessage,
       },
@@ -100,40 +92,32 @@ export async function PUT(
     const { id } = await params;
     const body: UpdateEpicRequest = await request.json();
 
-    // Vérifier que l'épic existe
     const existingEpic = await prisma.epic.findUnique({
       where: { id },
       include: { initiative: true },
     });
 
     if (!existingEpic) {
-      return NextResponse.json({ error: "Épic non trouvé" }, { status: 404 });
+      return NextResponse.json({ success: false, error: "Épic non trouvé" }, { status: 404 });
     }
 
     const updateData: any = {};
 
-    // Mise à jour conditionnelle des champs
     if (body.name !== undefined) {
       if (!body.name.trim()) {
-        return NextResponse.json(
-          { error: "Le nom ne peut pas être vide" },
-          { status: 400 }
-        );
+        return NextResponse.json({ success: false, error: "Le nom ne peut pas être vide" }, { status: 400 });
       }
       updateData.name = body.name.trim();
     }
 
     if (body.description !== undefined) {
-      updateData.description = body.description?.trim() || null;
+      updateData.description = body.description?.trim() ?? null;
     }
 
     if (body.priority !== undefined) {
       const validPriorities: Priority[] = ["CRITICAL", "HIGH", "MEDIUM", "LOW"];
       if (!validPriorities.includes(body.priority)) {
-        return NextResponse.json(
-          { error: "Priorité invalide" },
-          { status: 400 }
-        );
+        return NextResponse.json({ success: false, error: "Priorité invalide" }, { status: 400 });
       }
       updateData.priority = body.priority;
     }
@@ -146,10 +130,7 @@ export async function PUT(
       if (body.startDate) {
         const parsedStartDate = new Date(body.startDate);
         if (isNaN(parsedStartDate.getTime())) {
-          return NextResponse.json(
-            { error: "Format de date de début invalide" },
-            { status: 400 }
-          );
+          return NextResponse.json({ success: false, error: "Format de date de début invalide" }, { status: 400 });
         }
         updateData.startDate = parsedStartDate;
       } else {
@@ -161,10 +142,7 @@ export async function PUT(
       if (body.endDate) {
         const parsedEndDate = new Date(body.endDate);
         if (isNaN(parsedEndDate.getTime())) {
-          return NextResponse.json(
-            { error: "Format de date de fin invalide" },
-            { status: 400 }
-          );
+          return NextResponse.json({ success: false, error: "Format de date de fin invalide" }, { status: 400 });
         }
         updateData.endDate = parsedEndDate;
       } else {
@@ -174,26 +152,22 @@ export async function PUT(
 
     if (body.progress !== undefined) {
       if (body.progress < 0 || body.progress > 1) {
-        return NextResponse.json(
-          { error: "Le progrès doit être compris entre 0 et 1" },
-          { status: 400 }
-        );
+        return NextResponse.json({ success: false, error: "Le progrès doit être compris entre 0 et 1" }, { status: 400 });
       }
       updateData.progress = body.progress;
     }
 
-    // Validation des dates
+    // Validate start/end date coherence
     const finalStartDate = updateData.startDate ?? existingEpic.startDate;
     const finalEndDate = updateData.endDate ?? existingEpic.endDate;
-
     if (finalStartDate && finalEndDate && finalEndDate <= finalStartDate) {
       return NextResponse.json(
-        { error: "La date de fin doit être postérieure à la date de début" },
+        { success: false, error: "La date de fin doit être postérieure à la date de début" },
         { status: 400 }
       );
     }
 
-    const epic = await prisma.epic.update({
+    const updatedEpic = await prisma.epic.update({
       where: { id },
       data: updateData,
       include: {
@@ -215,30 +189,23 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json(epic);
-  } catch (error: unknown) {
-    console.error("Erreur lors de la mise à jour de l'épic:", error);
-
+    return NextResponse.json({ success: true, data: updatedEpic });
+  } catch (error) {
+    const errorMessage = getErrorMessage(error);
+    console.error("Erreur lors de la mise à jour de l'épic:", errorMessage);
     if (isPrismaError(error)) {
       if (error.code === "P2025") {
-        return NextResponse.json({ error: "Épic non trouvé" }, { status: 404 });
+        return NextResponse.json({ success: false, error: "Épic non trouvé" }, { status: 404 });
       }
-
       if (error.code === "P2002") {
         return NextResponse.json(
-          { error: "Un épic avec ce nom existe déjà dans cette initiative" },
+          { success: false, error: "Un épic avec ce nom existe déjà dans cette initiative" },
           { status: 409 }
         );
       }
     }
-
-    const errorMessage = getErrorMessage(error);
-
     return NextResponse.json(
-      {
-        error: "Erreur lors de la mise à jour de l'épic",
-        details: errorMessage,
-      },
+      { success: false, error: "Erreur lors de la mise à jour de l'épic", details: errorMessage },
       { status: 500 }
     );
   }
@@ -251,7 +218,6 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    // Vérifier que l'épic existe et récupérer les éléments liés
     const existingEpic = await prisma.epic.findUnique({
       where: { id },
       include: {
@@ -268,21 +234,19 @@ export async function DELETE(
     });
 
     if (!existingEpic) {
-      return NextResponse.json({ error: "Épic non trouvé" }, { status: 404 });
+      return NextResponse.json({ success: false, error: "Épic non trouvé" }, { status: 404 });
     }
 
-    // Vérifier s'il y a des éléments liés
     const hasFeatures = existingEpic.features.length > 0;
-    const hasUserStories = existingEpic.features.some(
-      (feature) => feature.userStories.length > 0
-    );
-    const hasTasks = existingEpic.features.some((feature) =>
-      feature.userStories.some((story) => story.tasks.length > 0)
+    const hasUserStories = existingEpic.features.some(f => f.userStories.length > 0);
+    const hasTasks = existingEpic.features.some(f =>
+      f.userStories.some(s => s.tasks.length > 0)
     );
 
     if (hasFeatures || hasUserStories || hasTasks) {
       return NextResponse.json(
         {
+          success: false,
           error:
             "Impossible de supprimer l'épic car il contient des éléments liés (features, user stories ou tasks)",
         },
@@ -290,30 +254,17 @@ export async function DELETE(
       );
     }
 
-    await prisma.epic.delete({
-      where: { id },
-    });
+    await prisma.epic.delete({ where: { id } });
 
-    return NextResponse.json(
-      { message: "Épic supprimé avec succès" },
-      { status: 200 }
-    );
-  } catch (error: unknown) {
-    console.error("Erreur lors de la suppression de l'épic:", error);
-
-    if (isPrismaError(error)) {
-      if (error.code === "P2025") {
-        return NextResponse.json({ error: "Épic non trouvé" }, { status: 404 });
-      }
-    }
-
+    return NextResponse.json({ success: true, message: "Épic supprimé avec succès" }, { status: 200 });
+  } catch (error) {
     const errorMessage = getErrorMessage(error);
-
+    console.error("Erreur lors de la suppression de l'épic:", errorMessage);
+    if (isPrismaError(error) && error.code === "P2025") {
+      return NextResponse.json({ success: false, error: "Épic non trouvé" }, { status: 404 });
+    }
     return NextResponse.json(
-      {
-        error: "Erreur lors de la suppression de l'épic",
-        details: errorMessage,
-      },
+      { success: false, error: "Erreur lors de la suppression de l'épic", details: errorMessage },
       { status: 500 }
     );
   }

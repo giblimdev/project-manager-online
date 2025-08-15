@@ -1,4 +1,4 @@
-// @/app/features/page.tsx
+// @/app/projects/[id]/features/page.tsx
 
 // Rôle : Page principale pour la gestion CRUD des features avec modes d'affichage multiples
 // Responsabilités : Orchestration composants, gestion état global, modals, sélection mode affichage
@@ -11,7 +11,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card"; 
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

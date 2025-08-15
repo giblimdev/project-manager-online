@@ -16,13 +16,13 @@
  * - FilesDisplay : Sélecteur de mode d'affichage (list/card/branch)
  * - FilesFilter : Filtrage avancé par type, recherche, tri
  * - FilesForm : Formulaire modal CRUD pour création/édition
- * - FilesList : Orchestrateur principal des vues
+ * - FilesList : Orchestrateur principal des vues qui utilise :
  * - FilesViewList : Vue tableau détaillée avec colonnes triables
  * - FilesViewCard : Vue grille moderne avec cartes visuelles
  * - FilesViewBranch : Vue arborescente hiérarchique avec navigation
  * - Card, Button, Skeleton : Composants UI shadcn/ui
  *
- * LIBS UTILISÉS :
+ * LIBS UTILISÉES :
  * - React 19 hooks : useState, useEffect, useCallback, useMemo, JSX
  * - Next.js 15 : Client component moderne avec TypeScript strict
  * - Zustand : Store state management avec cache TTL et persistence
@@ -48,18 +48,11 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle,
-  Info,
   Plus,
-  Settings,
-  Search,
-  Filter,
-  LayoutGrid,
-  List,
-  GitBranch,
 } from "lucide-react";
 import { toast } from "sonner";
 
-// ✅ Import du store Project (similaire au pattern Initiative)
+// ✅ Import du store Project avec pattern optimisé
 import {
   useProjectStoreHydration,
   useProjectStore,
@@ -79,48 +72,19 @@ import type {
   SortBy,
   SortOrder,
   ApiResponse,
+  FileStats,
+  NavigationState,
+  FilterState,
+  PaginationState,
 } from "@/types/files";
 
-// ✅ Interface pour l'état de navigation hiérarchique
-interface NavigationState {
-  currentFolder: string | null;
-  folderName: string;
-  breadcrumb: Array<{
-    id: string | null;
-    name: string;
-    path?: string;
-  }>;
-}
-
-// ✅ Interface pour l'état des filtres
-interface FilterState {
-  search: string;
-  type: FilterType;
-  sortBy: SortBy;
-  sortOrder: SortOrder;
-}
-
-// ✅ Interface stricte pour l'état de la pagination avec valeurs par défaut
-interface PaginationState {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-}
-
-// ✅ Interface pour les statistiques calculées
-interface FileStats {
-  total: number;
-  folders: number;
-  files: number;
-  selected: number;
-  byType: Record<string, number>;
-}
+// ✅ Configuration et constantes
+const PAGE_SIZES = [25, 50, 100] as const;
+const DEFAULT_PAGE_SIZE = 50;
+const CACHE_INVALIDATION_TIME = 30 * 1000; // 30 secondes
 
 export default function FilesPage(): JSX.Element {
-  // ✅ Utilisation du store Project avec pattern optimisé
+  // ✅ Store Project avec hooks optimisés
   const {
     selectedProjectId,
     projectData,
@@ -129,33 +93,33 @@ export default function FilesPage(): JSX.Element {
     isHydrated,
     loadProjectData,
     refreshProject,
+    isDataFresh,
   } = useProjectStore();
 
   // ✅ Hydratation sécurisée du store
   const isStoreHydrated = useProjectStoreHydration();
 
-  // ✅ États principaux
+  // ✅ États principaux avec types stricts
   const [files, setFiles] = useState<FileWithRelations[]>([]);
   const [filteredFiles, setFilteredFiles] = useState<FileWithRelations[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastFetch, setLastFetch] = useState<number | null>(null);
 
-  // ✅ États de navigation
+  // ✅ États de navigation avec initialisation typée
   const [navigation, setNavigation] = useState<NavigationState>({
     currentFolder: null,
     folderName: "Racine",
     breadcrumb: [{ id: null, name: "Racine" }],
   });
 
-  // ✅ États d'interface
+  // ✅ États d'interface avec valeurs par défaut
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingFile, setEditingFile] = useState<FileWithRelations | null>(
-    null
-  );
+  const [editingFile, setEditingFile] = useState<FileWithRelations | null>(null);
 
-  // ✅ États de filtrage
+  // ✅ États de filtrage avec configuration par défaut
   const [filters, setFilters] = useState<FilterState>({
     search: "",
     type: "ALL",
@@ -163,186 +127,285 @@ export default function FilesPage(): JSX.Element {
     sortOrder: "asc",
   });
 
-  // ✅ État de pagination avec valeurs par défaut strictes
+  // ✅ État de pagination avec validation stricte
   const [pagination, setPagination] = useState<PaginationState>({
     page: 1,
-    limit: 50,
+    limit: DEFAULT_PAGE_SIZE,
     total: 0,
     totalPages: 0,
     hasNextPage: false,
     hasPreviousPage: false,
   });
 
-  // ✅ Fonction de récupération des fichiers avec gestion stricte de la pagination
+  // ✅ État de performance et cache
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [operationInProgress, setOperationInProgress] = useState(false);
+
+  // ✅ Validation des dépendances pour éviter les re-renders inutiles
+  const projectId = selectedProjectId;
+  const currentFolder = navigation.currentFolder;
+  const filtersString = JSON.stringify(filters);
+  const { page, limit } = pagination;
+
+  // ✅ Fonction de récupération optimisée avec cache intelligent
   const fetchFiles = useCallback(
-    async (showLoadingState = true) => {
+    async (options: {
+      showLoadingState?: boolean;
+      force?: boolean;
+      silent?: boolean;
+    } = {}) => {
+      const { showLoadingState = true, force = false, silent = false } = options;
+
       if (!selectedProjectId || !isStoreHydrated) {
-        console.log(
-          "⏳ Attente de l'hydratation du store ou projectId manquant:",
-          {
-            selectedProjectId,
-            isStoreHydrated,
-          }
-        );
+        console.log("⏳ Attente de l'hydratation du store:", {
+          selectedProjectId: !!selectedProjectId,
+          isStoreHydrated,
+        });
         setIsLoading(false);
         return;
       }
 
+      // ✅ Vérification du cache intelligent
+      const now = Date.now();
+      const isCacheValid = 
+        lastFetch && 
+        (now - lastFetch) < CACHE_INVALIDATION_TIME && 
+        !force;
+
+      if (isCacheValid) {
+        console.log("📋 Utilisation du cache local");
+        return;
+      }
+
       try {
-        if (showLoadingState) {
+        if (showLoadingState && !silent) {
           setIsLoading(true);
         }
-        setError(null);
+        if (!silent) {
+          setError(null);
+        }
 
+        // ✅ Construction des paramètres avec validation
         const searchParams = new URLSearchParams({
           projectId: selectedProjectId,
-          page: pagination.page.toString(),
-          limit: pagination.limit.toString(),
+          page: Math.max(1, pagination.page).toString(),
+          limit: Math.max(1, Math.min(100, pagination.limit)).toString(),
           ...(navigation.currentFolder && {
             parentId: navigation.currentFolder,
           }),
           ...(filters.type !== "ALL" && { type: filters.type }),
-          ...(filters.search && { search: filters.search }),
+          ...(filters.search.trim() && { search: filters.search.trim() }),
           sortBy: filters.sortBy,
           sortOrder: filters.sortOrder,
+          // ✅ Ajout du timestamp pour éviter le cache navigateur
+          _t: now.toString(),
         });
 
         console.log("📡 Récupération des fichiers:", {
           projectId: selectedProjectId,
           params: Object.fromEntries(searchParams.entries()),
+          force,
         });
 
-        const response = await fetch(`/api/files?${searchParams}`);
+        const response = await fetch(`/api/files?${searchParams}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": force ? "no-cache" : "default",
+          },
+          // ✅ Gestion du cache navigateur
+          cache: force ? "no-store" : "default",
+        });
 
         if (!response.ok) {
-          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+          const errorText = await response.text();
+          throw new Error(
+            `Erreur ${response.status}: ${response.statusText}\n${errorText}`
+          );
         }
 
-        const result: ApiResponse<FileWithRelations[]> = await response.json();
+        const result: ApiResponse<{
+          files: FileWithRelations[];
+          pagination?: PaginationState;
+          stats?: FileStats;
+        }> = await response.json();
 
         if (!result.success) {
           throw new Error(result.error || "Erreur lors du chargement");
         }
 
-        const filesData = result.data || [];
-        setFiles(filesData);
-        setFilteredFiles(filesData);
+        const { files: filesData = [], pagination: paginationData, stats } = result.data || {};
 
-        // Gestion stricte de la pagination avec vérification de nullabilité
-        if (result.pagination) {
-          const paginationData: PaginationState = {
-            page: result.pagination.page,
-            limit: result.pagination.limit,
-            total: result.pagination.total,
-            totalPages: result.pagination.totalPages,
-            hasNextPage: result.pagination.page < result.pagination.totalPages,
-            hasPreviousPage: result.pagination.page > 1,
+        // ✅ Validation et normalisation des données
+        const validatedFiles = filesData.filter((file): file is FileWithRelations => {
+          return (
+            file &&
+            typeof file.id === "string" &&
+            typeof file.name === "string" &&
+            typeof file.type === "string" &&
+            typeof file.isFolder === "boolean"
+          );
+        });
+
+        setFiles(validatedFiles);
+        setFilteredFiles(validatedFiles);
+        setLastFetch(now);
+
+        // ✅ Gestion de la pagination avec validation stricte
+        if (paginationData) {
+          const validatedPagination: PaginationState = {
+            page: Math.max(1, paginationData.page || 1),
+            limit: Math.max(1, paginationData.limit || DEFAULT_PAGE_SIZE),
+            total: Math.max(0, paginationData.total || 0),
+            totalPages: Math.max(1, paginationData.totalPages || 1),
+            hasNextPage: Boolean(paginationData.hasNextPage),
+            hasPreviousPage: Boolean(paginationData.hasPreviousPage),
           };
-          setPagination(paginationData);
+          setPagination(validatedPagination);
         } else {
-          // Valeurs par défaut si pagination absente
+          // ✅ Pagination par défaut pour les réponses sans pagination
           setPagination({
             page: 1,
-            limit: 50,
-            total: filesData.length,
-            totalPages: 1,
+            limit: DEFAULT_PAGE_SIZE,
+            total: validatedFiles.length,
+            totalPages: Math.max(1, Math.ceil(validatedFiles.length / DEFAULT_PAGE_SIZE)),
             hasNextPage: false,
             hasPreviousPage: false,
           });
         }
 
-        console.log("✅ Fichiers chargés:", {
-          count: filesData.length,
-          total: result.pagination?.total || filesData.length,
+        console.log("✅ Fichiers chargés avec succès:", {
+          count: validatedFiles.length,
+          total: paginationData?.total || validatedFiles.length,
           currentFolder: navigation.currentFolder,
-          filters,
+          cached: isCacheValid,
         });
+
+        // ✅ Toast de succès uniquement pour les opérations manuelles
+        if (force && !silent) {
+          toast.success("Données actualisées", {
+            description: `${validatedFiles.length} fichier(s) chargé(s)`,
+          });
+        }
+
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Erreur inconnue";
+        const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
         console.error("❌ Erreur lors du chargement des fichiers:", error);
-        setError(errorMessage);
-        toast.error("Erreur de chargement", {
-          description: errorMessage,
-        });
+        
+        if (!silent) {
+          setError(errorMessage);
+          toast.error("Erreur de chargement", {
+            description: errorMessage,
+            action: {
+              label: "Réessayer",
+              onClick: () => fetchFiles({ force: true }),
+            },
+          });
+        }
+
+        // ✅ Réinitialisation propre en cas d'erreur
         setFiles([]);
         setFilteredFiles([]);
-
-        // Réinitialiser la pagination en cas d'erreur
         setPagination({
           page: 1,
-          limit: 50,
+          limit: DEFAULT_PAGE_SIZE,
           total: 0,
           totalPages: 0,
           hasNextPage: false,
           hasPreviousPage: false,
         });
       } finally {
-        setIsLoading(false);
+        if (showLoadingState) {
+          setIsLoading(false);
+        }
+        setIsRefreshing(false);
       }
     },
-    [
-      selectedProjectId,
-      isStoreHydrated,
-      navigation.currentFolder,
-      filters,
-      pagination.page,
-      pagination.limit,
-    ]
+    [projectId, isStoreHydrated, currentFolder, filtersString, page, limit, lastFetch]
   );
 
-  // ✅ Chargement initial avec gestion de l'hydratation
+  // ✅ Chargement initial avec gestion de l'hydratation optimisée
   useEffect(() => {
-    if (isStoreHydrated && selectedProjectId) {
-      console.log("🔄 Store hydraté, chargement des données:", {
-        projectId: selectedProjectId,
-        projectData: projectData?.name || "Non chargé",
-      });
+    if (!isStoreHydrated) {
+      console.log("⏳ En attente de l'hydratation du store...");
+      return;
+    }
 
-      // Charger les données du projet si nécessaire
-      if (!projectData && selectedProjectId) {
-        loadProjectData(selectedProjectId);
-      }
-
-      // Charger les fichiers
-      fetchFiles();
-    } else if (isStoreHydrated && !selectedProjectId) {
-      console.log("⚠️ Store hydraté mais pas de projet sélectionné");
+    if (!selectedProjectId) {
+      console.log("⚠️ Aucun projet sélectionné");
       setError("Aucun projet sélectionné");
       setIsLoading(false);
+      return;
     }
+
+    console.log("🔄 Initialisation de la page Files:", {
+      projectId: selectedProjectId,
+      projectName: projectData?.name || "Non chargé",
+      isDataFresh: isDataFresh(),
+    });
+
+    // ✅ Charger les données du projet si nécessaire
+    if (!projectData && selectedProjectId) {
+      loadProjectData(selectedProjectId);
+    }
+
+    // ✅ Charger les fichiers avec cache intelligent
+    fetchFiles({ showLoadingState: true });
   }, [
     isStoreHydrated,
     selectedProjectId,
+    fetchFiles,
     projectData,
     loadProjectData,
-    fetchFiles,
+    isDataFresh,
   ]);
 
-  // ✅ Filtrage local en temps réel
-  const applyLocalFilters = useCallback(() => {
+  // ✅ Filtrage local optimisé avec debounce via useMemo
+  const applyLocalFilters = useMemo(() => {
+    if (!files.length) return [];
+
     let filtered = [...files];
 
-    // Filtrage par recherche textuelle étendue
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(
-        (file) =>
-          file.name.toLowerCase().includes(searchLower) ||
-          file.description?.toLowerCase().includes(searchLower) ||
-          file.import?.toLowerCase().includes(searchLower) ||
-          file.export?.toLowerCase().includes(searchLower) ||
-          file.use?.toLowerCase().includes(searchLower) ||
-          file.script?.toLowerCase().includes(searchLower) ||
-          file.tags.some((tag) => tag.toLowerCase().includes(searchLower))
-      );
+    // ✅ Filtrage par recherche textuelle étendue et optimisée
+    if (filters.search.trim()) {
+      const searchLower = filters.search.toLowerCase().trim();
+      const searchTerms = searchLower.split(/\s+/);
+
+      filtered = filtered.filter((file) => {
+        const searchableText = [
+          file.name,
+          file.description,
+          file.import,
+          file.export,
+          file.use,
+          file.script,
+          ...file.tags,
+          ...(file.author?.map(a => `${a.firstName} ${a.lastName} ${a.name} ${a.email}`) || []),
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        return searchTerms.every(term => searchableText.includes(term));
+      });
     }
 
-    // Tri local optimisé
+    // ✅ Filtrage par type avec gestion des cas spéciaux
+    if (filters.type !== "ALL") {
+      filtered = filtered.filter((file) => {
+        if (filters.type === "DOSSIER") return file.isFolder;
+        if (filters.type === "FILE") return !file.isFolder;
+        return file.type === filters.type;
+      });
+    }
+
+    // ✅ Tri optimisé avec gestion des types
     filtered.sort((a, b) => {
-      // Dossiers toujours en premier
-      if (a.isFolder && !b.isFolder) return -1;
-      if (!a.isFolder && b.isFolder) return 1;
+      // ✅ Dossiers toujours en premier sauf si tri par type
+      if (filters.sortBy !== "type") {
+        if (a.isFolder && !b.isFolder) return -1;
+        if (!a.isFolder && b.isFolder) return 1;
+      }
 
       let aValue: any;
       let bValue: any;
@@ -353,54 +416,75 @@ export default function FilesPage(): JSX.Element {
           bValue = b.name.toLowerCase();
           break;
         case "type":
-          aValue = a.type;
-          bValue = b.type;
+          aValue = a.isFolder ? "000_FOLDER" : a.type;
+          bValue = b.isFolder ? "000_FOLDER" : b.type;
           break;
         case "date":
           aValue = new Date(a.updatedAt).getTime();
           bValue = new Date(b.updatedAt).getTime();
           break;
         case "size":
-          aValue = a.script?.length || 0;
-          bValue = b.script?.length || 0;
+          aValue = a.isFolder ? -1 : (a.script?.length || 0);
+          bValue = b.isFolder ? -1 : (b.script?.length || 0);
           break;
         case "author":
-          aValue = a.author?.[0]?.name?.toLowerCase() || "";
-          bValue = b.author?.[0]?.name?.toLowerCase() || "";
+          const aAuthor = a.author?.[0];
+          const bAuthor = b.author?.[0];
+          aValue = aAuthor 
+            ? `${aAuthor.lastName || ""} ${aAuthor.firstName || ""}`.trim() || aAuthor.name || aAuthor.email || ""
+            : "";
+          bValue = bAuthor 
+            ? `${bAuthor.lastName || ""} ${bAuthor.firstName || ""}`.trim() || bAuthor.name || bAuthor.email || ""
+            : "";
           break;
         default:
           return 0;
       }
 
       let comparison = 0;
-      if (aValue < bValue) comparison = -1;
-      if (aValue > bValue) comparison = 1;
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        comparison = aValue.localeCompare(bValue, "fr", { numeric: true });
+      } else if (typeof aValue === "number" && typeof bValue === "number") {
+        comparison = aValue - bValue;
+      } else {
+        comparison = String(aValue).localeCompare(String(bValue), "fr", { numeric: true });
+      }
 
       return filters.sortOrder === "desc" ? -comparison : comparison;
     });
 
-    setFilteredFiles(filtered);
+    return filtered;
   }, [files, filters]);
 
-  // ✅ Application des filtres à chaque changement
+  // ✅ Application des filtres optimisée
   useEffect(() => {
-    applyLocalFilters();
+    setFilteredFiles(applyLocalFilters);
   }, [applyLocalFilters]);
 
-  // ✅ Navigation dans l'arborescence
+  // ✅ Navigation dans l'arborescence avec historique
   const handleFolderNavigate = useCallback(
     (folderId: string | null, folderName?: string) => {
+      // ✅ Éviter la navigation vers le même dossier
+      if (navigation.currentFolder === folderId) return;
+
       const newBreadcrumb = [...navigation.breadcrumb];
 
       if (folderId) {
-        // Navigation vers un sous-dossier
-        newBreadcrumb.push({
-          id: folderId,
-          name: folderName || "Dossier",
-        });
+        // ✅ Navigation vers un sous-dossier
+        const existingIndex = newBreadcrumb.findIndex(crumb => crumb.id === folderId);
+        if (existingIndex >= 0) {
+          // ✅ Navigation vers un dossier déjà dans le breadcrumb
+          newBreadcrumb.splice(existingIndex + 1);
+        } else {
+          // ✅ Navigation vers un nouveau dossier
+          newBreadcrumb.push({
+            id: folderId,
+            name: folderName || "Dossier",
+          });
+        }
       } else {
-        // Retour à la racine
-        newBreadcrumb.splice(1); // Garde seulement la racine
+        // ✅ Retour à la racine
+        newBreadcrumb.splice(1);
       }
 
       setNavigation({
@@ -409,27 +493,32 @@ export default function FilesPage(): JSX.Element {
         breadcrumb: newBreadcrumb,
       });
 
-      // Réinitialiser la sélection et la pagination
+      // ✅ Réinitialisation des états dépendants
       setSelectedFiles([]);
-      setPagination((prev) => ({
+      setPagination(prev => ({
         ...prev,
         page: 1,
         hasNextPage: false,
         hasPreviousPage: false,
       }));
 
+      // ✅ Rafraîchissement des données pour le nouveau dossier
+      setTimeout(() => {
+        fetchFiles({ force: true, silent: true });
+      }, 100);
+
       toast.success("Navigation", {
-        description: `${folderId ? "Entrée dans" : "Retour à"} ${
-          folderName || "la racine"
-        }`,
+        description: `${folderId ? "Entrée dans" : "Retour à"} ${folderName || "la racine"}`,
       });
     },
-    [navigation]
+    [navigation, fetchFiles]
   );
 
-  // ✅ Navigation vers un niveau spécifique du breadcrumb
+  // ✅ Navigation breadcrumb optimisée
   const handleBreadcrumbClick = useCallback(
     (index: number) => {
+      if (index === navigation.breadcrumb.length - 1) return; // Déjà sur cette page
+
       const targetBreadcrumb = navigation.breadcrumb[index];
       const newBreadcrumb = navigation.breadcrumb.slice(0, index + 1);
 
@@ -440,46 +529,54 @@ export default function FilesPage(): JSX.Element {
       });
 
       setSelectedFiles([]);
-      setPagination((prev) => ({
+      setPagination(prev => ({
         ...prev,
         page: 1,
         hasNextPage: false,
         hasPreviousPage: false,
       }));
+
+      // ✅ Rafraîchissement avec délai pour éviter les conflits
+      setTimeout(() => {
+        fetchFiles({ force: true, silent: true });
+      }, 100);
     },
-    [navigation.breadcrumb]
+    [navigation.breadcrumb, fetchFiles]
   );
 
-  // ✅ Ouverture du formulaire pour création
+  // ✅ Gestion du formulaire - création
   const handleCreateNew = useCallback(() => {
     setEditingFile(null);
     setIsFormOpen(true);
   }, []);
 
-  // ✅ Ouverture du formulaire pour édition
+  // ✅ Gestion du formulaire - édition
   const handleEdit = useCallback((file: FileWithRelations) => {
     setEditingFile(file);
     setIsFormOpen(true);
   }, []);
 
-  // ✅ Suppression avec confirmation
+  // ✅ Suppression avec confirmation et feedback
   const handleDelete = useCallback(
     async (file: FileWithRelations) => {
-      const confirmMessage = file.isFolder
-        ? `Êtes-vous sûr de vouloir supprimer le dossier "${file.name}" ?`
-        : `Êtes-vous sûr de vouloir supprimer la référence "${file.name}" ?`;
+      const itemType = file.isFolder ? "dossier" : "référence";
+      const confirmMessage = `Êtes-vous sûr de vouloir supprimer ${itemType} "${file.name}" ?`;
 
-      if (!window.confirm(confirmMessage)) {
-        return;
-      }
+      if (!window.confirm(confirmMessage)) return;
+
+      setOperationInProgress(true);
 
       try {
         const response = await fetch(`/api/files/${file.id}`, {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
 
         if (!response.ok) {
-          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+          const errorText = await response.text();
+          throw new Error(`Erreur ${response.status}: ${response.statusText}\n${errorText}`);
         }
 
         const result = await response.json();
@@ -489,31 +586,37 @@ export default function FilesPage(): JSX.Element {
         }
 
         toast.success("Suppression réussie", {
-          description: `"${file.name}" a été supprimé avec succès`,
+          description: `${itemType} "${file.name}" supprimé avec succès`,
         });
 
-        // Rafraîchir la liste
-        fetchFiles(false);
+        // ✅ Mise à jour locale optimisée
+        setFiles(prev => prev.filter(f => f.id !== file.id));
+        setSelectedFiles(prev => prev.filter(id => id !== file.id));
 
-        // Retirer de la sélection si nécessaire
-        setSelectedFiles((prev) => prev.filter((id) => id !== file.id));
+        // ✅ Rafraîchissement en arrière-plan
+        setTimeout(() => {
+          fetchFiles({ force: true, silent: true });
+        }, 500);
+
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Erreur inconnue";
+        const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
         console.error("❌ Erreur lors de la suppression:", error);
         toast.error("Erreur de suppression", {
           description: errorMessage,
         });
+      } finally {
+        setOperationInProgress(false);
       }
     },
     [fetchFiles]
   );
 
-  // ✅ Gestion de la sélection multiple
+  // ✅ Gestion de la sélection multiple optimisée
   const handleToggleSelection = useCallback((fileId: string) => {
-    setSelectedFiles((prev) => {
-      if (prev.includes(fileId)) {
-        return prev.filter((id) => id !== fileId);
+    setSelectedFiles(prev => {
+      const isSelected = prev.includes(fileId);
+      if (isSelected) {
+        return prev.filter(id => id !== fileId);
       } else {
         return [...prev, fileId];
       }
@@ -522,61 +625,117 @@ export default function FilesPage(): JSX.Element {
 
   // ✅ Sélection/désélection globale
   const handleSelectAll = useCallback(() => {
-    if (selectedFiles.length === filteredFiles.length) {
+    const allSelected = selectedFiles.length === filteredFiles.length && filteredFiles.length > 0;
+    if (allSelected) {
       setSelectedFiles([]);
+      toast.info("Tout désélectionné");
     } else {
-      setSelectedFiles(filteredFiles.map((file) => file.id));
+      const newSelection = filteredFiles.map(file => file.id);
+      setSelectedFiles(newSelection);
+      toast.success(`${newSelection.length} élément(s) sélectionné(s)`);
     }
   }, [selectedFiles.length, filteredFiles]);
 
-  // ✅ Suppression en lot
+  // ✅ Suppression en lot avec progress
   const handleDeleteSelected = useCallback(async () => {
     if (selectedFiles.length === 0) return;
 
     const confirmMessage = `Êtes-vous sûr de vouloir supprimer ${selectedFiles.length} élément(s) sélectionné(s) ?`;
-    if (!window.confirm(confirmMessage)) {
-      return;
-    }
+    if (!window.confirm(confirmMessage)) return;
+
+    setOperationInProgress(true);
+    const toastId = toast.loading(`Suppression en cours...`, {
+      description: `0/${selectedFiles.length} éléments supprimés`,
+    });
 
     try {
-      const deletePromises = selectedFiles.map((fileId) =>
-        fetch(`/api/files/${fileId}`, { method: "DELETE" })
-      );
+      let successCount = 0;
+      let errorCount = 0;
 
-      const responses = await Promise.all(deletePromises);
-      const results = await Promise.all(
-        responses.map((response) => response.json())
-      );
-
-      const failures = results.filter((result) => !result.success);
-
-      if (failures.length > 0) {
-        toast.error("Suppression partielle", {
-          description: `${failures.length} élément(s) n'ont pas pu être supprimés`,
+      // ✅ Suppression par batch pour éviter la surcharge
+      const batchSize = 5;
+      for (let i = 0; i < selectedFiles.length; i += batchSize) {
+        const batch = selectedFiles.slice(i, i + batchSize);
+        const deletePromises = batch.map(async (fileId) => {
+          try {
+            const response = await fetch(`/api/files/${fileId}`, {
+              method: "DELETE",
+            });
+            if (response.ok) {
+              const result = await response.json();
+              return result.success ? "success" : "error";
+            }
+            return "error";
+          } catch {
+            return "error";
+          }
         });
-      } else {
-        toast.success("Suppression réussie", {
-          description: `${selectedFiles.length} élément(s) supprimé(s) avec succès`,
+
+        const results = await Promise.all(deletePromises);
+        successCount += results.filter(r => r === "success").length;
+        errorCount += results.filter(r => r === "error").length;
+
+        // ✅ Mise à jour du progress
+        toast.loading(`Suppression en cours...`, {
+          id: toastId,
+          description: `${successCount + errorCount}/${selectedFiles.length} éléments traités`,
         });
       }
 
-      // Rafraîchir et réinitialiser la sélection
-      fetchFiles(false);
+      // ✅ Résultat final
+      if (errorCount > 0) {
+        toast.error("Suppression partielle", {
+          id: toastId,
+          description: `${successCount} supprimés, ${errorCount} erreurs`,
+        });
+      } else {
+        toast.success("Suppression réussie", {
+          id: toastId,
+          description: `${successCount} élément(s) supprimé(s) avec succès`,
+        });
+      }
+
+      // ✅ Mise à jour locale et rafraîchissement
       setSelectedFiles([]);
+      setTimeout(() => {
+        fetchFiles({ force: true });
+      }, 500);
+
     } catch (error) {
       console.error("❌ Erreur lors de la suppression en lot:", error);
-      toast.error("Erreur lors de la suppression en lot");
+      toast.error("Erreur lors de la suppression en lot", { id: toastId });
+    } finally {
+      setOperationInProgress(false);
     }
   }, [selectedFiles, fetchFiles]);
 
   // ✅ Fermeture du formulaire avec succès
-  const handleFormSuccess = useCallback(() => {
+  const handleFormSuccess = useCallback((updatedFile?: FileWithRelations) => {
     setIsFormOpen(false);
     setEditingFile(null);
-    fetchFiles(false);
+
+    if (updatedFile) {
+      // ✅ Mise à jour locale immédiate
+      setFiles(prev => {
+        const index = prev.findIndex(f => f.id === updatedFile.id);
+        if (index >= 0) {
+          const newFiles = [...prev];
+          newFiles[index] = updatedFile;
+          return newFiles;
+        } else {
+          return [...prev, updatedFile];
+        }
+      });
+    }
+
     toast.success("Opération réussie", {
       description: "Les métadonnées ont été mises à jour",
     });
+
+    // ✅ Rafraîchissement en arrière-plan
+    setTimeout(() => {
+      fetchFiles({ force: true, silent: true });
+    }, 1000);
   }, [fetchFiles]);
 
   // ✅ Annulation du formulaire
@@ -585,39 +744,64 @@ export default function FilesPage(): JSX.Element {
     setEditingFile(null);
   }, []);
 
-  // ✅ Changement de page avec gestion stricte
+  // ✅ Changement de page avec validation
   const handlePageChange = useCallback(
     (newPage: number) => {
-      if (newPage >= 1 && newPage <= pagination.totalPages) {
-        setPagination((prev) => ({
-          ...prev,
-          page: newPage,
-          hasNextPage: newPage < prev.totalPages,
-          hasPreviousPage: newPage > 1,
-        }));
-      }
+      const validPage = Math.max(1, Math.min(newPage, pagination.totalPages));
+      if (validPage === pagination.page) return;
+
+      setPagination(prev => ({
+        ...prev,
+        page: validPage,
+        hasNextPage: validPage < prev.totalPages,
+        hasPreviousPage: validPage > 1,
+      }));
+
+      // ✅ Scroll vers le haut lors du changement de page
+      window.scrollTo({ top: 0, behavior: "smooth" });
     },
-    [pagination.totalPages]
+    [pagination.page, pagination.totalPages]
   );
 
-  // ✅ Statistiques calculées
+  // ✅ Changement de taille de page
+  const handlePageSizeChange = useCallback((newSize: number) => {
+    setPagination(prev => ({
+      ...prev,
+      limit: newSize,
+      page: 1,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    }));
+  }, []);
+
+  // ✅ Rafraîchissement manuel
+  const handleRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    fetchFiles({ force: true, showLoadingState: false });
+  }, [fetchFiles]);
+
+  // ✅ Statistiques calculées et mémorisées
   const stats: FileStats = useMemo(() => {
     const byType: Record<string, number> = {};
 
-    filteredFiles.forEach((file) => {
-      byType[file.type] = (byType[file.type] || 0) + 1;
+    filteredFiles.forEach(file => {
+      const type = file.isFolder ? "DOSSIER" : file.type;
+      byType[type] = (byType[type] || 0) + 1;
     });
 
     return {
       total: filteredFiles.length,
-      folders: filteredFiles.filter((f) => f.isFolder).length,
-      files: filteredFiles.filter((f) => !f.isFolder).length,
+      folders: filteredFiles.filter(f => f.isFolder).length,
+      files: filteredFiles.filter(f => !f.isFolder).length,
       selected: selectedFiles.length,
       byType,
     };
   }, [filteredFiles, selectedFiles]);
 
-  // ✅ Validation de l'état de chargement avec gestion du store
+  // ✅ États de chargement consolidés
+  const isAnyLoading = isLoading || isProjectLoading || isRefreshing || operationInProgress;
+
+  // ✅ Rendu conditionnel - Hydratation
   if (!isStoreHydrated) {
     return (
       <div className="min-h-screen bg-gray-50 p-4">
@@ -630,12 +814,16 @@ export default function FilesPage(): JSX.Element {
             <p className="text-gray-600 mb-6">
               Chargement de la configuration du projet.
             </p>
+            <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+              <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: "60%" }}></div>
+            </div>
           </CardContent>
         </Card>
       </div>
     );
   }
 
+  // ✅ Rendu conditionnel - Pas de projet
   if (!selectedProjectId) {
     return (
       <div className="min-h-screen bg-gray-50 p-4">
@@ -646,19 +834,24 @@ export default function FilesPage(): JSX.Element {
               Aucun projet sélectionné
             </h1>
             <p className="text-gray-600 mb-6">
-              Veuillez sélectionner un projet pour accéder à la gestion des
-              fichiers.
+              Veuillez sélectionner un projet pour accéder à la gestion des fichiers.
             </p>
-            <Button onClick={() => window.history.back()} variant="outline">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Retour à la sélection
-            </Button>
+            <div className="flex justify-center space-x-2">
+              <Button onClick={() => window.history.back()} variant="outline">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Retour à la sélection
+              </Button>
+              <Button onClick={() => window.location.href = "/projects"}>
+                Voir les projets
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
     );
   }
 
+  // ✅ Rendu conditionnel - Erreur projet
   if (projectError && !projectData) {
     return (
       <div className="min-h-screen bg-gray-50 p-4">
@@ -670,8 +863,12 @@ export default function FilesPage(): JSX.Element {
             </h1>
             <p className="text-gray-600 mb-6">{projectError}</p>
             <div className="flex justify-center space-x-2">
-              <Button onClick={() => refreshProject()} variant="outline">
-                <RefreshCw className="h-4 w-4 mr-2" />
+              <Button onClick={() => refreshProject()} variant="outline" disabled={isProjectLoading}>
+                {isProjectLoading ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                )}
                 Réessayer
               </Button>
               <Button onClick={() => window.history.back()} variant="ghost">
@@ -684,6 +881,7 @@ export default function FilesPage(): JSX.Element {
     );
   }
 
+  // ✅ Rendu principal
   return (
     <div className="min-h-screen bg-gray-50">
       {/* ✅ En-tête principal avec informations du projet depuis le store */}
@@ -716,7 +914,7 @@ export default function FilesPage(): JSX.Element {
 
               {/* Indicateur de statut du store */}
               <div className="flex items-center space-x-1 text-xs text-gray-500">
-                {isProjectLoading ? (
+                {isAnyLoading ? (
                   <>
                     <Loader2 className="h-3 w-3 animate-spin" />
                     <span>Sync...</span>
@@ -735,10 +933,10 @@ export default function FilesPage(): JSX.Element {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => fetchFiles()}
-                disabled={isLoading}
+                onClick={handleRefresh}
+                disabled={isAnyLoading}
               >
-                {isLoading ? (
+                {isRefreshing ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <RefreshCw className="h-4 w-4" />
@@ -746,7 +944,7 @@ export default function FilesPage(): JSX.Element {
                 <span className="hidden sm:inline ml-2">Actualiser</span>
               </Button>
 
-              <Button onClick={handleCreateNew} size="sm">
+              <Button onClick={handleCreateNew} size="sm" disabled={operationInProgress}>
                 <Plus className="h-4 w-4 mr-2" />
                 Ajouter
               </Button>
@@ -768,7 +966,12 @@ export default function FilesPage(): JSX.Element {
                     <React.Fragment key={crumb.id || "root"}>
                       <button
                         onClick={() => handleBreadcrumbClick(index)}
-                        className="flex items-center hover:text-blue-600 transition-colors px-2 py-1 rounded hover:bg-blue-50"
+                        disabled={index === navigation.breadcrumb.length - 1}
+                        className={`flex items-center transition-colors px-2 py-1 rounded ${
+                          index === navigation.breadcrumb.length - 1
+                            ? "text-gray-900 font-medium"
+                            : "hover:text-blue-600 hover:bg-blue-50"
+                        }`}
                       >
                         {index === 0 ? (
                           <Home className="h-4 w-4" />
@@ -799,6 +1002,11 @@ export default function FilesPage(): JSX.Element {
                       <span>{stats.selected} sélectionné(s)</span>
                     </div>
                   )}
+                  {lastFetch && (
+                    <div className="text-xs text-gray-400">
+                      MAJ: {new Date(lastFetch).toLocaleTimeString()}
+                    </div>
+                  )}
                 </div>
               </div>
             </CardHeader>
@@ -819,6 +1027,7 @@ export default function FilesPage(): JSX.Element {
                       variant="outline"
                       size="sm"
                       onClick={handleSelectAll}
+                      disabled={operationInProgress}
                     >
                       {selectedFiles.length === filteredFiles.length
                         ? "Tout désélectionner"
@@ -828,8 +1037,13 @@ export default function FilesPage(): JSX.Element {
                       variant="destructive"
                       size="sm"
                       onClick={handleDeleteSelected}
+                      disabled={operationInProgress}
                     >
-                      Supprimer ({selectedFiles.length})
+                      {operationInProgress ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        `Supprimer (${selectedFiles.length})`
+                      )}
                     </Button>
                   </div>
                 )}
@@ -868,8 +1082,16 @@ export default function FilesPage(): JSX.Element {
                   </h3>
                   <p className="text-gray-600 mb-4">{error}</p>
                   <div className="flex justify-center space-x-2">
-                    <Button onClick={() => fetchFiles()} variant="outline">
-                      <RefreshCw className="h-4 w-4 mr-2" />
+                    <Button 
+                      onClick={() => fetchFiles({ force: true })} 
+                      variant="outline"
+                      disabled={isAnyLoading}
+                    >
+                      {isAnyLoading ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                      )}
                       Réessayer
                     </Button>
                     <Button
@@ -906,30 +1128,51 @@ export default function FilesPage(): JSX.Element {
                   currentFolder={navigation.currentFolder}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
-                  onRefresh={() => fetchFiles(false)}
+                  onRefresh={handleRefresh}
                   onFolderNavigate={handleFolderNavigate}
                   selectedFiles={selectedFiles}
                   onToggleSelection={handleToggleSelection}
                   onCreateNew={handleCreateNew}
-                  isLoading={isLoading}
+                  isLoading={isAnyLoading}
                 />
               )}
             </CardContent>
           </Card>
 
-          {/* ✅ Pagination avec vérification stricte et gestion d'erreur */}
+          {/* ✅ Pagination avec contrôles étendus */}
           {pagination.totalPages > 1 && (
             <Card>
-              <CardContent className="flex items-center justify-between p-4">
+              <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 space-y-4 sm:space-y-0">
                 <div className="text-sm text-gray-600">
-                  Page {pagination.page} sur {pagination.totalPages}(
-                  {pagination.total} éléments au total)
+                  Page {pagination.page} sur {pagination.totalPages} ({pagination.total} éléments au total)
                 </div>
-                <div className="flex space-x-2">
+                
+                <div className="flex items-center space-x-2">
+                  {/* Sélecteur de taille de page */}
+                  <select
+                    value={pagination.limit}
+                    onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+                    className="text-sm border border-gray-300 rounded px-2 py-1"
+                    disabled={isAnyLoading}
+                  >
+                    {PAGE_SIZES.map(size => (
+                      <option key={size} value={size}>{size} par page</option>
+                    ))}
+                  </select>
+
+                  {/* Contrôles de navigation */}
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={!pagination.hasPreviousPage || isLoading}
+                    disabled={!pagination.hasPreviousPage || isAnyLoading}
+                    onClick={() => handlePageChange(1)}
+                  >
+                    Premier
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!pagination.hasPreviousPage || isAnyLoading}
                     onClick={() => handlePageChange(pagination.page - 1)}
                   >
                     Précédent
@@ -937,10 +1180,18 @@ export default function FilesPage(): JSX.Element {
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={!pagination.hasNextPage || isLoading}
+                    disabled={!pagination.hasNextPage || isAnyLoading}
                     onClick={() => handlePageChange(pagination.page + 1)}
                   >
                     Suivant
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!pagination.hasNextPage || isAnyLoading}
+                    onClick={() => handlePageChange(pagination.totalPages)}
+                  >
+                    Dernier
                   </Button>
                 </div>
               </CardContent>
@@ -952,8 +1203,8 @@ export default function FilesPage(): JSX.Element {
       {/* ✅ Formulaire modal avec projectId depuis le store */}
       <FilesForm
         file={editingFile}
-        currentFolder={navigation.currentFolder}
-        projectId={selectedProjectId} // ✅ ID depuis le store Zustand
+        currentFolder={navigation.currentFolder} 
+        projectId={selectedProjectId}
         onSuccess={handleFormSuccess}
         onCancel={handleFormCancel}
         isOpen={isFormOpen}
