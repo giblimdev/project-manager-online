@@ -1,19 +1,30 @@
 // app/api/file/[id]/route.ts
-import { NextResponse } from "next/server";
+/**
+ * Rôle : Gestionnaire de route API pour les opérations CRUD sur l'entité File
+ * Responsabilités :
+ * - Utilise Prisma client pour l'interaction avec la base de données
+ * - Utilise NextResponse pour les réponses HTTP
+ * - Gère les paramètres dynamiques comme Promise selon Next.js 15
+ * - Inclut la gestion d'erreurs complète
+ * - Supporte les opérations GET, PUT, DELETE avec typage strict
+ */
+
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { FileType } from "@/lib/generated/prisma/client";
 
+// GET handler - Récupérer un fichier par son ID
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  // Attendre params avant de déstructurer
-  const id = (await params).id;
-
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
   try {
+    // Await des paramètres requis par Next.js 15
+    const { id } = await params;
+    
     const file = await prisma.file.findUnique({
       where: { id },
-      include: { author: true }
+      include: { author: true },
     });
 
     if (!file) {
@@ -33,15 +44,16 @@ export async function GET(
   }
 }
 
+// PUT handler - Mettre à jour un fichier
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  // Attendre params avant de déstructurer
-  const id = (await params).id;
-  const data = await request.json();
-
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
   try {
+    // Await des paramètres requis par Next.js 15
+    const { id } = await params;
+    const data = await request.json();
+
     const updatedFile = await prisma.file.update({
       where: { id },
       data: {
@@ -53,7 +65,7 @@ export async function PUT(
         export: data.export,
         script: data.script,
       },
-      include: { author: true }
+      include: { author: true },
     });
 
     return NextResponse.json(updatedFile);
@@ -66,16 +78,17 @@ export async function PUT(
   }
 }
 
+// DELETE handler - Supprimer un fichier
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  // Attendre params avant de déstructurer
-  const id = (await params).id;
-
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
   try {
+    // Await des paramètres requis par Next.js 15
+    const { id } = await params;
+    
     await prisma.file.delete({
-      where: { id }
+      where: { id },
     });
 
     return NextResponse.json(

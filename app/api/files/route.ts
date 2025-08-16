@@ -33,18 +33,50 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const data = await request.json();
 
+  // Gestion robuste des types/JSON pour metadata
+  let metadata = {};
+  if (data.metadata) {
+    if (typeof data.metadata === "object") {
+      metadata = data.metadata;
+    } else {
+      try {
+        metadata = JSON.parse(data.metadata);
+      } catch {
+        metadata = {};
+      }
+    }
+  }
+
+  // Gestion de tags
+  let tags: string[] = [];
+  if (Array.isArray(data.tags)) {
+    tags = data.tags;
+  } else if (typeof data.tags === "string" && data.tags.length > 0) {
+    tags = data.tags.split(",").map((tag: string) => tag.trim()).filter(Boolean);
+  }
+
   try {
     const newFile = await prisma.file.create({
       data: {
         name: data.name,
         type: data.type as FileType,
-        description: data.description,
-        import: data.import,
-        use: data.use,
-        export: data.export,
-        script: data.script,
-        project: { connect: { id: data.projectId } },
-        author: { connect: { id: data.userId } },
+        mimeType: data.mimeType ?? null,
+        path: data.path ?? null,
+        description: data.description ?? null,
+        import: data.import ?? null,
+        use: data.use ?? null,
+        export: data.export ?? null,
+        script: data.script ?? null,
+        version: data.version ?? 1,
+        isFolder: !!data.isFolder,                // booléen obligatoire dans ton schéma
+        metadata,
+        tags,
+        parentId: data.parentId || null,
+        projectId: data.projectId,
+        featureId: data.featureId || undefined,       // optionnel
+        userStoryId: data.userStoryId || undefined,   // optionnel
+        sprintId: data.sprintId || undefined,         // optionnel
+        author: { connect: { id: data.userId } }
       },
       include: { author: true }
     });
