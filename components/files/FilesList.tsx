@@ -316,7 +316,7 @@ export default function FilesList({
     handleReorganize,
     reorganizationState.isReorganizing,
     reorganizationState.processingFileId,
-  ]);
+  ]); 
 
   // ✅ États de chargement
   if (isLoading) {

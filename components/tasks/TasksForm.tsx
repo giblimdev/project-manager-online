@@ -13,6 +13,7 @@ interface TaskFormProps {
   open: boolean;
   onClose: () => void;
   task: Task | null;
+  userId?: string; // Ajout de cette prop
   onCreate: (taskData: {
     title: string;
     description?: string;
@@ -24,7 +25,7 @@ interface TaskFormProps {
 
 const statusOptions: TaskStatus[] = [
   "TODO",
-  "IN_PROGRESS",
+  "IN_PROGRESS", 
   "CODE_REVIEW",
   "TESTING",
   "DONE",
@@ -39,12 +40,13 @@ const priorityOptions: Priority[] = [
   "LOW"
 ];
 
-export default function TaskForm({ 
-  open, 
-  onClose, 
-  task, 
-  onCreate, 
-  onUpdate 
+export default function TaskForm({
+  open,
+  onClose,
+  task,
+  userId, // Ajout du paramètre
+  onCreate,
+  onUpdate
 }: TaskFormProps) {
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
@@ -68,14 +70,14 @@ export default function TaskForm({
 
   const handleSubmit = () => {
     if (!title.trim()) return;
-    
+
     const taskData = {
       title: title.trim(),
       description: description.trim() || undefined,
       status,
       priority
     };
-    
+
     if (task) {
       onUpdate(task.id, taskData);
     } else {
@@ -85,11 +87,9 @@ export default function TaskForm({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>
-            {task ? "Edit Task" : "Create New Task"}
-          </DialogTitle>
+          <DialogTitle>{task ? "Edit Task" : "Create New Task"}</DialogTitle>
         </DialogHeader>
         
         <div className="grid gap-4 py-4">
@@ -123,12 +123,12 @@ export default function TaskForm({
             <Label htmlFor="status" className="text-right">
               Status
             </Label>
-            <Select 
-              value={status} 
+            <Select
+              value={status}
               onValueChange={(value) => setStatus(value as TaskStatus)}
             >
               <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
                 {statusOptions.map(option => (
@@ -144,12 +144,12 @@ export default function TaskForm({
             <Label htmlFor="priority" className="text-right">
               Priority
             </Label>
-            <Select 
-              value={priority} 
+            <Select
+              value={priority}
               onValueChange={(value) => setPriority(value as Priority)}
             >
               <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Priority" />
+                <SelectValue placeholder="Select priority" />
               </SelectTrigger>
               <SelectContent>
                 {priorityOptions.map(option => (
@@ -166,7 +166,10 @@ export default function TaskForm({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit}>
+          <Button 
+            onClick={handleSubmit}
+            disabled={!title.trim()}
+          >
             {task ? "Update Task" : "Create Task"}
           </Button>
         </DialogFooter>

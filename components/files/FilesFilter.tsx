@@ -17,7 +17,7 @@
  * - Button: Composant bouton pour les actions de tri et reset
  * - Card, CardContent: Composants structurants pour organisation
  * - lucide-react: Icons pour Search, Filter, ArrowUpDown, X et types de fichiers
- *
+ * 
  * LIBS UTILISÉS :
  * - React 19 hooks: useCallback, JSX pour gestion des événements
  * - Next.js 15 client component avec TypeScript strict mode

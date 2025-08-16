@@ -231,15 +231,15 @@ export default function ProjectTasksPage() {
       )}
 
       <TaskForm
-        open={isFormOpen}
-        onClose={() => {
-          setIsFormOpen(false);
-          setEditingTask(null);
-        }}
-        task={editingTask}
-        onCreate={handleCreateTask}
-        onUpdate={handleUpdateTask}
-      />
-    </div>
+  open={isFormOpen}
+  onClose={() => {
+    setIsFormOpen(false);
+    setEditingTask(null);
+  }}
+  task={editingTask}
+  userId={session?.user?.id}
+  onCreate={handleCreateTask}
+  onUpdate={handleUpdateTask}
+/>    </div>
   );
 }
