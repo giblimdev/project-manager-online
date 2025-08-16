@@ -1,15 +1,14 @@
-// 📄 /app/api/Tasks/[id]/route.ts
-// 🎯 Rôle : API route pour la gestion d'une User Story spécifique
-// 📦 Responsabilités : CRUD d'une User Story individuelle (GET, PUT, DELETE)
+// 📄 /app/api/tasks/[id]/route.ts
+// 🎯 Rôle : API route pour la gestion d'une Task spécifique
+// 📦 Responsabilités : CRUD d'une Task individuelle (GET, PUT, DELETE)
 // 🔧 Composants utilisés : NextRequest, NextResponse, Prisma Client
-// 🌐 Base de données : PostgreSQL via Prisma avec schéma UserStory
+// 🌐 Base de données : PostgreSQL via Prisma avec le modèle Task
 
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/lib/generated/prisma";
+import prisma from "@/lib/prisma";
+import type { TaskStatus, Priority } from "@/lib/generated/prisma/client";
 
-const prisma = new PrismaClient();
-
-// 📋 GET - Récupérer une User Story spécifique avec ses tâches
+// 📋 GET - Récupérer une Task spécifique
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -22,18 +21,15 @@ export async function GET(
       return NextResponse.json(
         {
           success: false,
-          error: "ID de la User Story requis",
+          error: "ID de la Task requis",
         },
         { status: 400 }
       );
     }
 
-    const story = await prisma.userStory.findUnique({
+    const task = await prisma.task.findUnique({
       where: { id },
       include: {
-        tasks: {
-          orderBy: { position: "asc" },
-        },
         creator: {
           select: {
             id: true,
@@ -42,23 +38,18 @@ export async function GET(
             image: true,
           },
         },
-        feature: {
+        project: {
           select: {
             id: true,
             name: true,
-            projectId: true,
           },
         },
-        UserStoryAssignees: {
-          include: {
-            users: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                image: true,
-              },
-            },
+        assignees: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
           },
         },
         comments: {
@@ -90,7 +81,7 @@ export async function GET(
         },
         dependencies: {
           include: {
-            dependsOnUserStory: {
+            dependsOnTask: {
               select: {
                 id: true,
                 title: true,
@@ -100,26 +91,15 @@ export async function GET(
             },
           },
         },
-        dependents: {
-          include: {
-            dependentUserStory: {
-              select: {
-                id: true,
-                title: true,
-                status: true,
-                priority: true,
-              },
-            },
-          },
-        },
+        
       },
     });
 
-    if (!story) {
+    if (!task) {
       return NextResponse.json(
         {
           success: false,
-          error: "User Story non trouvée",
+          error: "Task non trouvée",
         },
         { status: 404 }
       );
@@ -128,26 +108,24 @@ export async function GET(
     return NextResponse.json(
       {
         success: true,
-        data: story,
+        data: task,
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("GET /api/Tasks/[id] error:", error);
+    console.error("GET /api/tasks/[id] error:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Erreur lors de la récupération de la User Story",
+        error: "Erreur lors de la récupération de la Task",
         details: error instanceof Error ? error.message : "Erreur inconnue",
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
-// ✏️ PUT - Mettre à jour une User Story
+// ✏️ PUT - Mettre à jour une Task
 export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -160,7 +138,7 @@ export async function PUT(
       return NextResponse.json(
         {
           success: false,
-          error: "ID de la User Story requis",
+          error: "ID de la Task requis",
         },
         { status: 400 }
       );
@@ -202,16 +180,16 @@ export async function PUT(
       );
     }
 
-    // Vérifier que la User Story existe
-    const existingStory = await prisma.userStory.findUnique({
+    // Vérifier que la Task existe
+    const existingTask = await prisma.task.findUnique({
       where: { id },
     });
 
-    if (!existingStory) {
+    if (!existingTask) {
       return NextResponse.json(
         {
           success: false,
-          error: "User Story non trouvée",
+          error: "Task non trouvée",
         },
         { status: 404 }
       );
@@ -223,17 +201,9 @@ export async function PUT(
     if (body.title !== undefined) updateData.title = body.title.trim();
     if (body.description !== undefined)
       updateData.description = body.description?.trim() || null;
-    if (body.acceptanceCriteria !== undefined)
-      updateData.acceptanceCriteria = body.acceptanceCriteria?.trim() || null;
     if (body.priority !== undefined) updateData.priority = body.priority;
     if (body.status !== undefined) updateData.status = body.status;
-    if (body.storyPoints !== undefined)
-      updateData.storyPoints = body.storyPoints;
-    if (body.businessValue !== undefined)
-      updateData.businessValue = body.businessValue;
-    if (body.technicalRisk !== undefined)
-      updateData.technicalRisk = body.technicalRisk;
-    if (body.effort !== undefined) updateData.effort = body.effort;
+    if (body.type !== undefined) updateData.type = body.type;
     if (body.position !== undefined) updateData.position = body.position;
     if (body.labels !== undefined) updateData.labels = body.labels;
     if (body.tags !== undefined) updateData.tags = body.tags;
@@ -241,11 +211,17 @@ export async function PUT(
       updateData.estimatedHours = body.estimatedHours;
     if (body.actualHours !== undefined)
       updateData.actualHours = body.actualHours;
+    if (body.dueDate !== undefined) 
+      updateData.dueDate = body.dueDate ? new Date(body.dueDate) : null;
+    if (body.startDate !== undefined)
+      updateData.startDate = body.startDate ? new Date(body.startDate) : null;
+    if (body.completedAt !== undefined)
+      updateData.completedAt = body.completedAt ? new Date(body.completedAt) : null;
 
     // Ajouter la date de mise à jour
     updateData.updatedAt = new Date();
 
-    const updatedStory = await prisma.userStory.update({
+    const updatedTask = await prisma.task.update({
       where: { id },
       data: updateData,
       include: {
@@ -257,23 +233,18 @@ export async function PUT(
             image: true,
           },
         },
-        feature: {
+        project: {
           select: {
             id: true,
             name: true,
-            projectId: true,
           },
         },
-        UserStoryAssignees: {
-          include: {
-            users: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                image: true,
-              },
-            },
+        assignees: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
           },
         },
       },
@@ -282,27 +253,25 @@ export async function PUT(
     return NextResponse.json(
       {
         success: true,
-        data: updatedStory,
-        message: "User Story mise à jour avec succès",
+        data: updatedTask,
+        message: "Task mise à jour avec succès",
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("PUT /api/Tasks/[id] error:", error);
+    console.error("PUT /api/tasks/[id] error:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Erreur lors de la mise à jour de la User Story",
+        error: "Erreur lors de la mise à jour de la Task",
         details: error instanceof Error ? error.message : "Erreur inconnue",
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
-// 🗑️ DELETE - Supprimer une User Story
+// 🗑️ DELETE - Supprimer une Task
 export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -315,63 +284,53 @@ export async function DELETE(
       return NextResponse.json(
         {
           success: false,
-          error: "ID de la User Story requis",
+          error: "ID de la Task requis",
         },
         { status: 400 }
       );
     }
 
-    // Vérifier que la User Story existe et récupérer les dépendances
-    const existingStory = await prisma.userStory.findUnique({
+    // Vérifier que la Task existe et récupérer les dépendances
+    const existingTask = await prisma.task.findUnique({
       where: { id },
       include: {
         _count: {
           select: {
-            tasks: true,
             dependencies: true,
-            dependents: true,
+                   comments: true,
+            timeEntries: true,
           },
         },
       },
     });
 
-    if (!existingStory) {
+    if (!existingTask) {
       return NextResponse.json(
         {
           success: false,
-          error: "User Story non trouvée",
+          error: "Task non trouvée",
         },
         { status: 404 }
       );
     }
 
     // Vérifier s'il y a des dépendances qui empêchent la suppression
-    if (existingStory._count.dependencies > 0) {
+    if (existingTask._count.dependencies > 0) {
       return NextResponse.json(
         {
           success: false,
           error:
-            "Impossible de supprimer cette User Story car elle a des dépendances",
-          details: `${existingStory._count.dependencies} dépendance(s) trouvée(s)`,
+            "Impossible de supprimer cette Task car elle a des dépendances",
+          details: `${existingTask._count.dependencies} dépendance(s) trouvée(s)`,
         },
         { status: 409 }
       );
     }
 
-    if (existingStory._count.dependents > 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            "Impossible de supprimer cette User Story car d'autres User Stories en dépendent",
-          details: `${existingStory._count.dependents} User Story(s) dépendante(s) trouvée(s)`,
-        },
-        { status: 409 }
-      );
-    }
+    
 
-    // Supprimer en cascade (Prisma se charge des relations)
-    await prisma.userStory.delete({
+    // Supprimer la Task (Prisma se charge des relations en cascade)
+    await prisma.task.delete({
       where: { id },
     });
 
@@ -380,23 +339,21 @@ export async function DELETE(
         success: true,
         data: {
           deletedId: id,
-          title: existingStory.title,
+          title: existingTask.title,
         },
-        message: "User Story supprimée avec succès",
+        message: "Task supprimée avec succès",
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("DELETE /api/Tasks/[id] error:", error);
+    console.error("DELETE /api/tasks/[id] error:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Erreur lors de la suppression de la User Story",
+        error: "Erreur lors de la suppression de la Task",
         details: error instanceof Error ? error.message : "Erreur inconnue",
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
