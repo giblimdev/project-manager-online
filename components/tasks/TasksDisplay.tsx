@@ -31,7 +31,7 @@ export default function TasksDisplay({
           <Table className="h-4 w-4" />
           <span className="ml-2 hidden sm:inline">Table</span>
         </ToggleGroupItem>
-      </ToggleGroup>
+      </ToggleGroup> 
     </div>
   );
 }

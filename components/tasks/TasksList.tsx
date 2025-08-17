@@ -3,7 +3,7 @@
 import React from "react";
 import { Task, TaskStatus, Priority } from "@/lib/generated/prisma/client";
 import { Button } from "@/components/ui/button";
-import { PencilIcon, TrashIcon } from "lucide-react";
+import { PencilIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -18,6 +18,8 @@ interface TasksListProps {
   displayMode: "list" | "table";
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
+  onReorder: (taskId: string, direction: 'up' | 'down') => void;
+  projectId: string;
 }
 
 // Helper function for priority styling
@@ -49,12 +51,26 @@ export default function TasksList({
   tasks, 
   displayMode, 
   onEdit, 
-  onDelete
+  onDelete,
+  onReorder,
+  projectId
 }: TasksListProps) {
+  
+  const handleReorder = async (taskId: string, direction: 'up' | 'down') => {
+    try {
+      await onReorder(taskId, direction);
+    } catch (error) {
+      console.error('Failed to reorder task:', error);
+    }
+  };
+
+  const canMoveUp = (index: number) => index > 0;
+  const canMoveDown = (index: number) => index < tasks.length - 1;
+
   if (displayMode === "list") {
     return (
       <div className="space-y-4">
-        {tasks.map(task => (
+        {tasks.map((task, index) => (
           <div 
             key={task.id}
             className={`p-4 bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow ${getPriorityBorderColor(task.priority)}`}
@@ -64,6 +80,31 @@ export default function TasksList({
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-lg">{task.title}</h3>
                   <div className="flex space-x-2">
+                    {/* Reorder buttons */}
+                    <div className="flex flex-col space-y-1">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => handleReorder(task.id, 'up')}
+                        disabled={!canMoveUp(index)}
+                        className="h-6 w-6 text-gray-500 hover:text-blue-600 disabled:opacity-30"
+                        title="Move up"
+                      >
+                        <ChevronUpIcon className="h-3 w-3" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => handleReorder(task.id, 'down')}
+                        disabled={!canMoveDown(index)}
+                        className="h-6 w-6 text-gray-500 hover:text-blue-600 disabled:opacity-30"
+                        title="Move down"
+                      >
+                        <ChevronDownIcon className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    
+                    {/* Edit and Delete buttons */}
                     <Button 
                       variant="ghost" 
                       size="icon" 
@@ -116,11 +157,12 @@ export default function TasksList({
             <TableHead>Status</TableHead>
             <TableHead>Priority</TableHead>
             <TableHead>Created</TableHead>
+            <TableHead className="text-center">Order</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tasks.map(task => (
+          {tasks.map((task, index) => (
             <TableRow key={task.id} className="hover:bg-gray-50">
               <TableCell className="font-medium py-3">
                 <div className="font-medium">{task.title}</div>
@@ -142,6 +184,30 @@ export default function TasksList({
                 <span className="text-sm text-gray-600">
                   {new Date(task.createdAt).toLocaleDateString()}
                 </span>
+              </TableCell>
+              <TableCell className="py-3 text-center">
+                <div className="flex flex-col items-center space-y-1">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleReorder(task.id, 'up')}
+                    disabled={!canMoveUp(index)}
+                    className="h-6 w-6 text-gray-500 hover:text-blue-600 disabled:opacity-30"
+                    title="Move up"
+                  >
+                    <ChevronUpIcon className="h-3 w-3" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleReorder(task.id, 'down')}
+                    disabled={!canMoveDown(index)}
+                    className="h-6 w-6 text-gray-500 hover:text-blue-600 disabled:opacity-30"
+                    title="Move down"
+                  >
+                    <ChevronDownIcon className="h-3 w-3" />
+                  </Button>
+                </div>
               </TableCell>
               <TableCell className="py-3 text-right">
                 <div className="flex justify-end space-x-2">
@@ -173,6 +239,6 @@ export default function TasksList({
           No tasks found. Create your first task to get started.
         </div>
       )}
-    </div>
+    </div> 
   );
 }

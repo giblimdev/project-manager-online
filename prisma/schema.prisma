@@ -331,7 +331,7 @@ model UserStoryDependency {
 
 model Task {
   id             String           @id @default(cuid())
-  title          String
+  title          String           
   order          Int              @default(1000)
   description    String?
   priority       Priority         @default(MEDIUM)

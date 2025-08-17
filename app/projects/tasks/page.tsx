@@ -1,10 +1,7 @@
-//@/app/projects/tasks/page.tsx
-
 "use client";
 
 import { useState, useEffect } from "react";
 import { useProjectStore } from "@/stores/useSelectedProjectStore";
-import TasksDisplay from "@/components/tasks/TasksDisplay";
 import TasksFilter from "@/components/tasks/TasksFilter";
 import TasksList from "@/components/tasks/TasksList";
 import TaskForm from "@/components/tasks/TasksForm";
@@ -79,7 +76,6 @@ export default function ProjectTasksPage() {
   }) => {
     if (!selectedProjectId) return;
 
-    // Check if user is authenticated and session data is available
     if (!isAuthenticated || !session?.user?.id) {
       toast.error("Vous devez être connecté pour créer une tâche.");
       return;
@@ -101,7 +97,7 @@ export default function ProjectTasksPage() {
       if (result.success) {
         setTasks(prev => [...prev, result.data]);
         toast.success("Task created successfully");
-        setIsFormOpen(false);
+        setIsFormOpen(false); // Ferme le form après création
       } else {
         throw new Error(result.error || "Error creating task");
       }
@@ -112,6 +108,7 @@ export default function ProjectTasksPage() {
     }
   };
 
+  // Handle task update (FERME aussi le form)
   const handleUpdateTask = async (id: string, updateData: Partial<Task>) => {
     try {
       const response = await fetch(`/api/tasks/${id}`, {
@@ -127,6 +124,7 @@ export default function ProjectTasksPage() {
         );
         toast.success("Task updated successfully");
         setEditingTask(null);
+        setIsFormOpen(false); // Ferme le form après édition
       } else {
         throw new Error(result.error || "Error updating task");
       }
@@ -155,6 +153,47 @@ export default function ProjectTasksPage() {
     }
   };
 
+  // Handle task reordering with PATCH
+  const handleReorderTask = async (taskId: string, direction: 'up' | 'down') => {
+    if (!selectedProjectId) return;
+
+    try {
+      const response = await fetch('/api/tasks/reorder', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          taskId,
+          direction,
+          projectId: selectedProjectId
+        }),
+      });
+
+      if (response.status === 405) {
+        toast.error("La méthode PATCH n'est pas autorisée sur cette route. Vérifiez le fichier app/api/tasks/reorder/route.ts et son export !");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error('Failed to reorder task');
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        setTasks(result.data);
+        toast.success(`Task moved ${direction} successfully`);
+      } else {
+        throw new Error(result.error || 'Error reordering task');
+      }
+    } catch (err) {
+      toast.error("Error", {
+        description: err instanceof Error ? err.message : "Failed to reorder task",
+      });
+    }
+  };
+
   // FILTRAGE
   const filteredTasks = tasks.filter(task => {
     const matchesSearch =
@@ -168,7 +207,6 @@ export default function ProjectTasksPage() {
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
-  // Open form only if user is authenticated
   const handleOpenForm = () => {
     if (!isAuthenticated || !session?.user?.id) {
       toast.error("Vous devez être connecté pour créer une tâche.");
@@ -177,12 +215,10 @@ export default function ProjectTasksPage() {
     setIsFormOpen(true);
   };
 
-  // Show loading state while session is loading
   if (isPending) {
     return <div className="container mx-auto p-6">Loading session...</div>;
   }
 
-  // Show session error if any
   if (sessionError) {
     return (
       <div className="container mx-auto p-6">
@@ -227,19 +263,22 @@ export default function ProjectTasksPage() {
             setEditingTask(task);
           }}
           onDelete={handleDeleteTask}
+          onReorder={handleReorderTask}
+          projectId={selectedProjectId || ''}
         />
       )}
 
       <TaskForm
-  open={isFormOpen}
-  onClose={() => {
-    setIsFormOpen(false);
-    setEditingTask(null);
-  }}
-  task={editingTask}
-  userId={session?.user?.id}
-  onCreate={handleCreateTask}
-  onUpdate={handleUpdateTask}
-/>    </div>
+        open={isFormOpen}
+        onClose={() => {
+          setIsFormOpen(false);
+          setEditingTask(null);
+        }}
+        task={editingTask}
+        userId={session?.user?.id}
+        onCreate={handleCreateTask}
+        onUpdate={handleUpdateTask}
+      />
+    </div>
   );
 }

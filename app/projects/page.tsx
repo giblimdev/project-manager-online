@@ -777,7 +777,6 @@ export default function ProjectsPage(): JSX.Element {
     );
   }
 
-  // ✅ CORRECTION: Gestion d'erreur d'authentification
   if (authState.hasError) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -925,15 +924,6 @@ export default function ProjectsPage(): JSX.Element {
                 >
                   <PlusCircle className="h-4 w-4 mr-2" />
                   Nouveau projet
-                </Button>
-                <Button
-                  onClick={handleLogout}
-                  variant="outline"
-                  size="sm"
-                  className="text-red-600 border-red-200 hover:bg-red-50"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Déconnexion</span>
                 </Button>
               </div>
             </div>

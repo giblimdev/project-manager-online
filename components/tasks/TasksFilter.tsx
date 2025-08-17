@@ -15,7 +15,7 @@ interface TasksFilterProps {
     search: string;
     status: TaskStatus | "ALL";
     priority: Priority | "ALL";
-  }) => void;
+  }) => void; 
 }
 
 const statusOptions: { value: TaskStatus | "ALL"; label: string }[] = [

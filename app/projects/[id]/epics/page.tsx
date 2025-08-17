@@ -36,6 +36,7 @@ import {
 } from "@/stores/useSelectedProjectStore";
 
 import { useSelectedEpicStore } from "@/stores/useSelectedEpicStore";
+import { Button } from "@/components/ui/button";
 
 type Priority = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
 type ViewMode = "list" | "card";
@@ -351,12 +352,12 @@ export default function EpicsPage() {
           >
             &#x21bb; Actualiser
           </button>
-          <button
+          <Button
             onClick={handleCreateNew}
             className="btn btn-primary bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
           >
             + Nouvel épic
-          </button>
+          </Button>
         </div>
       </header>
 

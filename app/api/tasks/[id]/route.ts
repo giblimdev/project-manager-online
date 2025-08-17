@@ -330,7 +330,7 @@ export async function DELETE(
     
 
     // Supprimer la Task (Prisma se charge des relations en cascade)
-    await prisma.task.delete({
+    await prisma.task.delete({ 
       where: { id },
     });
 

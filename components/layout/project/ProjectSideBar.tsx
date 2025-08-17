@@ -10,16 +10,14 @@ import {
   SettingsIcon,
   UsersIcon,
   CalendarIcon,
-  PlusIcon,
-  HomeIcon,
   FileTextIcon,
+  ClipboardListIcon,
   TrendingUpIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-  LogOutIcon,
-  BellIcon,
-  SearchIcon,
+  SearchIcon
 } from "lucide-react";
+import { useSelectedProjectData } from "@/stores/useSelectedProjectStore";
 
 interface NavItem {
   name: string;
@@ -34,126 +32,87 @@ interface ProjectSideBarProps {
   onNavigate?: () => void; // Callback pour fermer la sidebar sur mobile
 }
 
-interface ProjectInfo {
-  name: string;
-  type: string;
-  progress: number;
-  sprintCurrent: string;
-  teamSize: number;
-}
-
 export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
   const pathname = usePathname();
-  const [expandedSections, setExpandedSections] = useState<string[]>([
-    "work-items",
-  ]);
+  const [expandedSections, setExpandedSections] = useState<string[]>(["work-items"]);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Informations du projet actuel
-  const projectInfo: ProjectInfo = {
-    name: "E-commerce Platform",
-    type: "Web Application",
-    progress: 68,
-    sprintCurrent: "Sprint 12",
-    teamSize: 8,
-  };
+  // Infos projet réel depuis le store : null si rien de sélectionné
+  const project = useSelectedProjectData();
 
   const navigationItems: NavItem[] = [
     {
-      name: "Dashboard",
+      name: "Projets",
       href: "/projects",
-      icon: HomeIcon,
-      description: "Vue d'ensemble des projets et métriques clés",
-    },
-    {
-      name: "Projects",
-      href: "/projects",
-      icon: CalendarIcon,
-      badge: 15,
-      description: "gestion des projet",
-    },
-    {
-      name: "Teams",
-      href: "/teams",
-      icon: CalendarIcon,
-      badge: 15,
-      description: "gestion des projet",
+      icon: FolderIcon,
+      description: "Vue d'ensemble des projets"
     },
     {
       name: "Rapports",
-      href: "/projects/reports",
+      href: project?.id ? `/projects/${project.id}/reports` : "/projects/reports",
       icon: BarChart3Icon,
-      description: "Analytics et insights IA",
-    },
+      description: "Analytics et insights IA"
+    }
   ];
 
   const workItemsNavigation: NavItem[] = [
     {
       name: "Initiatives",
-      href: "/projects/initiatives",
+      href: project?.id ? `/projects/${project.id}/initiatives` : "/projects/initiatives",
       icon: FolderIcon,
-      badge: 3,
-      description: "Objectifs business stratégiques avec ROI et budget",
+      description: "Objectifs business stratégiques"
     },
     {
       name: "Epics",
-      href: "/projects/epics",
+      href: project?.id ? `/projects/${project.id}/epics` : "/projects/epics",
       icon: FolderIcon,
-      badge: 12,
-      description: "Ensembles de fonctionnalités liées à un domaine métier",
+      description: "Ensembles de fonctionnalités"
     },
     {
       name: "Features",
-      href: "/projects/features",
+      href: project?.id ? `/projects/${project.id}/features` : "/projects/features",
       icon: FolderIcon,
-      badge: 24,
-      description:
-        "Fonctionnalités avec critères d'acceptation et valeur business",
+      description: "Fonctionnalités et valeur business"
     },
     {
       name: "Sprint",
-      href: "/projects/sprint",
-      icon: SettingsIcon,
-      badge: 89,
-      description: "Tâches techniques avec estimation en heures",
+      href: project?.id ? `/projects/${project.id}/sprint` : "/projects/sprint",
+      icon: CalendarIcon,
+      description: "Gestion des sprints"
     },
     {
       name: "User Stories",
-      href: "/projects/userStories",
+      href: project?.id ? `/projects/${project.id}/userStories` : "/projects/userStories",
       icon: FileTextIcon,
-      badge: 67,
-      description: "Besoins utilisateur avec estimation en story points",
+      description: "Besoins utilisateur"
     },
     {
       name: "Tasks",
-      href: "/projects/tasks",
-      icon: SettingsIcon,
-      badge: 89,
-      description: "Tâches techniques avec estimation en heures",
+      href: project?.id ? `/projects/${project.id}/tasks` : "/projects/tasks",
+      icon: ClipboardListIcon,
+      description: "Tâches techniques"
     },
     {
-      name: "Files",
-      href: "/files",
-      icon: SettingsIcon,
-      badge: 89,
-      description: "Tâches techniques avec estimation en heures",
-    },
+      name: "Fichiers",
+      href: project?.id ? `/projects/${project.id}/files` : "/files",
+      icon: FileTextIcon,
+      description: "Fichiers du projet"
+    }
   ];
 
   const teamNavigation: NavItem[] = [
     {
       name: "Équipe",
-      href: "/projects/team",
+      href: project?.id ? `/projects/${project.id}/team` : "/projects/team",
       icon: UsersIcon,
-      badge: projectInfo.teamSize,
-      description: "Membres de l'équipe et assignations",
+      description: "Membres de l'équipe"
     },
     {
       name: "Paramètres",
-      href: "/projects/settings",
+      href: project?.id ? `/projects/${project.id}/settings` : "/projects/settings",
       icon: SettingsIcon,
-      description: "Configuration du projet",
-    },
+      description: "Configuration du projet"
+    }
   ];
 
   const isActive = (href: string): boolean => {
@@ -172,9 +131,7 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
   };
 
   const handleItemClick = (): void => {
-    if (onNavigate) {
-      onNavigate();
-    }
+    if (onNavigate) onNavigate();
   };
 
   const filteredItems = (items: NavItem[]) => {
@@ -244,13 +201,11 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
                 </button>
               )}
             </Link>
-
             {/* Indicateur visuel pour l'item actif */}
             {active && (
               <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-r-full"></div>
             )}
           </div>
-
           {/* Description tooltip sur hover */}
           {active && item.description && (
             <div className="mt-2 mx-3 p-3 bg-blue-50/50 border border-blue-100 rounded-lg">
@@ -259,7 +214,6 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
               </p>
             </div>
           )}
-
           {/* Sous-navigation */}
           {hasChildren && isExpanded && (
             <ul className="mt-1 space-y-1">
@@ -275,33 +229,17 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
     <div className="flex flex-col h-full bg-white/95 backdrop-blur-xl">
       {/* Header du projet */}
       <div className="p-4 sm:p-6 border-b border-gray-200/50">
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 m-4 p-4 rounded-xl bg-gradient-to-br from-gray-50 to-indigo-50">
           <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
             <TrendingUpIcon className="w-7 h-7 text-white" />
           </div>
           <div className="flex-1 min-w-0">
             <h2 className="text-lg font-bold text-gray-900 truncate">
-              {projectInfo.name}
+              {project?.name || <span className="italic text-gray-400">Aucun projet sélectionné</span>}
             </h2>
-            <p className="text-sm text-gray-500">{projectInfo.type}</p>
-          </div>
-        </div>
-
-        {/* Indicateur de progression */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600 font-medium">
-              {projectInfo.sprintCurrent}
-            </span>
-            <span className="text-blue-600 font-bold">
-              {projectInfo.progress}%
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
-            <div
-              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2.5 rounded-full transition-all duration-500"
-              style={{ width: `${projectInfo.progress}%` }}
-            />
+            <p className="text-sm text-gray-500">
+              {project?.key || project?.slug || ""}
+            </p>
           </div>
         </div>
       </div>
@@ -322,7 +260,6 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
 
       {/* Navigation principale */}
       <nav className="flex-1 px-4 pb-4 space-y-6 overflow-y-auto scrollbar-hide">
-        {/* Navigation principale */}
         <div>
           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-3">
             Navigation
@@ -330,7 +267,6 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
           <ul className="space-y-1">{renderNavItems(navigationItems)}</ul>
         </div>
 
-        {/* Éléments de travail */}
         <div>
           <div className="flex items-center justify-between mb-3 px-3">
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -352,7 +288,6 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
           )}
         </div>
 
-        {/* Équipe et paramètres */}
         <div>
           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-3">
             Équipe & Paramètres
@@ -360,32 +295,6 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
           <ul className="space-y-1">{renderNavItems(teamNavigation)}</ul>
         </div>
       </nav>
-
-      {/* Footer utilisateur */}
-      <div className="border-t border-gray-200/50 p-4">
-        <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-gray-50 to-blue-50/30 rounded-xl border border-gray-100">
-          <div className="relative">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-md">
-              <span className="text-white text-sm font-bold">JP</span>
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 border-2 border-white rounded-full"></div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-gray-900 truncate">
-              Jean-Pierre Heurteux
-            </p>
-            <p className="text-xs text-gray-500 truncate">Product Owner</p>
-          </div>
-          <div className="flex items-center space-x-1">
-            <button className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-white/50 transition-all duration-200">
-              <BellIcon className="w-4 h-4" />
-            </button>
-            <button className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-white/50 transition-all duration-200">
-              <LogOutIcon className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

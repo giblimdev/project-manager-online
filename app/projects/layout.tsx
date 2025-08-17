@@ -115,18 +115,7 @@ const ProjectLayout: React.FC<ProjectLayoutProps> = ({ children }) => {
 
           {/* Sidebar desktop (dans le flux du DOM) */}
           <div className="hidden lg:block h-screen bg-white shadow-lg border-r border-gray-200 sticky top-0">
-            {/* Header sidebar desktop */}
-            <div className="flex items-center justify-center p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
-                  <span className="text-xl font-bold text-white">PM</span>
-                </div>
-                <h2 className="text-lg font-semibold text-gray-900">
-                  ProjectManager
-                </h2>
-                <p className="text-sm text-gray-500 mt-1">Gestion de projets</p>
-              </div>
-            </div>
+         
 
             {/* Contenu de la sidebar desktop */}
             <div className="h-full overflow-y-auto pb-6">
