@@ -1,325 +1,469 @@
-// 📄 /app/api/sprints/[id]/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { z } from "zod";
-import { SprintStatus } from "@/lib/generated/prisma";
+// app/api/sprints/[id]/route.ts
+/**
+ * RÔLE : Route API pour la gestion d'un sprint spécifique (GET, PUT, DELETE par ID)
+ * RESPONSABILITÉS :
+ *   - GET: Récupérer un sprint par son ID avec ses relations
+ *   - PUT: Modifier un sprint existant avec validation complète
+ *   - DELETE: Supprimer un sprint avec vérifications de sécurité
+ *   - Gestion des erreurs 404, validation et contraintes métier
+ *   - Typage strict avec Next.js 15 dynamic routes
+ * 
+ * COMPOSANTS/LIBS UTILISÉS :
+ *   - Next.js 15 App Router avec params dynamiques
+ *   - Prisma Client avec transactions pour les modifications complexes
+ *   - TypeScript strict mode avec interfaces Prisma
+ *   - Validation des contraintes métier (ex: sprint actif)
+ */
 
-const updateSprintSchema = z.object({
-  name: z.string().min(1).max(255).optional(),
-  goal: z.string().nullable().optional(),
-  description: z.string().nullable().optional(),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
-  capacity: z.number().int().min(0).nullable().optional(),
-  velocity: z.number().min(0).nullable().optional(),
-  status: z.nativeEnum(SprintStatus).optional(),
-  userIds: z.array(z.string()).optional(),
-  userStoryIds: z.array(z.string()).optional(),
-  itemIds: z.array(z.string()).optional(),
-});
+import { NextRequest, NextResponse } from 'next/server';
+import  prisma from '@/lib/prisma';
 
-// ✅ CORRECTION : Signature correcte pour Next.js 15
+
+type SprintStatus = 'PLANNED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+
+interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+  timestamp: string;
+}
+
+interface UpdateSprintRequest {
+  name?: string;
+  goal?: string | null;
+  description?: string | null;
+  startDate?: string;
+  endDate?: string;
+  status?: SprintStatus;
+  capacity?: number | null;
+  velocity?: number | null;
+}
+
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
+// GET /api/sprints/[id] - Récupérer un sprint par ID
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-): Promise<NextResponse> {
+  { params }: RouteParams
+): Promise<NextResponse<ApiResponse<any>>> {
   try {
-    // ✅ Await des params car ils sont Promise dans Next.js 15
-    const { id } = await context.params;
+    const { id } = await params;
 
-    if (!id) {
-      return NextResponse.json(
-        { success: false, error: "ID du sprint requis" },
-        { status: 400 }
-      );
+    // Validation de l'ID
+    if (!id || typeof id !== 'string') {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Validation error',
+        message: 'ID de sprint invalide',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
+    // Récupérer le sprint avec ses relations
     const sprint = await prisma.sprint.findUnique({
       where: { id },
       include: {
-        project: { select: { id: true, name: true, slug: true, key: true, description: true } },
-        users: { select: { id: true, name: true, email: true, image: true } },
-        userStories: { 
-          select: { 
-            id: true, 
-            title: true, 
-            status: true, 
-            storyPoints: true, 
+        project: {
+          select: {
+            id: true,
+            name: true,
+            key: true,
+            isActive: true,
+          },
+        },
+        userStories: {
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            storyPoints: true,
+            priority: true,
+          },
+          orderBy: { order: 'asc' },
+        },
+        Tasks: {
+          select: {
+            id: true,
+            title: true,
+            status: true,
             priority: true,
             estimatedHours: true,
-            actualHours: true,
-            position: true
-          } 
+          },
+          orderBy: { order: 'asc' },
         },
-        items: { 
-          select: { 
-            id: true, 
-            name: true, 
-            type: true, 
-            status: true, 
-            priority: true,
-            estimatedHours: true,
-            actualHours: true,
-            backlogPosition: true
-          } 
+        timeEntries: {
+          select: {
+            id: true,
+            hours: true,
+            date: true,
+            userId: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+          orderBy: { date: 'desc' },
         },
-        timeEntries: { 
-          select: { 
-            id: true, 
-            hours: true, 
-            date: true, 
-            user: { select: { id: true, name: true } } 
-          } 
-        },
-        files: { select: { id: true, name: true, type: true, path: true } },
-        _count: { 
-          select: { 
-            users: true, 
-            userStories: true, 
-            items: true, 
-            timeEntries: true, 
-            files: true 
-          } 
+        _count: {
+          select: {
+            userStories: true,
+            Tasks: true,
+            timeEntries: true,
+            users: true,
+          },
         },
       },
     });
 
     if (!sprint) {
-      return NextResponse.json(
-        { success: false, error: "Sprint non trouvé" },
-        { status: 404 }
-      );
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Not found',
+        message: 'Sprint non trouvé',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 404 });
     }
 
-    return NextResponse.json(
-      { success: true, data: sprint },
-      { status: 200 }
-    );
+    const response: ApiResponse<any> = {
+      success: true,
+      data: sprint,
+      timestamp: new Date().toISOString(),
+    };
 
-  } catch (error: unknown) {
-    console.error("GET /api/sprints/[id] error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Erreur lors de la récupération du sprint",
-        details: error instanceof Error ? error.message : "Erreur inconnue",
-      },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error('Erreur GET /api/sprints/[id]:', error);
+    const errorResponse: ApiResponse = {
+      success: false,
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Erreur inconnue',
+      timestamp: new Date().toISOString(),
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }
 
-// ✅ CORRECTION : Signature correcte pour PUT
+// PUT /api/sprints/[id] - Modifier un sprint
 export async function PUT(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-): Promise<NextResponse> {
+  { params }: RouteParams
+): Promise<NextResponse<ApiResponse<any>>> {
   try {
-    // ✅ Await des params car ils sont Promise dans Next.js 15
-    const { id } = await context.params;
+    const { id } = await params;
+    const body: UpdateSprintRequest = await request.json();
 
-    if (!id) {
-      return NextResponse.json(
-        { success: false, error: "ID du sprint requis" },
-        { status: 400 }
-      );
+    // Validation de l'ID
+    if (!id || typeof id !== 'string') {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Validation error',
+        message: 'ID de sprint invalide',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
-
-    const body = await request.json();
-    console.log("PUT /api/sprints/[id] - Données reçues:", body);
-
-    const validation = updateSprintSchema.safeParse(body);
-
-    if (!validation.success) {
-      console.error("PUT validation failed:", validation.error.issues);
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Données de mise à jour invalides",
-          details: validation.error.issues,
-        },
-        { status: 400 }
-      );
-    }
-
-    const updateData = validation.data;
 
     // Vérifier que le sprint existe
     const existingSprint = await prisma.sprint.findUnique({
       where: { id },
+      include: {
+        project: {
+          select: { id: true, isActive: true },
+        },
+      },
     });
 
     if (!existingSprint) {
-      return NextResponse.json(
-        { success: false, error: "Sprint non trouvé" },
-        { status: 404 }
-      );
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Not found',
+        message: 'Sprint non trouvé',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 404 });
     }
 
-    // Validation des dates si modifiées
-    let parsedStartDate = existingSprint.startDate;
-    let parsedEndDate = existingSprint.endDate;
-
-    if (updateData.startDate) {
-      parsedStartDate = new Date(updateData.startDate);
-      if (isNaN(parsedStartDate.getTime())) {
-        return NextResponse.json(
-          { success: false, error: "Format de date de début invalide" },
-          { status: 400 }
-        );
-      }
+    if (!existingSprint.project.isActive) {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Forbidden',
+        message: 'Impossible de modifier un sprint dans un projet inactif',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 403 });
     }
 
-    if (updateData.endDate) {
-      parsedEndDate = new Date(updateData.endDate);
-      if (isNaN(parsedEndDate.getTime())) {
-        return NextResponse.json(
-          { success: false, error: "Format de date de fin invalide" },
-          { status: 400 }
-        );
-      }
-    }
-
-    if (parsedEndDate <= parsedStartDate) {
-      return NextResponse.json(
-        { success: false, error: "La date de fin doit être postérieure à la date de début" },
-        { status: 400 }
-      );
-    }
-
-    // Préparer les données pour Prisma
-    const prismaUpdateData: any = {
-      name: updateData.name?.trim(),
-      goal: updateData.goal?.trim() || null,
-      description: updateData.description?.trim() || null,
-      startDate: updateData.startDate ? parsedStartDate : undefined,
-      endDate: updateData.endDate ? parsedEndDate : undefined,
-      capacity: updateData.capacity,
-      velocity: updateData.velocity,
-      status: updateData.status,
+    // Préparer les données de mise à jour
+    const updateData: any = {
       updatedAt: new Date(),
     };
 
-    // Nettoyer les champs undefined
-    Object.keys(prismaUpdateData).forEach(key => {
-      if (prismaUpdateData[key] === undefined) {
-        delete prismaUpdateData[key];
+    // Validation et mise à jour conditionnelle des champs
+    if (body.name !== undefined) {
+      if (!body.name || body.name.length > 100) {
+        const errorResponse: ApiResponse = {
+          success: false,
+          error: 'Validation error',
+          message: 'Le nom est requis et ne peut pas dépasser 100 caractères',
+          timestamp: new Date().toISOString(),
+        };
+        return NextResponse.json(errorResponse, { status: 400 });
       }
-    });
 
-    // Gestion des relations many-to-many
-    if (updateData.userIds !== undefined) {
-      prismaUpdateData.users = updateData.userIds.length > 0
-        ? { set: [], connect: updateData.userIds.map(id => ({ id })) }
-        : { set: [] };
+      // Vérifier l'unicité du nom dans le projet (sauf pour le sprint actuel)
+      const conflictingSprint = await prisma.sprint.findFirst({
+        where: {
+          projectId: existingSprint.projectId,
+          name: body.name,
+          id: { not: id },
+        },
+      });
+
+      if (conflictingSprint) {
+        const errorResponse: ApiResponse = {
+          success: false,
+          error: 'Conflict',
+          message: 'Un sprint avec ce nom existe déjà dans ce projet',
+          timestamp: new Date().toISOString(),
+        };
+        return NextResponse.json(errorResponse, { status: 409 });
+      }
+
+      updateData.name = body.name;
     }
 
-    if (updateData.userStoryIds !== undefined) {
-      prismaUpdateData.userStories = updateData.userStoryIds.length > 0
-        ? { set: [], connect: updateData.userStoryIds.map(id => ({ id })) }
-        : { set: [] };
+    if (body.goal !== undefined) {
+      updateData.goal = body.goal;
     }
 
-    if (updateData.itemIds !== undefined) {
-      prismaUpdateData.items = updateData.itemIds.length > 0
-        ? { set: [], connect: updateData.itemIds.map(id => ({ id })) }
-        : { set: [] };
+    if (body.description !== undefined) {
+      updateData.description = body.description;
     }
 
+    if (body.status !== undefined) {
+      updateData.status = body.status;
+    }
+
+    if (body.capacity !== undefined) {
+      if (body.capacity !== null && body.capacity < 0) {
+        const errorResponse: ApiResponse = {
+          success: false,
+          error: 'Validation error',
+          message: 'La capacité doit être positive',
+          timestamp: new Date().toISOString(),
+        };
+        return NextResponse.json(errorResponse, { status: 400 });
+      }
+      updateData.capacity = body.capacity;
+    }
+
+    if (body.velocity !== undefined) {
+      if (body.velocity !== null && body.velocity < 0) {
+        const errorResponse: ApiResponse = {
+          success: false,
+          error: 'Validation error',
+          message: 'La vélocité doit être positive',
+          timestamp: new Date().toISOString(),
+        };
+        return NextResponse.json(errorResponse, { status: 400 });
+      }
+      updateData.velocity = body.velocity;
+    }
+
+    // Validation des dates
+    if (body.startDate !== undefined || body.endDate !== undefined) {
+      const startDate = body.startDate ? new Date(body.startDate) : existingSprint.startDate;
+      const endDate = body.endDate ? new Date(body.endDate) : existingSprint.endDate;
+
+      if (body.startDate && isNaN(startDate.getTime())) {
+        const errorResponse: ApiResponse = {
+          success: false,
+          error: 'Validation error',
+          message: 'Date de début invalide',
+          timestamp: new Date().toISOString(),
+        };
+        return NextResponse.json(errorResponse, { status: 400 });
+      }
+
+      if (body.endDate && isNaN(endDate.getTime())) {
+        const errorResponse: ApiResponse = {
+          success: false,
+          error: 'Validation error',
+          message: 'Date de fin invalide',
+          timestamp: new Date().toISOString(),
+        };
+        return NextResponse.json(errorResponse, { status: 400 });
+      }
+
+      if (endDate <= startDate) {
+        const errorResponse: ApiResponse = {
+          success: false,
+          error: 'Validation error',
+          message: 'La date de fin doit être après la date de début',
+          timestamp: new Date().toISOString(),
+        };
+        return NextResponse.json(errorResponse, { status: 400 });
+      }
+
+      if (body.startDate) updateData.startDate = startDate;
+      if (body.endDate) updateData.endDate = endDate;
+    }
+
+    // Mise à jour du sprint
     const updatedSprint = await prisma.sprint.update({
       where: { id },
-      data: prismaUpdateData,
+      data: updateData,
       include: {
-        project: { select: { id: true, name: true, slug: true, key: true, description: true } },
-        users: { select: { id: true, name: true, email: true, image: true } },
-        userStories: { select: { id: true, title: true, status: true, storyPoints: true, priority: true } },
-        items: { select: { id: true, name: true, type: true, status: true, priority: true } },
-        _count: { select: { users: true, userStories: true, items: true, timeEntries: true, files: true } },
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        _count: {
+          select: {
+            userStories: true,
+            Tasks: true,
+            timeEntries: true,
+          },
+        },
       },
     });
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: updatedSprint,
-        message: "Sprint mis à jour avec succès",
-      },
-      { status: 200 }
-    );
+    const response: ApiResponse<any> = {
+      success: true,
+      data: updatedSprint,
+      message: 'Sprint mis à jour avec succès',
+      timestamp: new Date().toISOString(),
+    };
 
-  } catch (error: unknown) {
-    console.error("PUT /api/sprints/[id] error:", error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Erreur lors de la mise à jour du sprint",
-        details: error instanceof Error ? error.message : "Erreur inconnue",
-      },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error('Erreur PUT /api/sprints/[id]:', error);
+    const errorResponse: ApiResponse = {
+      success: false,
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Erreur inconnue',
+      timestamp: new Date().toISOString(),
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }
 
-// ✅ CORRECTION : Signature correcte pour DELETE
+// DELETE /api/sprints/[id] - Supprimer un sprint
 export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-): Promise<NextResponse> {
+  { params }: RouteParams
+): Promise<NextResponse<ApiResponse>> {
   try {
-    // ✅ Await des params car ils sont Promise dans Next.js 15
-    const { id } = await context.params;
+    const { id } = await params;
 
-    const existingSprint = await prisma.sprint.findUnique({
+    // Validation de l'ID
+    if (!id || typeof id !== 'string') {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Validation error',
+        message: 'ID de sprint invalide',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
+    }
+
+    // Vérifier que le sprint existe et récupérer ses relations
+    const sprint = await prisma.sprint.findUnique({
       where: { id },
-      select: { id: true, name: true, status: true },
+      include: {
+        project: {
+          select: { id: true, isActive: true },
+        },
+        _count: {
+          select: {
+            userStories: true,
+            Tasks: true,
+            timeEntries: true,
+          },
+        },
+      },
     });
 
-    if (!existingSprint) {
-      return NextResponse.json(
-        { success: false, error: "Sprint non trouvé" },
-        { status: 404 }
-      );
-    }
-
-    // Ne pas supprimer un sprint actif
-    if (existingSprint.status === SprintStatus.ACTIVE) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Impossible de supprimer un sprint actif",
-          details: "Veuillez d'abord terminer ou annuler le sprint",
-        },
-        { status: 409 }
-      );
-    }
-
-    await prisma.sprint.delete({ where: { id } });
-
-    return NextResponse.json(
-      {
-        success: true,
-        data: { id: existingSprint.id, name: existingSprint.name },
-        message: "Sprint supprimé avec succès",
-      },
-      { status: 200 }
-    );
-
-  } catch (error: unknown) {
-    console.error("DELETE /api/sprints/[id] error:", error);
-    return NextResponse.json(
-      {
+    if (!sprint) {
+      const errorResponse: ApiResponse = {
         success: false,
-        error: "Erreur lors de la suppression du sprint",
-        details: error instanceof Error ? error.message : "Erreur inconnue",
-      },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
+        error: 'Not found',
+        message: 'Sprint non trouvé',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 404 });
+    }
+
+    // Vérifications de sécurité
+    if (!sprint.project.isActive) {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Forbidden',
+        message: 'Impossible de supprimer un sprint dans un projet inactif',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 403 });
+    }
+
+    if (sprint.status === 'ACTIVE') {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Conflict',
+        message: 'Impossible de supprimer un sprint actif. Changez son statut d\'abord.',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 409 });
+    }
+
+    // Transaction pour supprimer le sprint et nettoyer les relations
+    await prisma.$transaction(async (tx: { userStory: { updateMany: (arg0: { where: { sprints: { some: { id: string; }; }; }; data: {}; }) => any; }; task: { updateMany: (arg0: { where: { sprints: { some: { id: string; }; }; }; data: {}; }) => any; }; timeEntry: { deleteMany: (arg0: { where: { sprintId: string; }; }) => any; }; sprint: { delete: (arg0: { where: { id: string; }; }) => any; }; }) => {
+      // Détacher les user stories et tâches du sprint
+      await tx.userStory.updateMany({
+        where: { sprints: { some: { id } } },
+        data: {},
+      });
+
+      await tx.task.updateMany({
+        where: { sprints: { some: { id } } },
+        data: {},
+      });
+
+      // Supprimer les entrées de temps liées
+      await tx.timeEntry.deleteMany({
+        where: { sprintId: id },
+      });
+
+      // Supprimer le sprint
+      await tx.sprint.delete({
+        where: { id },
+      });
+    });
+
+    const response: ApiResponse = {
+      success: true,
+      message: 'Sprint supprimé avec succès',
+      timestamp: new Date().toISOString(),
+    };
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error('Erreur DELETE /api/sprints/[id]:', error);
+    const errorResponse: ApiResponse = {
+      success: false,
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Erreur inconnue',
+      timestamp: new Date().toISOString(),
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }

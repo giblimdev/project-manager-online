@@ -155,15 +155,17 @@ model Project {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   channels    Channel[] /// Canaux de discussion
-  features    Feature[]
-  fields      fields[] /// Champs personnalisés
-  files       File[]
   initiatives Initiative[]
-  members     ProjectMember[]
+  epic  Epic[]
   sprints     Sprint[]
+  userStory UserStory[]
+  features    Feature[]
+  files       File[]
+  members     ProjectMember[]
   templates   Template[]
+  fields      fields[] /// Champs personnalisés
   user        User[]          @relation("ProjectOwner") /// Propriétaires du projet
-
+//team        Team[]
   @@map("projects")
   Task Task[]
 }
@@ -225,6 +227,7 @@ model Epic {
   userstories  UserStory[]
 tasks Task[]
   @@map("epics")
+  Project Project[]
 }
 
 model Feature {
@@ -245,14 +248,14 @@ model Feature {
   position           Int                 @default(0)
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
-  epicId             String
+  epicId             String?
   parentId           String?
-  projectId          String?
+  projectId          String
   userId             String?
   dependencies       FeatureDependency[] @relation("DependentFeature")
   dependents         FeatureDependency[] @relation("DependsOnFeature")
   Tasks Task[]
-  epic               Epic                @relation(fields: [epicId], references: [id], onDelete: Cascade)
+  epic               Epic?                @relation(fields: [epicId], references: [id], onDelete: Cascade)
   parent             Feature?            @relation("FeatureHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
   children           Feature[]           @relation("FeatureHierarchy")
   Project            Project?            @relation(fields: [projectId], references: [id])
@@ -312,6 +315,7 @@ model UserStory {
   epic               Epic[]
   tasks Task[]
   @@map("user_stories")
+  Project Project[]
 }
 
 model UserStoryDependency {
@@ -347,7 +351,7 @@ model Task {
   completedAt    DateTime?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  projectId          String?
+  projectId          String
   creatorId      String
   comments       Comment[]
   files          File[]

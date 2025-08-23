@@ -1,22 +1,15 @@
-// @/app/projects/[id]/features/page.tsx
-
+// @/app/projects/features/page.tsx
 // Rôle : Page principale pour la gestion CRUD des features avec modes d'affichage multiples
-// Responsabilités : Orchestration composants, gestion état global, modals, sélection mode affichage
-// Composants utilisés : FeatureListSimple, FeatureTreeView, FeatureDetailView, FeatureForm, DisplayModeSelector
-// Hooks utilisés : useFeatures, useSelectedEpicData, useState
-// Libs externes : sonner (pour les toasts), lucide-react (icônes)
-// Types utilisés : SimpleFeature, FeatureFormData, FeatureWithHierarchy, FeatureDisplayMode
-// Utilisé par : navigation principale, routing features
 
 "use client";
 
-import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card"; 
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  DialogDescription, 
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -30,40 +23,48 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+import { FeatureDisplayMode } from "@/types/feature";
 import { FeatureListSimple } from "@/components/features/views/FeatureListSimple";
-import { FeatureTreeView } from "@/components/features//views/FeatureViewBranch";
+import { FeatureTreeView } from "@/components/features/views/FeatureViewBranch";
 import { FeatureList } from "@/components/features/views/FeatureList";
 import { FeatureForm } from "@/components/features/FeatureForm";
 import { DisplayModeSelector } from "@/components/features/FeatureDisplay";
-import { useFeatures, type FeatureFormData } from "@/hooks/useFeatures";
+
 import {
-  useSelectedEpicData,
-  useEpicStoreHydration,
-} from "@/stores/useSelectedEpicStore";
+  useSelectedProjectData,
+  useProjectStoreHydration,
+  useProjectActions,
+  useProjectLoading,
+  useProjectError,
+} from "@/stores/useSelectedProjectStore"; 
+
+import { useFeatures } from "@/hooks/useFeatures";
 import {
   Plus,
   AlertCircle,
   Loader2,
   ArrowUpDown,
   Settings,
+  FolderOpen,
 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  FeatureDisplayMode,
-  FeatureWithHierarchy,
-  SimpleFeature,
-  ReorderRequest,
-} from "@/types/feature";
 import Link from "next/link";
 
 export default function FeaturesPage(): React.JSX.Element {
+  const selectedProject = useSelectedProjectData();
+  const isHydrated = useProjectStoreHydration();
+  const projectLoading = useProjectLoading();
+  const projectError = useProjectError();
+  const { refreshProject } = useProjectActions();
+
   const {
     features,
     availableParents,
     featuresSimple,
     featuresTree,
-    isLoading,
-    error,
+    isLoading: featuresLoading,
+    error: featuresError,
     displayMode,
     createFeature,
     updateFeature,
@@ -73,139 +74,121 @@ export default function FeaturesPage(): React.JSX.Element {
     reorderFeatures,
     setDisplayMode,
     getDisplayConfig,
-  } = useFeatures();
+    refetchFeatures,
+  } = useFeatures(selectedProject?.id);
 
-  const selectedEpic = useSelectedEpicData();
-  const isHydrated = useEpicStoreHydration();
-
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState<boolean>(false);
-  const [selectedFeature, setSelectedFeature] =
-    useState<FeatureWithHierarchy | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const config = getDisplayConfig();
+  const isLoading = projectLoading || featuresLoading;
+  const error = projectError || featuresError;
 
-  // Handlers pour les composants d'affichage
+  useEffect(() => {
+    if (selectedProject?.id && isHydrated) {
+      refetchFeatures()?.catch((err: any) => {
+        toast.error("Erreur de récupération des features");
+        console.error('refetchFeatures failed', err);
+      });
+    }
+  }, [selectedProject?.id, isHydrated]);
+
   const handleCreateFeature = (): void => {
     setSelectedFeature(null);
     setIsCreateModalOpen(true);
   };
 
-  const handleEditFeature = (feature: SimpleFeature): void => {
-    const featureWithHierarchy = features.find((f) => f.id === feature.id);
-    setSelectedFeature(featureWithHierarchy || null);
+  const handleEditFeature = (feature: any): void => {
+    const featureWithHierarchy = features.find((f: any) => f.id === feature.id) ?? null;
+    setSelectedFeature(featureWithHierarchy);
     setIsEditModalOpen(true);
   };
 
-  const handleDeleteFeature = (feature: SimpleFeature): void => {
-    const featureWithHierarchy = features.find((f) => f.id === feature.id);
-    setSelectedFeature(featureWithHierarchy || null);
+  const handleDeleteFeature = (feature: any): void => {
+    const featureWithHierarchy = features.find((f: any) => f.id === feature.id) ?? null;
+    setSelectedFeature(featureWithHierarchy);
     setIsDeleteAlertOpen(true);
   };
 
-  // Handlers pour la réorganisation
-  const handleMoveUp = async (featureId: string): Promise<boolean> => {
-    return await moveFeatureUp(featureId);
-  };
+  const handleMoveUp = async (featureId: string) => moveFeatureUp(featureId);
+  const handleMoveDown = async (featureId: string) => moveFeatureDown(featureId);
+  const handleReorderFeatures = async (reorderData: any[]) => reorderFeatures(reorderData);
 
-  const handleMoveDown = async (featureId: string): Promise<boolean> => {
-    return await moveFeatureDown(featureId);
-  };
-
-  const handleReorderFeatures = async (
-    reorderData: ReorderRequest[]
-  ): Promise<boolean> => {
-    return await reorderFeatures(reorderData);
-  };
-
-  // Tri automatique par priorité
-  const handleSortByPriority = async (): Promise<void> => {
-    if (features.length === 0) return;
-
+  const handleSortByPriority = async () => {
+    if (!features.length) return;
     const priorityOrder = { CRITICAL: 1, HIGH: 2, MEDIUM: 3, LOW: 4 };
-
     const sortedFeatures = [...features].sort((a, b) => {
-      const priorityA = priorityOrder[a.priority] || 5;
-      const priorityB = priorityOrder[b.priority] || 5;
-
-      if (priorityA !== priorityB) {
-        return priorityA - priorityB;
-      }
-
+      const priorityA = priorityOrder[a.priority as keyof typeof priorityOrder] || 5;
+      const priorityB = priorityOrder[b.priority as keyof typeof priorityOrder] || 5;
+      if (priorityA !== priorityB) return priorityA - priorityB;
       return a.name.localeCompare(b.name);
     });
-
-    const reorderData: ReorderRequest[] = sortedFeatures.map(
-      (feature, index) => ({
-        featureId: feature.id,
-        newOrder: (index + 1) * 10,
-      })
-    );
-
+    const reorderData = sortedFeatures.map((feature, index) => ({
+      featureId: feature.id,
+      newOrder: (index + 1) * 10,
+    }));
     const success = await reorderFeatures(reorderData);
-    if (success) {
-      toast.success("Features réorganisées par priorité");
-    }
+    if (success) toast.success("Features réorganisées par priorité");
   };
 
-  // Handlers pour le formulaire
-  const handleFormSubmit = async (
-    formData: FeatureFormData
-  ): Promise<boolean> => {
+  const handleFormSubmit = async (formData: any): Promise<boolean> => {
     setIsSubmitting(true);
-
     try {
-      let success: boolean;
-
-      if (selectedFeature) {
-        success = await updateFeature(selectedFeature.id, formData);
-      } else {
-        success = await createFeature(formData);
+      if (!selectedProject?.id) {
+        toast.error("Projet sélectionné manquant");
+        return false;
       }
-
+      const formDataWithProject = { ...formData, projectId: selectedProject.id };
+      let success: boolean;
+      if (selectedFeature) {
+        success = await updateFeature(selectedFeature.id, formDataWithProject);
+      } else {
+        success = await createFeature(formDataWithProject);
+      }
       if (success) {
-        toast.success(
-          `Feature ${selectedFeature ? "mise à jour" : "créée"} avec succès`
-        );
+        toast.success(`Feature ${selectedFeature ? "mise à jour" : "créée"} avec succès`);
         setIsCreateModalOpen(false);
         setIsEditModalOpen(false);
         setSelectedFeature(null);
+        await Promise.all([refetchFeatures(), refreshProject()]);
         return true;
       }
+      return false;
+    } catch (err) {
+      toast.error("Erreur lors de la soumission du formulaire");
       return false;
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleFormCancel = (): void => {
+  const handleFormCancel = () => {
     setIsCreateModalOpen(false);
     setIsEditModalOpen(false);
     setSelectedFeature(null);
   };
 
-  // Handler pour la confirmation de suppression
-  const handleConfirmDelete = async (): Promise<void> => {
+  const handleConfirmDelete = async () => {
     if (!selectedFeature) return;
-
     setIsSubmitting(true);
-
     try {
       const success = await deleteFeature(selectedFeature.id);
-
       if (success) {
         toast.success("Feature supprimée avec succès");
         setIsDeleteAlertOpen(false);
         setSelectedFeature(null);
+        await Promise.all([refetchFeatures(), refreshProject()]);
       }
+    } catch {
+      toast.error("Erreur lors de la suppression");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Rendu des composants selon le mode
   const renderFeaturesDisplay = () => {
     const baseProps = {
       features,
@@ -218,27 +201,18 @@ export default function FeaturesPage(): React.JSX.Element {
       onMoveDown: handleMoveDown,
       onReorderFeatures: handleReorderFeatures,
     };
-
     switch (displayMode) {
-      case FeatureDisplayMode.LIST:
-        return (
-          <FeatureListSimple {...baseProps} featuresSimple={featuresSimple} />
-        );
-
-      case FeatureDisplayMode.TREE:
+      case "list":
+        return <FeatureListSimple {...baseProps} featuresSimple={featuresSimple} />;
+      case "tree":
         return <FeatureTreeView {...baseProps} featuresTree={featuresTree} />;
-
-      case FeatureDisplayMode.DETAIL:
+      case "detail":
         return <FeatureList {...baseProps} />;
-
       default:
-        return (
-          <FeatureListSimple {...baseProps} featuresSimple={featuresSimple} />
-        );
+        return <FeatureListSimple {...baseProps} featuresSimple={featuresSimple} />;
     }
   };
 
-  // État de chargement initial
   if (!isHydrated) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -250,24 +224,28 @@ export default function FeaturesPage(): React.JSX.Element {
     );
   }
 
-  // État sans epic sélectionné
-  if (!selectedEpic) {
+  if (!selectedProject) {
     return (
       <div className="container mx-auto py-6 px-4">
         <Card className="max-w-2xl mx-auto">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <div className="text-center space-y-4">
               <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
-                <AlertCircle className="h-8 w-8 text-orange-600" />
+                <FolderOpen className="h-8 w-8 text-orange-600" />
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-semibold text-gray-900">
-                  Aucun Epic Sélectionné
+                  Aucun Projet Sélectionné
                 </h3>
                 <p className="text-muted-foreground text-center max-w-md">
-                  Veuillez sélectionner un epic pour gérer ses features.
-                  Utilisez le sélecteur d'epic dans la navigation.
+                  Veuillez sélectionner un projet pour gérer ses features.
+                  Utilisez le sélecteur de projet dans la navigation.
                 </p>
+                <Link href="/projects">
+                  <Button className="mt-4">
+                    Sélectionner un Projet
+                  </Button>
+                </Link>
               </div>
             </div>
           </CardContent>
@@ -278,15 +256,22 @@ export default function FeaturesPage(): React.JSX.Element {
 
   return (
     <div className="container mx-auto py-6 px-4 space-y-6">
-      {/* Header avec titre, sélecteur de mode et actions */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold text-gray-900">Features</h1>
           <div className="flex items-center gap-2 text-muted-foreground">
-            <span>Epic:</span>
+            <span>Projet:</span>
             <span className="font-medium text-gray-700">
-              {selectedEpic.name}
+              {selectedProject.name}
             </span>
+            {selectedProject.key && (
+              <>
+                <span>•</span>
+                <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                  {selectedProject.key}
+                </span>
+              </>
+            )}
             {features.length > 0 && (
               <>
                 <span>•</span>
@@ -297,22 +282,16 @@ export default function FeaturesPage(): React.JSX.Element {
             )}
           </div>
         </div>
-
-        {/* Contrôles d'affichage et actions */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          {/* ✅ Sélecteur de mode d'affichage */}
           <DisplayModeSelector
             currentMode={displayMode}
             onModeChange={setDisplayMode}
             disabled={isLoading}
           />
-
-          {/* Actions */}
           <div className="flex gap-2">
-            {/* Bouton de tri (seulement pour liste et détail) */}
             {features.length > 1 &&
-              (displayMode === FeatureDisplayMode.LIST ||
-                displayMode === FeatureDisplayMode.DETAIL) && (
+              (displayMode === "list" ||
+                displayMode === "detail") && (
                 <Button
                   variant="outline"
                   onClick={handleSortByPriority}
@@ -323,11 +302,11 @@ export default function FeaturesPage(): React.JSX.Element {
                   Trier
                 </Button>
               )}
-
             <Button
               onClick={handleCreateFeature}
               size="lg"
               className="whitespace-nowrap"
+              disabled={isLoading}
             >
               <Plus className="h-5 w-5 mr-2" />
               Nouvelle Feature
@@ -335,8 +314,6 @@ export default function FeaturesPage(): React.JSX.Element {
           </div>
         </div>
       </div>
-
-      {/* Instructions contextuelles selon le mode */}
       {features.length > 0 && (
         <Card className="bg-blue-50 border-blue-200">
           <CardContent className="pt-4">
@@ -345,18 +322,18 @@ export default function FeaturesPage(): React.JSX.Element {
               <div className="space-y-1">
                 <p className="text-sm font-medium text-blue-900">
                   Mode{" "}
-                  {displayMode === FeatureDisplayMode.LIST
+                  {displayMode === "list"
                     ? "Liste"
-                    : displayMode === FeatureDisplayMode.TREE
+                    : displayMode === "tree"
                     ? "Arbre"
                     : "Détaillé"}
                 </p>
                 <p className="text-xs text-blue-700">
-                  {displayMode === FeatureDisplayMode.LIST &&
+                  {displayMode === "list" &&
                     "Affichage compact avec titre et description. Utilisez les flèches pour réorganiser."}
-                  {displayMode === FeatureDisplayMode.TREE &&
+                  {displayMode === "tree" &&
                     "Vue hiérarchique des features. Cliquez sur les dossiers pour naviguer."}
-                  {displayMode === FeatureDisplayMode.DETAIL &&
+                  {displayMode === "detail" &&
                     "Vue complète avec toutes les informations. Drag & drop et réorganisation disponibles."}
                 </p>
               </div>
@@ -364,11 +341,7 @@ export default function FeaturesPage(): React.JSX.Element {
           </CardContent>
         </Card>
       )}
-
-      {/* ✅ Affichage selon le mode sélectionné */}
       {renderFeaturesDisplay()}
-
-      {/* Modal de création */}
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -376,12 +349,10 @@ export default function FeaturesPage(): React.JSX.Element {
               Nouvelle Feature
             </DialogTitle>
             <DialogDescription>
-              Créez une nouvelle feature pour l'epic "{selectedEpic.name}".
-              Remplissez les informations nécessaires pour définir cette
-              feature.
+              Créez une nouvelle feature pour le projet "{selectedProject.name}".
+              Remplissez les informations nécessaires pour définir cette feature.
             </DialogDescription>
           </DialogHeader>
-
           <FeatureForm
             availableParents={availableParents}
             onSubmit={handleFormSubmit}
@@ -389,11 +360,10 @@ export default function FeaturesPage(): React.JSX.Element {
             isSubmitting={isSubmitting}
             showHierarchy={true}
             className="py-4"
+            projectId={selectedProject.id}
           />
         </DialogContent>
       </Dialog>
-
-      {/* Modal d'édition */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -405,20 +375,18 @@ export default function FeaturesPage(): React.JSX.Element {
               Les modifications seront sauvegardées immédiatement.
             </DialogDescription>
           </DialogHeader>
-
           <FeatureForm
-            feature={selectedFeature}
+            feature={selectedFeature ?? undefined}
             availableParents={availableParents}
             onSubmit={handleFormSubmit}
             onCancel={handleFormCancel}
             isSubmitting={isSubmitting}
-            showHierarchy={true} 
+            showHierarchy={true}
             className="py-4"
+            projectId={selectedProject.id}
           />
-        </DialogContent> 
+        </DialogContent>
       </Dialog>
-
-      {/* Dialog de confirmation de suppression */}
       <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -427,16 +395,15 @@ export default function FeaturesPage(): React.JSX.Element {
               Supprimer la Feature
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-2">
-              <p>
-                Êtes-vous sûr de vouloir supprimer la feature{" "} 
+              <div>
+                Êtes-vous sûr de vouloir supprimer la feature{" "}
                 <span className="font-medium text-gray-900">
                   "{selectedFeature?.name}"
-                </span>{" "}
-                ?
-              </p>
+                </span>
+                {" "} ?
+              </div>
               <div className="text-sm text-red-600">
-                Cette action est irréversible et supprimera également toutes les
-                données associées.
+                Cette action est irréversible et supprimera également toutes les données associées.
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -457,9 +424,17 @@ export default function FeaturesPage(): React.JSX.Element {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <div><Button>
-        <Link href='/projects/sprints'>Sprint</Link></Button>
-        
+      <div className="flex gap-2">
+        <Button asChild>
+          <Link href="/projects/sprints">
+            Sprints du Projet
+          </Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link href="/projects">
+            Retour aux Projets
+          </Link>
+        </Button>
       </div>
     </div>
   );

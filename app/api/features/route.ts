@@ -1,68 +1,15 @@
 // @/app/api/features/route.ts
-
-// Rôle : Route API principale pour la gestion CRUD des features avec support hiérarchique complet
-// Responsabilités : CRUD features, relations parent-enfant, validation métier, gestion ordres
-// Composants utilisés : NextRequest, NextResponse, Prisma ORM, validation zod
-// Types utilisés : SimpleFeature, FeatureWithHierarchy, Priority, ApiResponse
-// Libs externes : @/lib/prisma, @/lib/generated/prisma/client
-// Utilisé par : hooks useFeatures, composants features, pages de gestion
+// RÔLE : Route API corrigée avec logs debug pour diagnostic et validation optimisée des features
 
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Priority } from "@/lib/generated/prisma/client";
-
-// Type pour une Feature simple sans relations
-export type SimpleFeature = {
-  id: string;
-  name: string;
-  order: number;
-  description: string | null;
-  acceptanceCriteria: string | null;
-  priority: Priority;
-  status: string;
-  storyPoints: number | null;
-  businessValue: number | null;
-  technicalRisk: number | null;
-  effort: number | null;
-  startDate: Date | null;
-  endDate: Date | null;
-  progress: number;
-  position: number;
-  createdAt: Date;
-  updatedAt: Date;
-  epicId: string;
-  parentId: string | null;
-  projectId: string | null;
-  userId: string | null;
-};
-
-// Type pour une Feature avec relations hiérarchiques
-export interface FeatureWithHierarchy extends SimpleFeature {
-  parent?: SimpleFeature | null;
-  children?: SimpleFeature[];
-}
-
-// Type pour la réponse API standardisée
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-  timestamp: string;
-  count?: number;
-  details?: string;
-}
-
-// Type pour les statistiques de features
-interface FeatureStats {
-  total: number;
-  byStatus: Record<string, number>;
-  byPriority: Record<string, number>;
-  withParent: number;
-  withChildren: number;
-  totalStoryPoints: number;
-  averageProgress: number;
-}
+import type {
+  SimpleFeature,
+  FeatureWithHierarchy,
+  ApiResponse,
+  FeatureStats,
+} from "@/types/feature";
 
 // GET - Récupérer les features avec support hiérarchique
 export async function GET(
@@ -86,25 +33,14 @@ export async function GET(
 
     // Construction du filtre WHERE
     const whereClause: any = {};
-
-    if (epicId) {
-      whereClause.epicId = epicId;
-    }
-
-    if (projectId) {
-      whereClause.projectId = projectId;
-    }
-
-    if (status) {
-      whereClause.status = status;
-    }
-
+    if (projectId) whereClause.projectId = projectId;
+    if (epicId) whereClause.epicId = epicId;
+    if (status) whereClause.status = status;
     if (priority && Object.values(Priority).includes(priority as Priority)) {
       whereClause.priority = priority as Priority;
     }
-
     if (parentId === "null") {
-      whereClause.parentId = null; // Features racines
+      whereClause.parentId = null;
     } else if (parentId) {
       whereClause.parentId = parentId;
     }
@@ -134,7 +70,6 @@ export async function GET(
       userId: true,
     };
 
-    // Ajouter les relations si demandées
     if (includeHierarchy) {
       selectConfig.parent = {
         select: {
@@ -148,6 +83,10 @@ export async function GET(
           endDate: true,
           createdAt: true,
           updatedAt: true,
+          epicId: true,
+          parentId: true,
+          projectId: true,
+          userId: true,
         },
       };
       selectConfig.children = {
@@ -163,8 +102,15 @@ export async function GET(
           endDate: true,
           createdAt: true,
           updatedAt: true,
+          epicId: true,
+          parentId: true,
+          projectId: true,
+          userId: true,
         },
         orderBy: [{ order: "asc" as const }, { position: "asc" as const }],
+      };
+      selectConfig.epic = {
+        select: { id: true, name: true, status: true },
       };
     }
 
@@ -178,12 +124,10 @@ export async function GET(
         { createdAt: "desc" as const },
       ],
     };
-
     if (limit) {
       queryOptions.take = limit;
       queryOptions.skip = offset;
     }
-
     const features = await prisma.feature.findMany(queryOptions);
 
     // Calculer les statistiques si demandées
@@ -207,23 +151,14 @@ export async function GET(
       let totalProgress = 0;
       let withParent = 0;
       let withChildren = 0;
-
       allFeatures.forEach((feature) => {
-        // Statuts
         byStatus[feature.status] = (byStatus[feature.status] || 0) + 1;
-
-        // Priorités
         byPriority[feature.priority] = (byPriority[feature.priority] || 0) + 1;
-
-        // Hiérarchie
         if (feature.parentId) withParent++;
         if (feature.children && feature.children.length > 0) withChildren++;
-
-        // Métriques
         if (feature.storyPoints) totalStoryPoints += feature.storyPoints;
         totalProgress += feature.progress;
       });
-
       stats = {
         total: allFeatures.length,
         byStatus,
@@ -243,15 +178,10 @@ export async function GET(
       count: features.length,
       timestamp: new Date().toISOString(),
     };
-
-    if (stats) {
-      (response as any).stats = stats;
-    }
-
+    if (stats) (response as any).stats = stats;
     return NextResponse.json(response);
   } catch (error: any) {
     console.error("Erreur lors de la récupération des features:", error);
-
     return NextResponse.json(
       {
         success: false,
@@ -265,7 +195,7 @@ export async function GET(
   }
 }
 
-// POST - Créer une nouvelle feature avec validation complète
+// POST - Créer une nouvelle feature avec validation complète et debug
 export async function POST(
   request: NextRequest
 ): Promise<NextResponse<ApiResponse<SimpleFeature>>> {
@@ -273,7 +203,9 @@ export async function POST(
     let body: any;
     try {
       body = await request.json();
+      console.log("🔍 DEBUG - Payload reçu pour création feature:", JSON.stringify(body, null, 2));
     } catch (parseError) {
+      console.error("❌ Erreur parsing JSON:", parseError);
       return NextResponse.json(
         {
           success: false,
@@ -290,6 +222,7 @@ export async function POST(
       typeof body.name !== "string" ||
       body.name.trim().length === 0
     ) {
+      console.error("❌ Validation échouée: name manquant ou invalide");
       return NextResponse.json(
         {
           success: false,
@@ -300,19 +233,21 @@ export async function POST(
       );
     }
 
-    if (!body.epicId || typeof body.epicId !== "string") {
+    // CORRECTION CRITIQUE : projectId est maintenant obligatoire (pas epicId)
+    if (!body.projectId || typeof body.projectId !== "string") {
+      console.error("❌ Validation échouée: projectId manquant");
       return NextResponse.json(
         {
           success: false,
-          error: "L'epicId est requis",
+          error: "Le projectId est requis",
           timestamp: new Date().toISOString(),
         },
         { status: 400 }
       );
     }
 
-    // Validation des champs optionnels
     if (body.priority && !Object.values(Priority).includes(body.priority)) {
+      console.error("❌ Validation échouée: priority invalide");
       return NextResponse.json(
         {
           success: false,
@@ -337,6 +272,7 @@ export async function POST(
       if (body[field] !== undefined && body[field] !== null) {
         const value = Number(body[field]);
         if (isNaN(value) || value < 0) {
+          console.error(`❌ Validation échouée: ${field} invalide`);
           return NextResponse.json(
             {
               success: false,
@@ -346,12 +282,11 @@ export async function POST(
             { status: 400 }
           );
         }
-
-        // Validation spécifique pour les pourcentages
         if (
           ["businessValue", "technicalRisk", "progress"].includes(field) &&
           value > 100
         ) {
+          console.error(`❌ Validation échouée: ${field} > 100`);
           return NextResponse.json(
             {
               success: false,
@@ -364,39 +299,46 @@ export async function POST(
       }
     }
 
+    console.log("✅ Validation réussie, début de la transaction");
+
     // Exécuter la création en transaction
     const result = await prisma.$transaction(async (tx) => {
-      // Vérifier que l'epic existe
-      const epic = await tx.epic.findUnique({
-        where: { id: body.epicId },
+      // Vérifier que le projet existe
+      const project = await tx.project.findUnique({
+        where: { id: body.projectId },
         select: { id: true, name: true, status: true },
       });
-
-      if (!epic) {
-        throw new Error("Epic non trouvé");
+      if (!project) throw new Error("Projet non trouvé");
+      if (project.status === "CANCELLED" || project.status === "ARCHIVED") {
+        throw new Error(
+          "Impossible de créer une feature dans un projet annulé ou archivé"
+        );
       }
 
-      if (epic.status === "CANCELLED" || epic.status === "ARCHIVED") {
-        throw new Error(
-          "Impossible de créer une feature dans un epic annulé ou archivé"
-        );
+      // Vérifier l'epic si fourni
+      if (body.epicId) {
+        const epic = await tx.epic.findUnique({
+          where: { id: body.epicId },
+          select: { id: true, name: true, status: true },
+        });
+        if (!epic) throw new Error("Epic non trouvé");
+        if (epic.status === "CANCELLED" || epic.status === "ARCHIVED") {
+          throw new Error(
+            "Impossible de créer une feature dans un epic annulé ou archivé"
+          );
+        }
       }
 
       // Validation du parent si fourni
       if (body.parentId) {
         const parentFeature = await tx.feature.findUnique({
           where: { id: body.parentId },
-          select: { id: true, epicId: true, order: true, status: true },
+          select: { id: true, projectId: true, order: true, status: true },
         });
-
-        if (!parentFeature) {
-          throw new Error("Feature parent non trouvée");
+        if (!parentFeature) throw new Error("Feature parent non trouvée");
+        if (parentFeature.projectId !== body.projectId) {
+          throw new Error("La feature parent doit appartenir au même projet");
         }
-
-        if (parentFeature.epicId !== body.epicId) {
-          throw new Error("La feature parent doit appartenir au même epic");
-        }
-
         if (
           parentFeature.status === "CANCELLED" ||
           parentFeature.status === "ARCHIVED"
@@ -409,23 +351,23 @@ export async function POST(
 
       // Obtenir le prochain order disponible
       const lastFeature = await tx.feature.findFirst({
-        where: { epicId: body.epicId },
+        where: { projectId: body.projectId },
         orderBy: { order: "desc" },
         select: { order: true },
       });
-
       const nextOrder =
         body.order || (lastFeature ? lastFeature.order + 10 : 1000);
 
       // Obtenir la prochaine position disponible
       const lastPosition = await tx.feature.findFirst({
-        where: { epicId: body.epicId },
+        where: { projectId: body.projectId },
         orderBy: { position: "desc" },
         select: { position: true },
       });
-
       const nextPosition =
         body.position || (lastPosition ? lastPosition.position + 1 : 0);
+
+      console.log(`🔧 Création feature avec order: ${nextOrder}, position: ${nextPosition}`);
 
       // Créer la feature
       return await tx.feature.create({
@@ -444,9 +386,9 @@ export async function POST(
           endDate: body.endDate ? new Date(body.endDate) : null,
           progress: body.progress ? Number(body.progress) : 0,
           position: nextPosition,
-          epicId: body.epicId,
+          epicId: body.epicId || null,
           parentId: body.parentId || null,
-          projectId: body.projectId || null,
+          projectId: body.projectId,
           userId: body.userId || null,
         },
         select: {
@@ -475,6 +417,8 @@ export async function POST(
       });
     });
 
+    console.log("✅ Feature créée avec succès:", result.id);
+
     return NextResponse.json(
       {
         success: true,
@@ -485,9 +429,7 @@ export async function POST(
       { status: 201 }
     );
   } catch (error: any) {
-    console.error("Erreur lors de la création de la feature:", error);
-
-    // Gestion des erreurs spécifiques de Prisma
+    console.error("❌ Erreur lors de la création de la feature:", error);
     if (error?.code === "P2002") {
       return NextResponse.json(
         {
@@ -502,7 +444,6 @@ export async function POST(
         { status: 409 }
       );
     }
-
     if (error?.code === "P2003") {
       return NextResponse.json(
         {
@@ -516,7 +457,6 @@ export async function POST(
         { status: 400 }
       );
     }
-
     if (error?.code === "P2025") {
       return NextResponse.json(
         {
@@ -527,12 +467,12 @@ export async function POST(
         { status: 404 }
       );
     }
-
     // Erreurs métier personnalisées
     if (
+      error?.message?.includes("Projet non trouvé") ||
       error?.message?.includes("Epic non trouvé") ||
       error?.message?.includes("Feature parent non trouvée") ||
-      error?.message?.includes("appartenir au même epic") ||
+      error?.message?.includes("appartenir au même") ||
       error?.message?.includes("annulé ou archivé")
     ) {
       return NextResponse.json(
@@ -544,7 +484,6 @@ export async function POST(
         { status: 400 }
       );
     }
-
     return NextResponse.json(
       {
         success: false,

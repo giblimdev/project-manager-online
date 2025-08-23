@@ -1,329 +1,485 @@
-// @/app/projects/sprints/page.tsx
+// app/projects/sprints/page.tsx
 /**
- * RÔLE ET RESPONSABILITÉS:
- * - Page de gestion des sprints d'un projet
- * - Filtrage et affichage des sprints avec gestion d'erreur
- * - CRUD complet des sprints avec validation
- * - Utilise: Next.js 15, Zustand store, React hooks, TypeScript strict
- * - COMPOSANTS: SprintList, SprintForm, SprintFilter, SprintDisplay
- * - API: /api/sprints pour les opérations CRUD
+ * Rôle: Page principale de gestion des sprints pour un projet
+ * Responsabilités:
+ * - Interface CRUD complète pour les sprints
+ * - Affichage des sprints en liste/cards responsives
+ * - Intégration avec le store Zustand du projet sélectionné
+ * - Gestion des états de chargement et d'erreur
+ * - Drag & drop pour réorganiser les sprints
+ * 
+ * Composants utilisés:
+ * - shadcn/ui: Button, Card, Dialog, Form, Input, Select, Textarea
+ * - lucide-react: Plus, Edit, Trash2, Calendar, Users, Target
+ * - React Hook Form avec Zod validation
+ * - Date-fns pour formatage des dates
+ * - Store Zustand pour l'état global du projet
  */
 
-"use client";
+'use client';
 
-import React, { useEffect, useMemo, useState, Suspense } from "react";
-import {
-  useProjectStore,
-  useProjectStoreHydration,
-} from "@/stores/useSelectedProjectStore";
-import { useSearchParams } from "next/navigation";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { PlusCircle, RefreshCw, AlertTriangle } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import SprintDisplay from "@/components/sprints/SprintDisplay";
-import SprintList from "@/components/sprints/SprintList";
-import SprintFilter from "@/components/sprints/SprintFilter";
-import SprintForm from "@/components/sprints/SprintForm";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sprint, SprintStatus } from "@/lib/generated/prisma/client";
+import React, { useState, useEffect, useCallback } from 'react';
+import { Plus, Calendar, Users, Target, Edit, Trash2, GripVertical, Clock, BarChart3 } from 'lucide-react';
+import { format, differenceInDays, isAfter, isBefore } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
-// Interface pour les sprints avec stats
-interface SprintWithStats extends Sprint {
-  _count?: {
-    users: number;
-    userStories: number;
-    items: number;
-    timeEntries: number;
-    files: number;
-  };
+// Shadcn UI Components
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+// Store et types
+import { useProjectStore } from '@/stores/useSelectedProjectStore';
+import { SprintFormDialog } from '@/components/sprints/SprintForm';
+import { DeleteSprintDialog } from '@/components/sprints/delete-sprint-dialog';
+ 
+// Types basés sur le schéma Prisma
+type SprintStatus = 'PLANNED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+
+interface Sprint {
+  id: string;
+  name: string;
+  order: number;
+  goal: string | null;
+  description: string | null;
+  startDate: Date;
+  endDate: Date;
+  status: SprintStatus;
+  capacity: number | null;
+  velocity: number | null;
+  burndownData: Record<string, any> | null;
+  retrospective: Record<string, any> | null;
+  projectId: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-// Interface pour les filtres
-interface SprintFilterType {
-  search: string;
-  status: SprintStatus | "";
+interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
 }
 
-// ✅ CORRECTION : Composant séparé pour useSearchParams avec Suspense
-function SprintPageContent() {
-  // Hydratation du store
-  const isHydrated = useProjectStoreHydration();
-  const {
-    selectedProjectId,
-    projectData,
-    isLoading: isProjectLoading,
-    error: projectError,
-    loadProjectData,
-  } = useProjectStore();
+const SprintsPage: React.FC = () => {
+  // État local
+  const [sprints, setSprints] = useState<Sprint[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'cards'>('cards');
+  const [selectedSprint, setSelectedSprint] = useState<Sprint | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  // ✅ Maintenant dans un composant Suspense
-  const searchParams = useSearchParams();
-  const viewMode = (searchParams.get("view") as "list" | "card") || "list";
+  // Store Zustand
+  const { selectedProjectId, projectData, isHydrated } = useProjectStore();
 
-  // États locaux
-  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-  const [editingSprint, setEditingSprint] = useState<Sprint | null>(null);
-  const [sprints, setSprints] = useState<SprintWithStats[]>([]);
-  const [isLoadingSprints, setIsLoadingSprints] = useState<boolean>(true);
-  const [filter, setFilter] = useState<SprintFilterType>({
-    search: "",
-    status: "",
-  });
+  // Chargement initial des sprints
+  const loadSprints = useCallback(async () => {
+    if (!selectedProjectId || !isHydrated) return;
 
-  // Chargement initial des données
-  useEffect(() => {
-    if (isHydrated && selectedProjectId) {
-      loadProjectData(selectedProjectId);
-      fetchSprints();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHydrated, selectedProjectId]);
+    setIsLoading(true);
+    setError(null);
 
-  // Gestion des erreurs projet
-  useEffect(() => {
-    if (projectError) {
-      toast.error("Erreur de chargement du projet", {
-        description: projectError,
-      });
-    }
-  }, [projectError]);
-
-  // Récupération des sprints depuis l'API
-  const fetchSprints = async (): Promise<void> => {
-    if (!selectedProjectId) return;
-    setIsLoadingSprints(true);
     try {
-      const res = await fetch(`/api/sprints?projectId=${selectedProjectId}`);
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      const response = await fetch(`/api/sprints?projectId=${selectedProjectId}`, {
+        cache: 'no-store',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
       }
-      const data = await res.json();
-      // Console.log pour debug
-      console.log("Sprints API response:", data);
+
+      const result: ApiResponse<Sprint[]> = await response.json();
       
-      if (data.success && data.data && Array.isArray(data.data.sprints)) {
-        setSprints(data.data.sprints);
-      } else if (data.success && Array.isArray(data.data)) {
-        // Cas fallback si data.data est directement un array
-        setSprints(data.data);
-      } else {
-        setSprints([]);
-        throw new Error(data.error || "Erreur lors du chargement des sprints");
+      if (!result.success) {
+        throw new Error(result.error || 'Erreur lors du chargement des sprints');
       }
-    } catch (error) {
-      console.error("Erreur fetchSprints:", error);
-      toast.error("Erreur", {
-        description: error instanceof Error ? error.message : "Erreur inconnue",
+
+      const sprintsData = result.data || [];
+      
+      // Normalisation des dates
+      const normalizedSprints = sprintsData.map(sprint => ({
+        ...sprint,
+        startDate: new Date(sprint.startDate),
+        endDate: new Date(sprint.endDate),
+        createdAt: new Date(sprint.createdAt),
+        updatedAt: new Date(sprint.updatedAt),
+      }));
+
+      // Tri par ordre puis par date de création
+      normalizedSprints.sort((a, b) => {
+        if (a.order !== b.order) return a.order - b.order;
+        return a.createdAt.getTime() - b.createdAt.getTime();
       });
-      setSprints([]);
+
+      setSprints(normalizedSprints);
+    } catch (err) {
+      console.error('Erreur chargement sprints:', err);
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
     } finally {
-      setIsLoadingSprints(false);
+      setIsLoading(false);
     }
-  };
+  }, [selectedProjectId, isHydrated]);
 
-  // Filtrage des sprints côté client
-  const filteredSprints = useMemo((): SprintWithStats[] => {
-    if (!Array.isArray(sprints)) return [];
-    return sprints.filter((sprint) => {
-      if (!sprint || typeof sprint !== "object") return false;
-      const matchesSearch = filter.search
-        ? sprint.name?.toLowerCase().includes(filter.search.toLowerCase()) ||
-          sprint.description
-            ?.toLowerCase()
-            .includes(filter.search.toLowerCase()) ||
-          sprint.goal?.toLowerCase().includes(filter.search.toLowerCase())
-        : true;
-      const matchesStatus = filter.status
-        ? sprint.status === filter.status
-        : true;
-      return matchesSearch && matchesStatus;
-    });
-  }, [sprints, filter]);
+  // Effet pour charger les sprints
+  useEffect(() => {
+    loadSprints();
+  }, [loadSprints]);
 
-  // Gestion des actions UI
-  const handleCreateSprint = (): void => {
-    setEditingSprint(null);
-    setIsFormOpen(true);
-  };
+  // Création d'un nouveau sprint
+  const handleCreateSprint = async (sprintData: Partial<Sprint>) => {
+    if (!selectedProjectId) return;
 
-  const handleEditSprint = (sprint: Sprint): void => {
-    setEditingSprint(sprint);
-    setIsFormOpen(true);
-  };
-
-  const handleDeleteSprint = async (sprintId: string): Promise<void> => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce sprint ?")) return;
     try {
-      const res = await fetch(`/api/sprints/${sprintId}`, {
-        method: "DELETE",
+      const response = await fetch('/api/sprints', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...sprintData,
+          projectId: selectedProjectId,
+          order: sprints.length + 1,
+        }),
       });
-      if (res.ok) {
-        toast.success("Sprint supprimé avec succès");
-        await fetchSprints();
-      } else {
-        const data = await res.json();
-        throw new Error(data.error || "Échec de la suppression");
+
+      const result: ApiResponse<Sprint> = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Erreur lors de la création');
       }
-    } catch (error) {
-      toast.error("Erreur", {
-        description: error instanceof Error ? error.message : "Erreur inconnue",
-      });
+
+      await loadSprints();
+      setIsFormOpen(false);
+    } catch (err) {
+      console.error('Erreur création sprint:', err);
+      setError(err instanceof Error ? err.message : 'Erreur création');
     }
   };
 
-  // Changement de vue
-  const handleViewModeChange = (mode: "list" | "card"): void => {
-    const params = new URLSearchParams(searchParams);
-    params.set("view", mode);
-    window.history.replaceState(null, "", `?${params.toString()}`);
+  // Modification d'un sprint
+  const handleUpdateSprint = async (sprintData: Partial<Sprint>) => {
+    if (!selectedSprint) return;
+
+    try {
+      const response = await fetch(`/api/sprints/${selectedSprint.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sprintData),
+      });
+
+      const result: ApiResponse<Sprint> = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Erreur lors de la modification');
+      }
+
+      await loadSprints();
+      setIsFormOpen(false);
+      setSelectedSprint(null);
+    } catch (err) {
+      console.error('Erreur modification sprint:', err);
+      setError(err instanceof Error ? err.message : 'Erreur modification');
+    }
   };
 
-  // Gestion du succès du formulaire
-  const handleFormSuccess = async (): Promise<void> => {
-    await fetchSprints();
-    setIsFormOpen(false);
-    setEditingSprint(null);
+  // Suppression d'un sprint
+  const handleDeleteSprint = async () => {
+    if (!selectedSprint) return;
+
+    try {
+      const response = await fetch(`/api/sprints/${selectedSprint.id}`, {
+        method: 'DELETE',
+      });
+
+      const result: ApiResponse = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Erreur lors de la suppression');
+      }
+
+      await loadSprints();
+      setIsDeleteOpen(false);
+      setSelectedSprint(null);
+    } catch (err) {
+      console.error('Erreur suppression sprint:', err);
+      setError(err instanceof Error ? err.message : 'Erreur suppression');
+    }
   };
 
-  // Affichage du chargement
-  if (!isHydrated || isProjectLoading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-10 w-1/3" />
-        <Skeleton className="h-16 w-full" />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[...Array(3)].map((_, i) => (
-            <Skeleton key={i} className="h-32 w-full" />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  // Modification de l'ordre d'un sprint
+  const handleUpdateSprintOrder = async (sprintId: string, newOrder: number) => {
+    try {
+      const response = await fetch(`/api/sprints/${sprintId}/order`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: newOrder }),
+      });
 
-  // Gestion des erreurs de sélection de projet
-  if (!selectedProjectId || !projectData) {
+      const result: ApiResponse = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Erreur lors de la réorganisation');
+      }
+
+      await loadSprints();
+    } catch (err) {
+      console.error('Erreur réorganisation:', err);
+      setError(err instanceof Error ? err.message : 'Erreur réorganisation');
+    }
+  };
+
+  // Utilitaires d'affichage
+  const getStatusColor = (status: SprintStatus): string => {
+    switch (status) {
+      case 'PLANNED': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'ACTIVE': return 'bg-green-100 text-green-800 border-green-200';
+      case 'COMPLETED': return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'CANCELLED': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getStatusLabel = (status: SprintStatus): string => {
+    switch (status) {
+      case 'PLANNED': return 'Planifié';
+      case 'ACTIVE': return 'Actif';
+      case 'COMPLETED': return 'Terminé';
+      case 'CANCELLED': return 'Annulé';
+      default: return status;
+    }
+  };
+
+  const calculateSprintProgress = (sprint: Sprint): number => {
+    if (sprint.status === 'COMPLETED') return 100;
+    if (sprint.status === 'CANCELLED') return 0;
+    
+    const now = new Date();
+    const total = differenceInDays(sprint.endDate, sprint.startDate);
+    const elapsed = differenceInDays(now, sprint.startDate);
+    
+    return Math.max(0, Math.min(100, (elapsed / total) * 100));
+  };
+
+  // Composant Card Sprint
+  const SprintCard: React.FC<{ sprint: Sprint }> = ({ sprint }) => {
+    const progress = calculateSprintProgress(sprint);
+    const daysRemaining = differenceInDays(sprint.endDate, new Date());
+    const isOverdue = isAfter(new Date(), sprint.endDate) && sprint.status === 'ACTIVE';
+
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-destructive">
-            <AlertTriangle className="h-5 w-5" />
-            Projet non sélectionné
-          </CardTitle>
+      <Card className={`transition-all hover:shadow-lg ${isOverdue ? 'border-red-300' : ''}`}>
+        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
+          <div className="flex items-start space-x-3 flex-1">
+            <div className="p-1 cursor-grab hover:bg-gray-100 rounded">
+              <GripVertical className="h-4 w-4 text-gray-400" />
+            </div>
+            <div className="flex-1">
+              <CardTitle className="text-lg font-semibold">{sprint.name}</CardTitle>
+              {sprint.goal && (
+                <p className="text-sm text-gray-600 mt-1">{sprint.goal}</p>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Badge className={getStatusColor(sprint.status)}>
+              {getStatusLabel(sprint.status)}
+            </Badge>
+            <div className="flex space-x-1">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  setSelectedSprint(sprint);
+                  setIsFormOpen(true);
+                }}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  setSelectedSprint(sprint);
+                  setIsDeleteOpen(true);
+                }}
+              >
+                <Trash2 className="h-4 w-4 text-red-500" />
+              </Button>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            Veuillez sélectionner un projet pour accéder à la gestion des sprints.
-          </p>
+        <CardContent className="space-y-4">
+          {sprint.description && (
+            <p className="text-sm text-gray-700">{sprint.description}</p>
+          )}
+          
+          {/* Dates et durée */}
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center space-x-2">
+              <Calendar className="h-4 w-4 text-gray-400" />
+              <span>
+                {format(sprint.startDate, 'dd MMM', { locale: fr })} - {' '}
+                {format(sprint.endDate, 'dd MMM yyyy', { locale: fr })}
+              </span>
+            </div>
+            <div className="flex items-center space-x-1 text-gray-500">
+              <Clock className="h-4 w-4" />
+              <span>{Math.abs(daysRemaining)} jour{Math.abs(daysRemaining) > 1 ? 's' : ''}</span>
+              {isOverdue && <span className="text-red-500 font-medium">(en retard)</span>}
+            </div>
+          </div>
+
+          {/* Progression */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">Progression</span>
+              <span className="font-medium">{Math.round(progress)}%</span>
+            </div>
+            <Progress value={progress} className="h-2" />
+          </div>
+
+          {/* Métriques */}
+          <div className="grid grid-cols-2 gap-4 pt-2 border-t">
+            <div className="flex items-center space-x-2">
+              <Target className="h-4 w-4 text-blue-500" />
+              <div>
+                <p className="text-xs text-gray-500">Capacité</p>
+                <p className="font-medium">{sprint.capacity || 'N/A'}</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <BarChart3 className="h-4 w-4 text-green-500" />
+              <div>
+                <p className="text-xs text-gray-500">Vélocité</p>
+                <p className="font-medium">{sprint.velocity || 'N/A'}</p>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
+  };
+
+  // Affichage conditionnel
+  if (!isHydrated) {
+    return (
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        <Skeleton className="h-8 w-64" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-64 w-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!selectedProjectId) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Alert>
+          <AlertDescription>
+            Aucun projet sélectionné. Veuillez sélectionner un projet pour gérer les sprints.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
-      {/* En-tête avec actions */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div className="container mx-auto px-4 py-8 space-y-6">
+      {/* En-tête */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Sprints du projet</h1>
-          <p className="text-muted-foreground">
-            {projectData.name} - {filteredSprints.length} sprint(s)
+          <h1 className="text-3xl font-bold text-gray-900">Sprints</h1>
+          <p className="text-gray-600 mt-1">
+            Gérez les sprints de {projectData?.name}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchSprints}
-            disabled={isLoadingSprints}
-          >
-            <RefreshCw
-              className={`mr-2 h-4 w-4 ${
-                isLoadingSprints ? "animate-spin" : ""
-              }`}
-            />
-            Actualiser
-          </Button>
-          <Button size="sm" onClick={handleCreateSprint}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Nouveau sprint
+        <div className="flex items-center space-x-3">
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'list' | 'cards')}>
+            <TabsList>
+              <TabsTrigger value="cards">Cards</TabsTrigger>
+              <TabsTrigger value="list">Liste</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Button onClick={() => setIsFormOpen(true)} className="flex items-center space-x-2">
+            <Plus className="h-4 w-4" />
+            <span>Nouveau Sprint</span>
           </Button>
         </div>
       </div>
 
-      {/* Contrôles (filtres et vue) */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row">
-        <SprintFilter
-          value={filter}
-          onChange={setFilter}
-          disabled={isLoadingSprints}
-          resultCount={filteredSprints.length}
-        />
-        <SprintDisplay viewMode={viewMode} onChange={handleViewModeChange} />
-      </div>
-
-      {/* Liste des sprints */}
-      {isLoadingSprints ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[...Array(3)].map((_, i) => (
-            <Skeleton key={i} className="h-32 w-full" />
-          ))}
-        </div>
-      ) : filteredSprints.length === 0 ? (
-        <Card>
-          <CardContent className="flex h-32 items-center justify-center text-center">
-            <div>
-              <p className="text-muted-foreground">
-                {sprints.length === 0
-                  ? "Ce projet n'a pas encore de sprints"
-                  : "Aucun sprint ne correspond aux filtres"}
-              </p>
-              {sprints.length === 0 && (
-                <Button className="mt-4" onClick={handleCreateSprint}>
-                  Créer un premier sprint
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <SprintList
-          sprints={filteredSprints}
-          viewMode={viewMode}
-          onEdit={handleEditSprint}
-          onDelete={handleDeleteSprint}
-        />
+      {/* Erreur */}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
 
-      {/* Formulaire modal */}
-      <SprintForm
+      {/* Contenu principal */}
+      <div className="space-y-6">
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <Skeleton key={i} className="h-64 w-full" />
+            ))}
+          </div>
+        ) : sprints.length === 0 ? (
+          <div className="text-center py-12">
+            <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Aucun sprint trouvé
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Créez votre premier sprint pour commencer à organiser votre travail.
+            </p>
+            <Button onClick={() => setIsFormOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Créer un Sprint
+            </Button>
+          </div>
+        ) : (
+          <Tabs value={viewMode} className="w-full">
+            <TabsContent value="cards" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sprints.map((sprint) => (
+                  <SprintCard key={sprint.id} sprint={sprint} />
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="list" className="space-y-4">
+              {/* Vue liste - à implémenter si nécessaire */}
+              <div className="space-y-3">
+                {sprints.map((sprint) => (
+                  <SprintCard key={sprint.id} sprint={sprint} />
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        )}
+      </div>
+
+      {/* Dialogs */}
+      <SprintFormDialog
         open={isFormOpen}
         onOpenChange={setIsFormOpen}
-        projectId={selectedProjectId}
-        sprint={editingSprint}
-        onSuccess={handleFormSuccess}
+        sprint={selectedSprint}
+        onSubmit={selectedSprint ? handleUpdateSprint : handleCreateSprint}
+      />
+
+      <DeleteSprintDialog
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+        sprint={selectedSprint}
+        onConfirm={handleDeleteSprint}
       />
     </div>
   );
-}
+};
 
-// ✅ SOLUTION : Composant principal avec Suspense boundary
-export default function SprintPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="space-y-4">
-          <Skeleton className="h-10 w-1/3" />
-          <Skeleton className="h-16 w-full" />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-32 w-full" />
-            ))}
-          </div>
-        </div>
-      }
-    >
-      <SprintPageContent />
-    </Suspense>
-  );
-}
+export default SprintsPage;

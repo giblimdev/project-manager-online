@@ -1,596 +1,295 @@
 // @/hooks/useFeatures.ts
+// RÔLE : Hook pour la gestion avancée des features d'un projet (cache, CRUD, tri, vue).
+// Les API utilisent uniquement /api/features/route.ts et /api/features/[id]/route.ts
 
-// Rôle : Hook personnalisé pour gérer les features avec modes d'affichage et réorganisation
-// Responsabilités : Fetch, cache, mutations CRUD, réorganisation ordre, conversion types complètes, transformation données
-// Composants utilisés : fetch API, gestion d'état React, localStorage
-// Libs externes : sonner (pour les notifications toast)
-// Types utilisés : types centralisés depuis @/types/feature (TRANSFORMATION COMPLÈTE DES CHAMPS)
-// Utilisé par : composants React, pages features, composants d'affichage
+"use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useSelectedEpicId } from "@/stores/useSelectedEpicStore";
-import { toast } from "sonner";
-import type { Priority } from "@/lib/generated/prisma/client";
-import {
-  FeatureWithHierarchy,
-  FeatureSimple,
-  SimpleFeature,
-  FeatureDisplayMode,
+import type {
   FeatureFormData,
-  FeatureApiData,
+  FeatureWithHierarchy,
+  SimpleFeature,
   ReorderRequest,
-  ApiResponse,
+  FeatureDisplayMode,
 } from "@/types/feature";
 
+// Exporter les types pour qu'ils soient disponibles ailleurs
+export type { SimpleFeature, ReorderRequest };
+
 interface UseFeaturesReturn {
-  // Données brutes
   features: FeatureWithHierarchy[];
-  availableParents: FeatureWithHierarchy[];
-
-  // Données transformées pour les différents modes
-  featuresSimple: FeatureSimple[];
-  featuresTree: FeatureSimple[];
-
-  // État
+  availableParents: SimpleFeature[];
+  featuresSimple: SimpleFeature[];
+  featuresTree: FeatureWithHierarchy[];
   isLoading: boolean;
   error: string | null;
   displayMode: FeatureDisplayMode;
-
-  // Actions CRUD
-  refetch: () => Promise<void>;
   createFeature: (data: FeatureFormData) => Promise<boolean>;
-  updateFeature: (
-    id: string,
-    data: Partial<FeatureFormData>
-  ) => Promise<boolean>;
+  updateFeature: (id: string, data: FeatureFormData) => Promise<boolean>;
   deleteFeature: (id: string) => Promise<boolean>;
-  getFeatureById: (id: string) => FeatureWithHierarchy | undefined;
-
-  // Actions réorganisation
   moveFeatureUp: (featureId: string) => Promise<boolean>;
   moveFeatureDown: (featureId: string) => Promise<boolean>;
   reorderFeatures: (reorderData: ReorderRequest[]) => Promise<boolean>;
-  updateFeatureOrder: (featureId: string, newOrder: number) => Promise<boolean>;
-
-  // Actions mode d'affichage
+  updateFeatureOrder: (featureId: string, newOrder: number, position?: number) => Promise<boolean>;
   setDisplayMode: (mode: FeatureDisplayMode) => void;
   getDisplayConfig: () => {
     mode: FeatureDisplayMode;
-    isListMode: boolean;
-    isTreeMode: boolean;
-    isDetailMode: boolean;
+    showHierarchy: boolean;
+    allowReorder: boolean;
+    showMetrics: boolean;
   };
+  refetchFeatures: () => Promise<void>;
+  invalidateCache: () => void;
 }
 
-// ✅ Export des types pour compatibilité (réexport depuis types centralisés)
-export type {
-  FeatureFormData,
-  SimpleFeature,
-  FeatureWithHierarchy,
-  ReorderRequest,
-  FeatureDisplayMode,
-} from "@/types/feature";
-
-// ✅ CORRECTION MAJEURE : Fonction pour transformer en données simplifiées avec TOUS les champs requis
-const transformToSimple = (
-  features: FeatureWithHierarchy[]
-): FeatureSimple[] => {
-  return features.map((feature) => ({
-    // ✅ CORRECTION : Inclusion de TOUS les champs requis par FeatureSimple (qui étend SimpleFeature)
-    id: feature.id,
-    name: feature.name,
-    order: feature.order,
-    description: feature.description,
-    acceptanceCriteria: feature.acceptanceCriteria, // ✅ Champ manquant ajouté
-    priority: feature.priority,
-    status: feature.status,
-    storyPoints: feature.storyPoints, // ✅ Champ manquant ajouté
-    businessValue: feature.businessValue, // ✅ Champ manquant ajouté
-    technicalRisk: feature.technicalRisk, // ✅ Champ manquant ajouté
-    effort: feature.effort, // ✅ Champ manquant ajouté
-    startDate: feature.startDate, // ✅ Champ manquant ajouté
-    endDate: feature.endDate, // ✅ Champ manquant ajouté
-    progress: feature.progress,
-    position: feature.position, // ✅ Champ manquant ajouté
-    createdAt: feature.createdAt, // ✅ Champ manquant ajouté
-    updatedAt: feature.updatedAt, // ✅ Champ manquant ajouté
-    epicId: feature.epicId, // ✅ Champ manquant ajouté
-    parentId: feature.parentId,
-    projectId: feature.projectId, // ✅ Champ manquant ajouté
-    userId: feature.userId, // ✅ Champ manquant ajouté
-    // ✅ Champ spécifique à FeatureSimple
-    children: feature.children
-      ? transformToSimple(feature.children)
-      : undefined,
-  }));
-};
-
-// Fonction pour construire l'arbre hiérarchique
-const buildFeatureTree = (features: FeatureSimple[]): FeatureSimple[] => {
-  const featureMap = new Map<
-    string,
-    FeatureSimple & { children: FeatureSimple[] }
-  >();
-  const rootFeatures: FeatureSimple[] = [];
-
-  // Créer une map avec children initialisés
-  features.forEach((feature) => {
-    featureMap.set(feature.id, { ...feature, children: [] });
-  });
-
-  // Construire l'arbre
-  features.forEach((feature) => {
-    const featureWithChildren = featureMap.get(feature.id)!;
-
-    if (feature.parentId) {
-      const parent = featureMap.get(feature.parentId);
-      if (parent) {
-        parent.children.push(featureWithChildren);
-      } else {
-        // Parent non trouvé, traiter comme racine
-        rootFeatures.push(featureWithChildren);
-      }
-    } else {
-      // Feature racine
-      rootFeatures.push(featureWithChildren);
-    }
-  });
-
-  // Trier les enfants par ordre
-  const sortChildren = (features: FeatureSimple[]) => {
-    features.sort((a, b) => a.order - b.order);
-    features.forEach((feature) => {
-      if ("children" in feature && feature.children) {
-        sortChildren(feature.children);
-      }
-    });
-  };
-
-  sortChildren(rootFeatures);
-  return rootFeatures;
-};
-
-// Fonctions utilitaires de conversion
-const convertFormDataToApiData = (
-  formData: FeatureFormData
-): FeatureApiData => {
-  return {
-    name: formData.name,
-    description: formData.description,
-    acceptanceCriteria: formData.acceptanceCriteria,
-    priority: formData.priority,
-    status: formData.status,
-    storyPoints: formData.storyPoints,
-    businessValue: formData.businessValue,
-    technicalRisk: formData.technicalRisk,
-    effort: formData.effort,
-    startDate: formData.startDate ? new Date(formData.startDate) : null,
-    endDate: formData.endDate ? new Date(formData.endDate) : null,
-    parentId: formData.parentId,
-  };
-};
-
-const convertPartialFormDataToApiData = (
-  formData: Partial<FeatureFormData>
-): Partial<FeatureApiData> => {
-  const apiData: Partial<FeatureApiData> = {};
-
-  Object.keys(formData).forEach((key) => {
-    if (key !== "startDate" && key !== "endDate") {
-      (apiData as any)[key] = (formData as any)[key];
-    }
-  });
-
-  if (formData.startDate !== undefined) {
-    apiData.startDate = formData.startDate
-      ? new Date(formData.startDate)
-      : null;
-  }
-
-  if (formData.endDate !== undefined) {
-    apiData.endDate = formData.endDate ? new Date(formData.endDate) : null;
-  }
-
-  return apiData;
-};
-
-export const useFeatures = (): UseFeaturesReturn => {
+export const useFeatures = (projectId?: string): UseFeaturesReturn => {
   const [features, setFeatures] = useState<FeatureWithHierarchy[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [displayMode, setDisplayModeState] = useState<FeatureDisplayMode>(
-    FeatureDisplayMode.LIST
-  );
+  const [displayMode, setDisplayMode] = useState<FeatureDisplayMode>("list" as FeatureDisplayMode);
+  const [lastFetched, setLastFetched] = useState<number | null>(null);
 
-  const selectedEpicId = useSelectedEpicId();
+  const CACHE_TTL = 2 * 60 * 1000; // 2 minutes
 
-  // ✅ Mémorisation des données transformées avec transformation complète
-  const featuresSimple = useMemo(() => transformToSimple(features), [features]);
-
-  const featuresTree = useMemo(
-    () => buildFeatureTree(featuresSimple),
-    [featuresSimple]
-  );
-
-  // Persistance du mode d'affichage
-  const setDisplayMode = useCallback((mode: FeatureDisplayMode) => {
-    setDisplayModeState(mode);
-    localStorage.setItem("features-display-mode", mode);
-  }, []);
-
-  // Récupération du mode d'affichage depuis localStorage
-  useEffect(() => {
-    const savedMode = localStorage.getItem(
-      "features-display-mode"
-    ) as FeatureDisplayMode;
-    if (savedMode && Object.values(FeatureDisplayMode).includes(savedMode)) {
-      setDisplayModeState(savedMode);
-    }
-  }, []);
-
-  // Configuration du mode d'affichage
-  const getDisplayConfig = useCallback(() => {
-    return {
-      mode: displayMode,
-      isListMode: displayMode === FeatureDisplayMode.LIST,
-      isTreeMode: displayMode === FeatureDisplayMode.TREE,
-      isDetailMode: displayMode === FeatureDisplayMode.DETAIL,
-    };
-  }, [displayMode]);
-
-  const fetchFeatures = useCallback(async (): Promise<void> => {
-    if (!selectedEpicId) {
+  // Fonction de récupération des features
+  const fetchFeatures = useCallback(async (force = false): Promise<void> => {
+    if (!projectId) {
       setFeatures([]);
-      setIsLoading(false);
       return;
     }
-
+    const now = Date.now();
+    if (!force && lastFetched && (now - lastFetched) < CACHE_TTL) return;
+    setIsLoading(true);
+    setError(null);
     try {
-      setIsLoading(true);
-      setError(null);
-
-      const url = new URL("/api/features", window.location.origin);
-      url.searchParams.set("epicId", selectedEpicId);
-      url.searchParams.set("includeHierarchy", "true");
-
-      const response = await fetch(url.toString(), {
+      const response = await fetch(`/api/features?projectId=${projectId}&includeHierarchy=true`, {
         method: "GET",
+        headers: { "Content-Type": "application/json" },
         cache: "no-store",
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const result: ApiResponse<FeatureWithHierarchy[]> = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || "Erreur inconnue");
-      }
-
-      const normalizedFeatures = (result.data || []).map((feature) => ({
-        ...feature,
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error || "Erreur lors de la récupération des features");
+      const normalizedFeatures: FeatureWithHierarchy[] = (result.data || []).map((feature: any) => ({
+        id: feature.id,
+        name: feature.name,
+        description: feature.description ?? null,
+        acceptanceCriteria: feature.acceptanceCriteria ?? null,
+        priority: feature.priority,
+        status: feature.status,
+        storyPoints: feature.storyPoints ?? null,
+        businessValue: feature.businessValue ?? null,
+        technicalRisk: feature.technicalRisk ?? null,
+        effort: feature.effort ?? null,
         startDate: feature.startDate ? new Date(feature.startDate) : null,
         endDate: feature.endDate ? new Date(feature.endDate) : null,
+        progress: feature.progress ?? 0,
+        position: feature.position ?? 0,
+        order: feature.order ?? 0,
         createdAt: new Date(feature.createdAt),
         updatedAt: new Date(feature.updatedAt),
-        parent: feature.parent
-          ? {
-              ...feature.parent,
-              startDate: feature.parent.startDate
-                ? new Date(feature.parent.startDate)
-                : null,
-              endDate: feature.parent.endDate
-                ? new Date(feature.parent.endDate)
-                : null,
-              createdAt: new Date(feature.parent.createdAt),
-              updatedAt: new Date(feature.parent.updatedAt),
-            }
-          : null,
-        children: feature.children
-          ? feature.children.map((child) => ({
-              ...child,
-              startDate: child.startDate ? new Date(child.startDate) : null,
-              endDate: child.endDate ? new Date(child.endDate) : null,
-              createdAt: new Date(child.createdAt),
-              updatedAt: new Date(child.updatedAt),
-            }))
-          : [],
+        epicId: feature.epicId ?? null,
+        parentId: feature.parentId ?? null,
+        projectId: feature.projectId,
+        userId: feature.userId ?? null,
+        parent: feature.parent ? { ...feature.parent, createdAt: new Date(feature.parent.createdAt), updatedAt: new Date(feature.parent.updatedAt) } : null,
+        children: feature.children ? feature.children.map((child: any) => ({
+          ...child,
+          createdAt: new Date(child.createdAt),
+          updatedAt: new Date(child.updatedAt)
+        })) : [],
+        epic: feature.epic ? { ...feature.epic } : null,
       }));
-
-      normalizedFeatures.sort((a, b) => a.order - b.order);
       setFeatures(normalizedFeatures);
+      setLastFetched(now);
     } catch (err) {
-      console.error("Erreur lors du fetch des features:", err);
-      const errorMessage =
-        err instanceof Error ? err.message : "Erreur inconnue";
+      console.error("Erreur fetchFeatures:", err);
+      const errorMessage = err instanceof Error ? err.message : "Erreur inconnue";
       setError(errorMessage);
       setFeatures([]);
     } finally {
       setIsLoading(false);
     }
-  }, [selectedEpicId]);
+  }, [projectId, lastFetched]);
 
-  // Calculer les parents disponibles
-  const availableParents = features.filter((feature) => {
-    return true; // À adapter selon vos besoins métier
-  });
+  useEffect(() => {
+    if (projectId) fetchFeatures();
+    else {
+      setFeatures([]);
+      setError(null);
+    }
+  }, [projectId, fetchFeatures]);
 
-  // Fonction pour récupérer une feature par ID
-  const getFeatureById = useCallback(
-    (id: string): FeatureWithHierarchy | undefined => {
-      return features.find((feature) => feature.id === id);
-    },
-    [features]
-  );
+  // Utilitaire générique API
+  const apiRequest = async (
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<any> => {
+    const response = await fetch(endpoint, {
+      headers: { "Content-Type": "application/json", ...options.headers },
+      ...options,
+    });
+    if (!response.ok)
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    const result = await response.json();
+    if (!result.success) throw new Error(result.error || "Erreur API");
+    return result;
+  };
 
-  // Fonctions de réorganisation
-  const moveFeatureUp = useCallback(
-    async (featureId: string): Promise<boolean> => {
+  // CRUD
+  const createFeature = useCallback(async (data: FeatureFormData) => {
+    if (!projectId) return false;
+    try {
+      setIsLoading(true);
+      setError(null);
+      await apiRequest(`/api/features`, {
+        method: "POST",
+        body: JSON.stringify({ ...data, projectId }),
+      });
+      await fetchFeatures(true);
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur création feature");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [projectId, fetchFeatures]);
+
+  const updateFeature = useCallback(async (id: string, data: FeatureFormData) => {
+    if (!projectId) return false;
+    try {
+      setIsLoading(true);
+      setError(null);
+      await apiRequest(`/api/features/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ ...data, projectId }),
+      });
+      await fetchFeatures(true);
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur mise à jour feature");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [projectId, fetchFeatures]);
+
+  const deleteFeature = useCallback(async (id: string) => {
+    if (!projectId) return false;
+    try {
+      setIsLoading(true);
+      setError(null);
+      await apiRequest(`/api/features/${id}`, { method: "DELETE" });
+      await fetchFeatures(true);
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur suppression feature");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [projectId, fetchFeatures]);
+
+  // ---- PATCH ordre ----
+  const updateFeatureOrder = useCallback(
+    async (featureId: string, newOrder: number, position?: number) => {
+      if (!projectId) return false;
       try {
+        setIsLoading(true);
         setError(null);
-
-        const currentIndex = features.findIndex((f) => f.id === featureId);
-        if (currentIndex <= 0) return false;
-
-        const currentFeature = features[currentIndex];
-        const previousFeature = features[currentIndex - 1];
-
-        const newOrder = previousFeature.order - 1;
-
-        const success = await updateFeatureOrder(featureId, newOrder);
-        if (success) {
-          toast.success(`"${currentFeature.name}" déplacée vers le haut`);
-        }
-        return success;
+        await apiRequest(`/api/features/${featureId}/order`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            order: newOrder,
+            ...(typeof position === "number" ? { position } : {}),
+          }),
+        });
+        await fetchFeatures(true);
+        return true;
       } catch (err) {
-        console.error("Erreur lors du déplacement vers le haut:", err);
-        const errorMessage =
-          err instanceof Error ? err.message : "Erreur inconnue";
-        setError(errorMessage);
-        toast.error(`Erreur: ${errorMessage}`);
+        setError(err instanceof Error ? err.message : "Erreur mise à jour ordre");
         return false;
+      } finally {
+        setIsLoading(false);
       }
     },
-    [features]
+    [projectId, fetchFeatures]
+  );
+
+  // ---- Déplacement haut/bas avec swap ----
+  const moveFeatureUp = useCallback(
+    async (featureId: string) => {
+      if (!projectId) return false;
+      const idx = features.findIndex(f => f.id === featureId);
+      if (idx <= 0) return false;
+      const current = features[idx];
+      const above = features[idx - 1];
+      if (!above) return false;
+
+      const ok1 = await updateFeatureOrder(current.id, above.order);
+      const ok2 = await updateFeatureOrder(above.id, current.order);
+      return ok1 && ok2;
+    },
+    [projectId, features, updateFeatureOrder]
   );
 
   const moveFeatureDown = useCallback(
-    async (featureId: string): Promise<boolean> => {
-      try {
-        setError(null);
+    async (featureId: string) => {
+      if (!projectId) return false;
+      const idx = features.findIndex(f => f.id === featureId);
+      if (idx === -1 || idx >= features.length - 1) return false;
+      const current = features[idx];
+      const below = features[idx + 1];
+      if (!below) return false;
 
-        const currentIndex = features.findIndex((f) => f.id === featureId);
-        if (currentIndex >= features.length - 1) return false;
-
-        const currentFeature = features[currentIndex];
-        const nextFeature = features[currentIndex + 1];
-
-        const newOrder = nextFeature.order + 1;
-
-        const success = await updateFeatureOrder(featureId, newOrder);
-        if (success) {
-          toast.success(`"${currentFeature.name}" déplacée vers le bas`);
-        }
-        return success;
-      } catch (err) {
-        console.error("Erreur lors du déplacement vers le bas:", err);
-        const errorMessage =
-          err instanceof Error ? err.message : "Erreur inconnue";
-        setError(errorMessage);
-        toast.error(`Erreur: ${errorMessage}`);
-        return false;
-      }
+      const ok1 = await updateFeatureOrder(current.id, below.order);
+      const ok2 = await updateFeatureOrder(below.id, current.order);
+      return ok1 && ok2;
     },
-    [features]
+    [projectId, features, updateFeatureOrder]
   );
 
-  const updateFeatureOrder = useCallback(
-    async (featureId: string, newOrder: number): Promise<boolean> => {
-      try {
-        setError(null);
+  // Réorganisation multiple
+  const reorderFeatures = useCallback(async (reorderData: ReorderRequest[]) => {
+    if (!projectId) return false;
+    try {
+      setError(null);
+      await apiRequest(`/api/features/reorder`, {
+        method: "POST",
+        body: JSON.stringify({ reorderData, projectId }),
+      });
+      await fetchFeatures(true);
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur réorganisation features");
+      return false;
+    }
+  }, [projectId, fetchFeatures]);
 
-        const response = await fetch(`/api/features/${featureId}/order`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ order: newOrder }),
-        });
+  // Sélecteurs dérivés
+  const availableParents = useMemo(() => features.filter(f => !f.parentId), [features]);
+  const featuresSimple = useMemo(() => features.map(({ parent, children, epic, ...rest }) => rest), [features]);
+  const featuresTree = useMemo(() => {
+    const rootFeatures = features.filter(f => !f.parentId);
+    return rootFeatures.sort((a, b) => a.order - b.order);
+  }, [features]);
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
+  const getDisplayConfig = useCallback(() => ({
+    mode: displayMode,
+    showHierarchy: displayMode === "tree",
+    allowReorder: displayMode !== "tree",
+    showMetrics: displayMode === "detail",
+  }), [displayMode]);
 
-        const result: ApiResponse<SimpleFeature> = await response.json();
-
-        if (!result.success) {
-          throw new Error(
-            result.error || "Erreur lors de la mise à jour de l'ordre"
-          );
-        }
-
-        await fetchFeatures();
-        return true;
-      } catch (err) {
-        console.error("Erreur lors de la mise à jour de l'ordre:", err);
-        const errorMessage =
-          err instanceof Error ? err.message : "Erreur inconnue";
-        setError(errorMessage);
-        toast.error(`Erreur: ${errorMessage}`);
-        return false;
-      }
-    },
-    [fetchFeatures]
-  );
-
-  const reorderFeatures = useCallback(
-    async (reorderData: ReorderRequest[]): Promise<boolean> => {
-      try {
-        setError(null);
-
-        const response = await fetch("/api/features/reorder", {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            epicId: selectedEpicId,
-            reorders: reorderData,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const result: ApiResponse<void> = await response.json();
-
-        if (!result.success) {
-          throw new Error(result.error || "Erreur lors de la réorganisation");
-        }
-
-        await fetchFeatures();
-        toast.success("Features réorganisées avec succès");
-        return true;
-      } catch (err) {
-        console.error("Erreur lors de la réorganisation:", err);
-        const errorMessage =
-          err instanceof Error ? err.message : "Erreur inconnue";
-        setError(errorMessage);
-        toast.error(`Erreur: ${errorMessage}`);
-        return false;
-      }
-    },
-    [selectedEpicId, fetchFeatures]
-  );
-
-  // Fonctions CRUD
-  const createFeature = useCallback(
-    async (formData: FeatureFormData): Promise<boolean> => {
-      if (!selectedEpicId) {
-        const errorMsg = "Aucun epic sélectionné";
-        setError(errorMsg);
-        toast.error(errorMsg);
-        return false;
-      }
-
-      try {
-        setError(null);
-        const apiData = convertFormDataToApiData(formData);
-
-        const response = await fetch("/api/features", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...apiData,
-            epicId: selectedEpicId,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const result: ApiResponse<SimpleFeature> = await response.json();
-
-        if (!result.success) {
-          throw new Error(result.error || "Erreur lors de la création");
-        }
-
-        await fetchFeatures();
-        return true;
-      } catch (err) {
-        console.error("Erreur lors de la création de la feature:", err);
-        const errorMessage =
-          err instanceof Error ? err.message : "Erreur inconnue";
-        setError(errorMessage);
-        toast.error(`Erreur: ${errorMessage}`);
-        return false;
-      }
-    },
-    [selectedEpicId, fetchFeatures]
-  );
-
-  const updateFeature = useCallback(
-    async (
-      id: string,
-      formData: Partial<FeatureFormData>
-    ): Promise<boolean> => {
-      try {
-        setError(null);
-        const apiData = convertPartialFormDataToApiData(formData);
-
-        const response = await fetch(`/api/features/${id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(apiData),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const result: ApiResponse<SimpleFeature> = await response.json();
-
-        if (!result.success) {
-          throw new Error(result.error || "Erreur lors de la mise à jour");
-        }
-
-        await fetchFeatures();
-        return true;
-      } catch (err) {
-        console.error("Erreur lors de la mise à jour de la feature:", err);
-        const errorMessage =
-          err instanceof Error ? err.message : "Erreur inconnue";
-        setError(errorMessage);
-        toast.error(`Erreur: ${errorMessage}`);
-        return false;
-      }
-    },
-    [fetchFeatures]
-  );
-
-  const deleteFeature = useCallback(
-    async (id: string): Promise<boolean> => {
-      try {
-        setError(null);
-
-        const response = await fetch(`/api/features/${id}`, {
-          method: "DELETE",
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const result: ApiResponse<void> = await response.json();
-
-        if (!result.success) {
-          throw new Error(result.error || "Erreur lors de la suppression");
-        }
-
-        await fetchFeatures();
-        return true;
-      } catch (err) {
-        console.error("Erreur lors de la suppression de la feature:", err);
-        const errorMessage =
-          err instanceof Error ? err.message : "Erreur inconnue";
-        setError(errorMessage);
-        toast.error(`Erreur: ${errorMessage}`);
-        return false;
-      }
-    },
-    [fetchFeatures]
-  );
-
-  useEffect(() => {
-    fetchFeatures();
+  const refetchFeatures = useCallback(async () => {
+    await fetchFeatures(true);
   }, [fetchFeatures]);
+
+  const invalidateCache = useCallback(() => {
+    setLastFetched(null);
+    setFeatures([]);
+  }, []);
 
   return {
     features,
@@ -600,16 +299,16 @@ export const useFeatures = (): UseFeaturesReturn => {
     isLoading,
     error,
     displayMode,
-    refetch: fetchFeatures,
     createFeature,
     updateFeature,
     deleteFeature,
-    getFeatureById,
     moveFeatureUp,
     moveFeatureDown,
     reorderFeatures,
     updateFeatureOrder,
     setDisplayMode,
     getDisplayConfig,
+    refetchFeatures,
+    invalidateCache,
   };
 };

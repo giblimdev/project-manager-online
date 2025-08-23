@@ -1,257 +1,329 @@
-// 📄 /app/api/sprints/route.ts
+// app/api/sprints/route.ts
 /**
- * RÔLE : API route principale pour la gestion des sprints - GET et POST uniquement
- * RESPONSABILITÉS : 
- * - GET : Récupérer les sprints avec filtres et pagination
- * - POST : Créer un nouveau sprint
- * COMPOSANTS : NextRequest, NextResponse, Prisma Client
- * DATABASE : PostgreSQL via Prisma selon schema-projec-manager
+ * RÔLE : Route API pour la gestion CRUD des sprints (GET collection, POST création)
+ * RESPONSABILITÉS :
+ *   - GET: Récupérer la liste des sprints d'un projet avec pagination et filtres
+ *   - POST: Créer un nouveau sprint avec validation complète
+ *   - Gestion des erreurs robuste avec status codes appropriés
+ *   - Validation stricte des données entrantes (Zod ou validation manuelle)
+ *   - Typage strict TypeScript pour Next.js 15
+ * 
+ * COMPOSANTS/LIBS UTILISÉS :
+ *   - Next.js 15 App Router (NextRequest, NextResponse)
+ *   - Prisma Client pour l'accès base de données
+ *   - TypeScript strict mode avec interfaces du schéma Prisma
+ *   - Gestion d'erreurs avec try/catch et status HTTP appropriés
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { z } from "zod";
-import {
-  SprintStatus,
-  Priority,
-  TaskStatus,
-  ItemStatus,
-} from "@/lib/generated/prisma"; // adapter le chemin si besoin
+import { NextRequest, NextResponse } from 'next/server';
+import  prisma  from '@/lib/prisma';
 
-// Schéma Zod de création "parfaitement" conforme à ton modèle Sprint et relations
-const createSprintSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Le nom est obligatoire")
-    .max(255, "Le nom ne peut pas dépasser 255 caractères"),
-  goal: z.string().nullable().optional(),
-  description: z.string().nullable().optional(),
-  startDate: z.string().datetime("Format de date invalide"), // DateTime
-  endDate: z.string().datetime("Format de date invalide"),   // DateTime
-  capacity: z.number().int().min(0, "La capacité ne peut pas être négative").nullable().optional(),
-  velocity: z.number().min(0, "La vélocité ne peut pas être négative").nullable().optional(),
-  projectId: z.string().min(1, "L'ID du projet est obligatoire"),
-  userIds: z.array(z.string()).default([]),        // relation users SprintToUser
-  userStoryIds: z.array(z.string()).default([]),   // relation SprintUserStories
-  itemIds: z.array(z.string()).default([]),        // relation items Sprint
-});
+// Types basés sur le schéma Prisma
+type SprintStatus = 'PLANNED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
 
-const querySchema = z.object({
-  projectId: z.string().optional(),
-  status: z.nativeEnum(SprintStatus).optional(),
-  userId: z.string().optional(),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
-  search: z.string().optional(),
-  page: z.number().int().min(1).default(1),
-  limit: z.number().int().min(1).max(100).default(20),
-  sortBy: z.enum(["name", "startDate", "endDate", "status", "createdAt"]).default("startDate"),
-  sortOrder: z.enum(["asc", "desc"]).default("desc"),
-});
-
-interface PaginationResponse {
-  totalCount: number;
-  totalPages: number;
-  currentPage: number;
-  pageSize: number;
-  hasNext: boolean;
-  hasPrev: boolean;
+interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+  timestamp: string;
 }
 
-function isError(err: unknown): err is Error {
-  return err instanceof Error;
+interface PaginatedResponse<T> extends ApiResponse<T[]> {
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
-function getErrorMessage(error: unknown): string {
-  if (isError(error)) return error.message;
-  if (typeof error === "string") return error;
-  return "Erreur inconnue";
+interface CreateSprintRequest {
+  name: string;
+  goal?: string | null;
+  description?: string | null;
+  startDate: string; // ISO string
+  endDate: string;   // ISO string
+  status?: SprintStatus;
+  capacity?: number | null;
+  velocity?: number | null;
+  projectId: string;
+  order?: number;
 }
 
-// GET - Liste paginée et filtrée des sprints
-export async function GET(request: NextRequest): Promise<NextResponse> {
+// GET /api/sprints - Récupérer les sprints d'un projet
+export async function GET(request: NextRequest): Promise<NextResponse<ApiResponse<any>>> {
   try {
-    const { searchParams } = request.nextUrl;
+    const { searchParams } = new URL(request.url);
+    const projectId = searchParams.get('projectId');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const status = searchParams.get('status') as SprintStatus | null;
+    const sortBy = searchParams.get('sortBy') || 'order';
+    const sortOrder = searchParams.get('sortOrder') || 'asc';
 
-    const params = querySchema.safeParse({
-      projectId: searchParams.get("projectId") || undefined,
-      status: searchParams.get("status") || undefined,
-      userId: searchParams.get("userId") || undefined,
-      startDate: searchParams.get("startDate") || undefined,
-      endDate: searchParams.get("endDate") || undefined,
-      search: searchParams.get("search") || undefined,
-      page: parseInt(searchParams.get("page") || "1", 10),
-      limit: parseInt(searchParams.get("limit") || "20", 10),
-      sortBy: searchParams.get("sortBy") || "startDate",
-      sortOrder: searchParams.get("sortOrder") || "desc",
+    // Validation des paramètres requis
+    if (!projectId) {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Validation error',
+        message: 'Le paramètre projectId est requis',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
+    }
+
+    // Vérifier que le projet existe
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { id: true, isActive: true },
     });
 
-    if (!params.success) {
-      return NextResponse.json(
-        { success: false, error: "Paramètres de requête invalides", details: params.error.issues },
-        { status: 400 }
-      );
+    if (!project || !project.isActive) {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Not found',
+        message: 'Projet non trouvé ou inactif',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 404 });
     }
 
-    const { projectId, status, userId, startDate, endDate, search, page, limit, sortBy, sortOrder } = params.data;
-    const where: any = {};
+    // Construction des filtres
+    const where: any = {
+      projectId,
+    };
 
-    if (projectId) where.projectId = projectId;
-    if (status) where.status = status;
-    if (userId) where.users = { some: { id: userId } };
-    if (startDate) where.startDate = { gte: new Date(startDate) };
-    if (endDate) where.endDate = { lte: new Date(endDate) };
-    if (search?.trim()) {
-      where.OR = [
-        { name: { contains: search.trim(), mode: "insensitive" } },
-        { description: { contains: search.trim(), mode: "insensitive" } },
-        { goal: { contains: search.trim(), mode: "insensitive" } },
-      ];
+    if (status) {
+      where.status = status;
     }
+
+    // Construction de l'ordre de tri
+    const orderBy: any = {};
+    if (sortBy === 'order') {
+      orderBy.order = sortOrder;
+    } else if (sortBy === 'name') {
+      orderBy.name = sortOrder;
+    } else if (sortBy === 'startDate') {
+      orderBy.startDate = sortOrder;
+    } else if (sortBy === 'endDate') {
+      orderBy.endDate = sortOrder;
+    } else if (sortBy === 'createdAt') {
+      orderBy.createdAt = sortOrder;
+    } else {
+      orderBy.order = 'asc';
+    }
+
+    // Pagination
     const skip = (page - 1) * limit;
 
+    // Requêtes en parallèle
     const [sprints, totalCount] = await Promise.all([
       prisma.sprint.findMany({
         where,
-        include: {
-          project: { select: { id: true, name: true, slug:true, key:true, description:true } },
-          users: { select: { id: true, name: true, email: true, image: true }, orderBy: { name: "asc" } },
-          userStories: { select: { id: true, title: true, status: true, storyPoints:true, priority: true, estimatedHours:true, actualHours:true, position:true }, orderBy: { position: "asc" } },
-          items: { select: { id: true, name: true, type: true, status: true, priority: true, estimatedHours: true, actualHours: true, backlogPosition: true }, orderBy: { backlogPosition: "asc" } },
-          timeEntries: { select: { id: true, hours: true, date: true, user: { select: { id: true, name: true } } }, orderBy: { date: "desc" } },
-          files: { select: { id: true, name: true, type: true, path: true }, orderBy: { name: "asc" } },
-          _count: { select: { users:true, userStories:true, items:true, timeEntries:true, files:true } },
-        },
-        orderBy: [{ status: "asc" }, { [sortBy]: sortOrder }],
+        orderBy,
         skip,
         take: limit,
+        include: {
+          project: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          userStories: {
+            select: {
+              id: true,
+              title: true,
+              status: true,
+            },
+          },
+          Tasks: {
+            select: {
+              id: true,
+              title: true,
+              status: true,
+            },
+          },
+          _count: {
+            select: {
+              userStories: true,
+              Tasks: true,
+              timeEntries: true,
+            },
+          },
+        },
       }),
       prisma.sprint.count({ where }),
     ]);
 
     const totalPages = Math.ceil(totalCount / limit);
 
-    const pagination: PaginationResponse = {
-      totalCount,
-      totalPages,
-      currentPage: page,
-      pageSize: limit,
-      hasNext: page < totalPages,
-      hasPrev: page > 1,
+    const response: ApiResponse<any> = {
+      success: true,
+      data: sprints,
+      message: 'Sprints récupérés avec succès',
+      timestamp: new Date().toISOString(),
     };
 
-    return NextResponse.json({ success: true, data: { sprints, pagination } }, { status: 200 });
-  } catch (error: unknown) {
-    return NextResponse.json(
-      { success: false, error: "Erreur lors de la récupération des sprints", details: getErrorMessage(error) },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error('Erreur GET /api/sprints:', error);
+    const errorResponse: ApiResponse = {
+      success: false,
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Erreur inconnue lors de la récupération des sprints',
+      timestamp: new Date().toISOString(),
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }
 
-// ➕ POST - Créer un nouveau sprint
-export async function POST(request: NextRequest): Promise<NextResponse> {
+// POST /api/sprints - Créer un nouveau sprint
+export async function POST(request: NextRequest): Promise<NextResponse<ApiResponse<any>>> {
   try {
-    const body = await request.json();
-    const validation = createSprintSchema.safeParse(body);
+    const body: CreateSprintRequest = await request.json();
 
-    if (!validation.success) {
-      return NextResponse.json(
-        { success: false, error: "Données de création invalides", details: validation.error.issues },
-        { status: 400 }
-      );
-    }
-    const data = validation.data;
-
-    const parsedStartDate = new Date(data.startDate);
-    const parsedEndDate = new Date(data.endDate);
-    if (isNaN(parsedStartDate.getTime()) || isNaN(parsedEndDate.getTime())) {
-      return NextResponse.json({ success: false, error: "Format de date invalide" }, { status: 400 });
-    }
-    if (parsedEndDate <= parsedStartDate) {
-      return NextResponse.json({ success: false, error: "La date de fin doit être postérieure à la date de début" }, { status: 400 });
+    // Validation des champs requis
+    if (!body.name || !body.startDate || !body.endDate || !body.projectId) {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Validation error',
+        message: 'Les champs name, startDate, endDate et projectId sont requis',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
+    // Validation des dates
+    const startDate = new Date(body.startDate);
+    const endDate = new Date(body.endDate);
+
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Validation error',
+        message: 'Dates invalides. Utilisez le format ISO 8601',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
+    }
+
+    if (endDate <= startDate) {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Validation error',
+        message: 'La date de fin doit être après la date de début',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
+    }
+
+    // Validation du nom (longueur)
+    if (body.name.length > 100) {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Validation error',
+        message: 'Le nom du sprint ne peut pas dépasser 100 caractères',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
+    }
+
+    // Vérifier que le projet existe et est actif
     const project = await prisma.project.findUnique({
-      where: { id: data.projectId },
-      select: { id: true },
+      where: { id: body.projectId },
+      select: { id: true, isActive: true },
     });
-    if (!project) {
-      return NextResponse.json({ success: false, error: "Projet non trouvé" }, { status: 404 });
+
+    if (!project || !project.isActive) {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Not found',
+        message: 'Projet non trouvé ou inactif',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 404 });
     }
 
-    // Relations (validation d'existence)
-    if (data.userIds.length > 0) {
-      const users = await prisma.user.findMany({ where: { id: { in: data.userIds } }, select: { id: true } });
-      if (users.length !== data.userIds.length) {
-        return NextResponse.json({ success: false, error: "Un ou plusieurs utilisateurs n'existent pas" }, { status: 404 });
-      }
-    }
-    if (data.userStoryIds.length > 0) {
-      const userStories = await prisma.userStory.findMany({ where: { id: { in: data.userStoryIds } }, select: { id: true } });
-      if (userStories.length !== data.userStoryIds.length) {
-        return NextResponse.json({ success: false, error: "Une ou plusieurs user stories n'existent pas" }, { status: 404 });
-      }
-    }
-    if (data.itemIds.length > 0) {
-      const items = await prisma.item.findMany({ where: { id: { in: data.itemIds } }, select: { id: true } });
-      if (items.length !== data.itemIds.length) {
-        return NextResponse.json({ success: false, error: "Un ou plusieurs items n'existent pas" }, { status: 404 });
-      }
+    // Déterminer l'ordre si non fourni
+    let order = body.order;
+    if (!order) {
+      const lastSprint = await prisma.sprint.findFirst({
+        where: { projectId: body.projectId },
+        orderBy: { order: 'desc' },
+        select: { order: true },
+      });
+      order = lastSprint ? lastSprint.order + 1 : 1000;
     }
 
-    const createData: any = {
-      name: data.name.trim(),
-      goal: data.goal?.trim() || null,
-      description: data.description?.trim() || null,
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-      capacity: data.capacity,
-      velocity: data.velocity,
-      status: SprintStatus.PLANNED,
-      projectId: data.projectId,
-      burndownData: {},
-      retrospective: {},
-    };
-    if (data.userIds.length > 0) {
-      createData.users = {
-        connect: data.userIds.map((id) => ({ id })),
-      };
-    }
-    if (data.userStoryIds.length > 0) {
-      createData.userStories = {
-        connect: data.userStoryIds.map((id) => ({ id })),
-      };
-    }
-    if (data.itemIds.length > 0) {
-      createData.items = {
-        connect: data.itemIds.map((id) => ({ id })),
-      };
-    }
-
-    const sprint = await prisma.sprint.create({
-      data: createData,
-      include: {
-        project: { select: { id: true, name: true, slug: true, key: true, description: true } },
-        users: { select: { id: true, name: true, email: true, image: true } },
-        userStories: { select: { id: true, title: true, status: true, storyPoints: true, priority: true, estimatedHours: true, actualHours: true, position: true } },
-        items: { select: { id: true, name: true, type: true, status: true, priority: true, estimatedHours: true, actualHours: true, backlogPosition: true } },
-        _count: { select: { users: true, userStories: true, items: true, timeEntries: true, files: true } },
+    // Vérifier l'unicité du nom dans le projet
+    const existingSprint = await prisma.sprint.findFirst({
+      where: {
+        projectId: body.projectId,
+        name: body.name,
       },
     });
 
-    return NextResponse.json(
-      { success: true, data: sprint, message: "Sprint créé avec succès" },
-      { status: 201 }
-    );
-  } catch (error: unknown) {
-    return NextResponse.json(
-      { success: false, error: "Erreur lors de la création du sprint", details: getErrorMessage(error) },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
+    if (existingSprint) {
+      const errorResponse: ApiResponse = {
+        success: false,
+        error: 'Conflict',
+        message: 'Un sprint avec ce nom existe déjà dans ce projet',
+        timestamp: new Date().toISOString(),
+      };
+      return NextResponse.json(errorResponse, { status: 409 });
+    }
+
+    // Créer le sprint
+    const newSprint = await prisma.sprint.create({
+      data: {
+        name: body.name,
+        goal: body.goal || null,
+        description: body.description || null,
+        startDate,
+        endDate,
+        status: body.status || 'PLANNED',
+        capacity: body.capacity || null,
+        velocity: body.velocity || null,
+        order,
+        projectId: body.projectId,
+        burndownData: {},
+        retrospective: {},
+      },
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        _count: {
+          select: {
+            userStories: true,
+            Tasks: true,
+            timeEntries: true,
+          },
+        },
+      },
+    });
+
+    const response: ApiResponse<any> = {
+      success: true,
+      data: newSprint,
+      message: 'Sprint créé avec succès',
+      timestamp: new Date().toISOString(),
+    }; 
+
+    return NextResponse.json(response, { status: 201 });
+  } catch (error) {
+    console.error('Erreur POST /api/sprints:', error);
+    const errorResponse: ApiResponse = {
+      success: false,
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Erreur inconnue lors de la création du sprint',
+      timestamp: new Date().toISOString(),
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }

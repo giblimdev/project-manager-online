@@ -30,8 +30,8 @@ import {
   Hash,
 } from "lucide-react";
 import { Priority } from "@/lib/generated/prisma/client";
-import type { SimpleFeature, ReorderRequest } from "@/hooks/useFeatures";
 import { toast } from "sonner";
+import type { SimpleFeature, ReorderRequest } from "@/types/feature";
 
 interface FeatureListProps {
   features: SimpleFeature[];
@@ -478,6 +478,6 @@ export const FeatureList: React.FC<FeatureListProps> = ({
           </p>
         </div>
       </div>
-    </div>
+    </div> 
   );
 };

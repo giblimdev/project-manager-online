@@ -1,132 +1,99 @@
 // @/app/api/features/[id]/order/route.ts
-
-// Rôle : Route API pour mettre à jour l'ordre d'une feature spécifique
-// Responsabilités : Validation des paramètres, mise à jour ordre en DB, gestion d'erreurs, sécurité
-// Composants utilisés : NextRequest, NextResponse, Prisma ORM, zod validation
-// Types utilisés : SimpleFeature, Priority, ApiResponse
-// Libs externes : @/lib/prisma, @/lib/generated/prisma/client
-// Utilisé par : hooks useFeatures, composants features, drag & drop interface
+// RÔLE : API route pour la mise à jour de l'ordre et de la position d'une feature spécifique
+// RESPONSABILITÉS :
+// - Gestion de la méthode PATCH pour modifier l'ordre d'une feature
+// - Validation des données d'entrée (order, position optionnelle)
+// - Interaction avec la base de données via Prisma
+// - Gestion des erreurs et retour de réponses JSON standardisées
+// COMPOSANTS/LIBS UTILISÉS :
+// - Next.js 15 API Routes avec params asynchrones
+// - Prisma Client via lib/prisma.ts (instance centralisée)
+// - Zod pour la validation des données
+// - TypeScript strict mode
 
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import prisma from "@/lib/prisma";
-import { Priority } from "@/lib/generated/prisma/client";
 
-// Type pour les paramètres de route Next.js 15
+// Schéma de validation pour la mise à jour de l'ordre
+const UpdateOrderSchema = z.object({
+  order: z.number().int().min(0).describe("Nouvel ordre de la feature"),
+  position: z.number().int().min(0).optional().describe("Position optionnelle dans la hiérarchie"),
+});
+
+type UpdateOrderData = z.infer<typeof UpdateOrderSchema>;
+
+// ✅ Interface mise à jour pour Next.js 15 - params est maintenant une Promise
 interface RouteParams {
-  params: Promise<{ id: string }>;
+  params: Promise<{
+    id: string;
+  }>;
 }
 
-// Type pour la réponse API standardisée
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-  timestamp: string;
-  details?: string;
-}
-
-// Type pour une Feature complète
-interface FeatureData {
-  id: string;
-  name: string;
-  order: number;
-  description: string | null;
-  acceptanceCriteria: string | null;
-  priority: Priority;
-  status: string;
-  storyPoints: number | null;
-  businessValue: number | null;
-  technicalRisk: number | null;
-  effort: number | null;
-  startDate: Date | null;
-  endDate: Date | null;
-  progress: number;
-  position: number;
-  createdAt: Date;
-  updatedAt: Date;
-  epicId: string;
-  parentId: string | null;
-  projectId: string | null;
-  userId: string | null;
-}
-
-// Type pour les données de mise à jour d'ordre
-interface OrderUpdateData {
-  order: number;
-  position?: number;
-}
-
-// PATCH - Mettre à jour l'ordre d'une feature spécifique
+/**
+ * PATCH /api/features/[id]/order
+ * Met à jour l'ordre et optionnellement la position d'une feature
+ */
 export async function PATCH(
   request: NextRequest,
-  context: RouteParams
-): Promise<NextResponse<ApiResponse<FeatureData>>> {
+  { params }: RouteParams
+): Promise<NextResponse> {
   try {
-    // Extraction des paramètres de route (Next.js 15)
-    const { id } = await context.params;
+    // ✅ Await des params dans Next.js 15
+    const { id: featureId } = await params;
 
-    // Validation de l'ID
-    if (!id || typeof id !== "string" || id.trim().length === 0) {
+    if (!featureId || typeof featureId !== "string") {
       return NextResponse.json(
         {
           success: false,
-          error: "ID de la feature requis et valide",
-          timestamp: new Date().toISOString(),
+          error: "ID de feature requis et doit être une chaîne valide",
         },
         { status: 400 }
       );
     }
 
-    // Extraction et validation du body
-    let body: OrderUpdateData;
+    // Parse et validation du body
+    let body: unknown;
     try {
       body = await request.json();
-    } catch (parseError) {
+    } catch (error) {
       return NextResponse.json(
         {
           success: false,
-          error: "Format JSON invalide",
-          timestamp: new Date().toISOString(),
+          error: "Corps de requête JSON invalide",
         },
         { status: 400 }
       );
     }
 
-    // Validation de l'ordre
-    if (typeof body.order !== "number" || !Number.isInteger(body.order)) {
+    // Validation des données avec Zod
+    const validationResult = UpdateOrderSchema.safeParse(body);
+    
+    if (!validationResult.success) {
+      const errorMessages = validationResult.error.issues
+        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+        .join(", ");
+      
       return NextResponse.json(
         {
           success: false,
-          error: "L'ordre doit être un nombre entier",
-          timestamp: new Date().toISOString(),
+          error: `Données invalides: ${errorMessages}`,
         },
         { status: 400 }
       );
     }
 
-    // Validation des limites de l'ordre
-    if (body.order < 0 || body.order > 999999) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "L'ordre doit être entre 0 et 999999",
-          timestamp: new Date().toISOString(),
-        },
-        { status: 400 }
-      );
-    }
+    const { order, position }: UpdateOrderData = validationResult.data;
 
-    // Vérification de l'existence de la feature
+    // Vérifier que la feature existe
     const existingFeature = await prisma.feature.findUnique({
-      where: { id },
+      where: { id: featureId },
       select: {
         id: true,
-        name: true,
+        projectId: true,
         order: true,
-        epicId: true,
-        parentId: true,
-        status: true,
+        position: true,
+        name: true,
       },
     });
 
@@ -135,208 +102,143 @@ export async function PATCH(
         {
           success: false,
           error: "Feature non trouvée",
-          timestamp: new Date().toISOString(),
         },
         { status: 404 }
       );
     }
 
-    // Vérification du statut de la feature (éviter de modifier des features archivées)
-    if (
-      existingFeature.status === "CANCELLED" ||
-      existingFeature.status === "ARCHIVED"
-    ) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            "Impossible de modifier l'ordre d'une feature annulée ou archivée",
-          timestamp: new Date().toISOString(),
-        },
-        { status: 403 }
-      );
-    }
+    // Si un autre feature a déjà le même ordre, on fait un swap
+    const conflictingFeature = await prisma.feature.findFirst({
+      where: {
+        projectId: existingFeature.projectId,
+        order: order,
+        id: { not: featureId },
+      },
+      select: { id: true, order: true },
+    });
 
-    // Mise à jour de l'ordre avec transaction pour éviter les conflits
-    const updatedFeature = await prisma.$transaction(async (tx) => {
-      // Vérifier s'il y a conflit d'ordre dans le même epic
-      const conflictingFeature = await tx.feature.findFirst({
-        where: {
-          epicId: existingFeature.epicId,
-          order: body.order,
-          id: { not: id },
-        },
-        select: { id: true, name: true, order: true },
-      });
-
-      // Si conflit, décaler les autres features
+    // Transaction pour garantir la cohérence
+    const result = await prisma.$transaction(async (tx) => {
+      // Si il y a un conflit d'ordre, on échange les ordres
       if (conflictingFeature) {
-        await tx.feature.updateMany({
-          where: {
-            epicId: existingFeature.epicId,
-            order: { gte: body.order },
-            id: { not: id },
-          },
-          data: {
-            order: { increment: 1 },
-            updatedAt: new Date(),
-          },
+        await tx.feature.update({
+          where: { id: conflictingFeature.id },
+          data: { order: existingFeature.order },
         });
       }
 
-      // Mettre à jour la feature cible
-      return await tx.feature.update({
-        where: { id },
-        data: {
-          order: body.order,
-          position: body.position ?? undefined,
-          updatedAt: new Date(),
-        },
+      // Mise à jour de la feature cible
+      const updateData: { order: number; position?: number } = { order };
+      if (typeof position === "number") {
+        updateData.position = position;
+      }
+
+      const updatedFeature = await tx.feature.update({
+        where: { id: featureId },
+        data: updateData,
         select: {
           id: true,
           name: true,
           order: true,
-          description: true,
-          acceptanceCriteria: true,
-          priority: true,
-          status: true,
-          storyPoints: true,
-          businessValue: true,
-          technicalRisk: true,
-          effort: true,
-          startDate: true,
-          endDate: true,
-          progress: true,
           position: true,
-          createdAt: true,
           updatedAt: true,
-          epicId: true,
-          parentId: true,
-          projectId: true,
-          userId: true,
         },
       });
+
+      return updatedFeature;
     });
 
     return NextResponse.json({
       success: true,
-      data: updatedFeature,
-      message: `Ordre de la feature "${existingFeature.name}" mis à jour avec succès`,
-      timestamp: new Date().toISOString(),
+      message: "Ordre de la feature mis à jour avec succès",
+      data: result,
     });
-  } catch (error: any) {
+
+  } catch (error) {
     console.error("Erreur lors de la mise à jour de l'ordre:", error);
 
-    // Gestion des erreurs spécifiques Prisma
-    if (error?.code === "P2002") {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Conflit d'ordre détecté",
-          details: "Une autre feature a déjà cet ordre",
-          timestamp: new Date().toISOString(),
-        },
-        { status: 409 }
-      );
-    }
+    // Gestion spécifique des erreurs Prisma
+    if (error instanceof Error) {
+      if (error.message.includes("Unique constraint")) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Conflit d'ordre détecté",
+          },
+          { status: 409 }
+        );
+      }
+      
+      if (error.message.includes("Record to update not found")) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Feature non trouvée",
+          },
+          { status: 404 }
+        );
+      }
 
-    if (error?.code === "P2025") {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Feature non trouvée",
-          timestamp: new Date().toISOString(),
-        },
-        { status: 404 }
-      );
-    }
-
-    if (error?.code === "P2003") {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Référence invalide (epic ou parent)",
-          timestamp: new Date().toISOString(),
-        },
-        { status: 400 }
-      );
+      if (error.message.includes("@prisma/client did not initialize")) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Erreur de connexion à la base de données",
+          },
+          { status: 503 }
+        );
+      }
     }
 
     return NextResponse.json(
       {
         success: false,
-        error: "Erreur interne lors de la mise à jour de l'ordre",
-        details:
-          process.env.NODE_ENV === "development" ? error?.message : undefined,
-        timestamp: new Date().toISOString(),
+        error: "Erreur interne du serveur lors de la mise à jour de l'ordre",
       },
       { status: 500 }
     );
   }
 }
 
-// GET - Récupérer les informations d'ordre d'une feature
-export async function GET(
-  request: NextRequest,
-  context: RouteParams
-): Promise<NextResponse<ApiResponse<{ order: number; position: number }>>> {
-  try {
-    const { id } = await context.params;
+/**
+ * Méthodes non supportées
+ */
+export async function GET(): Promise<NextResponse> {
+  return NextResponse.json(
+    {
+      success: false,
+      error: "Méthode GET non supportée sur cette route",
+    },
+    { status: 405 }
+  );
+}
 
-    if (!id || typeof id !== "string") {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "ID de la feature requis",
-          timestamp: new Date().toISOString(),
-        },
-        { status: 400 }
-      );
-    }
+export async function POST(): Promise<NextResponse> {
+  return NextResponse.json(
+    {
+      success: false,
+      error: "Méthode POST non supportée sur cette route",
+    },
+    { status: 405 }
+  );
+}
 
-    const feature = await prisma.feature.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        order: true,
-        position: true,
-        status: true,
-      },
-    });
+export async function PUT(): Promise<NextResponse> {
+  return NextResponse.json(
+    {
+      success: false,
+      error: "Méthode PUT non supportée sur cette route",
+    },
+    { status: 405 }
+  );
+}
 
-    if (!feature) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Feature non trouvée",
-          timestamp: new Date().toISOString(),
-        },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        order: feature.order,
-        position: feature.position,
-      },
-      message: `Ordre de la feature "${feature.name}" récupéré`,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: any) {
-    console.error("Erreur lors de la récupération de l'ordre:", error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Erreur lors de la récupération de l'ordre",
-        details:
-          process.env.NODE_ENV === "development" ? error?.message : undefined,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    );
-  }
+export async function DELETE(): Promise<NextResponse> {
+  return NextResponse.json(
+    {
+      success: false,
+      error: "Méthode DELETE non supportée sur cette route",
+    },
+    { status: 405 }
+  );
 }

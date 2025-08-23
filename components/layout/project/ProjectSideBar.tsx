@@ -64,43 +64,43 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
     },
     {
       name: "Epics",
-      href: project?.id ? `/projects/${project.id}/epics` : "/projects/epics",
+      href:"/projects/epics",
       icon: FolderIcon,
       description: "Ensembles de fonctionnalités"
     },
     {
       name: "Features",
-      href: project?.id ? `/projects/${project.id}/features` : "/projects/features",
+      href: project?.id ? `/projects/features` : "/projects/features",
       icon: FolderIcon,
       description: "Fonctionnalités et valeur business"
     },
     {
       name: "Sprint",
-      href: project?.id ? `/projects/${project.id}/sprint` : "/projects/sprint",
+      href: project?.id ? `/projects/sprints` : "/projects/sprints",
       icon: CalendarIcon,
       description: "Gestion des sprints"
     },
     {
       name: "User Stories",
-      href: project?.id ? `/projects/${project.id}/userStories` : "/projects/userStories",
+      href: project?.id ? `/projects/userStories` : "/projects/userStories",
       icon: FileTextIcon,
       description: "Besoins utilisateur"
     },
     {
       name: "Tasks",
-      href: project?.id ? `/projects/${project.id}/tasks` : "/projects/tasks",
+      href: project?.id ? `/projects/tasks` : "/projects/tasks",
       icon: ClipboardListIcon,
       description: "Tâches techniques"
     },
     {
       name: "Fichiers",
-      href: project?.id ? `/projects/${project.id}/files` : "/files",
+      href: project?.id ? `/projects/files` : "/files",
       icon: FileTextIcon,
       description: "Fichiers du projet"
     }
   ];
 
-  const teamNavigation: NavItem[] = [
+  const teamNavigation: NavItem[] = [ 
     {
       name: "Équipe",
       href: project?.id ? `/projects/${project.id}/team` : "/projects/team",
@@ -115,7 +115,7 @@ export default function ProjectSideBar({ onNavigate }: ProjectSideBarProps) {
     }
   ];
 
-  const isActive = (href: string): boolean => {
+  const isActive = (href: string): boolean => {  
     if (href === "/projects") {
       return pathname === href;
     }

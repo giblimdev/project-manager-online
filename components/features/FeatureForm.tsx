@@ -1,10 +1,5 @@
 // @/components/features/FeatureForm.tsx
-
-// Rôle : Composant formulaire réutilisable pour créer/éditer une feature avec gestion hiérarchique
-// Responsabilités : Validation, gestion d'état du formulaire, interface utilisateur, sélection parent/enfants
-// Composants utilisés : shadcn/ui (Input, Textarea, Select, Button, Label, Badge, TreeView)
-// Hooks utilisés : useState, useEffect, useCallback
-// Types utilisés : FeatureFormData, Priority, SimpleFeature, FeatureHierarchy
+// RÔLE : Formulaire complet pour créer et modifier des features avec validation stricte, hiérarchie et intégration API optimisée
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
@@ -19,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; 
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -27,44 +22,28 @@ import {
   ChevronRight,
   ChevronDown,
   FileText,
-  Folder,
-  FolderOpen,
+  Folder
 } from "lucide-react";
 import { Priority } from "@/lib/generated/prisma/client";
-import type { SimpleFeature } from "@/hooks/useFeatures";
-
-// Type étendu pour inclure les données hiérarchiques
-export interface FeatureWithHierarchy extends SimpleFeature {
-  parent?: SimpleFeature | null;
-  children?: SimpleFeature[];
-}
-
-export interface FeatureFormData {
-  name: string;
-  description: string | null;
-  acceptanceCriteria: string | null;
-  priority: Priority;
-  status: string;
-  storyPoints: number | null;
-  businessValue: number | null;
-  technicalRisk: number | null;
-  effort: number | null;
-  startDate: string | null;
-  endDate: string | null;
-  parentId: string | null; // ✅ Ajout pour la hiérarchie
-}
+import type { 
+  SimpleFeature, 
+  FeatureWithHierarchy,
+  FeatureFormData 
+} from "@/types/feature";
 
 interface FeatureFormProps {
   feature?: FeatureWithHierarchy | null;
-  availableParents?: SimpleFeature[]; // ✅ Features pouvant être parents
+  availableParents?: SimpleFeature[];
+  projectId: string;
+  epicId?: string | null;
   onSubmit: (data: FeatureFormData) => Promise<boolean>;
   onCancel: () => void;
   isSubmitting: boolean;
   className?: string;
-  showHierarchy?: boolean; // ✅ Afficher la section hiérarchie
+  showHierarchy?: boolean;
 }
 
-const initialFormData: FeatureFormData = {
+const initialFormData: Omit<FeatureFormData, "projectId"> = {
   name: "",
   description: null,
   acceptanceCriteria: null,
@@ -76,7 +55,7 @@ const initialFormData: FeatureFormData = {
   effort: null,
   startDate: null,
   endDate: null,
-  parentId: null, // ✅ Ajout
+  parentId: null,
 };
 
 const statusOptions = [
@@ -93,8 +72,11 @@ const priorityOptions = [
   { value: Priority.LOW, label: "Faible" },
 ];
 
-// Fonction pour convertir une feature en données de formulaire
-const featureToFormData = (feature: FeatureWithHierarchy): FeatureFormData => ({
+const featureToFormData = (
+    feature: FeatureWithHierarchy,
+    projectId: string,
+    epicId?: string | null
+): FeatureFormData => ({
   name: feature.name,
   description: feature.description,
   acceptanceCriteria: feature.acceptanceCriteria,
@@ -105,26 +87,31 @@ const featureToFormData = (feature: FeatureWithHierarchy): FeatureFormData => ({
   technicalRisk: feature.technicalRisk,
   effort: feature.effort,
   startDate: feature.startDate
-    ? feature.startDate.toISOString().split("T")[0]
+    ? (typeof feature.startDate === "string"
+        ? feature.startDate
+        : feature.startDate.toISOString().split("T")[0])
     : null,
-  endDate: feature.endDate ? feature.endDate.toISOString().split("T")[0] : null,
-  parentId: feature.parentId, // ✅ Ajout
+  endDate: feature.endDate
+    ? (typeof feature.endDate === "string"
+        ? feature.endDate
+        : feature.endDate.toISOString().split("T")[0])
+    : null,
+  parentId: feature.parentId,
+  projectId,
+  epicId: typeof epicId !== "undefined" ? epicId : feature.epicId,
 });
 
-// Composant pour afficher la hiérarchie existante
 const FeatureHierarchyDisplay: React.FC<{
   feature: FeatureWithHierarchy;
   className?: string;
 }> = ({ feature, className }) => {
   const [expandedChildren, setExpandedChildren] = useState<boolean>(false);
-
-  const toggleExpanded = useCallback(() => {
-    setExpandedChildren((prev) => !prev);
-  }, []);
-
+  const toggleExpanded = useCallback(
+    () => setExpandedChildren((prev) => !prev),
+    []
+  );
   return (
     <div className={`space-y-3 ${className}`}>
-      {/* Parent actuel */}
       {feature.parent && (
         <div className="space-y-2">
           <Label className="text-sm font-medium text-muted-foreground">
@@ -145,8 +132,6 @@ const FeatureHierarchyDisplay: React.FC<{
           </Card>
         </div>
       )}
-
-      {/* Enfants existants */}
       {feature.children && feature.children.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center gap-2">
@@ -158,6 +143,7 @@ const FeatureHierarchyDisplay: React.FC<{
               size="sm"
               onClick={toggleExpanded}
               className="h-6 w-6 p-0"
+              type="button"
             >
               {expandedChildren ? (
                 <ChevronDown className="h-3 w-3" />
@@ -166,7 +152,6 @@ const FeatureHierarchyDisplay: React.FC<{
               )}
             </Button>
           </div>
-
           {expandedChildren && (
             <Card className="border-l-4 border-l-green-500">
               <CardContent className="py-3">
@@ -198,37 +183,34 @@ const FeatureHierarchyDisplay: React.FC<{
 export const FeatureForm: React.FC<FeatureFormProps> = ({
   feature,
   availableParents = [],
+  projectId,
+  epicId,
   onSubmit,
   onCancel,
   isSubmitting,
   showHierarchy = true,
   className = "",
 }) => {
-  const [formData, setFormData] = useState<FeatureFormData>(initialFormData);
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
+  const [formData, setFormData] = useState<Omit<FeatureFormData, "projectId">>(initialFormData);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-  // Initialiser le formulaire
   useEffect(() => {
     if (feature) {
-      setFormData(featureToFormData(feature));
+      setFormData(featureToFormData(feature, projectId, epicId));
     } else {
       setFormData(initialFormData);
     }
     setValidationErrors({});
-  }, [feature]);
+  }, [feature, projectId, epicId]);
 
   const handleInputChange = (
-    field: keyof FeatureFormData,
+    field: keyof typeof initialFormData,
     value: any
   ): void => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
-
-    // Nettoyer l'erreur de validation pour ce champ
     if (validationErrors[field]) {
       setValidationErrors((prev) => {
         const newErrors = { ...prev };
@@ -240,43 +222,47 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
-
+    
+    // Validation obligatoire : nom
     if (!formData.name.trim()) {
       errors.name = "Le nom de la feature est requis";
     }
-
-    // Validation spécifique à la hiérarchie
+    
+    // Validation hiérarchie
     if (formData.parentId === feature?.id) {
       errors.parentId = "Une feature ne peut pas être son propre parent";
     }
-
-    // Validation des métriques
+    
+    // Validation story points
     if (
       formData.storyPoints !== null &&
       (formData.storyPoints < 0 || formData.storyPoints > 100)
     ) {
       errors.storyPoints = "Les story points doivent être entre 0 et 100";
     }
-
+    
+    // Validation valeur business
     if (
       formData.businessValue !== null &&
       (formData.businessValue < 0 || formData.businessValue > 100)
     ) {
       errors.businessValue = "La valeur business doit être entre 0 et 100";
     }
-
+    
+    // Validation risque technique
     if (
       formData.technicalRisk !== null &&
       (formData.technicalRisk < 0 || formData.technicalRisk > 100)
     ) {
       errors.technicalRisk = "Le risque technique doit être entre 0 et 100";
     }
-
+    
+    // Validation effort
     if (formData.effort !== null && formData.effort < 0) {
       errors.effort = "L'effort ne peut pas être négatif";
     }
-
-    // Validation des dates
+    
+    // Validation dates
     if (
       formData.startDate &&
       formData.endDate &&
@@ -285,46 +271,45 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
       errors.endDate =
         "La date de fin doit être postérieure à la date de début";
     }
-
+    
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-
+    
     if (!validateForm()) {
+      console.warn('Validation failed:', validationErrors);
+      return;
+    }
+    
+    if (!projectId) {
+      console.error('ProjectId is required but missing');
       return;
     }
 
     const cleanedData: FeatureFormData = {
+      ...formData,
       name: formData.name.trim(),
       description: formData.description?.trim() || null,
       acceptanceCriteria: formData.acceptanceCriteria?.trim() || null,
-      priority: formData.priority,
-      status: formData.status,
-      storyPoints: formData.storyPoints,
-      businessValue: formData.businessValue,
-      technicalRisk: formData.technicalRisk,
-      effort: formData.effort,
-      startDate: formData.startDate || null,
-      endDate: formData.endDate || null,
-      parentId: formData.parentId || null, // ✅ Inclus dans la soumission
+      parentId: formData.parentId || null,
+      projectId: projectId,
+      ...(epicId !== undefined ? { epicId } : {}),
     };
 
+    // Debug log pour vérifier les données envoyées
+    console.log('Submitting feature data:', cleanedData);
+    
     await onSubmit(cleanedData);
   };
 
-  // Filtrer les parents disponibles (exclure la feature actuelle et ses enfants)
+  // Filtrer les parents (pas self et pas enfants directs)
   const filteredParents = availableParents.filter((parent) => {
     if (!feature) return true;
-
-    // Exclure la feature actuelle
     if (parent.id === feature.id) return false;
-
-    // Exclure les enfants directs de cette feature
     if (feature.children?.some((child) => child.id === parent.id)) return false;
-
     return true;
   });
 
@@ -332,12 +317,12 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className={`space-y-8 ${className}`}>
-      {/* Hiérarchie existante (mode édition) */}
+      {/* Hiérarchie existante */}
       {isEditing && showHierarchy && feature && (
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Label className="text-lg font-semibold">Hiérarchie Actuelle</Label>
-            <Badge variant="outline" className="text-xs"> 
+            <Badge variant="outline" className="text-xs">
               Lecture seule
             </Badge>
           </div>
@@ -351,8 +336,6 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
         <div className="flex items-center gap-2 mb-4">
           <Label className="text-lg font-semibold">Informations de Base</Label>
         </div>
-
-        {/* Name */}
         <div className="space-y-2">
           <Label htmlFor="name">
             Nom <span className="text-red-500">*</span>
@@ -369,8 +352,6 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
             <p className="text-sm text-red-600">{validationErrors.name}</p>
           )}
         </div>
-
-        {/* Description */}
         <div className="space-y-2">
           <Label htmlFor="description">Description</Label>
           <Textarea
@@ -382,8 +363,6 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
             disabled={isSubmitting}
           />
         </div>
-
-        {/* Acceptance Criteria */}
         <div className="space-y-2">
           <Label htmlFor="acceptanceCriteria">Critères d'acceptation</Label>
           <Textarea
@@ -399,7 +378,7 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
         </div>
       </div>
 
-      {/* Section Hiérarchie (nouveau parent) */}
+      {/* Section Hiérarchie */}
       {showHierarchy && (
         <div className="space-y-4">
           <Separator />
@@ -409,7 +388,6 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
               Optionnel
             </Badge>
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="parentId">Feature Parent</Label>
             <Select
@@ -450,8 +428,7 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
               </p>
             )}
             <p className="text-xs text-muted-foreground">
-              Sélectionnez une feature parent pour organiser hiérarchiquement
-              vos features
+              Sélectionnez une feature parent pour organiser hiérarchiquement vos features
             </p>
           </div>
         </div>
@@ -467,9 +444,7 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
             <Label>Priorité</Label>
             <Select
               value={formData.priority}
-              onValueChange={(value: Priority) =>
-                handleInputChange("priority", value)
-              }
+              onValueChange={(value: Priority) => handleInputChange("priority", value)}
               disabled={isSubmitting}
             >
               <SelectTrigger>
@@ -484,7 +459,6 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
               </SelectContent>
             </Select>
           </div>
-
           <div className="space-y-2">
             <Label>Statut</Label>
             <Select
@@ -535,7 +509,6 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
               </p>
             )}
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="businessValue">Valeur Business</Label>
             <Input
@@ -560,7 +533,6 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
               </p>
             )}
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="technicalRisk">Risque Technique</Label>
             <Input
@@ -585,7 +557,6 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
               </p>
             )}
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="effort">Effort</Label>
             <Input
@@ -626,7 +597,6 @@ export const FeatureForm: React.FC<FeatureFormProps> = ({
               disabled={isSubmitting}
             />
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="endDate">Date de fin</Label>
             <Input
