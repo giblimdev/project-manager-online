@@ -4318,7 +4318,7 @@ export namespace Prisma {
     templates: number
     fields: number
     user: number
-    Task: number
+    task: number
   }
 
   export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4333,7 +4333,7 @@ export namespace Prisma {
     templates?: boolean | ProjectCountOutputTypeCountTemplatesArgs
     fields?: boolean | ProjectCountOutputTypeCountFieldsArgs
     user?: boolean | ProjectCountOutputTypeCountUserArgs
-    Task?: boolean | ProjectCountOutputTypeCountTaskArgs
+    task?: boolean | ProjectCountOutputTypeCountTaskArgs
   }
 
   // Custom InputTypes
@@ -13045,7 +13045,7 @@ export namespace Prisma {
     templates?: boolean | Project$templatesArgs<ExtArgs>
     fields?: boolean | Project$fieldsArgs<ExtArgs>
     user?: boolean | Project$userArgs<ExtArgs>
-    Task?: boolean | Project$TaskArgs<ExtArgs>
+    task?: boolean | Project$taskArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -13116,7 +13116,7 @@ export namespace Prisma {
     templates?: boolean | Project$templatesArgs<ExtArgs>
     fields?: boolean | Project$fieldsArgs<ExtArgs>
     user?: boolean | Project$userArgs<ExtArgs>
-    Task?: boolean | Project$TaskArgs<ExtArgs>
+    task?: boolean | Project$taskArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -13145,7 +13145,7 @@ export namespace Prisma {
        * Propriétaires du projet
        */
       user: Prisma.$UserPayload<ExtArgs>[]
-      Task: Prisma.$TaskPayload<ExtArgs>[]
+      task: Prisma.$TaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -13580,7 +13580,7 @@ export namespace Prisma {
     templates<T extends Project$templatesArgs<ExtArgs> = {}>(args?: Subset<T, Project$templatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     fields<T extends Project$fieldsArgs<ExtArgs> = {}>(args?: Subset<T, Project$fieldsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$fieldsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     user<T extends Project$userArgs<ExtArgs> = {}>(args?: Subset<T, Project$userArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    Task<T extends Project$TaskArgs<ExtArgs> = {}>(args?: Subset<T, Project$TaskArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    task<T extends Project$taskArgs<ExtArgs> = {}>(args?: Subset<T, Project$taskArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14277,9 +14277,9 @@ export namespace Prisma {
   }
 
   /**
-   * Project.Task
+   * Project.task
    */
-  export type Project$TaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$taskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Task
      */
@@ -50496,7 +50496,7 @@ export namespace Prisma {
     templates?: TemplateListRelationFilter
     fields?: FieldsListRelationFilter
     user?: UserListRelationFilter
-    Task?: TaskListRelationFilter
+    task?: TaskListRelationFilter
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -50526,7 +50526,7 @@ export namespace Prisma {
     templates?: TemplateOrderByRelationAggregateInput
     fields?: fieldsOrderByRelationAggregateInput
     user?: UserOrderByRelationAggregateInput
-    Task?: TaskOrderByRelationAggregateInput
+    task?: TaskOrderByRelationAggregateInput
   }
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -50559,7 +50559,7 @@ export namespace Prisma {
     templates?: TemplateListRelationFilter
     fields?: FieldsListRelationFilter
     user?: UserListRelationFilter
-    Task?: TaskListRelationFilter
+    task?: TaskListRelationFilter
   }, "id">
 
   export type ProjectOrderByWithAggregationInput = {
@@ -54222,7 +54222,7 @@ export namespace Prisma {
     templates?: TemplateCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
-    Task?: TaskCreateNestedManyWithoutProjectInput
+    task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -54252,7 +54252,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
-    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUpdateInput = {
@@ -54282,7 +54282,7 @@ export namespace Prisma {
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUpdateManyWithoutProjectNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -54312,7 +54312,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyInput = {
@@ -67033,7 +67033,7 @@ export namespace Prisma {
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
-    Task?: TaskCreateNestedManyWithoutProjectInput
+    task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutUserInput = {
@@ -67062,7 +67062,7 @@ export namespace Prisma {
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
-    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutUserInput = {
@@ -69969,7 +69969,7 @@ export namespace Prisma {
     templates?: TemplateCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
-    Task?: TaskCreateNestedManyWithoutProjectInput
+    task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutMembersInput = {
@@ -69998,7 +69998,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
-    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutMembersInput = {
@@ -70130,7 +70130,7 @@ export namespace Prisma {
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUpdateManyWithoutProjectNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutMembersInput = {
@@ -70159,7 +70159,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutProjectMembershipsInput = {
@@ -70327,7 +70327,7 @@ export namespace Prisma {
     templates?: TemplateCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
-    Task?: TaskCreateNestedManyWithoutProjectInput
+    task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutInitiativesInput = {
@@ -70356,7 +70356,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
-    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutInitiativesInput = {
@@ -70504,7 +70504,7 @@ export namespace Prisma {
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUpdateManyWithoutProjectNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutInitiativesInput = {
@@ -70533,7 +70533,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutInitiativesInput = {
@@ -70904,7 +70904,7 @@ export namespace Prisma {
     templates?: TemplateCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
-    Task?: TaskCreateNestedManyWithoutProjectInput
+    task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutEpicInput = {
@@ -70933,7 +70933,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
-    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutEpicInput = {
@@ -71377,7 +71377,7 @@ export namespace Prisma {
     templates?: TemplateCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
-    Task?: TaskCreateNestedManyWithoutProjectInput
+    task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutFeaturesInput = {
@@ -71406,7 +71406,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
-    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutFeaturesInput = {
@@ -71875,7 +71875,7 @@ export namespace Prisma {
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUpdateManyWithoutProjectNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutFeaturesInput = {
@@ -71904,7 +71904,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutFeaturesInput = {
@@ -72887,7 +72887,7 @@ export namespace Prisma {
     templates?: TemplateCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
-    Task?: TaskCreateNestedManyWithoutProjectInput
+    task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutUserStoryInput = {
@@ -72916,7 +72916,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
-    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutUserStoryInput = {
@@ -75046,7 +75046,7 @@ export namespace Prisma {
     templates?: TemplateCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
-    Task?: TaskCreateNestedManyWithoutProjectInput
+    task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutSprintsInput = {
@@ -75075,7 +75075,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
-    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutSprintsInput = {
@@ -75419,7 +75419,7 @@ export namespace Prisma {
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUpdateManyWithoutProjectNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutSprintsInput = {
@@ -75448,7 +75448,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TimeEntryUpsertWithWhereUniqueWithoutSprintInput = {
@@ -75839,7 +75839,7 @@ export namespace Prisma {
     templates?: TemplateCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
-    Task?: TaskCreateNestedManyWithoutProjectInput
+    task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutFilesInput = {
@@ -75868,7 +75868,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
-    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutFilesInput = {
@@ -76460,7 +76460,7 @@ export namespace Prisma {
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUpdateManyWithoutProjectNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutFilesInput = {
@@ -76489,7 +76489,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type SprintUpsertWithoutFilesInput = {
@@ -78156,7 +78156,7 @@ export namespace Prisma {
     templates?: TemplateCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
-    Task?: TaskCreateNestedManyWithoutProjectInput
+    task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutChannelsInput = {
@@ -78185,7 +78185,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
-    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutChannelsInput = {
@@ -78280,7 +78280,7 @@ export namespace Prisma {
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUpdateManyWithoutProjectNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutChannelsInput = {
@@ -78309,7 +78309,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type MessageUpsertWithWhereUniqueWithoutChannelInput = {
@@ -78858,7 +78858,7 @@ export namespace Prisma {
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
-    Task?: TaskCreateNestedManyWithoutProjectInput
+    task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutTemplatesInput = {
@@ -78887,7 +78887,7 @@ export namespace Prisma {
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
-    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutTemplatesInput = {
@@ -78969,7 +78969,7 @@ export namespace Prisma {
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUpdateManyWithoutProjectNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutTemplatesInput = {
@@ -78998,7 +78998,7 @@ export namespace Prisma {
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TeamUpsertWithoutTemplatesInput = {
@@ -82052,7 +82052,7 @@ export namespace Prisma {
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
     templates?: TemplateCreateNestedManyWithoutProjectInput
     user?: UserCreateNestedManyWithoutProjectsInput
-    Task?: TaskCreateNestedManyWithoutProjectInput
+    task?: TaskCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutFieldsInput = {
@@ -82081,7 +82081,7 @@ export namespace Prisma {
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
-    Task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutFieldsInput = {
@@ -82355,7 +82355,7 @@ export namespace Prisma {
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUpdateManyWithoutProjectNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutFieldsInput = {
@@ -82384,7 +82384,7 @@ export namespace Prisma {
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TeamUpsertWithoutFieldsInput = {
@@ -83918,7 +83918,7 @@ export namespace Prisma {
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUpdateManyWithoutProjectNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -83947,7 +83947,7 @@ export namespace Prisma {
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutUserInput = {
@@ -85792,7 +85792,7 @@ export namespace Prisma {
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUpdateManyWithoutProjectNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutEpicInput = {
@@ -85821,7 +85821,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutEpicInput = {
@@ -86919,7 +86919,7 @@ export namespace Prisma {
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUpdateManyWithoutProjectNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutUserStoryInput = {
@@ -86948,7 +86948,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
-    Task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutUserStoryInput = {

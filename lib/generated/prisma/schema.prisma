@@ -165,7 +165,7 @@ model Project {
   templates   Template[]
   fields      fields[] /// Champs personnalisés
   user        User[]          @relation("ProjectOwner") /// Propriétaires du projet
-  Task        Task[]
+  task        Task[]
 
   //team        Team[]
   @@map("projects")
