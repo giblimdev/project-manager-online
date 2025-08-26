@@ -1,0 +1,1533 @@
+{
+  "id": "48f45780-6e33-49f3-a3a7-fccbcf2d86c8",
+  "titre": "Guide de Développement - Application Next.js TypeScript",
+  "presentationProjet": "Rôle de l'application\n\nL'application Guide de Développement - Application Next.js TypeScript est une solution web full-stack conçue pour simplifier et optimiser la gestion de projets agiles tout en favorisant une collaboration d'équipe fluide. Elle propose une interface publique intuitive et responsive, mettant en avant les services, les tarifs, et les informations de l'entreprise à travers des pages modernes et accessibles (accueil, services, tarifs, contact, à propos, mentions légales). Ces pages, au design soigné et contemporain, sont pensées pour offrir une expérience utilisateur (UX) conviviale, garantissant une navigation fluide sur tous les appareils, du mobile au desktop.\n\nL'application inclut également un espace métier sécurisé, dédié à la gestion avancée des projets (structurés en Initiatives → Epics → Features → User Stories → Tasks) et des équipes (organisées en Organisation → Services → Équipes). Elle permet de planifier des sprints, de gérer des tableaux Scrum (Kanban), et de suivre l'avancement en temps réel grâce à des outils comme les burndown charts et les indicateurs de vélocité. En intégrant des outils d'intelligence artificielle, elle facilite la génération automatisée de code (composants, routes API, pages, stores) et de documents clients (présentations, devis, factures), rendant le développement plus rapide et cohérent.\n\nAvec une architecture moderne, performante et sécurisée, l'application combine un design responsive, un style visuel attrayant et une ergonomie optimisée pour répondre aux besoins des utilisateurs, qu'ils soient managers, développeurs ou clients, tout en garantissant une expérience utilisateur intuitive et engageante.",
+  "section": [
+    {
+      "id": "1a1efb23-fd3e-4ac1-8911-bb21692aef1d",
+      "data": [
+        {
+          "id": "e5e80917-330f-4f9e-bd5c-20ff02522bac",
+          "name": "Présentation du projet",
+          "label": "Présentation du projet",
+          "order": 0,
+          "description": "L'application Guide de Développement - Application Next.js TypeScript est une solution web full-stack conçue pour simplifier et optimiser la gestion de projets agiles tout en favorisant une collaboration d'équipe fluide. Elle propose une interface publique intuitive et responsive, mettant en avant les services, les tarifs, et les informations de l'entreprise à travers des pages modernes et accessibles (accueil, services, tarifs, contact, à propos, mentions légales). Ces pages, au design soigné et contemporain, sont pensées pour offrir une expérience utilisateur (UX) conviviale, garantissant une navigation fluide sur tous les appareils, du mobile au desktop.",
+          "subElements": []
+        }
+      ],
+      "type": "custom",
+      "order": 0,
+      "title": "définition du projet"
+    },
+    {
+      "id": "tech-stack",
+      "data": [
+        {
+          "name": "next@15.4",
+          "label": "next@15.4",
+          "order": 0,
+          "usage": "Base de l'application avec SSR/SSG hybride",
+          "version": "14.x",
+          "category": "framework",
+          "description": "Framework React avec App Router, Server Components, streaming et optimisations automatiques"
+        },
+        {
+          "name": "TypeScript",
+          "order": 1,
+          "usage": "Typage strict sur toute l'application",
+          "version": "5.x",
+          "category": "language",
+          "description": "Sécurité des types, IntelliSense, refactoring sûr et détection d'erreurs à la compilation"
+        },
+        {
+          "id": "57bdfd25-0c2c-49cd-a54c-ee1efad66956",
+          "name": "react@19.1",
+          "label": "react@19.1",
+          "order": 2,
+          "description": "Bibliothèque principale pour la construction des interfaces utilisateur.",
+          "subElements": []
+        },
+        {
+          "id": "cc0c60a7-92f1-488d-b5ef-e93b5fe4c231",
+          "name": "react-dom@19.1.0",
+          "label": "react-dom@19.1.0",
+          "order": 3,
+          "description": "Gestion du rendu DOM pour React, compatible avec Next.js 15+.",
+          "subElements": []
+        },
+        {
+          "name": "Shadcn/UI",
+          "order": 4,
+          "usage": "",
+          "category": "",
+          "description": "Composants accessibles et customisables basés sur Radix UI et Tailwind CSS : accordion@, alert-dialog, avatar, checkbox, collapsible, , dialog, dropdown-menu, , label,  popover, progress, scroll-area, select, separator, , slider, slot, switch, tabs, toggle, toggle-group, , tooltip, sonner"
+        },
+        {
+          "id": "30b29d20-e0a4-402b-8cec-1c6a2086274e",
+          "name": "lucide-react: 0.525.0",
+          "label": "lucide-react: 0.525.0",
+          "order": 5,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "name": "Framer Motion 12.23.6",
+          "label": "Framer Motion 12.23.6",
+          "order": 6,
+          "usage": "Micro-interactions et transitions",
+          "version": "11.x",
+          "category": "animation",
+          "description": "Animations fluides et performantes avec API déclarative"
+        },
+        {
+          "id": "b9e80623-3384-4946-8dce-8c247a7cff2c",
+          "name": "better-auth@1.2.12",
+          "label": "better-auth@1.2.12",
+          "order": 7,
+          "description": "Solution d'authentification moderne pour gérer l'inscription, la connexion, les rôles, et la sécurité (JWT, sessions, etc.).",
+          "subElements": []
+        },
+        {
+          "name": "prisma/client@6.12.0",
+          "label": "prisma/client@6.12.0",
+          "order": 8,
+          "usage": "",
+          "version": "5.x",
+          "category": "",
+          "description": "Client pour Prisma ORM, utilisé pour interagir avec la base de données PostgreSQL, gérer les schémas, migrations, et requêtes type-safe."
+        },
+        {
+          "name": "zustand@5.0.7",
+          "label": "zustand@5.0.7",
+          "order": 9,
+          "usage": "",
+          "version": "4.x",
+          "category": "state-management",
+          "description": "Gestion d'état global légère et performante, utilisée pour gérer les données des projets, équipes, et UI.",
+          "subElements": []
+        },
+        {
+          "id": "8fa77957-8ee4-4a9b-afde-e86a97b195f7",
+          "name": "react-hook-form@7.62.0",
+          "label": "react-hook-form@7.62.0",
+          "order": 10,
+          "description": "Gestion des formulaires performante, intégrée avec Zod pour une validation type-safe. @hookform/resolvers@5.2.1 : Connecteur pour intégrer Zod avec react-hook-form.  ",
+          "subElements": []
+        },
+        {
+          "id": "5f96d4b8-52d1-4554-8e0a-c0b917be0d23",
+          "name": "zod@4.0.16 ",
+          "label": "zod@4.0.16 ",
+          "order": 11,
+          "description": "Bibliothèque de validation de schémas, utilisée pour valider les données dans les formulaires et les routes API.",
+          "subElements": []
+        },
+        {
+          "id": "c657d6b7-a225-4d27-a8ba-1a99945984e4",
+          "name": "dnd-kit/core: 6.3.1",
+          "label": "dnd-kit/core: 6.3.1",
+          "order": 12,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "2673562a-f238-4df6-9fe6-68001bc143e3",
+          "name": "dnd-kit/core@6.3.1",
+          "label": "dnd-kit/core@6.3.1",
+          "order": 13,
+          "description": "Drag-and-Drop (D&D)   : Noyau de la bibliothèque dnd-kit pour les fonctionnalités de drag-and-drop, utilisé pour le tableau Scrum (Kanban). @dnd-kit/sortable@10.0.0 : Module pour les listes triables, idéal pour réorganiser les tâches dans les colonnes Kanban. @dnd-kit/utilities@3.2.2 : Utilitaires supplémentaires pour dnd-kit, facilitant la gestion des interactions D&D",
+          "subElements": []
+        },
+        {
+          "id": "745aaafc-b822-4765-8085-6c4a8559a2a5",
+          "name": "date-fns@4.1.0",
+          "label": "date-fns@4.1.0",
+          "order": 14,
+          "description": "Bibliothèque légère pour manipuler et formater les dates, utilisée pour la planification des sprints. ",
+          "subElements": []
+        },
+        {
+          "id": "adc2f793-c3a9-43e0-9fb6-40e8c39952af",
+          "name": "react-day-picker@9.8.0",
+          "label": "react-day-picker@9.8.0",
+          "order": 15,
+          "description": "Composant de sélecteur de dates, pour les interfaces de planification.  Thèmes  next-themes@0.4.6 : Gestion des thèmes clair/sombre pour une interface UX-friendly.  Utilitaires  uuid@11.1.0 : Génération d'identifiants uniques, utilisé pour les ID des tâches, projets, ou utilisateurs.  Dépendances de développement (devDependencies)  @tailwindcss/postcss@4 : Plugin PostCSS pour Tailwind CSS, utilisé pour traiter les styles. @types/node@20 : Types TypeScript pour Node.js. @types/react@19 : Types TypeScript pour React 19. @types/react-dom@19 : Types TypeScript pour React DOM 19. @types/uuid@10.0.0 : Types TypeScript pour la bibliothèque uuid. typescript@5 : Compilateur TypeScript pour un typage strict et une détection d'erreurs.  Résumé des rôles clés  Next.js, React, React DOM : Base de l'application, rendu et gestion des composants. Zustand, Prisma, better-auth : Gestion d'état, base de données, et authentification sécurisée. dnd-kit : Drag-and-drop pour le tableau Scrum (Kanban) et la réorganisation des tâches. Shadcn/UI (Radix UI, Tailwind) : Interface utilisateur accessible, responsive, et stylisée. Framer Motion, Lucide React : Animations fluides et icônes modernes. Zod, react-hook-form : Validation et gestion des formulaires. date-fns, react-day-picker : Gestion des dates pour la planification. sonner, cmdk, next-themes : Amélioration de l'UX avec notifications, recherche, et thèmes.  Intégration dans votre projet Ces bibliothèques sont cohérentes avec les besoins de votre application décrite dans le JSON initial :  Tableau Scrum : Utilisez @dnd-kit/core et @dnd-kit/sortable pour gérer les colonnes Kanban (To Do, In Progress, Done). Interface publique/métier : Les composants Radix UI et Shadcn/UI, stylisés avec Tailwind, assurent un design moderne et responsive. Gestion des projets/équipes : Prisma et Zustand gèrent les données et l'état, avec better-auth pour la sécurité. Animations : Framer Motion ajoute des transitions fluides pour le drag-and-drop et les interactions. Formulaires et validation : react-hook-form et Zod garantissent des formulaires robustes (ex. formulaire de contact). Planification : date-fns et react-day-picker facilitent la gestion des sprints.  Si vous avez besoin d'un exemple spécifique d'utilisation d'une de ces bibliothèques (par exemple, un composant Kanban avec dnd-kit ou un formulaire avec react-hook-form), ",
+          "subElements": []
+        }
+      ],
+      "type": "documentation",
+      "order": 1,
+      "title": "Stack Technique Détaillé"
+    },
+    {
+      "id": "6f29b955-e4a0-4286-859a-c2ef943841d0",
+      "data": [
+        {
+          "id": "e6fe95ed-dc1a-4231-af10-8b374bc0b434",
+          "name": "1. Le Modèle \"Server-First\" avec l'App Router",
+          "label": "1. Le Modèle \"Server-First\" avec l'App Router",
+          "order": 0,
+          "description": "Nous rendons le maximum côté serveur pour n'envoyer au client que le minimum de JavaScript nécessaire. L'interactivité est une amélioration que l'on ajoute au besoin. et demandons le rechargement si changement pour une prise en compt des nouvelle donner (modification en base de données)",
+          "subElements": []
+        },
+        {
+          "id": "60d428e9-2d2e-4217-b162-b0be897901fe",
+          "name": "2. Gestion des Données Moderne : Server Actions",
+          "label": "2. Gestion des Données Moderne : Server Actions",
+          "order": 1,
+          "description": "utilise les serveur action",
+          "subElements": []
+        },
+        {
+          "id": "24ca2429-a0f7-4ffd-bb43-4b3458e989b4",
+          "name": "3. utiliser le principe mvc",
+          "label": "3. utiliser le principe mvc",
+          "order": 2,
+          "description": "les item/page concernant la table Item de la db  utilise  ItemDisplay et ItemForm. ItemDisplay utilise SelectModeView (list, card, tree, d&d via props) et  view/displayList, view/displayCard, view/displayTree, view/displayd&d.",
+          "subElements": []
+        },
+        {
+          "id": "40ee3779-ca1a-421f-8e64-df8a6cf21a9c",
+          "name": "4. Structure de Projet Orientée \"Feature\" (Colocation)",
+          "label": "4. Structure de Projet Orientée \"Feature\" (Colocation)",
+          "order": 3,
+          "description": "les composant utiliser par une page est placer dans le même dossier avec layout.tsx : Définit une structure d'UI partagée.  page.tsx : Le contenu unique d'une page.  loading.tsx : Affiche automatiquement un spinner/squelette pendant que les données de page.tsx sont en cours de chargement.  error.tsx : Affiche une page d'erreur si une erreur se produit, sans faire planter toute l'application.",
+          "subElements": []
+        },
+        {
+          "id": "07bafa3a-0e25-4625-bdf5-c2816bea3361",
+          "name": "Streaming avec Suspense",
+          "label": "Streaming avec Suspense",
+          "order": 4,
+          "description": "les page et composant utilisent Suspense : Permet d'afficher les parties rapides d'une page instantanément, et de \"streamer\" les parties plus lentes dès qu'elles sont prêtes, améliorant le temps de chargement perçu.",
+          "subElements": []
+        }
+      ],
+      "type": "custom",
+      "order": 2,
+      "title": "philosophie développement"
+    },
+    {
+      "id": "6deec931-7900-4e79-8a45-79aee2686765",
+      "data": [
+        {
+          "id": "bef443b8-b17a-46da-a7b9-be40cb53c604",
+          "name": "Navigation publique",
+          "label": "Navigation publique",
+          "order": 0,
+          "description": "",
+          "subElements": [
+            {
+              "id": "3116a959-0371-4f4a-823c-944a3fcd0254",
+              "name": "Home",
+              "path": "/",
+              "label": "Home",
+              "order": 0,
+              "description": "Page d'accueil principale avec présentation de la solution, call-to-action et navigation vers les services"
+            },
+            {
+              "id": "30764220-969d-440e-b60e-28676ae49b37",
+              "name": "Services",
+              "path": "/services",
+              "label": "Services",
+              "order": 1,
+              "description": "description\": \"Présentation détaillée de l'offre : gestion de projets agile, outils Scrum, collaboration d'équipe. Tarifs, fonctionnalités et avantages concurrentiels"
+            },
+            {
+              "id": "41ec6a43-0ea5-4e7f-8466-b5f7fba4c12b",
+              "name": "Tarifs",
+              "path": "/pricing",
+              "label": "Tarifs",
+              "order": 2,
+              "description": "description\": \"Grille tarifaire avec plans Starter, Professional et Enterprise. Comparatif des fonctionnalités et période d'essai gratuite"
+            },
+            {
+              "id": "aa64fda7-6010-46fa-ac8d-74a3b0122c65",
+              "name": "Contact",
+              "path": "/contact",
+              "label": "Contact",
+              "order": 3,
+              "description": "Formulaire de contact, coordonnées complètes, horaires d'ouverture et support client. Intégration carte interactive"
+            },
+            {
+              "id": "07df2174-fb1a-43da-96e7-6366a72ba278",
+              "name": "about",
+              "path": "/about",
+              "label": "about",
+              "order": 4,
+              "description": "Histoire de l'entreprise, équipe dirigeante, valeurs, missions et réalisations. Renforce la confiance et améliore le SEO local"
+            },
+            {
+              "id": "fc33575a-bcb1-4f03-9c05-e631f10b3f4d",
+              "name": "Mentions légales",
+              "path": "/legal",
+              "label": "Mentions légales",
+              "order": 5,
+              "description": "Informations légales obligatoires : raison sociale, SIREN/SIRET, siège social, capital social, hébergeur, conditions d'utilisation et politique RGPD"
+            }
+          ]
+        },
+        {
+          "id": "b0e3809b-b0a2-4259-8f78-311cff70d5d0",
+          "name": "navigation Métier",
+          "label": "navigation Métier",
+          "order": 1,
+          "description": "",
+          "subElements": [
+            {
+              "id": "b5e659d7-e3bf-4ff7-aa6b-4d1a926cdc77",
+              "name": "Projects",
+              "path": "user/projects",
+              "label": "Projects",
+              "order": 0,
+              "description": "CRUD complet des projets avec hiérarchie : Initiatives → Epics → Features → User Stories → Tasks. "
+            },
+            {
+              "id": "2e98a08f-f426-467e-8e18-b3e91a05f802",
+              "name": "Teams",
+              "path": "/user/teams",
+              "label": "Teams",
+              "order": 1,
+              "description": "Gestion hiérarchique : Organisation parent → Services → Équipes de développement. Rôles, permissions et workflow d'approbation."
+            },
+            {
+              "id": "292862a7-9abd-41f9-9797-6a9e2178b904",
+              "name": "Tacks Planner",
+              "path": "/planner",
+              "label": "Tacks Planner",
+              "order": 2,
+              "description": "Gestion des sprints et assignation d'équipes"
+            },
+            {
+              "id": "57d9da61-8983-4342-995d-28d568b4e08a",
+              "name": "Scrum Board",
+              "path": "/user/scrum",
+              "label": "Scrum Board",
+              "order": 3,
+              "description": "Kanban board, gestion des sprints, burndown charts, vélocité d'équipe et suivi d'avancement en temps réel ."
+            },
+            {
+              "id": "049d3c26-544c-46b9-aed0-38a2e94266be",
+              "name": "Genration AI",
+              "path": "/creatPrompt",
+              "label": "Genration AI",
+              "order": 4,
+              "description": "Architecture de l'application, documentation des composants, générateur de prompts IA pour créer de nouveaux fichiers cohérents avec l'existant"
+            },
+            {
+              "id": "fb3a2be3-65a4-4abd-a405-6e6be04de464",
+              "name": "docClient",
+              "path": "/genDoc",
+              "label": "docClient",
+              "order": 5,
+              "description": "génération des documents : - présentation générale, - présentation investisseurs, devis, facture"
+            }
+          ]
+        }
+      ],
+      "type": "custom",
+      "order": 3,
+      "title": "navigation"
+    },
+    {
+      "id": "ea7e589c-237e-4bb8-99cd-7264b4d006cd",
+      "data": [
+        {
+          "id": "ec70762b-5e11-4a03-818d-cfe91992c71f",
+          "name": "📌 Epic 1 : Authentification  ",
+          "label": "📌 Epic 1 : Authentification  ",
+          "order": 0,
+          "description": "",
+          "subElements": [
+            {
+              "id": "cc357141-8408-4d11-95e7-9f237839d380",
+              "name": "Feature 1.1 : Inscription utilisateur (signup) ",
+              "label": "Feature 1.1 : Inscription utilisateur (signup) ",
+              "order": 0,
+              "description": ""
+            },
+            {
+              "id": "45d18621-c69a-4ae1-8f52-4eff23b206c8",
+              "name": " Feature 1.2 : Connexion utilisateur (login)  ",
+              "label": " Feature 1.2 : Connexion utilisateur (login)  ",
+              "order": 1,
+              "description": ""
+            },
+            {
+              "id": "b2310c0d-7d11-493e-9e8d-bd605a6dcda5",
+              "name": "Feature 1.3 : Déconnexion (logout)  Feature ",
+              "label": "Feature 1.3 : Déconnexion (logout)  Feature ",
+              "order": 2,
+              "description": ""
+            },
+            {
+              "id": "699d65a1-02f9-4d52-961e-6d796ccd5eee",
+              "name": "1.4 : Gestion des rôles & permissions (admin, manager, user)  ",
+              "label": "1.4 : Gestion des rôles & permissions (admin, manager, user)  ",
+              "order": 3,
+              "description": ""
+            },
+            {
+              "id": "7150bdd1-1b9a-4c65-abdb-10ec6349af94",
+              "name": "Feature 1.5 : Sécurité (hash mot de passe, JWT/session, 2FA optionnel)  ",
+              "label": "Feature 1.5 : Sécurité (hash mot de passe, JWT/session, 2FA optionnel)  ",
+              "order": 4,
+              "description": ""
+            },
+            {
+              "id": "c4e2edd8-83ef-4b16-9d4c-6b45471912bc",
+              "name": "Feature 1.6 : Gestion du profil utilisateur (update informations personnelles)  ",
+              "label": "Feature 1.6 : Gestion du profil utilisateur (update informations personnelles)  ",
+              "order": 5,
+              "description": ""
+            }
+          ]
+        },
+        {
+          "id": "69cb7ce1-67b2-4ebd-92e4-04499069f6a9",
+          "name": "📌 Epic 2 : Gestion des Projets  ",
+          "label": "📌 Epic 2 : Gestion des Projets  ",
+          "order": 1,
+          "description": "",
+          "subElements": [
+            {
+              "id": "5a7bf0ba-b8e7-4ce0-be31-b4441ac71bc9",
+              "name": "Feature 2.1 : CRUD projets  ",
+              "label": "Feature 2.1 : CRUD projets  ",
+              "order": 0,
+              "description": ""
+            },
+            {
+              "id": "afefb2e1-9414-4df8-be89-a4d797ebc235",
+              "name": "Feature 2.2 : Hiérarchie projet → Initiative → Epic → Feature → User Story → Task  Feature ",
+              "label": "Feature 2.2 : Hiérarchie projet → Initiative → Epic → Feature → User Story → Task  Feature ",
+              "order": 1,
+              "description": ""
+            },
+            {
+              "id": "9c60a96b-6f09-4267-90c9-5b5e0ef48892",
+              "name": "2.3 : Assignation des membres d’équipe  ",
+              "label": "2.3 : Assignation des membres d’équipe  ",
+              "order": 2,
+              "description": ""
+            },
+            {
+              "id": "b1d372ae-d37e-4eec-a2f5-fb18926a3b70",
+              "name": "Feature 2.4 : Suivi d’avancement du projet (progression, état des features)  ",
+              "label": "Feature 2.4 : Suivi d’avancement du projet (progression, état des features)  ",
+              "order": 3,
+              "description": ""
+            },
+            {
+              "id": "f3020980-c9f1-470b-a5c4-9b69bac12e19",
+              "name": "Nouveau souFeature 2.5 : Archivage & suppression  s-élément",
+              "label": "Nouveau souFeature 2.5 : Archivage & suppression  s-élément",
+              "order": 4,
+              "description": ""
+            }
+          ]
+        },
+        {
+          "id": "a00d4572-b6de-44c6-ad95-bb393793d4ae",
+          "name": "📌 Epic 3 : Gestion des Équipes ",
+          "label": "📌 Epic 3 : Gestion des Équipes ",
+          "order": 2,
+          "description": "",
+          "subElements": [
+            {
+              "id": "4baa0454-ab20-492e-8d82-1edb58af6e6a",
+              "name": " Feature 3.1 : CRUD équipes  ",
+              "label": " Feature 3.1 : CRUD équipes  ",
+              "order": 0,
+              "description": ""
+            },
+            {
+              "id": "d827ea63-c060-4dcd-82b6-3fe1803d8056",
+              "name": "Feature 3.2 : Hiérarchie organisationnelle (Organisation → Service → Équipe)  ",
+              "label": "Feature 3.2 : Hiérarchie organisationnelle (Organisation → Service → Équipe)  ",
+              "order": 1,
+              "description": ""
+            },
+            {
+              "id": "cfe29113-ba9e-4c3f-81b9-cf283ddb9888",
+              "name": "Feature 3.3 : Attribution de rôles et permissions  ",
+              "label": "Feature 3.3 : Attribution de rôles et permissions  ",
+              "order": 2,
+              "description": ""
+            },
+            {
+              "id": "bf533895-b55d-4c27-ab95-7d827d7a62ce",
+              "name": "Feature 3.4 : Workflow d’approbation (ajout/suppression membre)  ",
+              "label": "Feature 3.4 : Workflow d’approbation (ajout/suppression membre)  ",
+              "order": 3,
+              "description": ""
+            }
+          ]
+        },
+        {
+          "id": "4cd8c4c0-000e-40d0-8f70-0d2c995f207b",
+          "name": "📌 Epic 4 : Planification & Agilité ",
+          "label": "📌 Epic 4 : Planification & Agilité ",
+          "order": 3,
+          "description": "",
+          "subElements": [
+            {
+              "id": "8e87e914-6b4e-4e5d-91c0-f763b35b223b",
+              "name": "Feature 4.1 : Sprint planning (Sprint backlog, durée)  ",
+              "label": "Feature 4.1 : Sprint planning (Sprint backlog, durée)  ",
+              "order": 0,
+              "description": ""
+            },
+            {
+              "id": "09c7557a-6d09-4bdb-b0ec-839013243585",
+              "name": "Feature 4.2 : Assignation des tâches aux développeurs  ",
+              "label": "Feature 4.2 : Assignation des tâches aux développeurs  ",
+              "order": 1,
+              "description": ""
+            },
+            {
+              "id": "5d91d0a5-040c-463c-a537-9f2ad1897d9d",
+              "name": "Feature 4.3 : Scrum board (Kanban : To Do / In Progress / Done)  ",
+              "label": "Feature 4.3 : Scrum board (Kanban : To Do / In Progress / Done)  ",
+              "order": 2,
+              "description": ""
+            },
+            {
+              "id": "12b94f13-3f28-455a-92c9-b643045f3668",
+              "name": "Feature 4.4 : Burndown chart et vélocité d’équipe  ",
+              "label": "Feature 4.4 : Burndown chart et vélocité d’équipe  ",
+              "order": 3,
+              "description": ""
+            },
+            {
+              "id": "dbddb8c8-e7df-4377-97dc-4d1295d24d55",
+              "name": "Feature 4.5 : Suivi temps réel",
+              "label": "Feature 4.5 : Suivi temps réel",
+              "order": 4,
+              "description": ""
+            }
+          ]
+        },
+        {
+          "id": "0d688ac6-6621-40d2-b9cf-2646e24a9c9b",
+          "name": "📌 Epic 5 : Génération IA (Assistant Dev & Doc)  ",
+          "label": "📌 Epic 5 : Génération IA (Assistant Dev & Doc)  ",
+          "order": 4,
+          "description": "",
+          "subElements": [
+            {
+              "id": "93d4a33b-eab3-4731-b518-19208152f1f4",
+              "name": "Feature 5.1 : Générateur de prompts pour création de fichiers (composants, routes API, pages, stores)  ",
+              "label": "Feature 5.1 : Générateur de prompts pour création de fichiers (composants, routes API, pages, stores)  ",
+              "order": 0,
+              "description": ""
+            },
+            {
+              "id": "cc57477e-a0c7-4212-94ca-d9f2badefe1a",
+              "name": "Feature 5.2 : Documentation automatique des composants et architecture  ",
+              "label": "Feature 5.2 : Documentation automatique des composants et architecture  ",
+              "order": 1,
+              "description": ""
+            },
+            {
+              "id": "340d8334-0fad-4c69-94e2-f12cb7eb9e83",
+              "name": "Feature 5.3 : Génération de documents client (présentation générale, investisseurs, devis, facture)  ",
+              "label": "Feature 5.3 : Génération de documents client (présentation générale, investisseurs, devis, facture)  ",
+              "order": 2,
+              "description": ""
+            }
+          ]
+        },
+        {
+          "id": "be318b17-d513-4eca-8efa-b3dad40175e0",
+          "name": "📌 Epic 6 : Navigation & Pages Publiques  ",
+          "label": "📌 Epic 6 : Navigation & Pages Publiques  ",
+          "order": 5,
+          "description": "",
+          "subElements": [
+            {
+              "id": "44833cfd-9118-4b38-af00-436271f48f9a",
+              "name": "Feature 6.1 : Page d’accueil (Home)",
+              "label": "Feature 6.1 : Page d’accueil (Home)",
+              "order": 0,
+              "description": ""
+            },
+            {
+              "id": "6c08cffc-df06-44bd-a10a-ea31984a4225",
+              "name": "Feature 6.2 : Page Services (description, tarifs, avantages)",
+              "label": "Feature 6.2 : Page Services (description, tarifs, avantages)",
+              "order": 1,
+              "description": ""
+            },
+            {
+              "id": "f190ede5-6f9e-4796-b19e-86dab8cf309f",
+              "name": "Feature 6.3 : Page Tarifs (comparatif Starter / Pro / Enterprise)",
+              "label": "Feature 6.3 : Page Tarifs (comparatif Starter / Pro / Enterprise)",
+              "order": 2,
+              "description": ""
+            },
+            {
+              "id": "efa42b9d-6fb7-4ede-8d23-d1420a30282e",
+              "name": "Feature 6.4 : Page Contact (formulaire + carte interactive)",
+              "label": "Feature 6.4 : Page Contact (formulaire + carte interactive)",
+              "order": 3,
+              "description": ""
+            },
+            {
+              "id": "245673c0-2f69-46d1-b503-7a306f5aa5d9",
+              "name": "Feature 6.5 : Page About (équipe, mission, valeurs)",
+              "label": "Feature 6.5 : Page About (équipe, mission, valeurs)",
+              "order": 4,
+              "description": ""
+            },
+            {
+              "id": "fcec6fd9-a43c-471f-bcad-f2f355de569f",
+              "name": "Feature 6.6 : Mentions légales / RGPD",
+              "label": "Feature 6.6 : Mentions légales / RGPD",
+              "order": 5,
+              "description": ""
+            }
+          ]
+        },
+        {
+          "id": "cdca9053-8762-47cc-a7e1-6245187db5a3",
+          "name": "📌 Epic 7 : SEO",
+          "label": "📌 Epic 7 : SEO",
+          "order": 6,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "68a0cfa7-fbb2-435f-a458-29733f60a88b",
+          "name": "📌 Epic 8 : gestion des cérémonie",
+          "label": "📌 Epic 8 : gestion des cérémonie",
+          "order": 7,
+          "description": "D'après l'analyse de votre schéma et de votre documentation, je constate que la planification des cérémonies agiles n'est pas explicitement implémentée dans votre application actuelle. Voici ce qui manque et où elle devrait se situer :  🔍 Ce qui est actuellement présent Pages existantes liées à l'agilité : app/user/scrum/page.tsx : Tableau Scrum (Kanban Board)  app/user/planner/page.tsx : Planificateur de sprints et assignation  app/user/projects/sprints/page.tsx : Gestion des sprints  Tables dans votre schéma Prisma : Sprint : Avec startDate, endDate, status, burndownData, retrospective  Project, Team, User : Avec les relations nécessaires  🚨 Ce qui manque : La planification des cérémonies Cérémonies agiles non planifiées : Sprint Planning (Planification de sprint)  Daily Scrum / Stand-up (Mêlée quotidienne)  Sprint Review (Revue de sprint)  Sprint Retrospective (Rétrospective)  Backlog Refinement (Affinage du backlog)  🎯 Où ajouter la planification des cérémonies Option 1 : Extension du modèle existant Ajouter une table Ceremony à votre schéma Prisma :  text model Ceremony {   id          String        @id @default(cuid())   type        CeremonyType  // SPRINT_PLANNING, DAILY_SCRUM, etc.   title       String   description String?   startTime   DateTime   endTime     DateTime   location    String?       // Salle ou lien vidéo   status      String        @default(\"PLANNED\")   agenda      Json?         // Ordre du jour   notes       String?       // Compte-rendu   createdAt   DateTime      @default(now())   updatedAt   DateTime      @updatedAt      // Relations   sprintId    String?   projectId   String   teamId      String?      sprint      Sprint?       @relation(fields: [sprintId], references: [id])   project     Project       @relation(fields: [projectId], references: [id])   team        Team?         @relation(fields: [teamId], references: [id])   attendees   User[]        @relation(\"CeremonyAttendees\")      @@map(\"ceremonies\") }  enum CeremonyType {   SPRINT_PLANNING   DAILY_SCRUM   SPRINT_REVIEW   RETROSPECTIVE   BACKLOG_REFINEMENT } Option 2 : Pages recommandées à créer text app/user/ceremonies/ ├── page.tsx                    // Liste des cérémonies ├── [id]/page.tsx              // Détail d'une cérémonie ├── planning/page.tsx          // Planification des cérémonies └── calendar/page.tsx          // Calendrier des cérémonies Option 3 : Intégration dans les pages existantes Dans app/user/planner/page.tsx :  Ajouter une section \"Planification des cérémonies\"  Intégrer un calendrier avec les événements Scrum  Automatiser la création des cérémonies lors de la création d'un sprint  Dans app/user/projects/sprints/[id]/page.tsx :  Ajouter les cérémonies associées au sprint  Planning automatique (ex: Sprint Planning J-1, Daily tous les jours, Review dernier jour)  🛠️ Recommandations d'implémentation 1. Composants suggérés typescript // components/ceremonies/CeremoniesDisplay.tsx // components/ceremonies/CeremoniesForm.tsx // components/ceremonies/CeremoniesCalendar.tsx 2. Automatisation recommandée Auto-génération : Créer automatiquement les cérémonies lors de la création d'un sprint  Notifications : Rappels avant chaque cérémonie  Intégration calendrier : Export vers Google Calendar, Outlook  3. Navigation mise à jour Ajouter dans la navigation métier :  json {   \"name\": \"Cérémonies\",   \"path\": \"/user/ceremonies\",    \"description\": \"Planification et gestion des cérémonies agiles (Sprint Planning, Daily, Review, Rétro)\" } 📅 Conclusion La planification des cérémonies devrait être intégrée dans app/user/planner/page.tsx ou créer une nouvelle section app/user/ceremonies/ pour une gestion dédiée. Cela compléterait parfaitement votre écosystème agile existant en ajoutant la dimension temporelle et organisationnelle des rituels Scrum.",
+          "subElements": []
+        }
+      ],
+      "type": "custom",
+      "order": 4,
+      "title": "Epic et user stories (features)"
+    },
+    {
+      "id": "2efabe76-78ae-4418-923f-7786f4663c59",
+      "data": [
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb701",
+          "name": "app/layout.tsx",
+          "label": "app/layout.tsx",
+          "order": 0,
+          "description": "Layout racine de toute l'application. Il définit la structure HTML commune à toutes les pages (head, body, providers, thèmes). C'est ici que vous configurez :  Les métadonnées globales  Les providers (auth, thème, store)  Les polices et styles globaux  La structure HTML de base",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb702",
+          "name": "app/page.tsx",
+          "label": "app/page.tsx",
+          "order": 1,
+          "description": "Page d'accueil principale de votre application (/). C'est la première page que voient les visiteurs non connectés.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb703",
+          "name": "app/loading.tsx",
+          "label": "app/loading.tsx",
+          "order": 2,
+          "description": "Composant de chargement global qui s'affiche automatiquement pendant que les pages se chargent. Utilise le système de Suspense de Next.js pour améliorer l'UX.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb704",
+          "name": "app/error.tsx",
+          "label": "app/error.tsx",
+          "order": 3,
+          "description": "Page d'erreur globale qui capture les erreurs non gérées dans l'application sans faire planter toute l'app. Permet une récupération gracieuse.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb705",
+          "name": "app/not-found.tsx",
+          "label": "app/not-found.tsx",
+          "order": 4,
+          "description": "Page 404 personnalisée qui s'affiche quand une route n'existe pas. Améliore l'UX en gardant l'utilisateur dans votre application.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb717",
+          "name": "app/glossary/page.tsx",
+          "label": "app/glossary/page.tsx",
+          "order": 5,
+          "description": "Page de glossaire pour afficher les termes techniques ou spécifique de l'application.",
+          "subElements": []
+        },
+        {
+          "id": "42c4f53f-763e-4478-9c4a-b441eb427c17",
+          "name": "app//helpDev/page.tsx",
+          "path": "app//helpDev/page.tsx",
+          "label": "app//helpDev/page.tsx",
+          "order": 6,
+          "description": "Page d'aide au développement qui utilise la table helpDev pour afficher la documentation technique et les guides de développement.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb706",
+          "name": "app/(public)/page.tsx",
+          "label": "app/(public)/page.tsx",
+          "order": 7,
+          "description": " page d'accueil pour la section publique. peux etre utiliser avec layout et autre page technique de next. ",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb707",
+          "name": "app/(public)/services/page.tsx",
+          "label": "app/(public)/services/page.tsx",
+          "order": 8,
+          "description": "Page de présentation des services de gestion de projets agiles. Décrit l'offre, les fonctionnalités et les avantages concurrentiels.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb708",
+          "name": "app/(public)/pricing/page.tsx",
+          "label": "app/(public)/pricing/page.tsx",
+          "order": 9,
+          "description": "Page tarifaire avec les plans Starter, Professional et Enterprise. Comparatif des fonctionnalités et période d'essai.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb709",
+          "name": "app/(public)/contact/page.tsx",
+          "label": "app/(public)/contact/page.tsx",
+          "order": 10,
+          "description": "Page de contact avec formulaire, coordonnées et support client. Probablement avec une carte interactive.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb710",
+          "name": "app/(public)/about/page.tsx",
+          "label": "app/(public)/about/page.tsx",
+          "order": 11,
+          "description": "Page \"À propos\" présentant l'entreprise, l'équipe, les valeurs et missions. Important pour le SEO et la confiance client.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb711",
+          "name": "app/(public)/legal/page.tsx",
+          "label": "app/(public)/legal/page.tsx",
+          "order": 12,
+          "description": "Mentions légales obligatoires : informations juridiques, RGPD, conditions d'utilisation, hébergeur, etc.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb712",
+          "name": "app/(auth)/login/page.tsx",
+          "label": "app/(auth)/login/page.tsx",
+          "order": 13,
+          "description": "Page de connexion utilisateur avec formulaire de login sécurisé. et liens vers register",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb713",
+          "name": "app/(auth)/register/page.tsx",
+          "label": "app/(auth)/register/page.tsx",
+          "order": 14,
+          "description": "Page d'inscription pour créer un nouveau compte utilisateur. acceptation des conditiongeneral et liens vers app/(public)/legal/page.tsx. liens app/(auth)/login/page.tsx. vers login. champs de verification du mode passe. icone lucide voir/masquer le le mot de passe",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb715",
+          "name": "app/(auth)/welcome/page.tsx",
+          "label": "app/(auth)/welcome/page.tsx",
+          "order": 15,
+          "description": "Page de bienvenue affichée après une inscription ou première connexion réussie.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb714",
+          "name": "app/(auth)/goodbye/page.tsx",
+          "label": "app/(auth)/goodbye/page.tsx",
+          "order": 16,
+          "description": "Page de déconnexion affichée après un logout réussi.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb716",
+          "name": "app/user/layout.tsx",
+          "label": "app/user/layout.tsx",
+          "order": 17,
+          "description": "Layout sécurisé pour toute la section métier de l'application. Il définit :  La vérification d'authentification pour toutes les pages /user/*  La navigation métier (sidebar avec projets, équipes, scrum board, etc.)  Les providers spécifiques à l'espace utilisateur  La structure UI commune (header métier, navigation contexuelle)",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb737",
+          "name": "app/user/page.tsx",
+          "label": "app/user/page.tsx",
+          "order": 18,
+          "description": "Page principal de l'utilisateur connecté. Affiche  :  mes Project,    Tâches assignées et notifications. Planning.  lien vers app/user/dashboard ; Métriques et KPIs personnels. Raccourcis vers les fonctionnalités principales",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb718",
+          "name": "app/user/projects/page.tsx",
+          "label": "app/user/projects/page.tsx",
+          "order": 19,
+          "description": "Page de liste/gestion des projets. Utilise ProjectsDisplay avec SelectModeView (list, card, tree, drag & drop). Fonctionnalités :  CRUD complet des projets  Filtrage et recherche  Vue hiérarchique des projets",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb719",
+          "name": "app/user/projects/[id]/page.tsx",
+          "label": "app/user/projects/[id]/page.tsx",
+          "order": 20,
+          "description": "Page de détail d'un projet spécifique. Affiche :  Informations complètes du projet nombre par/item.  sprint en cours.  Progression et métriques du projet en général du sprint en particulier  .Navigation vers les initiatives/epics/features/task",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb720",
+          "name": "app/user/projects/initiatives/page.tsx",
+          "label": "app/user/projects/initiatives/page.tsx",
+          "order": 21,
+          "description": "Gestion des initiatives (niveau stratégique). Utilise InitiativesDisplay avec SelectModeView. Fonctionnalités :  Vue d'ensemble des initiatives par projet  Gestion des objectifs stratégiques et budgets  Suivi ROI et progression",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb721",
+          "name": "app/user/projects/initiatives/[id]/page.tsx",
+          "label": "app/user/projects/initiatives/[id]/page.tsx",
+          "order": 22,
+          "description": "Détail d'une initiative spécifique avec :  Epics associés  Métriques de progression  Gestion des ressources et timeline",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb722",
+          "name": "app/user/projects/epics/page.tsx",
+          "label": "app/user/projects/epics/page.tsx",
+          "order": 23,
+          "description": "Gestion des epics (fonctionnalités majeures). Utilise EpicsDisplay avec vues multiples :  Organisation par initiatives  Priorisation et planification  Suivi d'avancement",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb723",
+          "name": "app/user/projects/epics/[id]/page.tsx",
+          "label": "app/user/projects/epics/[id]/page.tsx",
+          "order": 24,
+          "description": "Détail d'un epic avec :  Features et user stories associées  Critères d'acceptation  Timeline et dépendances",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb728",
+          "name": "app/user/projects/features/page.tsx",
+          "label": "app/user/projects/features/page.tsx",
+          "order": 25,
+          "description": "Gestion des features (fonctionnalités). Utilise FeaturesDisplay avec patterns MVC :  Hiérarchie des features  Gestion des dépendances (FeatureDependency)  Story points et estimation",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb729",
+          "name": "app/user/projects/features/[id]/page.tsx",
+          "label": "app/user/projects/features/[id]/page.tsx",
+          "order": 26,
+          "description": "Détail d'une feature avec :  User stories associées  Critères d'acceptation  Risques techniques et valeur métier",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb726",
+          "name": "app/user/projects/userStories/page.tsx",
+          "label": "app/user/projects/userStories/page.tsx",
+          "order": 27,
+          "description": "Gestion des user stories. Utilise UserStoriesDisplay avec :  Assignation aux développeurs (UserStoryAssignees)  Gestion des sprints  Suivi des heures (estimées/réelles)",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb727",
+          "name": "app/user/projects/userStories/[id]/page.tsx",
+          "label": "app/user/projects/userStories/[id]/page.tsx",
+          "order": 28,
+          "description": "Détail d'une user story avec :  Tâches associées  Commentaires et fichiers  Historique des modifications",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb724",
+          "name": "app/user/projects/sprints/page.tsx",
+          "label": "app/user/projects/sprints/page.tsx",
+          "order": 29,
+          "description": "Gestion des sprints. Utilise SprintsDisplay avec :  Planning et rétrospectives  Métriques de vélocité  User stories incluses",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb725",
+          "name": "app/user/projects/sprints/[id]/page.tsx",
+          "label": "app/user/projects/sprints/[id]/page.tsx",
+          "order": 30,
+          "description": "app/user/projects/sprints/[id]/page.tsx → /user/projects/sprints/[id] Détail d'un sprint avec :  Burndown chart en temps réel  Daily scrum et blockers  Rétrospective et améliorations",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb730",
+          "name": "app/user/projects/tasks/page.tsx",
+          "label": "app/user/projects/tasks/page.tsx",
+          "order": 31,
+          "description": "Gestion des tâches (niveau opérationnel). Utilise TasksDisplay avec :  Assignation multiple (TaskAssignees)  Dépendances entre tâches (TaskDependency)  Suivi du temps (TimeEntry)",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb731",
+          "name": "app/user/projects/tasks/[id]/page.tsx",
+          "label": "app/user/projects/tasks/[id]/page.tsx",
+          "order": 32,
+          "description": "Détail d'une tâche avec :  Commentaires et pièces jointes  Historique des changements de statut  Tracking du temps passé",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb732",
+          "name": "app/user/projects/files/page.tsx",
+          "label": "app/user/projects/files/page.tsx",
+          "order": 33,
+          "description": "Gestionnaire de fichiers projet. Utilise FilesDisplay avec :  Structure hiérarchique (FileHierarchy)  Types de fichiers (COMPONENT, PAGE, UTILS, etc.) ",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb733",
+          "name": "app/user/projects/files/[id]/page.tsx",
+          "label": "app/user/projects/files/[id]/page.tsx",
+          "order": 34,
+          "description": "Détail d'un fichier avec :  métadonnées. import props ou parametre recus. Code source. Historique des versions",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb734",
+          "name": "app/user/teams/page.tsx",
+          "label": "app/user/teams/page.tsx",
+          "order": 35,
+          "description": "Gestion des équipes avec hiérarchie organisationnelle :  Organisation → Services → Équipes  Rôles et permissions (TeamMember, UserRole)  Workflow d'approbation",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb735",
+          "name": "app/user/teams/[id]/page.tsx",
+          "label": "app/user/teams/[id]/page.tsx",
+          "order": 36,
+          "description": "Détail d'une équipe avec :  Membres et leurs rôles  Projets assignés  Performance et métriques",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb736",
+          "name": "app/user/planner/page.tsx",
+          "label": "app/user/planner/page.tsx",
+          "order": 37,
+          "description": "app/user/planner/page.tsx → /user/planner Planificateur de sprints et assignation d'équipes :  Sprint planning avec capacity  Répartition des tâches  Gestion des ressources",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb738",
+          "name": "app/user/scrum/page.tsx",
+          "label": "app/user/scrum/page.tsx",
+          "order": 38,
+          "description": "Tableau Scrum (Kanban Board) avec :  Colonnes drag & drop (dnd-kit)  Gestion des sprints actifs  Burndown charts et vélocité",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb739",
+          "name": "app/user/creatPrompt/page.tsx",
+          "label": "app/user/creatPrompt/page.tsx",
+          "order": 39,
+          "description": "app/user/creatPrompt/page.tsx → /user/creatPrompt Générateur de prompts IA pour la création de code :  Templates pour composants, API routes, pages  Documentation automatique  Cohérence avec l'architecture existante",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb740",
+          "name": "app/user/genDoc/page.tsx",
+          "label": "app/user/genDoc/page.tsx",
+          "order": 40,
+          "description": "Génération de documents clients :  Présentations générales et investisseurs  Devis et factures automatisés  Templates personnalisables",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb741",
+          "name": "app/user/blog/page.tsx",
+          "label": "app/user/blog/page.tsx",
+          "order": 41,
+          "description": "Section blog/documentation avec :  Articles techniques (Comment model)  Catégories et tags (categories, blog_tags)  Système de publication",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb742",
+          "name": "app/user/dev/page.tsx",
+          "label": "app/user/dev/page.tsx",
+          "order": 42,
+          "description": "Espace développeur avec outils de debug et monitoring :  Logs d'audit (AuditLog)  Métriques de performance  Outils de développement",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb743",
+          "name": "app/user/dev/helpDev/page.tsx",
+          "label": "app/user/dev/helpDev/page.tsx",
+          "order": 43,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb744",
+          "name": "components/SelectModeView.tsx",
+          "label": "components/SelectModeView.tsx",
+          "order": 44,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb745",
+          "name": "components/header/Header.tsx",
+          "label": "components/header/Header.tsx",
+          "order": 45,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb746",
+          "name": "components/header/Logo.tsx",
+          "label": "components/header/Logo.tsx",
+          "order": 46,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb747",
+          "name": "components/header/NavHeader.tsx",
+          "label": "components/header/NavHeader.tsx",
+          "order": 47,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb748",
+          "name": "components/header/IsConnected.tsx",
+          "label": "components/header/IsConnected.tsx",
+          "order": 48,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb749",
+          "name": "components/projects/ProjectsDisplay.tsx",
+          "label": "components/projects/ProjectsDisplay.tsx",
+          "order": 49,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb750",
+          "name": "components/projects/ProjectsForm.tsx",
+          "label": "components/projects/ProjectsForm.tsx",
+          "order": 50,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb751",
+          "name": "components/projects/view/ProjectsDisplayList.tsx",
+          "label": "components/projects/view/ProjectsDisplayList.tsx",
+          "order": 51,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb752",
+          "name": "components/projects/view/ProjectsDisplayCard.tsx",
+          "label": "components/projects/view/ProjectsDisplayCard.tsx",
+          "order": 52,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb753",
+          "name": "components/projects/view/ProjectsDisplayTree.tsx",
+          "label": "components/projects/view/ProjectsDisplayTree.tsx",
+          "order": 53,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb754",
+          "name": "components/projects/view/ProjectsDisplayDnd.tsx",
+          "label": "components/projects/view/ProjectsDisplayDnd.tsx",
+          "order": 54,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb755",
+          "name": "components/initiatives/InitiativesDisplay.tsx",
+          "label": "components/initiatives/InitiativesDisplay.tsx",
+          "order": 55,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb756",
+          "name": "components/initiatives/InitiativesForm.tsx",
+          "label": "components/initiatives/InitiativesForm.tsx",
+          "order": 56,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb757",
+          "name": "components/initiatives/view/InitiativesDisplayList.tsx",
+          "label": "components/initiatives/view/InitiativesDisplayList.tsx",
+          "order": 57,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb758",
+          "name": "components/initiatives/view/InitiativesDisplayCard.tsx",
+          "label": "components/initiatives/view/InitiativesDisplayCard.tsx",
+          "order": 58,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb759",
+          "name": "components/initiatives/view/InitiativesDisplayTree.tsx",
+          "label": "components/initiatives/view/InitiativesDisplayTree.tsx",
+          "order": 59,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb760",
+          "name": "components/initiatives/view/InitiativesDisplayDnd.tsx",
+          "label": "components/initiatives/view/InitiativesDisplayDnd.tsx",
+          "order": 60,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb761",
+          "name": "components/epics/EpicsDisplay.tsx",
+          "label": "components/epics/EpicsDisplay.tsx",
+          "order": 61,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb762",
+          "name": "components/epics/EpicsForm.tsx",
+          "label": "components/epics/EpicsForm.tsx",
+          "order": 62,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb763",
+          "name": "components/epics/view/EpicsDisplayList.tsx",
+          "label": "components/epics/view/EpicsDisplayList.tsx",
+          "order": 63,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb764",
+          "name": "components/epics/view/EpicsDisplayCard.tsx",
+          "label": "components/epics/view/EpicsDisplayCard.tsx",
+          "order": 64,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb765",
+          "name": "components/epics/view/EpicsDisplayTree.tsx",
+          "label": "components/epics/view/EpicsDisplayTree.tsx",
+          "order": 65,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb766",
+          "name": "components/epics/view/EpicsDisplayDnd.tsx",
+          "label": "components/epics/view/EpicsDisplayDnd.tsx",
+          "order": 66,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb767",
+          "name": "components/sprints/SprintsDisplay.tsx",
+          "label": "components/sprints/SprintsDisplay.tsx",
+          "order": 67,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb768",
+          "name": "components/sprints/SprintsForm.tsx",
+          "label": "components/sprints/SprintsForm.tsx",
+          "order": 68,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb769",
+          "name": "components/sprints/view/SprintsDisplayList.tsx",
+          "label": "components/sprints/view/SprintsDisplayList.tsx",
+          "order": 69,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb770",
+          "name": "components/sprints/view/SprintsDisplayCard.tsx",
+          "label": "components/sprints/view/SprintsDisplayCard.tsx",
+          "order": 70,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb771",
+          "name": "components/sprints/view/SprintsDisplayTree.tsx",
+          "label": "components/sprints/view/SprintsDisplayTree.tsx",
+          "order": 71,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb772",
+          "name": "components/sprints/view/SprintsDisplayDnd.tsx",
+          "label": "components/sprints/view/SprintsDisplayDnd.tsx",
+          "order": 72,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb773",
+          "name": "components/features/FeaturesDisplay.tsx",
+          "label": "components/features/FeaturesDisplay.tsx",
+          "order": 73,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb774",
+          "name": "components/features/FeaturesForm.tsx",
+          "label": "components/features/FeaturesForm.tsx",
+          "order": 74,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb775",
+          "name": "components/features/view/FeaturesDisplayList.tsx",
+          "label": "components/features/view/FeaturesDisplayList.tsx",
+          "order": 75,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb776",
+          "name": "components/features/view/FeaturesDisplayCard.tsx",
+          "label": "components/features/view/FeaturesDisplayCard.tsx",
+          "order": 76,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb777",
+          "name": "components/features/view/FeaturesDisplayTree.tsx",
+          "label": "components/features/view/FeaturesDisplayTree.tsx",
+          "order": 77,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb778",
+          "name": "components/features/view/FeaturesDisplayDnd.tsx",
+          "label": "components/features/view/FeaturesDisplayDnd.tsx",
+          "order": 78,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb779",
+          "name": "components/userStories/UserStoriesDisplay.tsx",
+          "label": "components/userStories/UserStoriesDisplay.tsx",
+          "order": 79,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb780",
+          "name": "components/userStories/UserStoriesForm.tsx",
+          "label": "components/userStories/UserStoriesForm.tsx",
+          "order": 80,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb781",
+          "name": "components/userStories/view/UserStoriesDisplayList.tsx",
+          "label": "components/userStories/view/UserStoriesDisplayList.tsx",
+          "order": 81,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb782",
+          "name": "components/userStories/view/UserStoriesDisplayCard.tsx",
+          "label": "components/userStories/view/UserStoriesDisplayCard.tsx",
+          "order": 82,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb783",
+          "name": "components/userStories/view/UserStoriesDisplayTree.tsx",
+          "label": "components/userStories/view/UserStoriesDisplayTree.tsx",
+          "order": 83,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb784",
+          "name": "components/userStories/view/UserStoriesDisplayDnd.tsx",
+          "label": "components/userStories/view/UserStoriesDisplayDnd.tsx",
+          "order": 84,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb785",
+          "name": "components/tasks/TasksDisplay.tsx",
+          "label": "components/tasks/TasksDisplay.tsx",
+          "order": 85,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "8efa20c6-50f6-49f8-817b-b625f27f4d87",
+          "name": "app/user/dashboard",
+          "label": "app/user/dashboard",
+          "order": 86,
+          "description": " ; Métriques et KPIs personnels.",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb786",
+          "name": "components/tasks/TasksForm.tsx",
+          "label": "components/tasks/TasksForm.tsx",
+          "order": 87,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb787",
+          "name": "components/tasks/view/TasksDisplayList.tsx",
+          "label": "components/tasks/view/TasksDisplayList.tsx",
+          "order": 88,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb788",
+          "name": "components/tasks/view/TasksDisplayCard.tsx",
+          "label": "components/tasks/view/TasksDisplayCard.tsx",
+          "order": 89,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb789",
+          "name": "components/tasks/view/TasksDisplayTree.tsx",
+          "label": "components/tasks/view/TasksDisplayTree.tsx",
+          "order": 90,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb790",
+          "name": "components/tasks/view/TasksDisplayDnd.tsx",
+          "label": "components/tasks/view/TasksDisplayDnd.tsx",
+          "order": 91,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb791",
+          "name": "components/files/FilesDisplay.tsx",
+          "label": "components/files/FilesDisplay.tsx",
+          "order": 92,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb792",
+          "name": "components/files/FilesForm.tsx",
+          "label": "components/files/FilesForm.tsx",
+          "order": 93,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb793",
+          "name": "components/files/view/FilesDisplayList.tsx",
+          "label": "components/files/view/FilesDisplayList.tsx",
+          "order": 94,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb794",
+          "name": "components/files/view/FilesDisplayCard.tsx",
+          "label": "components/files/view/FilesDisplayCard.tsx",
+          "order": 95,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb795",
+          "name": "components/files/view/FilesDisplayTree.tsx",
+          "label": "components/files/view/FilesDisplayTree.tsx",
+          "order": 96,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb796",
+          "name": "components/files/view/FilesDisplayDnd.tsx",
+          "label": "components/files/view/FilesDisplayDnd.tsx",
+          "order": 97,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb797",
+          "name": "lib/prisma.ts",
+          "label": "lib/prisma.ts",
+          "order": 98,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb798",
+          "name": "lib/auth/auth.ts",
+          "label": "lib/auth/auth.ts",
+          "order": 99,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb799",
+          "name": "lib/auth/auth-client.ts",
+          "label": "lib/auth/auth-client.ts",
+          "order": 100,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb800",
+          "name": "lib/auth/auth-server.ts",
+          "label": "lib/auth/auth-server.ts",
+          "order": 101,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb801",
+          "name": "store/useSelectedProjectStore.ts",
+          "label": "store/useSelectedProjectStore.ts",
+          "order": 102,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "5f57bf26-97db-4d26-837f-bc14f36bb802",
+          "name": "store/useSelectedIdProjectStore.ts",
+          "label": "store/useSelectedIdProjectStore.ts",
+          "order": 103,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "1d7cfe20-9ac5-4ccc-9f82-1077c9adbf6b",
+          "name": "creer les ficier suivants ;",
+          "label": "creer les ficier suivants ;",
+          "order": 104,
+          "description": "app/user/ceremonies/ ├── page.tsx                    // Liste des cérémonies ├── [id]/page.tsx              // Détail d'une cérémonie ├── planning/page.tsx          // Planification des cérémonies └── calendar/page.tsx          // Calendrier des cérémonies  // components/ceremonies/CeremoniesDisplay.tsx // components/ceremonies/CeremoniesForm.tsx // components/ceremonies/CeremoniesCalendar.tsx",
+          "subElements": []
+        }
+      ],
+      "type": "files",
+      "order": 5,
+      "title": "Architecture des Fichiers"
+    },
+    {
+      "id": "a04618f6-31cf-4efd-88ea-0364092aa277",
+      "data": [
+        {
+          "id": "3c7ba224-434d-4420-a85a-e2c9370c4533",
+          "name": "SelectModeView",
+          "path": "components/SelectModeView",
+          "label": "SelectModeView",
+          "order": 0,
+          "description": "SelectModeView (list, card, tree, d&d) ",
+          "subElements": []
+        },
+        {
+          "id": "3620045f-482f-4588-a2e3-0cc06f119be1",
+          "name": "api/reorder/route",
+          "label": "api/reorder/route",
+          "order": 1,
+          "description": "",
+          "subElements": []
+        },
+        {
+          "id": "e19ce153-1985-412c-b2e0-3a2e0b99efb4",
+          "label": "Nouvel élément",
+          "order": 2,
+          "description": "",
+          "subElements": []
+        }
+      ],
+      "type": "custom",
+      "order": 6,
+      "title": "Scripts utiles"
+    },
+    {
+      "id": "26ff1671-9a8a-4f32-a980-f9dcd2b394f1",
+      "data": [
+        {
+          "id": "component-prompt",
+          "name": "Création de composant",
+          "category": "component",
+          "template": "Crée un composant React TypeScript pour [FONCTION] utilisant Shadcn/UI, Framer Motion pour les animations, et suivant les patterns de l'application. Inclus les types, la documentation JSDoc et les tests.",
+          "description": "Prompt pour générer un nouveau composant React TypeScript avec Shadcn/UI"
+        },
+        {
+          "id": "api-route-prompt",
+          "name": "Route API",
+          "category": "api",
+          "template": "Génère une route API Next.js pour [RESOURCE] avec CRUD complet, validation Zod, gestion d'erreurs, authentification et types TypeScript. Suit les patterns existants.",
+          "description": "Prompt pour créer une nouvelle route API Next.js avec validation"
+        },
+        {
+          "id": "page-prompt",
+          "name": "Nouvelle page",
+          "category": "page",
+          "template": "Crée une page Next.js pour [PAGE] avec layout responsive, composants UI cohérents, gestion d'état Zustand, et animations Framer Motion. Inclus loading et error states.",
+          "description": "Prompt pour créer une page complète avec layout et composants"
+        },
+        {
+          "id": "store-prompt",
+          "name": "Store Zustand",
+          "category": "state",
+          "template": "Génère un store Zustand TypeScript pour [DOMAIN] avec actions CRUD, persistence, selectors optimisés et integration avec les API routes existantes.",
+          "description": "Prompt pour créer un nouveau store Zustand typé"
+        }
+      ],
+      "type": "prompts",
+      "order": 7,
+      "title": "Prompts IA pour Développement"
+    }
+  ],
+  "createdAt": "2025-08-25T09:36:31.256Z",
+  "updatedAt": "2025-08-26T07:17:32.244Z"
+}

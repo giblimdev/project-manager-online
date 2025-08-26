@@ -109,10 +109,35 @@ export type File = $Result.DefaultSelection<Prisma.$FilePayload>
  */
 export type FileVersion = $Result.DefaultSelection<Prisma.$FileVersionPayload>
 /**
+ * Model Ceremony
+ * 
+ */
+export type Ceremony = $Result.DefaultSelection<Prisma.$CeremonyPayload>
+/**
+ * Model Post
+ * 
+ */
+export type Post = $Result.DefaultSelection<Prisma.$PostPayload>
+/**
  * Model Comment
  * 
  */
 export type Comment = $Result.DefaultSelection<Prisma.$CommentPayload>
+/**
+ * Model Image
+ * 
+ */
+export type Image = $Result.DefaultSelection<Prisma.$ImagePayload>
+/**
+ * Model Category
+ * 
+ */
+export type Category = $Result.DefaultSelection<Prisma.$CategoryPayload>
+/**
+ * Model Tag
+ * 
+ */
+export type Tag = $Result.DefaultSelection<Prisma.$TagPayload>
 /**
  * Model Channel
  * 
@@ -164,16 +189,6 @@ export type Glossary = $Result.DefaultSelection<Prisma.$GlossaryPayload>
  */
 export type UserStoryAssignees = $Result.DefaultSelection<Prisma.$UserStoryAssigneesPayload>
 /**
- * Model blog_tags
- * 
- */
-export type blog_tags = $Result.DefaultSelection<Prisma.$blog_tagsPayload>
-/**
- * Model categories
- * 
- */
-export type categories = $Result.DefaultSelection<Prisma.$categoriesPayload>
-/**
  * Model fields
  * 
  */
@@ -188,7 +203,18 @@ export type helpDev = $Result.DefaultSelection<Prisma.$helpDevPayload>
  * Enums
  */
 export namespace $Enums {
-  export const UserRole: {
+  export const CeremonyType: {
+  SPRINT_PLANNING: 'SPRINT_PLANNING',
+  DAILY_SCRUM: 'DAILY_SCRUM',
+  SPRINT_REVIEW: 'SPRINT_REVIEW',
+  RETROSPECTIVE: 'RETROSPECTIVE',
+  BACKLOG_REFINEMENT: 'BACKLOG_REFINEMENT'
+};
+
+export type CeremonyType = (typeof CeremonyType)[keyof typeof CeremonyType]
+
+
+export const UserRole: {
   ADMIN: 'ADMIN',
   PRODUCT_OWNER: 'PRODUCT_OWNER',
   SCRUM_MASTER: 'SCRUM_MASTER',
@@ -295,6 +321,10 @@ export const FileType: {
 export type FileType = (typeof FileType)[keyof typeof FileType]
 
 }
+
+export type CeremonyType = $Enums.CeremonyType
+
+export const CeremonyType: typeof $Enums.CeremonyType
 
 export type UserRole = $Enums.UserRole
 
@@ -648,6 +678,26 @@ export class PrismaClient<
   get fileVersion(): Prisma.FileVersionDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.ceremony`: Exposes CRUD operations for the **Ceremony** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Ceremonies
+    * const ceremonies = await prisma.ceremony.findMany()
+    * ```
+    */
+  get ceremony(): Prisma.CeremonyDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.post`: Exposes CRUD operations for the **Post** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Posts
+    * const posts = await prisma.post.findMany()
+    * ```
+    */
+  get post(): Prisma.PostDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.comment`: Exposes CRUD operations for the **Comment** model.
     * Example usage:
     * ```ts
@@ -656,6 +706,36 @@ export class PrismaClient<
     * ```
     */
   get comment(): Prisma.CommentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.image`: Exposes CRUD operations for the **Image** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Images
+    * const images = await prisma.image.findMany()
+    * ```
+    */
+  get image(): Prisma.ImageDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.category`: Exposes CRUD operations for the **Category** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Categories
+    * const categories = await prisma.category.findMany()
+    * ```
+    */
+  get category(): Prisma.CategoryDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.tag`: Exposes CRUD operations for the **Tag** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Tags
+    * const tags = await prisma.tag.findMany()
+    * ```
+    */
+  get tag(): Prisma.TagDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.channel`: Exposes CRUD operations for the **Channel** model.
@@ -756,26 +836,6 @@ export class PrismaClient<
     * ```
     */
   get userStoryAssignees(): Prisma.UserStoryAssigneesDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.blog_tags`: Exposes CRUD operations for the **blog_tags** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Blog_tags
-    * const blog_tags = await prisma.blog_tags.findMany()
-    * ```
-    */
-  get blog_tags(): Prisma.blog_tagsDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.categories`: Exposes CRUD operations for the **categories** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Categories
-    * const categories = await prisma.categories.findMany()
-    * ```
-    */
-  get categories(): Prisma.categoriesDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.fields`: Exposes CRUD operations for the **fields** model.
@@ -1255,7 +1315,12 @@ export namespace Prisma {
     Sprint: 'Sprint',
     File: 'File',
     FileVersion: 'FileVersion',
+    Ceremony: 'Ceremony',
+    Post: 'Post',
     Comment: 'Comment',
+    Image: 'Image',
+    Category: 'Category',
+    Tag: 'Tag',
     Channel: 'Channel',
     ChannelMember: 'ChannelMember',
     Message: 'Message',
@@ -1266,8 +1331,6 @@ export namespace Prisma {
     Item: 'Item',
     Glossary: 'Glossary',
     UserStoryAssignees: 'UserStoryAssignees',
-    blog_tags: 'blog_tags',
-    categories: 'categories',
     fields: 'fields',
     helpDev: 'helpDev'
   };
@@ -1288,7 +1351,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "account" | "session" | "verification" | "team" | "teamMember" | "project" | "projectMember" | "initiative" | "epic" | "feature" | "featureDependency" | "userStory" | "userStoryDependency" | "task" | "taskDependency" | "sprint" | "file" | "fileVersion" | "comment" | "channel" | "channelMember" | "message" | "template" | "timeEntry" | "notification" | "auditLog" | "item" | "glossary" | "userStoryAssignees" | "blog_tags" | "categories" | "fields" | "helpDev"
+      modelProps: "user" | "account" | "session" | "verification" | "team" | "teamMember" | "project" | "projectMember" | "initiative" | "epic" | "feature" | "featureDependency" | "userStory" | "userStoryDependency" | "task" | "taskDependency" | "sprint" | "file" | "fileVersion" | "ceremony" | "post" | "comment" | "image" | "category" | "tag" | "channel" | "channelMember" | "message" | "template" | "timeEntry" | "notification" | "auditLog" | "item" | "glossary" | "userStoryAssignees" | "fields" | "helpDev"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2698,6 +2761,154 @@ export namespace Prisma {
           }
         }
       }
+      Ceremony: {
+        payload: Prisma.$CeremonyPayload<ExtArgs>
+        fields: Prisma.CeremonyFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CeremonyFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CeremonyPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CeremonyFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CeremonyPayload>
+          }
+          findFirst: {
+            args: Prisma.CeremonyFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CeremonyPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CeremonyFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CeremonyPayload>
+          }
+          findMany: {
+            args: Prisma.CeremonyFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CeremonyPayload>[]
+          }
+          create: {
+            args: Prisma.CeremonyCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CeremonyPayload>
+          }
+          createMany: {
+            args: Prisma.CeremonyCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CeremonyCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CeremonyPayload>[]
+          }
+          delete: {
+            args: Prisma.CeremonyDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CeremonyPayload>
+          }
+          update: {
+            args: Prisma.CeremonyUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CeremonyPayload>
+          }
+          deleteMany: {
+            args: Prisma.CeremonyDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CeremonyUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CeremonyUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CeremonyPayload>[]
+          }
+          upsert: {
+            args: Prisma.CeremonyUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CeremonyPayload>
+          }
+          aggregate: {
+            args: Prisma.CeremonyAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCeremony>
+          }
+          groupBy: {
+            args: Prisma.CeremonyGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CeremonyGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CeremonyCountArgs<ExtArgs>
+            result: $Utils.Optional<CeremonyCountAggregateOutputType> | number
+          }
+        }
+      }
+      Post: {
+        payload: Prisma.$PostPayload<ExtArgs>
+        fields: Prisma.PostFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PostFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PostFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostPayload>
+          }
+          findFirst: {
+            args: Prisma.PostFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PostFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostPayload>
+          }
+          findMany: {
+            args: Prisma.PostFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostPayload>[]
+          }
+          create: {
+            args: Prisma.PostCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostPayload>
+          }
+          createMany: {
+            args: Prisma.PostCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PostCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostPayload>[]
+          }
+          delete: {
+            args: Prisma.PostDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostPayload>
+          }
+          update: {
+            args: Prisma.PostUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostPayload>
+          }
+          deleteMany: {
+            args: Prisma.PostDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PostUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PostUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostPayload>[]
+          }
+          upsert: {
+            args: Prisma.PostUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostPayload>
+          }
+          aggregate: {
+            args: Prisma.PostAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePost>
+          }
+          groupBy: {
+            args: Prisma.PostGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PostGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PostCountArgs<ExtArgs>
+            result: $Utils.Optional<PostCountAggregateOutputType> | number
+          }
+        }
+      }
       Comment: {
         payload: Prisma.$CommentPayload<ExtArgs>
         fields: Prisma.CommentFieldRefs
@@ -2769,6 +2980,228 @@ export namespace Prisma {
           count: {
             args: Prisma.CommentCountArgs<ExtArgs>
             result: $Utils.Optional<CommentCountAggregateOutputType> | number
+          }
+        }
+      }
+      Image: {
+        payload: Prisma.$ImagePayload<ExtArgs>
+        fields: Prisma.ImageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ImageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ImageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>
+          }
+          findFirst: {
+            args: Prisma.ImageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ImageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>
+          }
+          findMany: {
+            args: Prisma.ImageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>[]
+          }
+          create: {
+            args: Prisma.ImageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>
+          }
+          createMany: {
+            args: Prisma.ImageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ImageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>[]
+          }
+          delete: {
+            args: Prisma.ImageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>
+          }
+          update: {
+            args: Prisma.ImageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>
+          }
+          deleteMany: {
+            args: Prisma.ImageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ImageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ImageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>[]
+          }
+          upsert: {
+            args: Prisma.ImageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImagePayload>
+          }
+          aggregate: {
+            args: Prisma.ImageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateImage>
+          }
+          groupBy: {
+            args: Prisma.ImageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ImageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ImageCountArgs<ExtArgs>
+            result: $Utils.Optional<ImageCountAggregateOutputType> | number
+          }
+        }
+      }
+      Category: {
+        payload: Prisma.$CategoryPayload<ExtArgs>
+        fields: Prisma.CategoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CategoryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CategoryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryPayload>
+          }
+          findFirst: {
+            args: Prisma.CategoryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CategoryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryPayload>
+          }
+          findMany: {
+            args: Prisma.CategoryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryPayload>[]
+          }
+          create: {
+            args: Prisma.CategoryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryPayload>
+          }
+          createMany: {
+            args: Prisma.CategoryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CategoryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryPayload>[]
+          }
+          delete: {
+            args: Prisma.CategoryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryPayload>
+          }
+          update: {
+            args: Prisma.CategoryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.CategoryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CategoryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CategoryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryPayload>[]
+          }
+          upsert: {
+            args: Prisma.CategoryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryPayload>
+          }
+          aggregate: {
+            args: Prisma.CategoryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCategory>
+          }
+          groupBy: {
+            args: Prisma.CategoryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CategoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CategoryCountArgs<ExtArgs>
+            result: $Utils.Optional<CategoryCountAggregateOutputType> | number
+          }
+        }
+      }
+      Tag: {
+        payload: Prisma.$TagPayload<ExtArgs>
+        fields: Prisma.TagFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TagFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TagFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>
+          }
+          findFirst: {
+            args: Prisma.TagFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TagFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>
+          }
+          findMany: {
+            args: Prisma.TagFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>[]
+          }
+          create: {
+            args: Prisma.TagCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>
+          }
+          createMany: {
+            args: Prisma.TagCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TagCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>[]
+          }
+          delete: {
+            args: Prisma.TagDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>
+          }
+          update: {
+            args: Prisma.TagUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>
+          }
+          deleteMany: {
+            args: Prisma.TagDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TagUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TagUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>[]
+          }
+          upsert: {
+            args: Prisma.TagUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>
+          }
+          aggregate: {
+            args: Prisma.TagAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTag>
+          }
+          groupBy: {
+            args: Prisma.TagGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TagGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TagCountArgs<ExtArgs>
+            result: $Utils.Optional<TagCountAggregateOutputType> | number
           }
         }
       }
@@ -3512,154 +3945,6 @@ export namespace Prisma {
           }
         }
       }
-      blog_tags: {
-        payload: Prisma.$blog_tagsPayload<ExtArgs>
-        fields: Prisma.blog_tagsFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.blog_tagsFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$blog_tagsPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.blog_tagsFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$blog_tagsPayload>
-          }
-          findFirst: {
-            args: Prisma.blog_tagsFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$blog_tagsPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.blog_tagsFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$blog_tagsPayload>
-          }
-          findMany: {
-            args: Prisma.blog_tagsFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$blog_tagsPayload>[]
-          }
-          create: {
-            args: Prisma.blog_tagsCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$blog_tagsPayload>
-          }
-          createMany: {
-            args: Prisma.blog_tagsCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.blog_tagsCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$blog_tagsPayload>[]
-          }
-          delete: {
-            args: Prisma.blog_tagsDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$blog_tagsPayload>
-          }
-          update: {
-            args: Prisma.blog_tagsUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$blog_tagsPayload>
-          }
-          deleteMany: {
-            args: Prisma.blog_tagsDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.blog_tagsUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.blog_tagsUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$blog_tagsPayload>[]
-          }
-          upsert: {
-            args: Prisma.blog_tagsUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$blog_tagsPayload>
-          }
-          aggregate: {
-            args: Prisma.Blog_tagsAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateBlog_tags>
-          }
-          groupBy: {
-            args: Prisma.blog_tagsGroupByArgs<ExtArgs>
-            result: $Utils.Optional<Blog_tagsGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.blog_tagsCountArgs<ExtArgs>
-            result: $Utils.Optional<Blog_tagsCountAggregateOutputType> | number
-          }
-        }
-      }
-      categories: {
-        payload: Prisma.$categoriesPayload<ExtArgs>
-        fields: Prisma.categoriesFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.categoriesFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$categoriesPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.categoriesFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$categoriesPayload>
-          }
-          findFirst: {
-            args: Prisma.categoriesFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$categoriesPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.categoriesFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$categoriesPayload>
-          }
-          findMany: {
-            args: Prisma.categoriesFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$categoriesPayload>[]
-          }
-          create: {
-            args: Prisma.categoriesCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$categoriesPayload>
-          }
-          createMany: {
-            args: Prisma.categoriesCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.categoriesCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$categoriesPayload>[]
-          }
-          delete: {
-            args: Prisma.categoriesDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$categoriesPayload>
-          }
-          update: {
-            args: Prisma.categoriesUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$categoriesPayload>
-          }
-          deleteMany: {
-            args: Prisma.categoriesDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.categoriesUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.categoriesUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$categoriesPayload>[]
-          }
-          upsert: {
-            args: Prisma.categoriesUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$categoriesPayload>
-          }
-          aggregate: {
-            args: Prisma.CategoriesAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateCategories>
-          }
-          groupBy: {
-            args: Prisma.categoriesGroupByArgs<ExtArgs>
-            result: $Utils.Optional<CategoriesGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.categoriesCountArgs<ExtArgs>
-            result: $Utils.Optional<CategoriesCountAggregateOutputType> | number
-          }
-        }
-      }
       fields: {
         payload: Prisma.$fieldsPayload<ExtArgs>
         fields: Prisma.fieldsFieldRefs
@@ -3911,7 +4196,12 @@ export namespace Prisma {
     sprint?: SprintOmit
     file?: FileOmit
     fileVersion?: FileVersionOmit
+    ceremony?: CeremonyOmit
+    post?: PostOmit
     comment?: CommentOmit
+    image?: ImageOmit
+    category?: CategoryOmit
+    tag?: TagOmit
     channel?: ChannelOmit
     channelMember?: ChannelMemberOmit
     message?: MessageOmit
@@ -3922,8 +4212,6 @@ export namespace Prisma {
     item?: ItemOmit
     glossary?: GlossaryOmit
     userStoryAssignees?: UserStoryAssigneesOmit
-    blog_tags?: blog_tagsOmit
-    categories?: categoriesOmit
     fields?: fieldsOmit
     helpDev?: helpDevOmit
   }
@@ -4043,6 +4331,9 @@ export namespace Prisma {
     projects: number
     sprints: number
     assignedTasks: number
+    Ceremony: number
+    Image: number
+    Post: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4069,6 +4360,9 @@ export namespace Prisma {
     projects?: boolean | UserCountOutputTypeCountProjectsArgs
     sprints?: boolean | UserCountOutputTypeCountSprintsArgs
     assignedTasks?: boolean | UserCountOutputTypeCountAssignedTasksArgs
+    Ceremony?: boolean | UserCountOutputTypeCountCeremonyArgs
+    Image?: boolean | UserCountOutputTypeCountImageArgs
+    Post?: boolean | UserCountOutputTypeCountPostArgs
   }
 
   // Custom InputTypes
@@ -4243,6 +4537,27 @@ export namespace Prisma {
     where?: TaskWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCeremonyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CeremonyWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountImageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPostArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostWhereInput
+  }
+
 
   /**
    * Count Type TeamCountOutputType
@@ -4253,6 +4568,7 @@ export namespace Prisma {
     members: number
     children: number
     templates: number
+    Ceremony: number
   }
 
   export type TeamCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4260,6 +4576,7 @@ export namespace Prisma {
     members?: boolean | TeamCountOutputTypeCountMembersArgs
     children?: boolean | TeamCountOutputTypeCountChildrenArgs
     templates?: boolean | TeamCountOutputTypeCountTemplatesArgs
+    Ceremony?: boolean | TeamCountOutputTypeCountCeremonyArgs
   }
 
   // Custom InputTypes
@@ -4301,6 +4618,13 @@ export namespace Prisma {
     where?: TemplateWhereInput
   }
 
+  /**
+   * TeamCountOutputType without action
+   */
+  export type TeamCountOutputTypeCountCeremonyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CeremonyWhereInput
+  }
+
 
   /**
    * Count Type ProjectCountOutputType
@@ -4319,6 +4643,7 @@ export namespace Prisma {
     fields: number
     user: number
     task: number
+    Ceremony: number
   }
 
   export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4334,6 +4659,7 @@ export namespace Prisma {
     fields?: boolean | ProjectCountOutputTypeCountFieldsArgs
     user?: boolean | ProjectCountOutputTypeCountUserArgs
     task?: boolean | ProjectCountOutputTypeCountTaskArgs
+    Ceremony?: boolean | ProjectCountOutputTypeCountCeremonyArgs
   }
 
   // Custom InputTypes
@@ -4429,6 +4755,13 @@ export namespace Prisma {
    */
   export type ProjectCountOutputTypeCountTaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TaskWhereInput
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountCeremonyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CeremonyWhereInput
   }
 
 
@@ -4832,6 +5165,7 @@ export namespace Prisma {
     users: number
     userStories: number
     Tasks: number
+    Ceremony: number
   }
 
   export type SprintCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4841,6 +5175,7 @@ export namespace Prisma {
     users?: boolean | SprintCountOutputTypeCountUsersArgs
     userStories?: boolean | SprintCountOutputTypeCountUserStoriesArgs
     Tasks?: boolean | SprintCountOutputTypeCountTasksArgs
+    Ceremony?: boolean | SprintCountOutputTypeCountCeremonyArgs
   }
 
   // Custom InputTypes
@@ -4894,6 +5229,13 @@ export namespace Prisma {
    */
   export type SprintCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TaskWhereInput
+  }
+
+  /**
+   * SprintCountOutputType without action
+   */
+  export type SprintCountOutputTypeCountCeremonyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CeremonyWhereInput
   }
 
 
@@ -4974,19 +5316,114 @@ export namespace Prisma {
 
 
   /**
+   * Count Type CeremonyCountOutputType
+   */
+
+  export type CeremonyCountOutputType = {
+    attendees: number
+  }
+
+  export type CeremonyCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    attendees?: boolean | CeremonyCountOutputTypeCountAttendeesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * CeremonyCountOutputType without action
+   */
+  export type CeremonyCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CeremonyCountOutputType
+     */
+    select?: CeremonyCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * CeremonyCountOutputType without action
+   */
+  export type CeremonyCountOutputTypeCountAttendeesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
+  }
+
+
+  /**
+   * Count Type PostCountOutputType
+   */
+
+  export type PostCountOutputType = {
+    comments: number
+    images: number
+    categories: number
+    tags: number
+  }
+
+  export type PostCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    comments?: boolean | PostCountOutputTypeCountCommentsArgs
+    images?: boolean | PostCountOutputTypeCountImagesArgs
+    categories?: boolean | PostCountOutputTypeCountCategoriesArgs
+    tags?: boolean | PostCountOutputTypeCountTagsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PostCountOutputType without action
+   */
+  export type PostCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostCountOutputType
+     */
+    select?: PostCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PostCountOutputType without action
+   */
+  export type PostCountOutputTypeCountCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CommentWhereInput
+  }
+
+  /**
+   * PostCountOutputType without action
+   */
+  export type PostCountOutputTypeCountImagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageWhereInput
+  }
+
+  /**
+   * PostCountOutputType without action
+   */
+  export type PostCountOutputTypeCountCategoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CategoryWhereInput
+  }
+
+  /**
+   * PostCountOutputType without action
+   */
+  export type PostCountOutputTypeCountTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TagWhereInput
+  }
+
+
+  /**
    * Count Type CommentCountOutputType
    */
 
   export type CommentCountOutputType = {
     replies: number
-    blog_tags: number
-    categories: number
+    images: number
+    Item: number
+    File: number
+    Task: number
+    UserStory: number
   }
 
   export type CommentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     replies?: boolean | CommentCountOutputTypeCountRepliesArgs
-    blog_tags?: boolean | CommentCountOutputTypeCountBlog_tagsArgs
-    categories?: boolean | CommentCountOutputTypeCountCategoriesArgs
+    images?: boolean | CommentCountOutputTypeCountImagesArgs
+    Item?: boolean | CommentCountOutputTypeCountItemArgs
+    File?: boolean | CommentCountOutputTypeCountFileArgs
+    Task?: boolean | CommentCountOutputTypeCountTaskArgs
+    UserStory?: boolean | CommentCountOutputTypeCountUserStoryArgs
   }
 
   // Custom InputTypes
@@ -5010,15 +5447,107 @@ export namespace Prisma {
   /**
    * CommentCountOutputType without action
    */
-  export type CommentCountOutputTypeCountBlog_tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: blog_tagsWhereInput
+  export type CommentCountOutputTypeCountImagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageWhereInput
   }
 
   /**
    * CommentCountOutputType without action
    */
-  export type CommentCountOutputTypeCountCategoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: categoriesWhereInput
+  export type CommentCountOutputTypeCountItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ItemWhereInput
+  }
+
+  /**
+   * CommentCountOutputType without action
+   */
+  export type CommentCountOutputTypeCountFileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FileWhereInput
+  }
+
+  /**
+   * CommentCountOutputType without action
+   */
+  export type CommentCountOutputTypeCountTaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskWhereInput
+  }
+
+  /**
+   * CommentCountOutputType without action
+   */
+  export type CommentCountOutputTypeCountUserStoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserStoryWhereInput
+  }
+
+
+  /**
+   * Count Type CategoryCountOutputType
+   */
+
+  export type CategoryCountOutputType = {
+    posts: number
+    tags: number
+  }
+
+  export type CategoryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    posts?: boolean | CategoryCountOutputTypeCountPostsArgs
+    tags?: boolean | CategoryCountOutputTypeCountTagsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * CategoryCountOutputType without action
+   */
+  export type CategoryCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryCountOutputType
+     */
+    select?: CategoryCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * CategoryCountOutputType without action
+   */
+  export type CategoryCountOutputTypeCountPostsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostWhereInput
+  }
+
+  /**
+   * CategoryCountOutputType without action
+   */
+  export type CategoryCountOutputTypeCountTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TagWhereInput
+  }
+
+
+  /**
+   * Count Type TagCountOutputType
+   */
+
+  export type TagCountOutputType = {
+    posts: number
+  }
+
+  export type TagCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    posts?: boolean | TagCountOutputTypeCountPostsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * TagCountOutputType without action
+   */
+  export type TagCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TagCountOutputType
+     */
+    select?: TagCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * TagCountOutputType without action
+   */
+  export type TagCountOutputTypeCountPostsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostWhereInput
   }
 
 
@@ -5126,86 +5655,6 @@ export namespace Prisma {
    */
   export type ItemCountOutputTypeCountAssigneesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserWhereInput
-  }
-
-
-  /**
-   * Count Type Blog_tagsCountOutputType
-   */
-
-  export type Blog_tagsCountOutputType = {
-    comments: number
-  }
-
-  export type Blog_tagsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    comments?: boolean | Blog_tagsCountOutputTypeCountCommentsArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * Blog_tagsCountOutputType without action
-   */
-  export type Blog_tagsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Blog_tagsCountOutputType
-     */
-    select?: Blog_tagsCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * Blog_tagsCountOutputType without action
-   */
-  export type Blog_tagsCountOutputTypeCountCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: CommentWhereInput
-  }
-
-
-  /**
-   * Count Type CategoriesCountOutputType
-   */
-
-  export type CategoriesCountOutputType = {
-    blog_tags: number
-    other_categories: number
-    comments: number
-  }
-
-  export type CategoriesCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    blog_tags?: boolean | CategoriesCountOutputTypeCountBlog_tagsArgs
-    other_categories?: boolean | CategoriesCountOutputTypeCountOther_categoriesArgs
-    comments?: boolean | CategoriesCountOutputTypeCountCommentsArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * CategoriesCountOutputType without action
-   */
-  export type CategoriesCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the CategoriesCountOutputType
-     */
-    select?: CategoriesCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * CategoriesCountOutputType without action
-   */
-  export type CategoriesCountOutputTypeCountBlog_tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: blog_tagsWhereInput
-  }
-
-  /**
-   * CategoriesCountOutputType without action
-   */
-  export type CategoriesCountOutputTypeCountOther_categoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: categoriesWhereInput
-  }
-
-  /**
-   * CategoriesCountOutputType without action
-   */
-  export type CategoriesCountOutputTypeCountCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: CommentWhereInput
   }
 
 
@@ -5515,6 +5964,9 @@ export namespace Prisma {
     projects?: boolean | User$projectsArgs<ExtArgs>
     sprints?: boolean | User$sprintsArgs<ExtArgs>
     assignedTasks?: boolean | User$assignedTasksArgs<ExtArgs>
+    Ceremony?: boolean | User$CeremonyArgs<ExtArgs>
+    Image?: boolean | User$ImageArgs<ExtArgs>
+    Post?: boolean | User$PostArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5600,6 +6052,9 @@ export namespace Prisma {
     projects?: boolean | User$projectsArgs<ExtArgs>
     sprints?: boolean | User$sprintsArgs<ExtArgs>
     assignedTasks?: boolean | User$assignedTasksArgs<ExtArgs>
+    Ceremony?: boolean | User$CeremonyArgs<ExtArgs>
+    Image?: boolean | User$ImageArgs<ExtArgs>
+    Post?: boolean | User$PostArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5631,6 +6086,9 @@ export namespace Prisma {
       projects: Prisma.$ProjectPayload<ExtArgs>[]
       sprints: Prisma.$SprintPayload<ExtArgs>[]
       assignedTasks: Prisma.$TaskPayload<ExtArgs>[]
+      Ceremony: Prisma.$CeremonyPayload<ExtArgs>[]
+      Image: Prisma.$ImagePayload<ExtArgs>[]
+      Post: Prisma.$PostPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6066,6 +6524,9 @@ export namespace Prisma {
     projects<T extends User$projectsArgs<ExtArgs> = {}>(args?: Subset<T, User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sprints<T extends User$sprintsArgs<ExtArgs> = {}>(args?: Subset<T, User$sprintsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SprintPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     assignedTasks<T extends User$assignedTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Ceremony<T extends User$CeremonyArgs<ExtArgs> = {}>(args?: Subset<T, User$CeremonyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Image<T extends User$ImageArgs<ExtArgs> = {}>(args?: Subset<T, User$ImageArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Post<T extends User$PostArgs<ExtArgs> = {}>(args?: Subset<T, User$PostArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7048,6 +7509,78 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
+  }
+
+  /**
+   * User.Ceremony
+   */
+  export type User$CeremonyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    where?: CeremonyWhereInput
+    orderBy?: CeremonyOrderByWithRelationInput | CeremonyOrderByWithRelationInput[]
+    cursor?: CeremonyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CeremonyScalarFieldEnum | CeremonyScalarFieldEnum[]
+  }
+
+  /**
+   * User.Image
+   */
+  export type User$ImageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+    where?: ImageWhereInput
+    orderBy?: ImageOrderByWithRelationInput | ImageOrderByWithRelationInput[]
+    cursor?: ImageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ImageScalarFieldEnum | ImageScalarFieldEnum[]
+  }
+
+  /**
+   * User.Post
+   */
+  export type User$PostArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    where?: PostWhereInput
+    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
+    cursor?: PostWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
   }
 
   /**
@@ -10579,6 +11112,7 @@ export namespace Prisma {
     parentTeam?: boolean | Team$parentTeamArgs<ExtArgs>
     children?: boolean | Team$childrenArgs<ExtArgs>
     templates?: boolean | Team$templatesArgs<ExtArgs>
+    Ceremony?: boolean | Team$CeremonyArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["team"]>
 
@@ -10630,6 +11164,7 @@ export namespace Prisma {
     parentTeam?: boolean | Team$parentTeamArgs<ExtArgs>
     children?: boolean | Team$childrenArgs<ExtArgs>
     templates?: boolean | Team$templatesArgs<ExtArgs>
+    Ceremony?: boolean | Team$CeremonyArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TeamIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10653,6 +11188,7 @@ export namespace Prisma {
        * Templates associés
        */
       templates: Prisma.$TemplatePayload<ExtArgs>[]
+      Ceremony: Prisma.$CeremonyPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -11064,6 +11600,7 @@ export namespace Prisma {
     parentTeam<T extends Team$parentTeamArgs<ExtArgs> = {}>(args?: Subset<T, Team$parentTeamArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     children<T extends Team$childrenArgs<ExtArgs> = {}>(args?: Subset<T, Team$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     templates<T extends Team$templatesArgs<ExtArgs> = {}>(args?: Subset<T, Team$templatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Ceremony<T extends Team$CeremonyArgs<ExtArgs> = {}>(args?: Subset<T, Team$CeremonyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11611,6 +12148,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TemplateScalarFieldEnum | TemplateScalarFieldEnum[]
+  }
+
+  /**
+   * Team.Ceremony
+   */
+  export type Team$CeremonyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    where?: CeremonyWhereInput
+    orderBy?: CeremonyOrderByWithRelationInput | CeremonyOrderByWithRelationInput[]
+    cursor?: CeremonyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CeremonyScalarFieldEnum | CeremonyScalarFieldEnum[]
   }
 
   /**
@@ -13046,6 +13607,7 @@ export namespace Prisma {
     fields?: boolean | Project$fieldsArgs<ExtArgs>
     user?: boolean | Project$userArgs<ExtArgs>
     task?: boolean | Project$taskArgs<ExtArgs>
+    Ceremony?: boolean | Project$CeremonyArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -13117,6 +13679,7 @@ export namespace Prisma {
     fields?: boolean | Project$fieldsArgs<ExtArgs>
     user?: boolean | Project$userArgs<ExtArgs>
     task?: boolean | Project$taskArgs<ExtArgs>
+    Ceremony?: boolean | Project$CeremonyArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -13146,6 +13709,7 @@ export namespace Prisma {
        */
       user: Prisma.$UserPayload<ExtArgs>[]
       task: Prisma.$TaskPayload<ExtArgs>[]
+      Ceremony: Prisma.$CeremonyPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -13581,6 +14145,7 @@ export namespace Prisma {
     fields<T extends Project$fieldsArgs<ExtArgs> = {}>(args?: Subset<T, Project$fieldsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$fieldsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     user<T extends Project$userArgs<ExtArgs> = {}>(args?: Subset<T, Project$userArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     task<T extends Project$taskArgs<ExtArgs> = {}>(args?: Subset<T, Project$taskArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Ceremony<T extends Project$CeremonyArgs<ExtArgs> = {}>(args?: Subset<T, Project$CeremonyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14298,6 +14863,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
+  }
+
+  /**
+   * Project.Ceremony
+   */
+  export type Project$CeremonyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    where?: CeremonyWhereInput
+    orderBy?: CeremonyOrderByWithRelationInput | CeremonyOrderByWithRelationInput[]
+    cursor?: CeremonyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CeremonyScalarFieldEnum | CeremonyScalarFieldEnum[]
   }
 
   /**
@@ -26516,6 +27105,7 @@ export namespace Prisma {
     users?: boolean | Sprint$usersArgs<ExtArgs>
     userStories?: boolean | Sprint$userStoriesArgs<ExtArgs>
     Tasks?: boolean | Sprint$TasksArgs<ExtArgs>
+    Ceremony?: boolean | Sprint$CeremonyArgs<ExtArgs>
     _count?: boolean | SprintCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["sprint"]>
 
@@ -26584,6 +27174,7 @@ export namespace Prisma {
     users?: boolean | Sprint$usersArgs<ExtArgs>
     userStories?: boolean | Sprint$userStoriesArgs<ExtArgs>
     Tasks?: boolean | Sprint$TasksArgs<ExtArgs>
+    Ceremony?: boolean | Sprint$CeremonyArgs<ExtArgs>
     _count?: boolean | SprintCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SprintIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -26603,6 +27194,7 @@ export namespace Prisma {
       users: Prisma.$UserPayload<ExtArgs>[]
       userStories: Prisma.$UserStoryPayload<ExtArgs>[]
       Tasks: Prisma.$TaskPayload<ExtArgs>[]
+      Ceremony: Prisma.$CeremonyPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -27027,6 +27619,7 @@ export namespace Prisma {
     users<T extends Sprint$usersArgs<ExtArgs> = {}>(args?: Subset<T, Sprint$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userStories<T extends Sprint$userStoriesArgs<ExtArgs> = {}>(args?: Subset<T, Sprint$userStoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserStoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Tasks<T extends Sprint$TasksArgs<ExtArgs> = {}>(args?: Subset<T, Sprint$TasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Ceremony<T extends Sprint$CeremonyArgs<ExtArgs> = {}>(args?: Subset<T, Sprint$CeremonyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -27608,6 +28201,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
+  }
+
+  /**
+   * Sprint.Ceremony
+   */
+  export type Sprint$CeremonyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    where?: CeremonyWhereInput
+    orderBy?: CeremonyOrderByWithRelationInput | CeremonyOrderByWithRelationInput[]
+    cursor?: CeremonyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CeremonyScalarFieldEnum | CeremonyScalarFieldEnum[]
   }
 
   /**
@@ -30376,6 +30993,2545 @@ export namespace Prisma {
 
 
   /**
+   * Model Ceremony
+   */
+
+  export type AggregateCeremony = {
+    _count: CeremonyCountAggregateOutputType | null
+    _min: CeremonyMinAggregateOutputType | null
+    _max: CeremonyMaxAggregateOutputType | null
+  }
+
+  export type CeremonyMinAggregateOutputType = {
+    id: string | null
+    type: $Enums.CeremonyType | null
+    title: string | null
+    description: string | null
+    startTime: Date | null
+    endTime: Date | null
+    location: string | null
+    status: string | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    sprintId: string | null
+    projectId: string | null
+    teamId: string | null
+  }
+
+  export type CeremonyMaxAggregateOutputType = {
+    id: string | null
+    type: $Enums.CeremonyType | null
+    title: string | null
+    description: string | null
+    startTime: Date | null
+    endTime: Date | null
+    location: string | null
+    status: string | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    sprintId: string | null
+    projectId: string | null
+    teamId: string | null
+  }
+
+  export type CeremonyCountAggregateOutputType = {
+    id: number
+    type: number
+    title: number
+    description: number
+    startTime: number
+    endTime: number
+    location: number
+    status: number
+    agenda: number
+    notes: number
+    createdAt: number
+    updatedAt: number
+    sprintId: number
+    projectId: number
+    teamId: number
+    _all: number
+  }
+
+
+  export type CeremonyMinAggregateInputType = {
+    id?: true
+    type?: true
+    title?: true
+    description?: true
+    startTime?: true
+    endTime?: true
+    location?: true
+    status?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+    sprintId?: true
+    projectId?: true
+    teamId?: true
+  }
+
+  export type CeremonyMaxAggregateInputType = {
+    id?: true
+    type?: true
+    title?: true
+    description?: true
+    startTime?: true
+    endTime?: true
+    location?: true
+    status?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+    sprintId?: true
+    projectId?: true
+    teamId?: true
+  }
+
+  export type CeremonyCountAggregateInputType = {
+    id?: true
+    type?: true
+    title?: true
+    description?: true
+    startTime?: true
+    endTime?: true
+    location?: true
+    status?: true
+    agenda?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+    sprintId?: true
+    projectId?: true
+    teamId?: true
+    _all?: true
+  }
+
+  export type CeremonyAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Ceremony to aggregate.
+     */
+    where?: CeremonyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ceremonies to fetch.
+     */
+    orderBy?: CeremonyOrderByWithRelationInput | CeremonyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CeremonyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ceremonies from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ceremonies.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Ceremonies
+    **/
+    _count?: true | CeremonyCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CeremonyMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CeremonyMaxAggregateInputType
+  }
+
+  export type GetCeremonyAggregateType<T extends CeremonyAggregateArgs> = {
+        [P in keyof T & keyof AggregateCeremony]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCeremony[P]>
+      : GetScalarType<T[P], AggregateCeremony[P]>
+  }
+
+
+
+
+  export type CeremonyGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CeremonyWhereInput
+    orderBy?: CeremonyOrderByWithAggregationInput | CeremonyOrderByWithAggregationInput[]
+    by: CeremonyScalarFieldEnum[] | CeremonyScalarFieldEnum
+    having?: CeremonyScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CeremonyCountAggregateInputType | true
+    _min?: CeremonyMinAggregateInputType
+    _max?: CeremonyMaxAggregateInputType
+  }
+
+  export type CeremonyGroupByOutputType = {
+    id: string
+    type: $Enums.CeremonyType
+    title: string
+    description: string | null
+    startTime: Date
+    endTime: Date
+    location: string | null
+    status: string
+    agenda: JsonValue | null
+    notes: string | null
+    createdAt: Date
+    updatedAt: Date
+    sprintId: string | null
+    projectId: string
+    teamId: string | null
+    _count: CeremonyCountAggregateOutputType | null
+    _min: CeremonyMinAggregateOutputType | null
+    _max: CeremonyMaxAggregateOutputType | null
+  }
+
+  type GetCeremonyGroupByPayload<T extends CeremonyGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CeremonyGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CeremonyGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CeremonyGroupByOutputType[P]>
+            : GetScalarType<T[P], CeremonyGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CeremonySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    title?: boolean
+    description?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    location?: boolean
+    status?: boolean
+    agenda?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    sprintId?: boolean
+    projectId?: boolean
+    teamId?: boolean
+    sprint?: boolean | Ceremony$sprintArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    team?: boolean | Ceremony$teamArgs<ExtArgs>
+    attendees?: boolean | Ceremony$attendeesArgs<ExtArgs>
+    _count?: boolean | CeremonyCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["ceremony"]>
+
+  export type CeremonySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    title?: boolean
+    description?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    location?: boolean
+    status?: boolean
+    agenda?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    sprintId?: boolean
+    projectId?: boolean
+    teamId?: boolean
+    sprint?: boolean | Ceremony$sprintArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    team?: boolean | Ceremony$teamArgs<ExtArgs>
+  }, ExtArgs["result"]["ceremony"]>
+
+  export type CeremonySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    title?: boolean
+    description?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    location?: boolean
+    status?: boolean
+    agenda?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    sprintId?: boolean
+    projectId?: boolean
+    teamId?: boolean
+    sprint?: boolean | Ceremony$sprintArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    team?: boolean | Ceremony$teamArgs<ExtArgs>
+  }, ExtArgs["result"]["ceremony"]>
+
+  export type CeremonySelectScalar = {
+    id?: boolean
+    type?: boolean
+    title?: boolean
+    description?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    location?: boolean
+    status?: boolean
+    agenda?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    sprintId?: boolean
+    projectId?: boolean
+    teamId?: boolean
+  }
+
+  export type CeremonyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "title" | "description" | "startTime" | "endTime" | "location" | "status" | "agenda" | "notes" | "createdAt" | "updatedAt" | "sprintId" | "projectId" | "teamId", ExtArgs["result"]["ceremony"]>
+  export type CeremonyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    sprint?: boolean | Ceremony$sprintArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    team?: boolean | Ceremony$teamArgs<ExtArgs>
+    attendees?: boolean | Ceremony$attendeesArgs<ExtArgs>
+    _count?: boolean | CeremonyCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type CeremonyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    sprint?: boolean | Ceremony$sprintArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    team?: boolean | Ceremony$teamArgs<ExtArgs>
+  }
+  export type CeremonyIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    sprint?: boolean | Ceremony$sprintArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    team?: boolean | Ceremony$teamArgs<ExtArgs>
+  }
+
+  export type $CeremonyPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Ceremony"
+    objects: {
+      sprint: Prisma.$SprintPayload<ExtArgs> | null
+      project: Prisma.$ProjectPayload<ExtArgs>
+      team: Prisma.$TeamPayload<ExtArgs> | null
+      attendees: Prisma.$UserPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      type: $Enums.CeremonyType
+      title: string
+      description: string | null
+      startTime: Date
+      endTime: Date
+      location: string | null
+      status: string
+      agenda: Prisma.JsonValue | null
+      notes: string | null
+      createdAt: Date
+      updatedAt: Date
+      sprintId: string | null
+      projectId: string
+      teamId: string | null
+    }, ExtArgs["result"]["ceremony"]>
+    composites: {}
+  }
+
+  type CeremonyGetPayload<S extends boolean | null | undefined | CeremonyDefaultArgs> = $Result.GetResult<Prisma.$CeremonyPayload, S>
+
+  type CeremonyCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CeremonyFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CeremonyCountAggregateInputType | true
+    }
+
+  export interface CeremonyDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Ceremony'], meta: { name: 'Ceremony' } }
+    /**
+     * Find zero or one Ceremony that matches the filter.
+     * @param {CeremonyFindUniqueArgs} args - Arguments to find a Ceremony
+     * @example
+     * // Get one Ceremony
+     * const ceremony = await prisma.ceremony.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CeremonyFindUniqueArgs>(args: SelectSubset<T, CeremonyFindUniqueArgs<ExtArgs>>): Prisma__CeremonyClient<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Ceremony that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CeremonyFindUniqueOrThrowArgs} args - Arguments to find a Ceremony
+     * @example
+     * // Get one Ceremony
+     * const ceremony = await prisma.ceremony.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CeremonyFindUniqueOrThrowArgs>(args: SelectSubset<T, CeremonyFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CeremonyClient<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Ceremony that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CeremonyFindFirstArgs} args - Arguments to find a Ceremony
+     * @example
+     * // Get one Ceremony
+     * const ceremony = await prisma.ceremony.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CeremonyFindFirstArgs>(args?: SelectSubset<T, CeremonyFindFirstArgs<ExtArgs>>): Prisma__CeremonyClient<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Ceremony that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CeremonyFindFirstOrThrowArgs} args - Arguments to find a Ceremony
+     * @example
+     * // Get one Ceremony
+     * const ceremony = await prisma.ceremony.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CeremonyFindFirstOrThrowArgs>(args?: SelectSubset<T, CeremonyFindFirstOrThrowArgs<ExtArgs>>): Prisma__CeremonyClient<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Ceremonies that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CeremonyFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Ceremonies
+     * const ceremonies = await prisma.ceremony.findMany()
+     * 
+     * // Get first 10 Ceremonies
+     * const ceremonies = await prisma.ceremony.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const ceremonyWithIdOnly = await prisma.ceremony.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CeremonyFindManyArgs>(args?: SelectSubset<T, CeremonyFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Ceremony.
+     * @param {CeremonyCreateArgs} args - Arguments to create a Ceremony.
+     * @example
+     * // Create one Ceremony
+     * const Ceremony = await prisma.ceremony.create({
+     *   data: {
+     *     // ... data to create a Ceremony
+     *   }
+     * })
+     * 
+     */
+    create<T extends CeremonyCreateArgs>(args: SelectSubset<T, CeremonyCreateArgs<ExtArgs>>): Prisma__CeremonyClient<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Ceremonies.
+     * @param {CeremonyCreateManyArgs} args - Arguments to create many Ceremonies.
+     * @example
+     * // Create many Ceremonies
+     * const ceremony = await prisma.ceremony.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CeremonyCreateManyArgs>(args?: SelectSubset<T, CeremonyCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Ceremonies and returns the data saved in the database.
+     * @param {CeremonyCreateManyAndReturnArgs} args - Arguments to create many Ceremonies.
+     * @example
+     * // Create many Ceremonies
+     * const ceremony = await prisma.ceremony.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Ceremonies and only return the `id`
+     * const ceremonyWithIdOnly = await prisma.ceremony.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CeremonyCreateManyAndReturnArgs>(args?: SelectSubset<T, CeremonyCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Ceremony.
+     * @param {CeremonyDeleteArgs} args - Arguments to delete one Ceremony.
+     * @example
+     * // Delete one Ceremony
+     * const Ceremony = await prisma.ceremony.delete({
+     *   where: {
+     *     // ... filter to delete one Ceremony
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CeremonyDeleteArgs>(args: SelectSubset<T, CeremonyDeleteArgs<ExtArgs>>): Prisma__CeremonyClient<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Ceremony.
+     * @param {CeremonyUpdateArgs} args - Arguments to update one Ceremony.
+     * @example
+     * // Update one Ceremony
+     * const ceremony = await prisma.ceremony.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CeremonyUpdateArgs>(args: SelectSubset<T, CeremonyUpdateArgs<ExtArgs>>): Prisma__CeremonyClient<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Ceremonies.
+     * @param {CeremonyDeleteManyArgs} args - Arguments to filter Ceremonies to delete.
+     * @example
+     * // Delete a few Ceremonies
+     * const { count } = await prisma.ceremony.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CeremonyDeleteManyArgs>(args?: SelectSubset<T, CeremonyDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Ceremonies.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CeremonyUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Ceremonies
+     * const ceremony = await prisma.ceremony.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CeremonyUpdateManyArgs>(args: SelectSubset<T, CeremonyUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Ceremonies and returns the data updated in the database.
+     * @param {CeremonyUpdateManyAndReturnArgs} args - Arguments to update many Ceremonies.
+     * @example
+     * // Update many Ceremonies
+     * const ceremony = await prisma.ceremony.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Ceremonies and only return the `id`
+     * const ceremonyWithIdOnly = await prisma.ceremony.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CeremonyUpdateManyAndReturnArgs>(args: SelectSubset<T, CeremonyUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Ceremony.
+     * @param {CeremonyUpsertArgs} args - Arguments to update or create a Ceremony.
+     * @example
+     * // Update or create a Ceremony
+     * const ceremony = await prisma.ceremony.upsert({
+     *   create: {
+     *     // ... data to create a Ceremony
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Ceremony we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CeremonyUpsertArgs>(args: SelectSubset<T, CeremonyUpsertArgs<ExtArgs>>): Prisma__CeremonyClient<$Result.GetResult<Prisma.$CeremonyPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Ceremonies.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CeremonyCountArgs} args - Arguments to filter Ceremonies to count.
+     * @example
+     * // Count the number of Ceremonies
+     * const count = await prisma.ceremony.count({
+     *   where: {
+     *     // ... the filter for the Ceremonies we want to count
+     *   }
+     * })
+    **/
+    count<T extends CeremonyCountArgs>(
+      args?: Subset<T, CeremonyCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CeremonyCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Ceremony.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CeremonyAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CeremonyAggregateArgs>(args: Subset<T, CeremonyAggregateArgs>): Prisma.PrismaPromise<GetCeremonyAggregateType<T>>
+
+    /**
+     * Group by Ceremony.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CeremonyGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CeremonyGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CeremonyGroupByArgs['orderBy'] }
+        : { orderBy?: CeremonyGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CeremonyGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCeremonyGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Ceremony model
+   */
+  readonly fields: CeremonyFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Ceremony.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CeremonyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    sprint<T extends Ceremony$sprintArgs<ExtArgs> = {}>(args?: Subset<T, Ceremony$sprintArgs<ExtArgs>>): Prisma__SprintClient<$Result.GetResult<Prisma.$SprintPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    team<T extends Ceremony$teamArgs<ExtArgs> = {}>(args?: Subset<T, Ceremony$teamArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    attendees<T extends Ceremony$attendeesArgs<ExtArgs> = {}>(args?: Subset<T, Ceremony$attendeesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Ceremony model
+   */
+  interface CeremonyFieldRefs {
+    readonly id: FieldRef<"Ceremony", 'String'>
+    readonly type: FieldRef<"Ceremony", 'CeremonyType'>
+    readonly title: FieldRef<"Ceremony", 'String'>
+    readonly description: FieldRef<"Ceremony", 'String'>
+    readonly startTime: FieldRef<"Ceremony", 'DateTime'>
+    readonly endTime: FieldRef<"Ceremony", 'DateTime'>
+    readonly location: FieldRef<"Ceremony", 'String'>
+    readonly status: FieldRef<"Ceremony", 'String'>
+    readonly agenda: FieldRef<"Ceremony", 'Json'>
+    readonly notes: FieldRef<"Ceremony", 'String'>
+    readonly createdAt: FieldRef<"Ceremony", 'DateTime'>
+    readonly updatedAt: FieldRef<"Ceremony", 'DateTime'>
+    readonly sprintId: FieldRef<"Ceremony", 'String'>
+    readonly projectId: FieldRef<"Ceremony", 'String'>
+    readonly teamId: FieldRef<"Ceremony", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Ceremony findUnique
+   */
+  export type CeremonyFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    /**
+     * Filter, which Ceremony to fetch.
+     */
+    where: CeremonyWhereUniqueInput
+  }
+
+  /**
+   * Ceremony findUniqueOrThrow
+   */
+  export type CeremonyFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    /**
+     * Filter, which Ceremony to fetch.
+     */
+    where: CeremonyWhereUniqueInput
+  }
+
+  /**
+   * Ceremony findFirst
+   */
+  export type CeremonyFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    /**
+     * Filter, which Ceremony to fetch.
+     */
+    where?: CeremonyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ceremonies to fetch.
+     */
+    orderBy?: CeremonyOrderByWithRelationInput | CeremonyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Ceremonies.
+     */
+    cursor?: CeremonyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ceremonies from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ceremonies.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Ceremonies.
+     */
+    distinct?: CeremonyScalarFieldEnum | CeremonyScalarFieldEnum[]
+  }
+
+  /**
+   * Ceremony findFirstOrThrow
+   */
+  export type CeremonyFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    /**
+     * Filter, which Ceremony to fetch.
+     */
+    where?: CeremonyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ceremonies to fetch.
+     */
+    orderBy?: CeremonyOrderByWithRelationInput | CeremonyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Ceremonies.
+     */
+    cursor?: CeremonyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ceremonies from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ceremonies.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Ceremonies.
+     */
+    distinct?: CeremonyScalarFieldEnum | CeremonyScalarFieldEnum[]
+  }
+
+  /**
+   * Ceremony findMany
+   */
+  export type CeremonyFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    /**
+     * Filter, which Ceremonies to fetch.
+     */
+    where?: CeremonyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ceremonies to fetch.
+     */
+    orderBy?: CeremonyOrderByWithRelationInput | CeremonyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Ceremonies.
+     */
+    cursor?: CeremonyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ceremonies from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ceremonies.
+     */
+    skip?: number
+    distinct?: CeremonyScalarFieldEnum | CeremonyScalarFieldEnum[]
+  }
+
+  /**
+   * Ceremony create
+   */
+  export type CeremonyCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Ceremony.
+     */
+    data: XOR<CeremonyCreateInput, CeremonyUncheckedCreateInput>
+  }
+
+  /**
+   * Ceremony createMany
+   */
+  export type CeremonyCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Ceremonies.
+     */
+    data: CeremonyCreateManyInput | CeremonyCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Ceremony createManyAndReturn
+   */
+  export type CeremonyCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * The data used to create many Ceremonies.
+     */
+    data: CeremonyCreateManyInput | CeremonyCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Ceremony update
+   */
+  export type CeremonyUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Ceremony.
+     */
+    data: XOR<CeremonyUpdateInput, CeremonyUncheckedUpdateInput>
+    /**
+     * Choose, which Ceremony to update.
+     */
+    where: CeremonyWhereUniqueInput
+  }
+
+  /**
+   * Ceremony updateMany
+   */
+  export type CeremonyUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Ceremonies.
+     */
+    data: XOR<CeremonyUpdateManyMutationInput, CeremonyUncheckedUpdateManyInput>
+    /**
+     * Filter which Ceremonies to update
+     */
+    where?: CeremonyWhereInput
+    /**
+     * Limit how many Ceremonies to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Ceremony updateManyAndReturn
+   */
+  export type CeremonyUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * The data used to update Ceremonies.
+     */
+    data: XOR<CeremonyUpdateManyMutationInput, CeremonyUncheckedUpdateManyInput>
+    /**
+     * Filter which Ceremonies to update
+     */
+    where?: CeremonyWhereInput
+    /**
+     * Limit how many Ceremonies to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Ceremony upsert
+   */
+  export type CeremonyUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Ceremony to update in case it exists.
+     */
+    where: CeremonyWhereUniqueInput
+    /**
+     * In case the Ceremony found by the `where` argument doesn't exist, create a new Ceremony with this data.
+     */
+    create: XOR<CeremonyCreateInput, CeremonyUncheckedCreateInput>
+    /**
+     * In case the Ceremony was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CeremonyUpdateInput, CeremonyUncheckedUpdateInput>
+  }
+
+  /**
+   * Ceremony delete
+   */
+  export type CeremonyDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+    /**
+     * Filter which Ceremony to delete.
+     */
+    where: CeremonyWhereUniqueInput
+  }
+
+  /**
+   * Ceremony deleteMany
+   */
+  export type CeremonyDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Ceremonies to delete
+     */
+    where?: CeremonyWhereInput
+    /**
+     * Limit how many Ceremonies to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Ceremony.sprint
+   */
+  export type Ceremony$sprintArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sprint
+     */
+    select?: SprintSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sprint
+     */
+    omit?: SprintOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SprintInclude<ExtArgs> | null
+    where?: SprintWhereInput
+  }
+
+  /**
+   * Ceremony.team
+   */
+  export type Ceremony$teamArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Team
+     */
+    select?: TeamSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Team
+     */
+    omit?: TeamOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeamInclude<ExtArgs> | null
+    where?: TeamWhereInput
+  }
+
+  /**
+   * Ceremony.attendees
+   */
+  export type Ceremony$attendeesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
+   * Ceremony without action
+   */
+  export type CeremonyDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ceremony
+     */
+    select?: CeremonySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Ceremony
+     */
+    omit?: CeremonyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CeremonyInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Post
+   */
+
+  export type AggregatePost = {
+    _count: PostCountAggregateOutputType | null
+    _avg: PostAvgAggregateOutputType | null
+    _sum: PostSumAggregateOutputType | null
+    _min: PostMinAggregateOutputType | null
+    _max: PostMaxAggregateOutputType | null
+  }
+
+  export type PostAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type PostSumAggregateOutputType = {
+    order: number | null
+  }
+
+  export type PostMinAggregateOutputType = {
+    id: string | null
+    slug: string | null
+    title: string | null
+    order: number | null
+    excerpt: string | null
+    content: string | null
+    published: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    authorId: string | null
+  }
+
+  export type PostMaxAggregateOutputType = {
+    id: string | null
+    slug: string | null
+    title: string | null
+    order: number | null
+    excerpt: string | null
+    content: string | null
+    published: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    authorId: string | null
+  }
+
+  export type PostCountAggregateOutputType = {
+    id: number
+    slug: number
+    title: number
+    order: number
+    excerpt: number
+    content: number
+    published: number
+    createdAt: number
+    updatedAt: number
+    authorId: number
+    _all: number
+  }
+
+
+  export type PostAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type PostSumAggregateInputType = {
+    order?: true
+  }
+
+  export type PostMinAggregateInputType = {
+    id?: true
+    slug?: true
+    title?: true
+    order?: true
+    excerpt?: true
+    content?: true
+    published?: true
+    createdAt?: true
+    updatedAt?: true
+    authorId?: true
+  }
+
+  export type PostMaxAggregateInputType = {
+    id?: true
+    slug?: true
+    title?: true
+    order?: true
+    excerpt?: true
+    content?: true
+    published?: true
+    createdAt?: true
+    updatedAt?: true
+    authorId?: true
+  }
+
+  export type PostCountAggregateInputType = {
+    id?: true
+    slug?: true
+    title?: true
+    order?: true
+    excerpt?: true
+    content?: true
+    published?: true
+    createdAt?: true
+    updatedAt?: true
+    authorId?: true
+    _all?: true
+  }
+
+  export type PostAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Post to aggregate.
+     */
+    where?: PostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Posts to fetch.
+     */
+    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Posts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Posts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Posts
+    **/
+    _count?: true | PostCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PostAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PostSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PostMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PostMaxAggregateInputType
+  }
+
+  export type GetPostAggregateType<T extends PostAggregateArgs> = {
+        [P in keyof T & keyof AggregatePost]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePost[P]>
+      : GetScalarType<T[P], AggregatePost[P]>
+  }
+
+
+
+
+  export type PostGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostWhereInput
+    orderBy?: PostOrderByWithAggregationInput | PostOrderByWithAggregationInput[]
+    by: PostScalarFieldEnum[] | PostScalarFieldEnum
+    having?: PostScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PostCountAggregateInputType | true
+    _avg?: PostAvgAggregateInputType
+    _sum?: PostSumAggregateInputType
+    _min?: PostMinAggregateInputType
+    _max?: PostMaxAggregateInputType
+  }
+
+  export type PostGroupByOutputType = {
+    id: string
+    slug: string
+    title: string
+    order: number
+    excerpt: string | null
+    content: string
+    published: boolean
+    createdAt: Date
+    updatedAt: Date
+    authorId: string
+    _count: PostCountAggregateOutputType | null
+    _avg: PostAvgAggregateOutputType | null
+    _sum: PostSumAggregateOutputType | null
+    _min: PostMinAggregateOutputType | null
+    _max: PostMaxAggregateOutputType | null
+  }
+
+  type GetPostGroupByPayload<T extends PostGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PostGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PostGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PostGroupByOutputType[P]>
+            : GetScalarType<T[P], PostGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PostSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slug?: boolean
+    title?: boolean
+    order?: boolean
+    excerpt?: boolean
+    content?: boolean
+    published?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    authorId?: boolean
+    comments?: boolean | Post$commentsArgs<ExtArgs>
+    images?: boolean | Post$imagesArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    categories?: boolean | Post$categoriesArgs<ExtArgs>
+    tags?: boolean | Post$tagsArgs<ExtArgs>
+    _count?: boolean | PostCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["post"]>
+
+  export type PostSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slug?: boolean
+    title?: boolean
+    order?: boolean
+    excerpt?: boolean
+    content?: boolean
+    published?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    authorId?: boolean
+    author?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["post"]>
+
+  export type PostSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slug?: boolean
+    title?: boolean
+    order?: boolean
+    excerpt?: boolean
+    content?: boolean
+    published?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    authorId?: boolean
+    author?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["post"]>
+
+  export type PostSelectScalar = {
+    id?: boolean
+    slug?: boolean
+    title?: boolean
+    order?: boolean
+    excerpt?: boolean
+    content?: boolean
+    published?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    authorId?: boolean
+  }
+
+  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "title" | "order" | "excerpt" | "content" | "published" | "createdAt" | "updatedAt" | "authorId", ExtArgs["result"]["post"]>
+  export type PostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    comments?: boolean | Post$commentsArgs<ExtArgs>
+    images?: boolean | Post$imagesArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    categories?: boolean | Post$categoriesArgs<ExtArgs>
+    tags?: boolean | Post$tagsArgs<ExtArgs>
+    _count?: boolean | PostCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PostIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    author?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PostIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    author?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $PostPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Post"
+    objects: {
+      comments: Prisma.$CommentPayload<ExtArgs>[]
+      images: Prisma.$ImagePayload<ExtArgs>[]
+      author: Prisma.$UserPayload<ExtArgs>
+      categories: Prisma.$CategoryPayload<ExtArgs>[]
+      tags: Prisma.$TagPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      slug: string
+      title: string
+      order: number
+      excerpt: string | null
+      content: string
+      published: boolean
+      createdAt: Date
+      updatedAt: Date
+      authorId: string
+    }, ExtArgs["result"]["post"]>
+    composites: {}
+  }
+
+  type PostGetPayload<S extends boolean | null | undefined | PostDefaultArgs> = $Result.GetResult<Prisma.$PostPayload, S>
+
+  type PostCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PostFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PostCountAggregateInputType | true
+    }
+
+  export interface PostDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Post'], meta: { name: 'Post' } }
+    /**
+     * Find zero or one Post that matches the filter.
+     * @param {PostFindUniqueArgs} args - Arguments to find a Post
+     * @example
+     * // Get one Post
+     * const post = await prisma.post.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PostFindUniqueArgs>(args: SelectSubset<T, PostFindUniqueArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Post that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PostFindUniqueOrThrowArgs} args - Arguments to find a Post
+     * @example
+     * // Get one Post
+     * const post = await prisma.post.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PostFindUniqueOrThrowArgs>(args: SelectSubset<T, PostFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Post that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostFindFirstArgs} args - Arguments to find a Post
+     * @example
+     * // Get one Post
+     * const post = await prisma.post.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PostFindFirstArgs>(args?: SelectSubset<T, PostFindFirstArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Post that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostFindFirstOrThrowArgs} args - Arguments to find a Post
+     * @example
+     * // Get one Post
+     * const post = await prisma.post.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PostFindFirstOrThrowArgs>(args?: SelectSubset<T, PostFindFirstOrThrowArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Posts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Posts
+     * const posts = await prisma.post.findMany()
+     * 
+     * // Get first 10 Posts
+     * const posts = await prisma.post.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const postWithIdOnly = await prisma.post.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PostFindManyArgs>(args?: SelectSubset<T, PostFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Post.
+     * @param {PostCreateArgs} args - Arguments to create a Post.
+     * @example
+     * // Create one Post
+     * const Post = await prisma.post.create({
+     *   data: {
+     *     // ... data to create a Post
+     *   }
+     * })
+     * 
+     */
+    create<T extends PostCreateArgs>(args: SelectSubset<T, PostCreateArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Posts.
+     * @param {PostCreateManyArgs} args - Arguments to create many Posts.
+     * @example
+     * // Create many Posts
+     * const post = await prisma.post.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PostCreateManyArgs>(args?: SelectSubset<T, PostCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Posts and returns the data saved in the database.
+     * @param {PostCreateManyAndReturnArgs} args - Arguments to create many Posts.
+     * @example
+     * // Create many Posts
+     * const post = await prisma.post.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Posts and only return the `id`
+     * const postWithIdOnly = await prisma.post.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PostCreateManyAndReturnArgs>(args?: SelectSubset<T, PostCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Post.
+     * @param {PostDeleteArgs} args - Arguments to delete one Post.
+     * @example
+     * // Delete one Post
+     * const Post = await prisma.post.delete({
+     *   where: {
+     *     // ... filter to delete one Post
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PostDeleteArgs>(args: SelectSubset<T, PostDeleteArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Post.
+     * @param {PostUpdateArgs} args - Arguments to update one Post.
+     * @example
+     * // Update one Post
+     * const post = await prisma.post.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PostUpdateArgs>(args: SelectSubset<T, PostUpdateArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Posts.
+     * @param {PostDeleteManyArgs} args - Arguments to filter Posts to delete.
+     * @example
+     * // Delete a few Posts
+     * const { count } = await prisma.post.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PostDeleteManyArgs>(args?: SelectSubset<T, PostDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Posts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Posts
+     * const post = await prisma.post.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PostUpdateManyArgs>(args: SelectSubset<T, PostUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Posts and returns the data updated in the database.
+     * @param {PostUpdateManyAndReturnArgs} args - Arguments to update many Posts.
+     * @example
+     * // Update many Posts
+     * const post = await prisma.post.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Posts and only return the `id`
+     * const postWithIdOnly = await prisma.post.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PostUpdateManyAndReturnArgs>(args: SelectSubset<T, PostUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Post.
+     * @param {PostUpsertArgs} args - Arguments to update or create a Post.
+     * @example
+     * // Update or create a Post
+     * const post = await prisma.post.upsert({
+     *   create: {
+     *     // ... data to create a Post
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Post we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PostUpsertArgs>(args: SelectSubset<T, PostUpsertArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Posts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostCountArgs} args - Arguments to filter Posts to count.
+     * @example
+     * // Count the number of Posts
+     * const count = await prisma.post.count({
+     *   where: {
+     *     // ... the filter for the Posts we want to count
+     *   }
+     * })
+    **/
+    count<T extends PostCountArgs>(
+      args?: Subset<T, PostCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PostCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Post.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PostAggregateArgs>(args: Subset<T, PostAggregateArgs>): Prisma.PrismaPromise<GetPostAggregateType<T>>
+
+    /**
+     * Group by Post.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PostGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PostGroupByArgs['orderBy'] }
+        : { orderBy?: PostGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PostGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPostGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Post model
+   */
+  readonly fields: PostFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Post.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PostClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    comments<T extends Post$commentsArgs<ExtArgs> = {}>(args?: Subset<T, Post$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    images<T extends Post$imagesArgs<ExtArgs> = {}>(args?: Subset<T, Post$imagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    categories<T extends Post$categoriesArgs<ExtArgs> = {}>(args?: Subset<T, Post$categoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tags<T extends Post$tagsArgs<ExtArgs> = {}>(args?: Subset<T, Post$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Post model
+   */
+  interface PostFieldRefs {
+    readonly id: FieldRef<"Post", 'String'>
+    readonly slug: FieldRef<"Post", 'String'>
+    readonly title: FieldRef<"Post", 'String'>
+    readonly order: FieldRef<"Post", 'Int'>
+    readonly excerpt: FieldRef<"Post", 'String'>
+    readonly content: FieldRef<"Post", 'String'>
+    readonly published: FieldRef<"Post", 'Boolean'>
+    readonly createdAt: FieldRef<"Post", 'DateTime'>
+    readonly updatedAt: FieldRef<"Post", 'DateTime'>
+    readonly authorId: FieldRef<"Post", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Post findUnique
+   */
+  export type PostFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    /**
+     * Filter, which Post to fetch.
+     */
+    where: PostWhereUniqueInput
+  }
+
+  /**
+   * Post findUniqueOrThrow
+   */
+  export type PostFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    /**
+     * Filter, which Post to fetch.
+     */
+    where: PostWhereUniqueInput
+  }
+
+  /**
+   * Post findFirst
+   */
+  export type PostFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    /**
+     * Filter, which Post to fetch.
+     */
+    where?: PostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Posts to fetch.
+     */
+    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Posts.
+     */
+    cursor?: PostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Posts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Posts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Posts.
+     */
+    distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
+  }
+
+  /**
+   * Post findFirstOrThrow
+   */
+  export type PostFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    /**
+     * Filter, which Post to fetch.
+     */
+    where?: PostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Posts to fetch.
+     */
+    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Posts.
+     */
+    cursor?: PostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Posts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Posts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Posts.
+     */
+    distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
+  }
+
+  /**
+   * Post findMany
+   */
+  export type PostFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    /**
+     * Filter, which Posts to fetch.
+     */
+    where?: PostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Posts to fetch.
+     */
+    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Posts.
+     */
+    cursor?: PostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Posts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Posts.
+     */
+    skip?: number
+    distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
+  }
+
+  /**
+   * Post create
+   */
+  export type PostCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Post.
+     */
+    data: XOR<PostCreateInput, PostUncheckedCreateInput>
+  }
+
+  /**
+   * Post createMany
+   */
+  export type PostCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Posts.
+     */
+    data: PostCreateManyInput | PostCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Post createManyAndReturn
+   */
+  export type PostCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * The data used to create many Posts.
+     */
+    data: PostCreateManyInput | PostCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Post update
+   */
+  export type PostUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Post.
+     */
+    data: XOR<PostUpdateInput, PostUncheckedUpdateInput>
+    /**
+     * Choose, which Post to update.
+     */
+    where: PostWhereUniqueInput
+  }
+
+  /**
+   * Post updateMany
+   */
+  export type PostUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Posts.
+     */
+    data: XOR<PostUpdateManyMutationInput, PostUncheckedUpdateManyInput>
+    /**
+     * Filter which Posts to update
+     */
+    where?: PostWhereInput
+    /**
+     * Limit how many Posts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Post updateManyAndReturn
+   */
+  export type PostUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * The data used to update Posts.
+     */
+    data: XOR<PostUpdateManyMutationInput, PostUncheckedUpdateManyInput>
+    /**
+     * Filter which Posts to update
+     */
+    where?: PostWhereInput
+    /**
+     * Limit how many Posts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Post upsert
+   */
+  export type PostUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Post to update in case it exists.
+     */
+    where: PostWhereUniqueInput
+    /**
+     * In case the Post found by the `where` argument doesn't exist, create a new Post with this data.
+     */
+    create: XOR<PostCreateInput, PostUncheckedCreateInput>
+    /**
+     * In case the Post was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PostUpdateInput, PostUncheckedUpdateInput>
+  }
+
+  /**
+   * Post delete
+   */
+  export type PostDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    /**
+     * Filter which Post to delete.
+     */
+    where: PostWhereUniqueInput
+  }
+
+  /**
+   * Post deleteMany
+   */
+  export type PostDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Posts to delete
+     */
+    where?: PostWhereInput
+    /**
+     * Limit how many Posts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Post.comments
+   */
+  export type Post$commentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comment
+     */
+    omit?: CommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
+    where?: CommentWhereInput
+    orderBy?: CommentOrderByWithRelationInput | CommentOrderByWithRelationInput[]
+    cursor?: CommentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CommentScalarFieldEnum | CommentScalarFieldEnum[]
+  }
+
+  /**
+   * Post.images
+   */
+  export type Post$imagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+    where?: ImageWhereInput
+    orderBy?: ImageOrderByWithRelationInput | ImageOrderByWithRelationInput[]
+    cursor?: ImageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ImageScalarFieldEnum | ImageScalarFieldEnum[]
+  }
+
+  /**
+   * Post.categories
+   */
+  export type Post$categoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryInclude<ExtArgs> | null
+    where?: CategoryWhereInput
+    orderBy?: CategoryOrderByWithRelationInput | CategoryOrderByWithRelationInput[]
+    cursor?: CategoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CategoryScalarFieldEnum | CategoryScalarFieldEnum[]
+  }
+
+  /**
+   * Post.tags
+   */
+  export type Post$tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    where?: TagWhereInput
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    cursor?: TagWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * Post without action
+   */
+  export type PostDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Comment
    */
 
@@ -30389,178 +33545,86 @@ export namespace Prisma {
 
   export type CommentAvgAggregateOutputType = {
     order: number | null
-    readingTime: number | null
   }
 
   export type CommentSumAggregateOutputType = {
     order: number | null
-    readingTime: number | null
   }
 
   export type CommentMinAggregateOutputType = {
     id: string | null
-    title: string | null
-    order: number | null
     content: string | null
+    order: number | null
     createdAt: Date | null
     updatedAt: Date | null
+    postId: string | null
     authorId: string | null
-    taskId: string | null
-    userStoryId: string | null
-    fileId: string | null
-    itemId: string | null
-    parentCommentId: string | null
-    blogImage: string | null
-    excerpt: string | null
-    isActive: boolean | null
-    isPinned: boolean | null
-    isResolved: boolean | null
-    publishedAt: Date | null
-    readingTime: number | null
-    slug: string | null
-    status: string | null
-    visibility: $Enums.Visibility | null
+    parentId: string | null
   }
 
   export type CommentMaxAggregateOutputType = {
     id: string | null
-    title: string | null
-    order: number | null
     content: string | null
+    order: number | null
     createdAt: Date | null
     updatedAt: Date | null
+    postId: string | null
     authorId: string | null
-    taskId: string | null
-    userStoryId: string | null
-    fileId: string | null
-    itemId: string | null
-    parentCommentId: string | null
-    blogImage: string | null
-    excerpt: string | null
-    isActive: boolean | null
-    isPinned: boolean | null
-    isResolved: boolean | null
-    publishedAt: Date | null
-    readingTime: number | null
-    slug: string | null
-    status: string | null
-    visibility: $Enums.Visibility | null
+    parentId: string | null
   }
 
   export type CommentCountAggregateOutputType = {
     id: number
-    title: number
-    order: number
     content: number
-    mentions: number
+    order: number
     createdAt: number
     updatedAt: number
+    postId: number
     authorId: number
-    taskId: number
-    userStoryId: number
-    fileId: number
-    itemId: number
-    parentCommentId: number
-    blogImage: number
-    excerpt: number
-    isActive: number
-    isPinned: number
-    isResolved: number
-    metadata: number
-    publishedAt: number
-    readingTime: number
-    slug: number
-    status: number
-    visibility: number
+    parentId: number
     _all: number
   }
 
 
   export type CommentAvgAggregateInputType = {
     order?: true
-    readingTime?: true
   }
 
   export type CommentSumAggregateInputType = {
     order?: true
-    readingTime?: true
   }
 
   export type CommentMinAggregateInputType = {
     id?: true
-    title?: true
-    order?: true
     content?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
+    postId?: true
     authorId?: true
-    taskId?: true
-    userStoryId?: true
-    fileId?: true
-    itemId?: true
-    parentCommentId?: true
-    blogImage?: true
-    excerpt?: true
-    isActive?: true
-    isPinned?: true
-    isResolved?: true
-    publishedAt?: true
-    readingTime?: true
-    slug?: true
-    status?: true
-    visibility?: true
+    parentId?: true
   }
 
   export type CommentMaxAggregateInputType = {
     id?: true
-    title?: true
-    order?: true
     content?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
+    postId?: true
     authorId?: true
-    taskId?: true
-    userStoryId?: true
-    fileId?: true
-    itemId?: true
-    parentCommentId?: true
-    blogImage?: true
-    excerpt?: true
-    isActive?: true
-    isPinned?: true
-    isResolved?: true
-    publishedAt?: true
-    readingTime?: true
-    slug?: true
-    status?: true
-    visibility?: true
+    parentId?: true
   }
 
   export type CommentCountAggregateInputType = {
     id?: true
-    title?: true
-    order?: true
     content?: true
-    mentions?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
+    postId?: true
     authorId?: true
-    taskId?: true
-    userStoryId?: true
-    fileId?: true
-    itemId?: true
-    parentCommentId?: true
-    blogImage?: true
-    excerpt?: true
-    isActive?: true
-    isPinned?: true
-    isResolved?: true
-    metadata?: true
-    publishedAt?: true
-    readingTime?: true
-    slug?: true
-    status?: true
-    visibility?: true
+    parentId?: true
     _all?: true
   }
 
@@ -30652,29 +33716,13 @@ export namespace Prisma {
 
   export type CommentGroupByOutputType = {
     id: string
-    title: string
-    order: number
     content: string
-    mentions: string[]
+    order: number
     createdAt: Date
     updatedAt: Date
+    postId: string
     authorId: string
-    taskId: string | null
-    userStoryId: string | null
-    fileId: string | null
-    itemId: string | null
-    parentCommentId: string | null
-    blogImage: string | null
-    excerpt: string | null
-    isActive: boolean
-    isPinned: boolean
-    isResolved: boolean
-    metadata: JsonValue | null
-    publishedAt: Date | null
-    readingTime: number | null
-    slug: string | null
-    status: string
-    visibility: $Enums.Visibility
+    parentId: string | null
     _count: CommentCountAggregateOutputType | null
     _avg: CommentAvgAggregateOutputType | null
     _sum: CommentSumAggregateOutputType | null
@@ -30698,202 +33746,110 @@ export namespace Prisma {
 
   export type CommentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    title?: boolean
-    order?: boolean
     content?: boolean
-    mentions?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    postId?: boolean
     authorId?: boolean
-    taskId?: boolean
-    userStoryId?: boolean
-    fileId?: boolean
-    itemId?: boolean
-    parentCommentId?: boolean
-    blogImage?: boolean
-    excerpt?: boolean
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: boolean
-    publishedAt?: boolean
-    readingTime?: boolean
-    slug?: boolean
-    status?: boolean
-    visibility?: boolean
+    parentId?: boolean
     author?: boolean | UserDefaultArgs<ExtArgs>
-    file?: boolean | Comment$fileArgs<ExtArgs>
-    item?: boolean | Comment$itemArgs<ExtArgs>
-    parentComment?: boolean | Comment$parentCommentArgs<ExtArgs>
+    parent?: boolean | Comment$parentArgs<ExtArgs>
     replies?: boolean | Comment$repliesArgs<ExtArgs>
-    task?: boolean | Comment$taskArgs<ExtArgs>
-    userStory?: boolean | Comment$userStoryArgs<ExtArgs>
-    blog_tags?: boolean | Comment$blog_tagsArgs<ExtArgs>
-    categories?: boolean | Comment$categoriesArgs<ExtArgs>
+    post?: boolean | PostDefaultArgs<ExtArgs>
+    images?: boolean | Comment$imagesArgs<ExtArgs>
+    Item?: boolean | Comment$ItemArgs<ExtArgs>
+    File?: boolean | Comment$FileArgs<ExtArgs>
+    Task?: boolean | Comment$TaskArgs<ExtArgs>
+    UserStory?: boolean | Comment$UserStoryArgs<ExtArgs>
     _count?: boolean | CommentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["comment"]>
 
   export type CommentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    title?: boolean
-    order?: boolean
     content?: boolean
-    mentions?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    postId?: boolean
     authorId?: boolean
-    taskId?: boolean
-    userStoryId?: boolean
-    fileId?: boolean
-    itemId?: boolean
-    parentCommentId?: boolean
-    blogImage?: boolean
-    excerpt?: boolean
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: boolean
-    publishedAt?: boolean
-    readingTime?: boolean
-    slug?: boolean
-    status?: boolean
-    visibility?: boolean
+    parentId?: boolean
     author?: boolean | UserDefaultArgs<ExtArgs>
-    file?: boolean | Comment$fileArgs<ExtArgs>
-    item?: boolean | Comment$itemArgs<ExtArgs>
-    parentComment?: boolean | Comment$parentCommentArgs<ExtArgs>
-    task?: boolean | Comment$taskArgs<ExtArgs>
-    userStory?: boolean | Comment$userStoryArgs<ExtArgs>
+    parent?: boolean | Comment$parentArgs<ExtArgs>
+    post?: boolean | PostDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["comment"]>
 
   export type CommentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    title?: boolean
-    order?: boolean
     content?: boolean
-    mentions?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    postId?: boolean
     authorId?: boolean
-    taskId?: boolean
-    userStoryId?: boolean
-    fileId?: boolean
-    itemId?: boolean
-    parentCommentId?: boolean
-    blogImage?: boolean
-    excerpt?: boolean
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: boolean
-    publishedAt?: boolean
-    readingTime?: boolean
-    slug?: boolean
-    status?: boolean
-    visibility?: boolean
+    parentId?: boolean
     author?: boolean | UserDefaultArgs<ExtArgs>
-    file?: boolean | Comment$fileArgs<ExtArgs>
-    item?: boolean | Comment$itemArgs<ExtArgs>
-    parentComment?: boolean | Comment$parentCommentArgs<ExtArgs>
-    task?: boolean | Comment$taskArgs<ExtArgs>
-    userStory?: boolean | Comment$userStoryArgs<ExtArgs>
+    parent?: boolean | Comment$parentArgs<ExtArgs>
+    post?: boolean | PostDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["comment"]>
 
   export type CommentSelectScalar = {
     id?: boolean
-    title?: boolean
-    order?: boolean
     content?: boolean
-    mentions?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    postId?: boolean
     authorId?: boolean
-    taskId?: boolean
-    userStoryId?: boolean
-    fileId?: boolean
-    itemId?: boolean
-    parentCommentId?: boolean
-    blogImage?: boolean
-    excerpt?: boolean
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: boolean
-    publishedAt?: boolean
-    readingTime?: boolean
-    slug?: boolean
-    status?: boolean
-    visibility?: boolean
+    parentId?: boolean
   }
 
-  export type CommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "order" | "content" | "mentions" | "createdAt" | "updatedAt" | "authorId" | "taskId" | "userStoryId" | "fileId" | "itemId" | "parentCommentId" | "blogImage" | "excerpt" | "isActive" | "isPinned" | "isResolved" | "metadata" | "publishedAt" | "readingTime" | "slug" | "status" | "visibility", ExtArgs["result"]["comment"]>
+  export type CommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "content" | "order" | "createdAt" | "updatedAt" | "postId" | "authorId" | "parentId", ExtArgs["result"]["comment"]>
   export type CommentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     author?: boolean | UserDefaultArgs<ExtArgs>
-    file?: boolean | Comment$fileArgs<ExtArgs>
-    item?: boolean | Comment$itemArgs<ExtArgs>
-    parentComment?: boolean | Comment$parentCommentArgs<ExtArgs>
+    parent?: boolean | Comment$parentArgs<ExtArgs>
     replies?: boolean | Comment$repliesArgs<ExtArgs>
-    task?: boolean | Comment$taskArgs<ExtArgs>
-    userStory?: boolean | Comment$userStoryArgs<ExtArgs>
-    blog_tags?: boolean | Comment$blog_tagsArgs<ExtArgs>
-    categories?: boolean | Comment$categoriesArgs<ExtArgs>
+    post?: boolean | PostDefaultArgs<ExtArgs>
+    images?: boolean | Comment$imagesArgs<ExtArgs>
+    Item?: boolean | Comment$ItemArgs<ExtArgs>
+    File?: boolean | Comment$FileArgs<ExtArgs>
+    Task?: boolean | Comment$TaskArgs<ExtArgs>
+    UserStory?: boolean | Comment$UserStoryArgs<ExtArgs>
     _count?: boolean | CommentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CommentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     author?: boolean | UserDefaultArgs<ExtArgs>
-    file?: boolean | Comment$fileArgs<ExtArgs>
-    item?: boolean | Comment$itemArgs<ExtArgs>
-    parentComment?: boolean | Comment$parentCommentArgs<ExtArgs>
-    task?: boolean | Comment$taskArgs<ExtArgs>
-    userStory?: boolean | Comment$userStoryArgs<ExtArgs>
+    parent?: boolean | Comment$parentArgs<ExtArgs>
+    post?: boolean | PostDefaultArgs<ExtArgs>
   }
   export type CommentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     author?: boolean | UserDefaultArgs<ExtArgs>
-    file?: boolean | Comment$fileArgs<ExtArgs>
-    item?: boolean | Comment$itemArgs<ExtArgs>
-    parentComment?: boolean | Comment$parentCommentArgs<ExtArgs>
-    task?: boolean | Comment$taskArgs<ExtArgs>
-    userStory?: boolean | Comment$userStoryArgs<ExtArgs>
+    parent?: boolean | Comment$parentArgs<ExtArgs>
+    post?: boolean | PostDefaultArgs<ExtArgs>
   }
 
   export type $CommentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Comment"
     objects: {
       author: Prisma.$UserPayload<ExtArgs>
-      file: Prisma.$FilePayload<ExtArgs> | null
-      item: Prisma.$ItemPayload<ExtArgs> | null
-      parentComment: Prisma.$CommentPayload<ExtArgs> | null
+      parent: Prisma.$CommentPayload<ExtArgs> | null
       replies: Prisma.$CommentPayload<ExtArgs>[]
-      task: Prisma.$TaskPayload<ExtArgs> | null
-      userStory: Prisma.$UserStoryPayload<ExtArgs> | null
-      blog_tags: Prisma.$blog_tagsPayload<ExtArgs>[]
-      categories: Prisma.$categoriesPayload<ExtArgs>[]
+      post: Prisma.$PostPayload<ExtArgs>
+      images: Prisma.$ImagePayload<ExtArgs>[]
+      Item: Prisma.$ItemPayload<ExtArgs>[]
+      File: Prisma.$FilePayload<ExtArgs>[]
+      Task: Prisma.$TaskPayload<ExtArgs>[]
+      UserStory: Prisma.$UserStoryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      title: string
-      order: number
       content: string
-      mentions: string[]
+      order: number
       createdAt: Date
       updatedAt: Date
+      postId: string
       authorId: string
-      taskId: string | null
-      userStoryId: string | null
-      fileId: string | null
-      itemId: string | null
-      parentCommentId: string | null
-      blogImage: string | null
-      excerpt: string | null
-      isActive: boolean
-      isPinned: boolean
-      isResolved: boolean
-      metadata: Prisma.JsonValue | null
-      publishedAt: Date | null
-      readingTime: number | null
-      slug: string | null
-      status: string
-      visibility: $Enums.Visibility
+      parentId: string | null
     }, ExtArgs["result"]["comment"]>
     composites: {}
   }
@@ -31289,14 +34245,14 @@ export namespace Prisma {
   export interface Prisma__CommentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    file<T extends Comment$fileArgs<ExtArgs> = {}>(args?: Subset<T, Comment$fileArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    item<T extends Comment$itemArgs<ExtArgs> = {}>(args?: Subset<T, Comment$itemArgs<ExtArgs>>): Prisma__ItemClient<$Result.GetResult<Prisma.$ItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    parentComment<T extends Comment$parentCommentArgs<ExtArgs> = {}>(args?: Subset<T, Comment$parentCommentArgs<ExtArgs>>): Prisma__CommentClient<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    parent<T extends Comment$parentArgs<ExtArgs> = {}>(args?: Subset<T, Comment$parentArgs<ExtArgs>>): Prisma__CommentClient<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     replies<T extends Comment$repliesArgs<ExtArgs> = {}>(args?: Subset<T, Comment$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    task<T extends Comment$taskArgs<ExtArgs> = {}>(args?: Subset<T, Comment$taskArgs<ExtArgs>>): Prisma__TaskClient<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    userStory<T extends Comment$userStoryArgs<ExtArgs> = {}>(args?: Subset<T, Comment$userStoryArgs<ExtArgs>>): Prisma__UserStoryClient<$Result.GetResult<Prisma.$UserStoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    blog_tags<T extends Comment$blog_tagsArgs<ExtArgs> = {}>(args?: Subset<T, Comment$blog_tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    categories<T extends Comment$categoriesArgs<ExtArgs> = {}>(args?: Subset<T, Comment$categoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    post<T extends PostDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PostDefaultArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    images<T extends Comment$imagesArgs<ExtArgs> = {}>(args?: Subset<T, Comment$imagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Item<T extends Comment$ItemArgs<ExtArgs> = {}>(args?: Subset<T, Comment$ItemArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    File<T extends Comment$FileArgs<ExtArgs> = {}>(args?: Subset<T, Comment$FileArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Task<T extends Comment$TaskArgs<ExtArgs> = {}>(args?: Subset<T, Comment$TaskArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    UserStory<T extends Comment$UserStoryArgs<ExtArgs> = {}>(args?: Subset<T, Comment$UserStoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserStoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -31327,29 +34283,13 @@ export namespace Prisma {
    */
   interface CommentFieldRefs {
     readonly id: FieldRef<"Comment", 'String'>
-    readonly title: FieldRef<"Comment", 'String'>
-    readonly order: FieldRef<"Comment", 'Int'>
     readonly content: FieldRef<"Comment", 'String'>
-    readonly mentions: FieldRef<"Comment", 'String[]'>
+    readonly order: FieldRef<"Comment", 'Int'>
     readonly createdAt: FieldRef<"Comment", 'DateTime'>
     readonly updatedAt: FieldRef<"Comment", 'DateTime'>
+    readonly postId: FieldRef<"Comment", 'String'>
     readonly authorId: FieldRef<"Comment", 'String'>
-    readonly taskId: FieldRef<"Comment", 'String'>
-    readonly userStoryId: FieldRef<"Comment", 'String'>
-    readonly fileId: FieldRef<"Comment", 'String'>
-    readonly itemId: FieldRef<"Comment", 'String'>
-    readonly parentCommentId: FieldRef<"Comment", 'String'>
-    readonly blogImage: FieldRef<"Comment", 'String'>
-    readonly excerpt: FieldRef<"Comment", 'String'>
-    readonly isActive: FieldRef<"Comment", 'Boolean'>
-    readonly isPinned: FieldRef<"Comment", 'Boolean'>
-    readonly isResolved: FieldRef<"Comment", 'Boolean'>
-    readonly metadata: FieldRef<"Comment", 'Json'>
-    readonly publishedAt: FieldRef<"Comment", 'DateTime'>
-    readonly readingTime: FieldRef<"Comment", 'Int'>
-    readonly slug: FieldRef<"Comment", 'String'>
-    readonly status: FieldRef<"Comment", 'String'>
-    readonly visibility: FieldRef<"Comment", 'Visibility'>
+    readonly parentId: FieldRef<"Comment", 'String'>
   }
     
 
@@ -31746,47 +34686,9 @@ export namespace Prisma {
   }
 
   /**
-   * Comment.file
+   * Comment.parent
    */
-  export type Comment$fileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the File
-     */
-    select?: FileSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the File
-     */
-    omit?: FileOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: FileInclude<ExtArgs> | null
-    where?: FileWhereInput
-  }
-
-  /**
-   * Comment.item
-   */
-  export type Comment$itemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Item
-     */
-    select?: ItemSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Item
-     */
-    omit?: ItemOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ItemInclude<ExtArgs> | null
-    where?: ItemWhereInput
-  }
-
-  /**
-   * Comment.parentComment
-   */
-  export type Comment$parentCommentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Comment$parentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Comment
      */
@@ -31827,9 +34729,81 @@ export namespace Prisma {
   }
 
   /**
-   * Comment.task
+   * Comment.images
    */
-  export type Comment$taskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Comment$imagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+    where?: ImageWhereInput
+    orderBy?: ImageOrderByWithRelationInput | ImageOrderByWithRelationInput[]
+    cursor?: ImageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ImageScalarFieldEnum | ImageScalarFieldEnum[]
+  }
+
+  /**
+   * Comment.Item
+   */
+  export type Comment$ItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Item
+     */
+    select?: ItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Item
+     */
+    omit?: ItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemInclude<ExtArgs> | null
+    where?: ItemWhereInput
+    orderBy?: ItemOrderByWithRelationInput | ItemOrderByWithRelationInput[]
+    cursor?: ItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ItemScalarFieldEnum | ItemScalarFieldEnum[]
+  }
+
+  /**
+   * Comment.File
+   */
+  export type Comment$FileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    where?: FileWhereInput
+    orderBy?: FileOrderByWithRelationInput | FileOrderByWithRelationInput[]
+    cursor?: FileWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
+  }
+
+  /**
+   * Comment.Task
+   */
+  export type Comment$TaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Task
      */
@@ -31843,12 +34817,17 @@ export namespace Prisma {
      */
     include?: TaskInclude<ExtArgs> | null
     where?: TaskWhereInput
+    orderBy?: TaskOrderByWithRelationInput | TaskOrderByWithRelationInput[]
+    cursor?: TaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
   }
 
   /**
-   * Comment.userStory
+   * Comment.UserStory
    */
-  export type Comment$userStoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Comment$UserStoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the UserStory
      */
@@ -31862,54 +34841,11 @@ export namespace Prisma {
      */
     include?: UserStoryInclude<ExtArgs> | null
     where?: UserStoryWhereInput
-  }
-
-  /**
-   * Comment.blog_tags
-   */
-  export type Comment$blog_tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsInclude<ExtArgs> | null
-    where?: blog_tagsWhereInput
-    orderBy?: blog_tagsOrderByWithRelationInput | blog_tagsOrderByWithRelationInput[]
-    cursor?: blog_tagsWhereUniqueInput
+    orderBy?: UserStoryOrderByWithRelationInput | UserStoryOrderByWithRelationInput[]
+    cursor?: UserStoryWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Blog_tagsScalarFieldEnum | Blog_tagsScalarFieldEnum[]
-  }
-
-  /**
-   * Comment.categories
-   */
-  export type Comment$categoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    where?: categoriesWhereInput
-    orderBy?: categoriesOrderByWithRelationInput | categoriesOrderByWithRelationInput[]
-    cursor?: categoriesWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: CategoriesScalarFieldEnum | CategoriesScalarFieldEnum[]
+    distinct?: UserStoryScalarFieldEnum | UserStoryScalarFieldEnum[]
   }
 
   /**
@@ -31928,6 +34864,3451 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: CommentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Image
+   */
+
+  export type AggregateImage = {
+    _count: ImageCountAggregateOutputType | null
+    _avg: ImageAvgAggregateOutputType | null
+    _sum: ImageSumAggregateOutputType | null
+    _min: ImageMinAggregateOutputType | null
+    _max: ImageMaxAggregateOutputType | null
+  }
+
+  export type ImageAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type ImageSumAggregateOutputType = {
+    order: number | null
+  }
+
+  export type ImageMinAggregateOutputType = {
+    id: string | null
+    url: string | null
+    order: number | null
+    alt: string | null
+    createdAt: Date | null
+    postId: string | null
+    userId: string | null
+    commentId: string | null
+  }
+
+  export type ImageMaxAggregateOutputType = {
+    id: string | null
+    url: string | null
+    order: number | null
+    alt: string | null
+    createdAt: Date | null
+    postId: string | null
+    userId: string | null
+    commentId: string | null
+  }
+
+  export type ImageCountAggregateOutputType = {
+    id: number
+    url: number
+    order: number
+    alt: number
+    createdAt: number
+    postId: number
+    userId: number
+    commentId: number
+    _all: number
+  }
+
+
+  export type ImageAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type ImageSumAggregateInputType = {
+    order?: true
+  }
+
+  export type ImageMinAggregateInputType = {
+    id?: true
+    url?: true
+    order?: true
+    alt?: true
+    createdAt?: true
+    postId?: true
+    userId?: true
+    commentId?: true
+  }
+
+  export type ImageMaxAggregateInputType = {
+    id?: true
+    url?: true
+    order?: true
+    alt?: true
+    createdAt?: true
+    postId?: true
+    userId?: true
+    commentId?: true
+  }
+
+  export type ImageCountAggregateInputType = {
+    id?: true
+    url?: true
+    order?: true
+    alt?: true
+    createdAt?: true
+    postId?: true
+    userId?: true
+    commentId?: true
+    _all?: true
+  }
+
+  export type ImageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Image to aggregate.
+     */
+    where?: ImageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Images to fetch.
+     */
+    orderBy?: ImageOrderByWithRelationInput | ImageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ImageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Images from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Images.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Images
+    **/
+    _count?: true | ImageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ImageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ImageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ImageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ImageMaxAggregateInputType
+  }
+
+  export type GetImageAggregateType<T extends ImageAggregateArgs> = {
+        [P in keyof T & keyof AggregateImage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateImage[P]>
+      : GetScalarType<T[P], AggregateImage[P]>
+  }
+
+
+
+
+  export type ImageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageWhereInput
+    orderBy?: ImageOrderByWithAggregationInput | ImageOrderByWithAggregationInput[]
+    by: ImageScalarFieldEnum[] | ImageScalarFieldEnum
+    having?: ImageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ImageCountAggregateInputType | true
+    _avg?: ImageAvgAggregateInputType
+    _sum?: ImageSumAggregateInputType
+    _min?: ImageMinAggregateInputType
+    _max?: ImageMaxAggregateInputType
+  }
+
+  export type ImageGroupByOutputType = {
+    id: string
+    url: string
+    order: number
+    alt: string | null
+    createdAt: Date
+    postId: string | null
+    userId: string | null
+    commentId: string | null
+    _count: ImageCountAggregateOutputType | null
+    _avg: ImageAvgAggregateOutputType | null
+    _sum: ImageSumAggregateOutputType | null
+    _min: ImageMinAggregateOutputType | null
+    _max: ImageMaxAggregateOutputType | null
+  }
+
+  type GetImageGroupByPayload<T extends ImageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ImageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ImageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ImageGroupByOutputType[P]>
+            : GetScalarType<T[P], ImageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ImageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    url?: boolean
+    order?: boolean
+    alt?: boolean
+    createdAt?: boolean
+    postId?: boolean
+    userId?: boolean
+    commentId?: boolean
+    comment?: boolean | Image$commentArgs<ExtArgs>
+    post?: boolean | Image$postArgs<ExtArgs>
+    user?: boolean | Image$userArgs<ExtArgs>
+  }, ExtArgs["result"]["image"]>
+
+  export type ImageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    url?: boolean
+    order?: boolean
+    alt?: boolean
+    createdAt?: boolean
+    postId?: boolean
+    userId?: boolean
+    commentId?: boolean
+    comment?: boolean | Image$commentArgs<ExtArgs>
+    post?: boolean | Image$postArgs<ExtArgs>
+    user?: boolean | Image$userArgs<ExtArgs>
+  }, ExtArgs["result"]["image"]>
+
+  export type ImageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    url?: boolean
+    order?: boolean
+    alt?: boolean
+    createdAt?: boolean
+    postId?: boolean
+    userId?: boolean
+    commentId?: boolean
+    comment?: boolean | Image$commentArgs<ExtArgs>
+    post?: boolean | Image$postArgs<ExtArgs>
+    user?: boolean | Image$userArgs<ExtArgs>
+  }, ExtArgs["result"]["image"]>
+
+  export type ImageSelectScalar = {
+    id?: boolean
+    url?: boolean
+    order?: boolean
+    alt?: boolean
+    createdAt?: boolean
+    postId?: boolean
+    userId?: boolean
+    commentId?: boolean
+  }
+
+  export type ImageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "url" | "order" | "alt" | "createdAt" | "postId" | "userId" | "commentId", ExtArgs["result"]["image"]>
+  export type ImageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    comment?: boolean | Image$commentArgs<ExtArgs>
+    post?: boolean | Image$postArgs<ExtArgs>
+    user?: boolean | Image$userArgs<ExtArgs>
+  }
+  export type ImageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    comment?: boolean | Image$commentArgs<ExtArgs>
+    post?: boolean | Image$postArgs<ExtArgs>
+    user?: boolean | Image$userArgs<ExtArgs>
+  }
+  export type ImageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    comment?: boolean | Image$commentArgs<ExtArgs>
+    post?: boolean | Image$postArgs<ExtArgs>
+    user?: boolean | Image$userArgs<ExtArgs>
+  }
+
+  export type $ImagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Image"
+    objects: {
+      comment: Prisma.$CommentPayload<ExtArgs> | null
+      post: Prisma.$PostPayload<ExtArgs> | null
+      user: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      url: string
+      order: number
+      alt: string | null
+      createdAt: Date
+      postId: string | null
+      userId: string | null
+      commentId: string | null
+    }, ExtArgs["result"]["image"]>
+    composites: {}
+  }
+
+  type ImageGetPayload<S extends boolean | null | undefined | ImageDefaultArgs> = $Result.GetResult<Prisma.$ImagePayload, S>
+
+  type ImageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ImageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ImageCountAggregateInputType | true
+    }
+
+  export interface ImageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Image'], meta: { name: 'Image' } }
+    /**
+     * Find zero or one Image that matches the filter.
+     * @param {ImageFindUniqueArgs} args - Arguments to find a Image
+     * @example
+     * // Get one Image
+     * const image = await prisma.image.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ImageFindUniqueArgs>(args: SelectSubset<T, ImageFindUniqueArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Image that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ImageFindUniqueOrThrowArgs} args - Arguments to find a Image
+     * @example
+     * // Get one Image
+     * const image = await prisma.image.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ImageFindUniqueOrThrowArgs>(args: SelectSubset<T, ImageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Image that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageFindFirstArgs} args - Arguments to find a Image
+     * @example
+     * // Get one Image
+     * const image = await prisma.image.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ImageFindFirstArgs>(args?: SelectSubset<T, ImageFindFirstArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Image that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageFindFirstOrThrowArgs} args - Arguments to find a Image
+     * @example
+     * // Get one Image
+     * const image = await prisma.image.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ImageFindFirstOrThrowArgs>(args?: SelectSubset<T, ImageFindFirstOrThrowArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Images that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Images
+     * const images = await prisma.image.findMany()
+     * 
+     * // Get first 10 Images
+     * const images = await prisma.image.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const imageWithIdOnly = await prisma.image.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ImageFindManyArgs>(args?: SelectSubset<T, ImageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Image.
+     * @param {ImageCreateArgs} args - Arguments to create a Image.
+     * @example
+     * // Create one Image
+     * const Image = await prisma.image.create({
+     *   data: {
+     *     // ... data to create a Image
+     *   }
+     * })
+     * 
+     */
+    create<T extends ImageCreateArgs>(args: SelectSubset<T, ImageCreateArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Images.
+     * @param {ImageCreateManyArgs} args - Arguments to create many Images.
+     * @example
+     * // Create many Images
+     * const image = await prisma.image.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ImageCreateManyArgs>(args?: SelectSubset<T, ImageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Images and returns the data saved in the database.
+     * @param {ImageCreateManyAndReturnArgs} args - Arguments to create many Images.
+     * @example
+     * // Create many Images
+     * const image = await prisma.image.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Images and only return the `id`
+     * const imageWithIdOnly = await prisma.image.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ImageCreateManyAndReturnArgs>(args?: SelectSubset<T, ImageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Image.
+     * @param {ImageDeleteArgs} args - Arguments to delete one Image.
+     * @example
+     * // Delete one Image
+     * const Image = await prisma.image.delete({
+     *   where: {
+     *     // ... filter to delete one Image
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ImageDeleteArgs>(args: SelectSubset<T, ImageDeleteArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Image.
+     * @param {ImageUpdateArgs} args - Arguments to update one Image.
+     * @example
+     * // Update one Image
+     * const image = await prisma.image.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ImageUpdateArgs>(args: SelectSubset<T, ImageUpdateArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Images.
+     * @param {ImageDeleteManyArgs} args - Arguments to filter Images to delete.
+     * @example
+     * // Delete a few Images
+     * const { count } = await prisma.image.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ImageDeleteManyArgs>(args?: SelectSubset<T, ImageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Images.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Images
+     * const image = await prisma.image.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ImageUpdateManyArgs>(args: SelectSubset<T, ImageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Images and returns the data updated in the database.
+     * @param {ImageUpdateManyAndReturnArgs} args - Arguments to update many Images.
+     * @example
+     * // Update many Images
+     * const image = await prisma.image.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Images and only return the `id`
+     * const imageWithIdOnly = await prisma.image.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ImageUpdateManyAndReturnArgs>(args: SelectSubset<T, ImageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Image.
+     * @param {ImageUpsertArgs} args - Arguments to update or create a Image.
+     * @example
+     * // Update or create a Image
+     * const image = await prisma.image.upsert({
+     *   create: {
+     *     // ... data to create a Image
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Image we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ImageUpsertArgs>(args: SelectSubset<T, ImageUpsertArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Images.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageCountArgs} args - Arguments to filter Images to count.
+     * @example
+     * // Count the number of Images
+     * const count = await prisma.image.count({
+     *   where: {
+     *     // ... the filter for the Images we want to count
+     *   }
+     * })
+    **/
+    count<T extends ImageCountArgs>(
+      args?: Subset<T, ImageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ImageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Image.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ImageAggregateArgs>(args: Subset<T, ImageAggregateArgs>): Prisma.PrismaPromise<GetImageAggregateType<T>>
+
+    /**
+     * Group by Image.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ImageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ImageGroupByArgs['orderBy'] }
+        : { orderBy?: ImageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ImageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetImageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Image model
+   */
+  readonly fields: ImageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Image.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ImageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    comment<T extends Image$commentArgs<ExtArgs> = {}>(args?: Subset<T, Image$commentArgs<ExtArgs>>): Prisma__CommentClient<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    post<T extends Image$postArgs<ExtArgs> = {}>(args?: Subset<T, Image$postArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    user<T extends Image$userArgs<ExtArgs> = {}>(args?: Subset<T, Image$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Image model
+   */
+  interface ImageFieldRefs {
+    readonly id: FieldRef<"Image", 'String'>
+    readonly url: FieldRef<"Image", 'String'>
+    readonly order: FieldRef<"Image", 'Int'>
+    readonly alt: FieldRef<"Image", 'String'>
+    readonly createdAt: FieldRef<"Image", 'DateTime'>
+    readonly postId: FieldRef<"Image", 'String'>
+    readonly userId: FieldRef<"Image", 'String'>
+    readonly commentId: FieldRef<"Image", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Image findUnique
+   */
+  export type ImageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+    /**
+     * Filter, which Image to fetch.
+     */
+    where: ImageWhereUniqueInput
+  }
+
+  /**
+   * Image findUniqueOrThrow
+   */
+  export type ImageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+    /**
+     * Filter, which Image to fetch.
+     */
+    where: ImageWhereUniqueInput
+  }
+
+  /**
+   * Image findFirst
+   */
+  export type ImageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+    /**
+     * Filter, which Image to fetch.
+     */
+    where?: ImageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Images to fetch.
+     */
+    orderBy?: ImageOrderByWithRelationInput | ImageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Images.
+     */
+    cursor?: ImageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Images from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Images.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Images.
+     */
+    distinct?: ImageScalarFieldEnum | ImageScalarFieldEnum[]
+  }
+
+  /**
+   * Image findFirstOrThrow
+   */
+  export type ImageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+    /**
+     * Filter, which Image to fetch.
+     */
+    where?: ImageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Images to fetch.
+     */
+    orderBy?: ImageOrderByWithRelationInput | ImageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Images.
+     */
+    cursor?: ImageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Images from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Images.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Images.
+     */
+    distinct?: ImageScalarFieldEnum | ImageScalarFieldEnum[]
+  }
+
+  /**
+   * Image findMany
+   */
+  export type ImageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+    /**
+     * Filter, which Images to fetch.
+     */
+    where?: ImageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Images to fetch.
+     */
+    orderBy?: ImageOrderByWithRelationInput | ImageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Images.
+     */
+    cursor?: ImageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Images from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Images.
+     */
+    skip?: number
+    distinct?: ImageScalarFieldEnum | ImageScalarFieldEnum[]
+  }
+
+  /**
+   * Image create
+   */
+  export type ImageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Image.
+     */
+    data: XOR<ImageCreateInput, ImageUncheckedCreateInput>
+  }
+
+  /**
+   * Image createMany
+   */
+  export type ImageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Images.
+     */
+    data: ImageCreateManyInput | ImageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Image createManyAndReturn
+   */
+  export type ImageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * The data used to create many Images.
+     */
+    data: ImageCreateManyInput | ImageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Image update
+   */
+  export type ImageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Image.
+     */
+    data: XOR<ImageUpdateInput, ImageUncheckedUpdateInput>
+    /**
+     * Choose, which Image to update.
+     */
+    where: ImageWhereUniqueInput
+  }
+
+  /**
+   * Image updateMany
+   */
+  export type ImageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Images.
+     */
+    data: XOR<ImageUpdateManyMutationInput, ImageUncheckedUpdateManyInput>
+    /**
+     * Filter which Images to update
+     */
+    where?: ImageWhereInput
+    /**
+     * Limit how many Images to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Image updateManyAndReturn
+   */
+  export type ImageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * The data used to update Images.
+     */
+    data: XOR<ImageUpdateManyMutationInput, ImageUncheckedUpdateManyInput>
+    /**
+     * Filter which Images to update
+     */
+    where?: ImageWhereInput
+    /**
+     * Limit how many Images to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Image upsert
+   */
+  export type ImageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Image to update in case it exists.
+     */
+    where: ImageWhereUniqueInput
+    /**
+     * In case the Image found by the `where` argument doesn't exist, create a new Image with this data.
+     */
+    create: XOR<ImageCreateInput, ImageUncheckedCreateInput>
+    /**
+     * In case the Image was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ImageUpdateInput, ImageUncheckedUpdateInput>
+  }
+
+  /**
+   * Image delete
+   */
+  export type ImageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+    /**
+     * Filter which Image to delete.
+     */
+    where: ImageWhereUniqueInput
+  }
+
+  /**
+   * Image deleteMany
+   */
+  export type ImageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Images to delete
+     */
+    where?: ImageWhereInput
+    /**
+     * Limit how many Images to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Image.comment
+   */
+  export type Image$commentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Comment
+     */
+    omit?: CommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
+    where?: CommentWhereInput
+  }
+
+  /**
+   * Image.post
+   */
+  export type Image$postArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    where?: PostWhereInput
+  }
+
+  /**
+   * Image.user
+   */
+  export type Image$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Image without action
+   */
+  export type ImageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Image
+     */
+    select?: ImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Image
+     */
+    omit?: ImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Category
+   */
+
+  export type AggregateCategory = {
+    _count: CategoryCountAggregateOutputType | null
+    _avg: CategoryAvgAggregateOutputType | null
+    _sum: CategorySumAggregateOutputType | null
+    _min: CategoryMinAggregateOutputType | null
+    _max: CategoryMaxAggregateOutputType | null
+  }
+
+  export type CategoryAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type CategorySumAggregateOutputType = {
+    order: number | null
+  }
+
+  export type CategoryMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    order: number | null
+    slug: string | null
+  }
+
+  export type CategoryMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    order: number | null
+    slug: string | null
+  }
+
+  export type CategoryCountAggregateOutputType = {
+    id: number
+    name: number
+    order: number
+    slug: number
+    _all: number
+  }
+
+
+  export type CategoryAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type CategorySumAggregateInputType = {
+    order?: true
+  }
+
+  export type CategoryMinAggregateInputType = {
+    id?: true
+    name?: true
+    order?: true
+    slug?: true
+  }
+
+  export type CategoryMaxAggregateInputType = {
+    id?: true
+    name?: true
+    order?: true
+    slug?: true
+  }
+
+  export type CategoryCountAggregateInputType = {
+    id?: true
+    name?: true
+    order?: true
+    slug?: true
+    _all?: true
+  }
+
+  export type CategoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Category to aggregate.
+     */
+    where?: CategoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Categories to fetch.
+     */
+    orderBy?: CategoryOrderByWithRelationInput | CategoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CategoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Categories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Categories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Categories
+    **/
+    _count?: true | CategoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CategoryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CategorySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CategoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CategoryMaxAggregateInputType
+  }
+
+  export type GetCategoryAggregateType<T extends CategoryAggregateArgs> = {
+        [P in keyof T & keyof AggregateCategory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCategory[P]>
+      : GetScalarType<T[P], AggregateCategory[P]>
+  }
+
+
+
+
+  export type CategoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CategoryWhereInput
+    orderBy?: CategoryOrderByWithAggregationInput | CategoryOrderByWithAggregationInput[]
+    by: CategoryScalarFieldEnum[] | CategoryScalarFieldEnum
+    having?: CategoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CategoryCountAggregateInputType | true
+    _avg?: CategoryAvgAggregateInputType
+    _sum?: CategorySumAggregateInputType
+    _min?: CategoryMinAggregateInputType
+    _max?: CategoryMaxAggregateInputType
+  }
+
+  export type CategoryGroupByOutputType = {
+    id: string
+    name: string
+    order: number
+    slug: string
+    _count: CategoryCountAggregateOutputType | null
+    _avg: CategoryAvgAggregateOutputType | null
+    _sum: CategorySumAggregateOutputType | null
+    _min: CategoryMinAggregateOutputType | null
+    _max: CategoryMaxAggregateOutputType | null
+  }
+
+  type GetCategoryGroupByPayload<T extends CategoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CategoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CategoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CategoryGroupByOutputType[P]>
+            : GetScalarType<T[P], CategoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CategorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    order?: boolean
+    slug?: boolean
+    posts?: boolean | Category$postsArgs<ExtArgs>
+    tags?: boolean | Category$tagsArgs<ExtArgs>
+    _count?: boolean | CategoryCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["category"]>
+
+  export type CategorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    order?: boolean
+    slug?: boolean
+  }, ExtArgs["result"]["category"]>
+
+  export type CategorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    order?: boolean
+    slug?: boolean
+  }, ExtArgs["result"]["category"]>
+
+  export type CategorySelectScalar = {
+    id?: boolean
+    name?: boolean
+    order?: boolean
+    slug?: boolean
+  }
+
+  export type CategoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "slug", ExtArgs["result"]["category"]>
+  export type CategoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    posts?: boolean | Category$postsArgs<ExtArgs>
+    tags?: boolean | Category$tagsArgs<ExtArgs>
+    _count?: boolean | CategoryCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type CategoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type CategoryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $CategoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Category"
+    objects: {
+      posts: Prisma.$PostPayload<ExtArgs>[]
+      tags: Prisma.$TagPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      order: number
+      slug: string
+    }, ExtArgs["result"]["category"]>
+    composites: {}
+  }
+
+  type CategoryGetPayload<S extends boolean | null | undefined | CategoryDefaultArgs> = $Result.GetResult<Prisma.$CategoryPayload, S>
+
+  type CategoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CategoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CategoryCountAggregateInputType | true
+    }
+
+  export interface CategoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Category'], meta: { name: 'Category' } }
+    /**
+     * Find zero or one Category that matches the filter.
+     * @param {CategoryFindUniqueArgs} args - Arguments to find a Category
+     * @example
+     * // Get one Category
+     * const category = await prisma.category.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CategoryFindUniqueArgs>(args: SelectSubset<T, CategoryFindUniqueArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Category that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CategoryFindUniqueOrThrowArgs} args - Arguments to find a Category
+     * @example
+     * // Get one Category
+     * const category = await prisma.category.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CategoryFindUniqueOrThrowArgs>(args: SelectSubset<T, CategoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Category that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryFindFirstArgs} args - Arguments to find a Category
+     * @example
+     * // Get one Category
+     * const category = await prisma.category.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CategoryFindFirstArgs>(args?: SelectSubset<T, CategoryFindFirstArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Category that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryFindFirstOrThrowArgs} args - Arguments to find a Category
+     * @example
+     * // Get one Category
+     * const category = await prisma.category.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CategoryFindFirstOrThrowArgs>(args?: SelectSubset<T, CategoryFindFirstOrThrowArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Categories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Categories
+     * const categories = await prisma.category.findMany()
+     * 
+     * // Get first 10 Categories
+     * const categories = await prisma.category.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const categoryWithIdOnly = await prisma.category.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CategoryFindManyArgs>(args?: SelectSubset<T, CategoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Category.
+     * @param {CategoryCreateArgs} args - Arguments to create a Category.
+     * @example
+     * // Create one Category
+     * const Category = await prisma.category.create({
+     *   data: {
+     *     // ... data to create a Category
+     *   }
+     * })
+     * 
+     */
+    create<T extends CategoryCreateArgs>(args: SelectSubset<T, CategoryCreateArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Categories.
+     * @param {CategoryCreateManyArgs} args - Arguments to create many Categories.
+     * @example
+     * // Create many Categories
+     * const category = await prisma.category.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CategoryCreateManyArgs>(args?: SelectSubset<T, CategoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Categories and returns the data saved in the database.
+     * @param {CategoryCreateManyAndReturnArgs} args - Arguments to create many Categories.
+     * @example
+     * // Create many Categories
+     * const category = await prisma.category.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Categories and only return the `id`
+     * const categoryWithIdOnly = await prisma.category.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CategoryCreateManyAndReturnArgs>(args?: SelectSubset<T, CategoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Category.
+     * @param {CategoryDeleteArgs} args - Arguments to delete one Category.
+     * @example
+     * // Delete one Category
+     * const Category = await prisma.category.delete({
+     *   where: {
+     *     // ... filter to delete one Category
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CategoryDeleteArgs>(args: SelectSubset<T, CategoryDeleteArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Category.
+     * @param {CategoryUpdateArgs} args - Arguments to update one Category.
+     * @example
+     * // Update one Category
+     * const category = await prisma.category.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CategoryUpdateArgs>(args: SelectSubset<T, CategoryUpdateArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Categories.
+     * @param {CategoryDeleteManyArgs} args - Arguments to filter Categories to delete.
+     * @example
+     * // Delete a few Categories
+     * const { count } = await prisma.category.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CategoryDeleteManyArgs>(args?: SelectSubset<T, CategoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Categories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Categories
+     * const category = await prisma.category.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CategoryUpdateManyArgs>(args: SelectSubset<T, CategoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Categories and returns the data updated in the database.
+     * @param {CategoryUpdateManyAndReturnArgs} args - Arguments to update many Categories.
+     * @example
+     * // Update many Categories
+     * const category = await prisma.category.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Categories and only return the `id`
+     * const categoryWithIdOnly = await prisma.category.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CategoryUpdateManyAndReturnArgs>(args: SelectSubset<T, CategoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Category.
+     * @param {CategoryUpsertArgs} args - Arguments to update or create a Category.
+     * @example
+     * // Update or create a Category
+     * const category = await prisma.category.upsert({
+     *   create: {
+     *     // ... data to create a Category
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Category we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CategoryUpsertArgs>(args: SelectSubset<T, CategoryUpsertArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Categories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryCountArgs} args - Arguments to filter Categories to count.
+     * @example
+     * // Count the number of Categories
+     * const count = await prisma.category.count({
+     *   where: {
+     *     // ... the filter for the Categories we want to count
+     *   }
+     * })
+    **/
+    count<T extends CategoryCountArgs>(
+      args?: Subset<T, CategoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CategoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Category.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CategoryAggregateArgs>(args: Subset<T, CategoryAggregateArgs>): Prisma.PrismaPromise<GetCategoryAggregateType<T>>
+
+    /**
+     * Group by Category.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CategoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CategoryGroupByArgs['orderBy'] }
+        : { orderBy?: CategoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CategoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCategoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Category model
+   */
+  readonly fields: CategoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Category.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CategoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    posts<T extends Category$postsArgs<ExtArgs> = {}>(args?: Subset<T, Category$postsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tags<T extends Category$tagsArgs<ExtArgs> = {}>(args?: Subset<T, Category$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Category model
+   */
+  interface CategoryFieldRefs {
+    readonly id: FieldRef<"Category", 'String'>
+    readonly name: FieldRef<"Category", 'String'>
+    readonly order: FieldRef<"Category", 'Int'>
+    readonly slug: FieldRef<"Category", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Category findUnique
+   */
+  export type CategoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryInclude<ExtArgs> | null
+    /**
+     * Filter, which Category to fetch.
+     */
+    where: CategoryWhereUniqueInput
+  }
+
+  /**
+   * Category findUniqueOrThrow
+   */
+  export type CategoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryInclude<ExtArgs> | null
+    /**
+     * Filter, which Category to fetch.
+     */
+    where: CategoryWhereUniqueInput
+  }
+
+  /**
+   * Category findFirst
+   */
+  export type CategoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryInclude<ExtArgs> | null
+    /**
+     * Filter, which Category to fetch.
+     */
+    where?: CategoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Categories to fetch.
+     */
+    orderBy?: CategoryOrderByWithRelationInput | CategoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Categories.
+     */
+    cursor?: CategoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Categories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Categories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Categories.
+     */
+    distinct?: CategoryScalarFieldEnum | CategoryScalarFieldEnum[]
+  }
+
+  /**
+   * Category findFirstOrThrow
+   */
+  export type CategoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryInclude<ExtArgs> | null
+    /**
+     * Filter, which Category to fetch.
+     */
+    where?: CategoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Categories to fetch.
+     */
+    orderBy?: CategoryOrderByWithRelationInput | CategoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Categories.
+     */
+    cursor?: CategoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Categories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Categories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Categories.
+     */
+    distinct?: CategoryScalarFieldEnum | CategoryScalarFieldEnum[]
+  }
+
+  /**
+   * Category findMany
+   */
+  export type CategoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryInclude<ExtArgs> | null
+    /**
+     * Filter, which Categories to fetch.
+     */
+    where?: CategoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Categories to fetch.
+     */
+    orderBy?: CategoryOrderByWithRelationInput | CategoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Categories.
+     */
+    cursor?: CategoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Categories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Categories.
+     */
+    skip?: number
+    distinct?: CategoryScalarFieldEnum | CategoryScalarFieldEnum[]
+  }
+
+  /**
+   * Category create
+   */
+  export type CategoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Category.
+     */
+    data: XOR<CategoryCreateInput, CategoryUncheckedCreateInput>
+  }
+
+  /**
+   * Category createMany
+   */
+  export type CategoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Categories.
+     */
+    data: CategoryCreateManyInput | CategoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Category createManyAndReturn
+   */
+  export type CategoryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * The data used to create many Categories.
+     */
+    data: CategoryCreateManyInput | CategoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Category update
+   */
+  export type CategoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Category.
+     */
+    data: XOR<CategoryUpdateInput, CategoryUncheckedUpdateInput>
+    /**
+     * Choose, which Category to update.
+     */
+    where: CategoryWhereUniqueInput
+  }
+
+  /**
+   * Category updateMany
+   */
+  export type CategoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Categories.
+     */
+    data: XOR<CategoryUpdateManyMutationInput, CategoryUncheckedUpdateManyInput>
+    /**
+     * Filter which Categories to update
+     */
+    where?: CategoryWhereInput
+    /**
+     * Limit how many Categories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Category updateManyAndReturn
+   */
+  export type CategoryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * The data used to update Categories.
+     */
+    data: XOR<CategoryUpdateManyMutationInput, CategoryUncheckedUpdateManyInput>
+    /**
+     * Filter which Categories to update
+     */
+    where?: CategoryWhereInput
+    /**
+     * Limit how many Categories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Category upsert
+   */
+  export type CategoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Category to update in case it exists.
+     */
+    where: CategoryWhereUniqueInput
+    /**
+     * In case the Category found by the `where` argument doesn't exist, create a new Category with this data.
+     */
+    create: XOR<CategoryCreateInput, CategoryUncheckedCreateInput>
+    /**
+     * In case the Category was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CategoryUpdateInput, CategoryUncheckedUpdateInput>
+  }
+
+  /**
+   * Category delete
+   */
+  export type CategoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryInclude<ExtArgs> | null
+    /**
+     * Filter which Category to delete.
+     */
+    where: CategoryWhereUniqueInput
+  }
+
+  /**
+   * Category deleteMany
+   */
+  export type CategoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Categories to delete
+     */
+    where?: CategoryWhereInput
+    /**
+     * Limit how many Categories to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Category.posts
+   */
+  export type Category$postsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    where?: PostWhereInput
+    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
+    cursor?: PostWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
+  }
+
+  /**
+   * Category.tags
+   */
+  export type Category$tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    where?: TagWhereInput
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    cursor?: TagWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * Category without action
+   */
+  export type CategoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Category
+     */
+    omit?: CategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Tag
+   */
+
+  export type AggregateTag = {
+    _count: TagCountAggregateOutputType | null
+    _avg: TagAvgAggregateOutputType | null
+    _sum: TagSumAggregateOutputType | null
+    _min: TagMinAggregateOutputType | null
+    _max: TagMaxAggregateOutputType | null
+  }
+
+  export type TagAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type TagSumAggregateOutputType = {
+    order: number | null
+  }
+
+  export type TagMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    order: number | null
+    slug: string | null
+    categoryId: string | null
+  }
+
+  export type TagMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    order: number | null
+    slug: string | null
+    categoryId: string | null
+  }
+
+  export type TagCountAggregateOutputType = {
+    id: number
+    name: number
+    order: number
+    slug: number
+    categoryId: number
+    _all: number
+  }
+
+
+  export type TagAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type TagSumAggregateInputType = {
+    order?: true
+  }
+
+  export type TagMinAggregateInputType = {
+    id?: true
+    name?: true
+    order?: true
+    slug?: true
+    categoryId?: true
+  }
+
+  export type TagMaxAggregateInputType = {
+    id?: true
+    name?: true
+    order?: true
+    slug?: true
+    categoryId?: true
+  }
+
+  export type TagCountAggregateInputType = {
+    id?: true
+    name?: true
+    order?: true
+    slug?: true
+    categoryId?: true
+    _all?: true
+  }
+
+  export type TagAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Tag to aggregate.
+     */
+    where?: TagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Tags to fetch.
+     */
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Tags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Tags
+    **/
+    _count?: true | TagCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TagAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TagSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TagMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TagMaxAggregateInputType
+  }
+
+  export type GetTagAggregateType<T extends TagAggregateArgs> = {
+        [P in keyof T & keyof AggregateTag]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTag[P]>
+      : GetScalarType<T[P], AggregateTag[P]>
+  }
+
+
+
+
+  export type TagGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TagWhereInput
+    orderBy?: TagOrderByWithAggregationInput | TagOrderByWithAggregationInput[]
+    by: TagScalarFieldEnum[] | TagScalarFieldEnum
+    having?: TagScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TagCountAggregateInputType | true
+    _avg?: TagAvgAggregateInputType
+    _sum?: TagSumAggregateInputType
+    _min?: TagMinAggregateInputType
+    _max?: TagMaxAggregateInputType
+  }
+
+  export type TagGroupByOutputType = {
+    id: string
+    name: string
+    order: number
+    slug: string
+    categoryId: string
+    _count: TagCountAggregateOutputType | null
+    _avg: TagAvgAggregateOutputType | null
+    _sum: TagSumAggregateOutputType | null
+    _min: TagMinAggregateOutputType | null
+    _max: TagMaxAggregateOutputType | null
+  }
+
+  type GetTagGroupByPayload<T extends TagGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TagGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TagGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TagGroupByOutputType[P]>
+            : GetScalarType<T[P], TagGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TagSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    order?: boolean
+    slug?: boolean
+    categoryId?: boolean
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+    posts?: boolean | Tag$postsArgs<ExtArgs>
+    _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tag"]>
+
+  export type TagSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    order?: boolean
+    slug?: boolean
+    categoryId?: boolean
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tag"]>
+
+  export type TagSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    order?: boolean
+    slug?: boolean
+    categoryId?: boolean
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tag"]>
+
+  export type TagSelectScalar = {
+    id?: boolean
+    name?: boolean
+    order?: boolean
+    slug?: boolean
+    categoryId?: boolean
+  }
+
+  export type TagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "slug" | "categoryId", ExtArgs["result"]["tag"]>
+  export type TagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+    posts?: boolean | Tag$postsArgs<ExtArgs>
+    _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type TagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  }
+  export type TagIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  }
+
+  export type $TagPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Tag"
+    objects: {
+      category: Prisma.$CategoryPayload<ExtArgs>
+      posts: Prisma.$PostPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      order: number
+      slug: string
+      categoryId: string
+    }, ExtArgs["result"]["tag"]>
+    composites: {}
+  }
+
+  type TagGetPayload<S extends boolean | null | undefined | TagDefaultArgs> = $Result.GetResult<Prisma.$TagPayload, S>
+
+  type TagCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TagFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TagCountAggregateInputType | true
+    }
+
+  export interface TagDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Tag'], meta: { name: 'Tag' } }
+    /**
+     * Find zero or one Tag that matches the filter.
+     * @param {TagFindUniqueArgs} args - Arguments to find a Tag
+     * @example
+     * // Get one Tag
+     * const tag = await prisma.tag.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TagFindUniqueArgs>(args: SelectSubset<T, TagFindUniqueArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Tag that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TagFindUniqueOrThrowArgs} args - Arguments to find a Tag
+     * @example
+     * // Get one Tag
+     * const tag = await prisma.tag.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TagFindUniqueOrThrowArgs>(args: SelectSubset<T, TagFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Tag that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagFindFirstArgs} args - Arguments to find a Tag
+     * @example
+     * // Get one Tag
+     * const tag = await prisma.tag.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TagFindFirstArgs>(args?: SelectSubset<T, TagFindFirstArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Tag that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagFindFirstOrThrowArgs} args - Arguments to find a Tag
+     * @example
+     * // Get one Tag
+     * const tag = await prisma.tag.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TagFindFirstOrThrowArgs>(args?: SelectSubset<T, TagFindFirstOrThrowArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Tags that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Tags
+     * const tags = await prisma.tag.findMany()
+     * 
+     * // Get first 10 Tags
+     * const tags = await prisma.tag.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const tagWithIdOnly = await prisma.tag.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TagFindManyArgs>(args?: SelectSubset<T, TagFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Tag.
+     * @param {TagCreateArgs} args - Arguments to create a Tag.
+     * @example
+     * // Create one Tag
+     * const Tag = await prisma.tag.create({
+     *   data: {
+     *     // ... data to create a Tag
+     *   }
+     * })
+     * 
+     */
+    create<T extends TagCreateArgs>(args: SelectSubset<T, TagCreateArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Tags.
+     * @param {TagCreateManyArgs} args - Arguments to create many Tags.
+     * @example
+     * // Create many Tags
+     * const tag = await prisma.tag.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TagCreateManyArgs>(args?: SelectSubset<T, TagCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Tags and returns the data saved in the database.
+     * @param {TagCreateManyAndReturnArgs} args - Arguments to create many Tags.
+     * @example
+     * // Create many Tags
+     * const tag = await prisma.tag.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Tags and only return the `id`
+     * const tagWithIdOnly = await prisma.tag.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TagCreateManyAndReturnArgs>(args?: SelectSubset<T, TagCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Tag.
+     * @param {TagDeleteArgs} args - Arguments to delete one Tag.
+     * @example
+     * // Delete one Tag
+     * const Tag = await prisma.tag.delete({
+     *   where: {
+     *     // ... filter to delete one Tag
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TagDeleteArgs>(args: SelectSubset<T, TagDeleteArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Tag.
+     * @param {TagUpdateArgs} args - Arguments to update one Tag.
+     * @example
+     * // Update one Tag
+     * const tag = await prisma.tag.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TagUpdateArgs>(args: SelectSubset<T, TagUpdateArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Tags.
+     * @param {TagDeleteManyArgs} args - Arguments to filter Tags to delete.
+     * @example
+     * // Delete a few Tags
+     * const { count } = await prisma.tag.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TagDeleteManyArgs>(args?: SelectSubset<T, TagDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Tags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Tags
+     * const tag = await prisma.tag.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TagUpdateManyArgs>(args: SelectSubset<T, TagUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Tags and returns the data updated in the database.
+     * @param {TagUpdateManyAndReturnArgs} args - Arguments to update many Tags.
+     * @example
+     * // Update many Tags
+     * const tag = await prisma.tag.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Tags and only return the `id`
+     * const tagWithIdOnly = await prisma.tag.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TagUpdateManyAndReturnArgs>(args: SelectSubset<T, TagUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Tag.
+     * @param {TagUpsertArgs} args - Arguments to update or create a Tag.
+     * @example
+     * // Update or create a Tag
+     * const tag = await prisma.tag.upsert({
+     *   create: {
+     *     // ... data to create a Tag
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Tag we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TagUpsertArgs>(args: SelectSubset<T, TagUpsertArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Tags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagCountArgs} args - Arguments to filter Tags to count.
+     * @example
+     * // Count the number of Tags
+     * const count = await prisma.tag.count({
+     *   where: {
+     *     // ... the filter for the Tags we want to count
+     *   }
+     * })
+    **/
+    count<T extends TagCountArgs>(
+      args?: Subset<T, TagCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TagCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Tag.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TagAggregateArgs>(args: Subset<T, TagAggregateArgs>): Prisma.PrismaPromise<GetTagAggregateType<T>>
+
+    /**
+     * Group by Tag.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TagGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TagGroupByArgs['orderBy'] }
+        : { orderBy?: TagGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TagGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTagGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Tag model
+   */
+  readonly fields: TagFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Tag.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    posts<T extends Tag$postsArgs<ExtArgs> = {}>(args?: Subset<T, Tag$postsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Tag model
+   */
+  interface TagFieldRefs {
+    readonly id: FieldRef<"Tag", 'String'>
+    readonly name: FieldRef<"Tag", 'String'>
+    readonly order: FieldRef<"Tag", 'Int'>
+    readonly slug: FieldRef<"Tag", 'String'>
+    readonly categoryId: FieldRef<"Tag", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Tag findUnique
+   */
+  export type TagFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * Filter, which Tag to fetch.
+     */
+    where: TagWhereUniqueInput
+  }
+
+  /**
+   * Tag findUniqueOrThrow
+   */
+  export type TagFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * Filter, which Tag to fetch.
+     */
+    where: TagWhereUniqueInput
+  }
+
+  /**
+   * Tag findFirst
+   */
+  export type TagFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * Filter, which Tag to fetch.
+     */
+    where?: TagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Tags to fetch.
+     */
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Tags.
+     */
+    cursor?: TagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Tags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Tags.
+     */
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * Tag findFirstOrThrow
+   */
+  export type TagFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * Filter, which Tag to fetch.
+     */
+    where?: TagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Tags to fetch.
+     */
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Tags.
+     */
+    cursor?: TagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Tags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Tags.
+     */
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * Tag findMany
+   */
+  export type TagFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * Filter, which Tags to fetch.
+     */
+    where?: TagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Tags to fetch.
+     */
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Tags.
+     */
+    cursor?: TagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Tags.
+     */
+    skip?: number
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * Tag create
+   */
+  export type TagCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Tag.
+     */
+    data: XOR<TagCreateInput, TagUncheckedCreateInput>
+  }
+
+  /**
+   * Tag createMany
+   */
+  export type TagCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Tags.
+     */
+    data: TagCreateManyInput | TagCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Tag createManyAndReturn
+   */
+  export type TagCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * The data used to create many Tags.
+     */
+    data: TagCreateManyInput | TagCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Tag update
+   */
+  export type TagUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Tag.
+     */
+    data: XOR<TagUpdateInput, TagUncheckedUpdateInput>
+    /**
+     * Choose, which Tag to update.
+     */
+    where: TagWhereUniqueInput
+  }
+
+  /**
+   * Tag updateMany
+   */
+  export type TagUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Tags.
+     */
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyInput>
+    /**
+     * Filter which Tags to update
+     */
+    where?: TagWhereInput
+    /**
+     * Limit how many Tags to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Tag updateManyAndReturn
+   */
+  export type TagUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * The data used to update Tags.
+     */
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyInput>
+    /**
+     * Filter which Tags to update
+     */
+    where?: TagWhereInput
+    /**
+     * Limit how many Tags to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Tag upsert
+   */
+  export type TagUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Tag to update in case it exists.
+     */
+    where: TagWhereUniqueInput
+    /**
+     * In case the Tag found by the `where` argument doesn't exist, create a new Tag with this data.
+     */
+    create: XOR<TagCreateInput, TagUncheckedCreateInput>
+    /**
+     * In case the Tag was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TagUpdateInput, TagUncheckedUpdateInput>
+  }
+
+  /**
+   * Tag delete
+   */
+  export type TagDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * Filter which Tag to delete.
+     */
+    where: TagWhereUniqueInput
+  }
+
+  /**
+   * Tag deleteMany
+   */
+  export type TagDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Tags to delete
+     */
+    where?: TagWhereInput
+    /**
+     * Limit how many Tags to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Tag.posts
+   */
+  export type Tag$postsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Post
+     */
+    select?: PostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Post
+     */
+    omit?: PostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostInclude<ExtArgs> | null
+    where?: PostWhereInput
+    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
+    cursor?: PostWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
+  }
+
+  /**
+   * Tag without action
+   */
+  export type TagDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
   }
 
 
@@ -43974,2448 +50355,6 @@ export namespace Prisma {
 
 
   /**
-   * Model blog_tags
-   */
-
-  export type AggregateBlog_tags = {
-    _count: Blog_tagsCountAggregateOutputType | null
-    _avg: Blog_tagsAvgAggregateOutputType | null
-    _sum: Blog_tagsSumAggregateOutputType | null
-    _min: Blog_tagsMinAggregateOutputType | null
-    _max: Blog_tagsMaxAggregateOutputType | null
-  }
-
-  export type Blog_tagsAvgAggregateOutputType = {
-    order: number | null
-  }
-
-  export type Blog_tagsSumAggregateOutputType = {
-    order: number | null
-  }
-
-  export type Blog_tagsMinAggregateOutputType = {
-    id: string | null
-    name: string | null
-    order: number | null
-    color: string | null
-    isActive: boolean | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    categoriesId: string | null
-  }
-
-  export type Blog_tagsMaxAggregateOutputType = {
-    id: string | null
-    name: string | null
-    order: number | null
-    color: string | null
-    isActive: boolean | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    categoriesId: string | null
-  }
-
-  export type Blog_tagsCountAggregateOutputType = {
-    id: number
-    name: number
-    order: number
-    color: number
-    isActive: number
-    createdAt: number
-    updatedAt: number
-    categoriesId: number
-    _all: number
-  }
-
-
-  export type Blog_tagsAvgAggregateInputType = {
-    order?: true
-  }
-
-  export type Blog_tagsSumAggregateInputType = {
-    order?: true
-  }
-
-  export type Blog_tagsMinAggregateInputType = {
-    id?: true
-    name?: true
-    order?: true
-    color?: true
-    isActive?: true
-    createdAt?: true
-    updatedAt?: true
-    categoriesId?: true
-  }
-
-  export type Blog_tagsMaxAggregateInputType = {
-    id?: true
-    name?: true
-    order?: true
-    color?: true
-    isActive?: true
-    createdAt?: true
-    updatedAt?: true
-    categoriesId?: true
-  }
-
-  export type Blog_tagsCountAggregateInputType = {
-    id?: true
-    name?: true
-    order?: true
-    color?: true
-    isActive?: true
-    createdAt?: true
-    updatedAt?: true
-    categoriesId?: true
-    _all?: true
-  }
-
-  export type Blog_tagsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which blog_tags to aggregate.
-     */
-    where?: blog_tagsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of blog_tags to fetch.
-     */
-    orderBy?: blog_tagsOrderByWithRelationInput | blog_tagsOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: blog_tagsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` blog_tags from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` blog_tags.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned blog_tags
-    **/
-    _count?: true | Blog_tagsCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: Blog_tagsAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: Blog_tagsSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: Blog_tagsMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: Blog_tagsMaxAggregateInputType
-  }
-
-  export type GetBlog_tagsAggregateType<T extends Blog_tagsAggregateArgs> = {
-        [P in keyof T & keyof AggregateBlog_tags]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateBlog_tags[P]>
-      : GetScalarType<T[P], AggregateBlog_tags[P]>
-  }
-
-
-
-
-  export type blog_tagsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: blog_tagsWhereInput
-    orderBy?: blog_tagsOrderByWithAggregationInput | blog_tagsOrderByWithAggregationInput[]
-    by: Blog_tagsScalarFieldEnum[] | Blog_tagsScalarFieldEnum
-    having?: blog_tagsScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: Blog_tagsCountAggregateInputType | true
-    _avg?: Blog_tagsAvgAggregateInputType
-    _sum?: Blog_tagsSumAggregateInputType
-    _min?: Blog_tagsMinAggregateInputType
-    _max?: Blog_tagsMaxAggregateInputType
-  }
-
-  export type Blog_tagsGroupByOutputType = {
-    id: string
-    name: string
-    order: number
-    color: string | null
-    isActive: boolean
-    createdAt: Date
-    updatedAt: Date
-    categoriesId: string | null
-    _count: Blog_tagsCountAggregateOutputType | null
-    _avg: Blog_tagsAvgAggregateOutputType | null
-    _sum: Blog_tagsSumAggregateOutputType | null
-    _min: Blog_tagsMinAggregateOutputType | null
-    _max: Blog_tagsMaxAggregateOutputType | null
-  }
-
-  type GetBlog_tagsGroupByPayload<T extends blog_tagsGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<Blog_tagsGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof Blog_tagsGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], Blog_tagsGroupByOutputType[P]>
-            : GetScalarType<T[P], Blog_tagsGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type blog_tagsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    order?: boolean
-    color?: boolean
-    isActive?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    categoriesId?: boolean
-    categories?: boolean | blog_tags$categoriesArgs<ExtArgs>
-    comments?: boolean | blog_tags$commentsArgs<ExtArgs>
-    _count?: boolean | Blog_tagsCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["blog_tags"]>
-
-  export type blog_tagsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    order?: boolean
-    color?: boolean
-    isActive?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    categoriesId?: boolean
-    categories?: boolean | blog_tags$categoriesArgs<ExtArgs>
-  }, ExtArgs["result"]["blog_tags"]>
-
-  export type blog_tagsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    order?: boolean
-    color?: boolean
-    isActive?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    categoriesId?: boolean
-    categories?: boolean | blog_tags$categoriesArgs<ExtArgs>
-  }, ExtArgs["result"]["blog_tags"]>
-
-  export type blog_tagsSelectScalar = {
-    id?: boolean
-    name?: boolean
-    order?: boolean
-    color?: boolean
-    isActive?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    categoriesId?: boolean
-  }
-
-  export type blog_tagsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "color" | "isActive" | "createdAt" | "updatedAt" | "categoriesId", ExtArgs["result"]["blog_tags"]>
-  export type blog_tagsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    categories?: boolean | blog_tags$categoriesArgs<ExtArgs>
-    comments?: boolean | blog_tags$commentsArgs<ExtArgs>
-    _count?: boolean | Blog_tagsCountOutputTypeDefaultArgs<ExtArgs>
-  }
-  export type blog_tagsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    categories?: boolean | blog_tags$categoriesArgs<ExtArgs>
-  }
-  export type blog_tagsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    categories?: boolean | blog_tags$categoriesArgs<ExtArgs>
-  }
-
-  export type $blog_tagsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "blog_tags"
-    objects: {
-      categories: Prisma.$categoriesPayload<ExtArgs> | null
-      comments: Prisma.$CommentPayload<ExtArgs>[]
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      name: string
-      order: number
-      color: string | null
-      isActive: boolean
-      createdAt: Date
-      updatedAt: Date
-      categoriesId: string | null
-    }, ExtArgs["result"]["blog_tags"]>
-    composites: {}
-  }
-
-  type blog_tagsGetPayload<S extends boolean | null | undefined | blog_tagsDefaultArgs> = $Result.GetResult<Prisma.$blog_tagsPayload, S>
-
-  type blog_tagsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<blog_tagsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: Blog_tagsCountAggregateInputType | true
-    }
-
-  export interface blog_tagsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['blog_tags'], meta: { name: 'blog_tags' } }
-    /**
-     * Find zero or one Blog_tags that matches the filter.
-     * @param {blog_tagsFindUniqueArgs} args - Arguments to find a Blog_tags
-     * @example
-     * // Get one Blog_tags
-     * const blog_tags = await prisma.blog_tags.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends blog_tagsFindUniqueArgs>(args: SelectSubset<T, blog_tagsFindUniqueArgs<ExtArgs>>): Prisma__blog_tagsClient<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Blog_tags that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {blog_tagsFindUniqueOrThrowArgs} args - Arguments to find a Blog_tags
-     * @example
-     * // Get one Blog_tags
-     * const blog_tags = await prisma.blog_tags.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends blog_tagsFindUniqueOrThrowArgs>(args: SelectSubset<T, blog_tagsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__blog_tagsClient<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Blog_tags that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {blog_tagsFindFirstArgs} args - Arguments to find a Blog_tags
-     * @example
-     * // Get one Blog_tags
-     * const blog_tags = await prisma.blog_tags.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends blog_tagsFindFirstArgs>(args?: SelectSubset<T, blog_tagsFindFirstArgs<ExtArgs>>): Prisma__blog_tagsClient<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Blog_tags that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {blog_tagsFindFirstOrThrowArgs} args - Arguments to find a Blog_tags
-     * @example
-     * // Get one Blog_tags
-     * const blog_tags = await prisma.blog_tags.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends blog_tagsFindFirstOrThrowArgs>(args?: SelectSubset<T, blog_tagsFindFirstOrThrowArgs<ExtArgs>>): Prisma__blog_tagsClient<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Blog_tags that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {blog_tagsFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Blog_tags
-     * const blog_tags = await prisma.blog_tags.findMany()
-     * 
-     * // Get first 10 Blog_tags
-     * const blog_tags = await prisma.blog_tags.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const blog_tagsWithIdOnly = await prisma.blog_tags.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends blog_tagsFindManyArgs>(args?: SelectSubset<T, blog_tagsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Blog_tags.
-     * @param {blog_tagsCreateArgs} args - Arguments to create a Blog_tags.
-     * @example
-     * // Create one Blog_tags
-     * const Blog_tags = await prisma.blog_tags.create({
-     *   data: {
-     *     // ... data to create a Blog_tags
-     *   }
-     * })
-     * 
-     */
-    create<T extends blog_tagsCreateArgs>(args: SelectSubset<T, blog_tagsCreateArgs<ExtArgs>>): Prisma__blog_tagsClient<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Blog_tags.
-     * @param {blog_tagsCreateManyArgs} args - Arguments to create many Blog_tags.
-     * @example
-     * // Create many Blog_tags
-     * const blog_tags = await prisma.blog_tags.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends blog_tagsCreateManyArgs>(args?: SelectSubset<T, blog_tagsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many Blog_tags and returns the data saved in the database.
-     * @param {blog_tagsCreateManyAndReturnArgs} args - Arguments to create many Blog_tags.
-     * @example
-     * // Create many Blog_tags
-     * const blog_tags = await prisma.blog_tags.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many Blog_tags and only return the `id`
-     * const blog_tagsWithIdOnly = await prisma.blog_tags.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends blog_tagsCreateManyAndReturnArgs>(args?: SelectSubset<T, blog_tagsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a Blog_tags.
-     * @param {blog_tagsDeleteArgs} args - Arguments to delete one Blog_tags.
-     * @example
-     * // Delete one Blog_tags
-     * const Blog_tags = await prisma.blog_tags.delete({
-     *   where: {
-     *     // ... filter to delete one Blog_tags
-     *   }
-     * })
-     * 
-     */
-    delete<T extends blog_tagsDeleteArgs>(args: SelectSubset<T, blog_tagsDeleteArgs<ExtArgs>>): Prisma__blog_tagsClient<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Blog_tags.
-     * @param {blog_tagsUpdateArgs} args - Arguments to update one Blog_tags.
-     * @example
-     * // Update one Blog_tags
-     * const blog_tags = await prisma.blog_tags.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends blog_tagsUpdateArgs>(args: SelectSubset<T, blog_tagsUpdateArgs<ExtArgs>>): Prisma__blog_tagsClient<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Blog_tags.
-     * @param {blog_tagsDeleteManyArgs} args - Arguments to filter Blog_tags to delete.
-     * @example
-     * // Delete a few Blog_tags
-     * const { count } = await prisma.blog_tags.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends blog_tagsDeleteManyArgs>(args?: SelectSubset<T, blog_tagsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Blog_tags.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {blog_tagsUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Blog_tags
-     * const blog_tags = await prisma.blog_tags.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends blog_tagsUpdateManyArgs>(args: SelectSubset<T, blog_tagsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Blog_tags and returns the data updated in the database.
-     * @param {blog_tagsUpdateManyAndReturnArgs} args - Arguments to update many Blog_tags.
-     * @example
-     * // Update many Blog_tags
-     * const blog_tags = await prisma.blog_tags.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Blog_tags and only return the `id`
-     * const blog_tagsWithIdOnly = await prisma.blog_tags.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends blog_tagsUpdateManyAndReturnArgs>(args: SelectSubset<T, blog_tagsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one Blog_tags.
-     * @param {blog_tagsUpsertArgs} args - Arguments to update or create a Blog_tags.
-     * @example
-     * // Update or create a Blog_tags
-     * const blog_tags = await prisma.blog_tags.upsert({
-     *   create: {
-     *     // ... data to create a Blog_tags
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Blog_tags we want to update
-     *   }
-     * })
-     */
-    upsert<T extends blog_tagsUpsertArgs>(args: SelectSubset<T, blog_tagsUpsertArgs<ExtArgs>>): Prisma__blog_tagsClient<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of Blog_tags.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {blog_tagsCountArgs} args - Arguments to filter Blog_tags to count.
-     * @example
-     * // Count the number of Blog_tags
-     * const count = await prisma.blog_tags.count({
-     *   where: {
-     *     // ... the filter for the Blog_tags we want to count
-     *   }
-     * })
-    **/
-    count<T extends blog_tagsCountArgs>(
-      args?: Subset<T, blog_tagsCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], Blog_tagsCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Blog_tags.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {Blog_tagsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends Blog_tagsAggregateArgs>(args: Subset<T, Blog_tagsAggregateArgs>): Prisma.PrismaPromise<GetBlog_tagsAggregateType<T>>
-
-    /**
-     * Group by Blog_tags.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {blog_tagsGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends blog_tagsGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: blog_tagsGroupByArgs['orderBy'] }
-        : { orderBy?: blog_tagsGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, blog_tagsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBlog_tagsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the blog_tags model
-   */
-  readonly fields: blog_tagsFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for blog_tags.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__blog_tagsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    categories<T extends blog_tags$categoriesArgs<ExtArgs> = {}>(args?: Subset<T, blog_tags$categoriesArgs<ExtArgs>>): Prisma__categoriesClient<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    comments<T extends blog_tags$commentsArgs<ExtArgs> = {}>(args?: Subset<T, blog_tags$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the blog_tags model
-   */
-  interface blog_tagsFieldRefs {
-    readonly id: FieldRef<"blog_tags", 'String'>
-    readonly name: FieldRef<"blog_tags", 'String'>
-    readonly order: FieldRef<"blog_tags", 'Int'>
-    readonly color: FieldRef<"blog_tags", 'String'>
-    readonly isActive: FieldRef<"blog_tags", 'Boolean'>
-    readonly createdAt: FieldRef<"blog_tags", 'DateTime'>
-    readonly updatedAt: FieldRef<"blog_tags", 'DateTime'>
-    readonly categoriesId: FieldRef<"blog_tags", 'String'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * blog_tags findUnique
-   */
-  export type blog_tagsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsInclude<ExtArgs> | null
-    /**
-     * Filter, which blog_tags to fetch.
-     */
-    where: blog_tagsWhereUniqueInput
-  }
-
-  /**
-   * blog_tags findUniqueOrThrow
-   */
-  export type blog_tagsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsInclude<ExtArgs> | null
-    /**
-     * Filter, which blog_tags to fetch.
-     */
-    where: blog_tagsWhereUniqueInput
-  }
-
-  /**
-   * blog_tags findFirst
-   */
-  export type blog_tagsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsInclude<ExtArgs> | null
-    /**
-     * Filter, which blog_tags to fetch.
-     */
-    where?: blog_tagsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of blog_tags to fetch.
-     */
-    orderBy?: blog_tagsOrderByWithRelationInput | blog_tagsOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for blog_tags.
-     */
-    cursor?: blog_tagsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` blog_tags from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` blog_tags.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of blog_tags.
-     */
-    distinct?: Blog_tagsScalarFieldEnum | Blog_tagsScalarFieldEnum[]
-  }
-
-  /**
-   * blog_tags findFirstOrThrow
-   */
-  export type blog_tagsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsInclude<ExtArgs> | null
-    /**
-     * Filter, which blog_tags to fetch.
-     */
-    where?: blog_tagsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of blog_tags to fetch.
-     */
-    orderBy?: blog_tagsOrderByWithRelationInput | blog_tagsOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for blog_tags.
-     */
-    cursor?: blog_tagsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` blog_tags from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` blog_tags.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of blog_tags.
-     */
-    distinct?: Blog_tagsScalarFieldEnum | Blog_tagsScalarFieldEnum[]
-  }
-
-  /**
-   * blog_tags findMany
-   */
-  export type blog_tagsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsInclude<ExtArgs> | null
-    /**
-     * Filter, which blog_tags to fetch.
-     */
-    where?: blog_tagsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of blog_tags to fetch.
-     */
-    orderBy?: blog_tagsOrderByWithRelationInput | blog_tagsOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing blog_tags.
-     */
-    cursor?: blog_tagsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` blog_tags from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` blog_tags.
-     */
-    skip?: number
-    distinct?: Blog_tagsScalarFieldEnum | Blog_tagsScalarFieldEnum[]
-  }
-
-  /**
-   * blog_tags create
-   */
-  export type blog_tagsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsInclude<ExtArgs> | null
-    /**
-     * The data needed to create a blog_tags.
-     */
-    data: XOR<blog_tagsCreateInput, blog_tagsUncheckedCreateInput>
-  }
-
-  /**
-   * blog_tags createMany
-   */
-  export type blog_tagsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many blog_tags.
-     */
-    data: blog_tagsCreateManyInput | blog_tagsCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * blog_tags createManyAndReturn
-   */
-  export type blog_tagsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * The data used to create many blog_tags.
-     */
-    data: blog_tagsCreateManyInput | blog_tagsCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * blog_tags update
-   */
-  export type blog_tagsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsInclude<ExtArgs> | null
-    /**
-     * The data needed to update a blog_tags.
-     */
-    data: XOR<blog_tagsUpdateInput, blog_tagsUncheckedUpdateInput>
-    /**
-     * Choose, which blog_tags to update.
-     */
-    where: blog_tagsWhereUniqueInput
-  }
-
-  /**
-   * blog_tags updateMany
-   */
-  export type blog_tagsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update blog_tags.
-     */
-    data: XOR<blog_tagsUpdateManyMutationInput, blog_tagsUncheckedUpdateManyInput>
-    /**
-     * Filter which blog_tags to update
-     */
-    where?: blog_tagsWhereInput
-    /**
-     * Limit how many blog_tags to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * blog_tags updateManyAndReturn
-   */
-  export type blog_tagsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * The data used to update blog_tags.
-     */
-    data: XOR<blog_tagsUpdateManyMutationInput, blog_tagsUncheckedUpdateManyInput>
-    /**
-     * Filter which blog_tags to update
-     */
-    where?: blog_tagsWhereInput
-    /**
-     * Limit how many blog_tags to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * blog_tags upsert
-   */
-  export type blog_tagsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsInclude<ExtArgs> | null
-    /**
-     * The filter to search for the blog_tags to update in case it exists.
-     */
-    where: blog_tagsWhereUniqueInput
-    /**
-     * In case the blog_tags found by the `where` argument doesn't exist, create a new blog_tags with this data.
-     */
-    create: XOR<blog_tagsCreateInput, blog_tagsUncheckedCreateInput>
-    /**
-     * In case the blog_tags was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<blog_tagsUpdateInput, blog_tagsUncheckedUpdateInput>
-  }
-
-  /**
-   * blog_tags delete
-   */
-  export type blog_tagsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsInclude<ExtArgs> | null
-    /**
-     * Filter which blog_tags to delete.
-     */
-    where: blog_tagsWhereUniqueInput
-  }
-
-  /**
-   * blog_tags deleteMany
-   */
-  export type blog_tagsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which blog_tags to delete
-     */
-    where?: blog_tagsWhereInput
-    /**
-     * Limit how many blog_tags to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * blog_tags.categories
-   */
-  export type blog_tags$categoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    where?: categoriesWhereInput
-  }
-
-  /**
-   * blog_tags.comments
-   */
-  export type blog_tags$commentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comment
-     */
-    select?: CommentSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Comment
-     */
-    omit?: CommentOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: CommentInclude<ExtArgs> | null
-    where?: CommentWhereInput
-    orderBy?: CommentOrderByWithRelationInput | CommentOrderByWithRelationInput[]
-    cursor?: CommentWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: CommentScalarFieldEnum | CommentScalarFieldEnum[]
-  }
-
-  /**
-   * blog_tags without action
-   */
-  export type blog_tagsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model categories
-   */
-
-  export type AggregateCategories = {
-    _count: CategoriesCountAggregateOutputType | null
-    _avg: CategoriesAvgAggregateOutputType | null
-    _sum: CategoriesSumAggregateOutputType | null
-    _min: CategoriesMinAggregateOutputType | null
-    _max: CategoriesMaxAggregateOutputType | null
-  }
-
-  export type CategoriesAvgAggregateOutputType = {
-    order: number | null
-  }
-
-  export type CategoriesSumAggregateOutputType = {
-    order: number | null
-  }
-
-  export type CategoriesMinAggregateOutputType = {
-    id: string | null
-    name: string | null
-    order: number | null
-    slug: string | null
-    description: string | null
-    color: string | null
-    isActive: boolean | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    parentId: string | null
-  }
-
-  export type CategoriesMaxAggregateOutputType = {
-    id: string | null
-    name: string | null
-    order: number | null
-    slug: string | null
-    description: string | null
-    color: string | null
-    isActive: boolean | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    parentId: string | null
-  }
-
-  export type CategoriesCountAggregateOutputType = {
-    id: number
-    name: number
-    order: number
-    slug: number
-    description: number
-    color: number
-    isActive: number
-    createdAt: number
-    updatedAt: number
-    parentId: number
-    _all: number
-  }
-
-
-  export type CategoriesAvgAggregateInputType = {
-    order?: true
-  }
-
-  export type CategoriesSumAggregateInputType = {
-    order?: true
-  }
-
-  export type CategoriesMinAggregateInputType = {
-    id?: true
-    name?: true
-    order?: true
-    slug?: true
-    description?: true
-    color?: true
-    isActive?: true
-    createdAt?: true
-    updatedAt?: true
-    parentId?: true
-  }
-
-  export type CategoriesMaxAggregateInputType = {
-    id?: true
-    name?: true
-    order?: true
-    slug?: true
-    description?: true
-    color?: true
-    isActive?: true
-    createdAt?: true
-    updatedAt?: true
-    parentId?: true
-  }
-
-  export type CategoriesCountAggregateInputType = {
-    id?: true
-    name?: true
-    order?: true
-    slug?: true
-    description?: true
-    color?: true
-    isActive?: true
-    createdAt?: true
-    updatedAt?: true
-    parentId?: true
-    _all?: true
-  }
-
-  export type CategoriesAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which categories to aggregate.
-     */
-    where?: categoriesWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of categories to fetch.
-     */
-    orderBy?: categoriesOrderByWithRelationInput | categoriesOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: categoriesWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` categories from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` categories.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned categories
-    **/
-    _count?: true | CategoriesCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: CategoriesAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: CategoriesSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: CategoriesMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: CategoriesMaxAggregateInputType
-  }
-
-  export type GetCategoriesAggregateType<T extends CategoriesAggregateArgs> = {
-        [P in keyof T & keyof AggregateCategories]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateCategories[P]>
-      : GetScalarType<T[P], AggregateCategories[P]>
-  }
-
-
-
-
-  export type categoriesGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: categoriesWhereInput
-    orderBy?: categoriesOrderByWithAggregationInput | categoriesOrderByWithAggregationInput[]
-    by: CategoriesScalarFieldEnum[] | CategoriesScalarFieldEnum
-    having?: categoriesScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: CategoriesCountAggregateInputType | true
-    _avg?: CategoriesAvgAggregateInputType
-    _sum?: CategoriesSumAggregateInputType
-    _min?: CategoriesMinAggregateInputType
-    _max?: CategoriesMaxAggregateInputType
-  }
-
-  export type CategoriesGroupByOutputType = {
-    id: string
-    name: string
-    order: number
-    slug: string | null
-    description: string | null
-    color: string | null
-    isActive: boolean
-    createdAt: Date
-    updatedAt: Date
-    parentId: string | null
-    _count: CategoriesCountAggregateOutputType | null
-    _avg: CategoriesAvgAggregateOutputType | null
-    _sum: CategoriesSumAggregateOutputType | null
-    _min: CategoriesMinAggregateOutputType | null
-    _max: CategoriesMaxAggregateOutputType | null
-  }
-
-  type GetCategoriesGroupByPayload<T extends categoriesGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<CategoriesGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof CategoriesGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], CategoriesGroupByOutputType[P]>
-            : GetScalarType<T[P], CategoriesGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type categoriesSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    order?: boolean
-    slug?: boolean
-    description?: boolean
-    color?: boolean
-    isActive?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    parentId?: boolean
-    blog_tags?: boolean | categories$blog_tagsArgs<ExtArgs>
-    categories?: boolean | categories$categoriesArgs<ExtArgs>
-    other_categories?: boolean | categories$other_categoriesArgs<ExtArgs>
-    comments?: boolean | categories$commentsArgs<ExtArgs>
-    _count?: boolean | CategoriesCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["categories"]>
-
-  export type categoriesSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    order?: boolean
-    slug?: boolean
-    description?: boolean
-    color?: boolean
-    isActive?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    parentId?: boolean
-    categories?: boolean | categories$categoriesArgs<ExtArgs>
-  }, ExtArgs["result"]["categories"]>
-
-  export type categoriesSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    order?: boolean
-    slug?: boolean
-    description?: boolean
-    color?: boolean
-    isActive?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    parentId?: boolean
-    categories?: boolean | categories$categoriesArgs<ExtArgs>
-  }, ExtArgs["result"]["categories"]>
-
-  export type categoriesSelectScalar = {
-    id?: boolean
-    name?: boolean
-    order?: boolean
-    slug?: boolean
-    description?: boolean
-    color?: boolean
-    isActive?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    parentId?: boolean
-  }
-
-  export type categoriesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "slug" | "description" | "color" | "isActive" | "createdAt" | "updatedAt" | "parentId", ExtArgs["result"]["categories"]>
-  export type categoriesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    blog_tags?: boolean | categories$blog_tagsArgs<ExtArgs>
-    categories?: boolean | categories$categoriesArgs<ExtArgs>
-    other_categories?: boolean | categories$other_categoriesArgs<ExtArgs>
-    comments?: boolean | categories$commentsArgs<ExtArgs>
-    _count?: boolean | CategoriesCountOutputTypeDefaultArgs<ExtArgs>
-  }
-  export type categoriesIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    categories?: boolean | categories$categoriesArgs<ExtArgs>
-  }
-  export type categoriesIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    categories?: boolean | categories$categoriesArgs<ExtArgs>
-  }
-
-  export type $categoriesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "categories"
-    objects: {
-      blog_tags: Prisma.$blog_tagsPayload<ExtArgs>[]
-      categories: Prisma.$categoriesPayload<ExtArgs> | null
-      other_categories: Prisma.$categoriesPayload<ExtArgs>[]
-      comments: Prisma.$CommentPayload<ExtArgs>[]
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      name: string
-      order: number
-      slug: string | null
-      description: string | null
-      color: string | null
-      isActive: boolean
-      createdAt: Date
-      updatedAt: Date
-      parentId: string | null
-    }, ExtArgs["result"]["categories"]>
-    composites: {}
-  }
-
-  type categoriesGetPayload<S extends boolean | null | undefined | categoriesDefaultArgs> = $Result.GetResult<Prisma.$categoriesPayload, S>
-
-  type categoriesCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<categoriesFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: CategoriesCountAggregateInputType | true
-    }
-
-  export interface categoriesDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['categories'], meta: { name: 'categories' } }
-    /**
-     * Find zero or one Categories that matches the filter.
-     * @param {categoriesFindUniqueArgs} args - Arguments to find a Categories
-     * @example
-     * // Get one Categories
-     * const categories = await prisma.categories.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends categoriesFindUniqueArgs>(args: SelectSubset<T, categoriesFindUniqueArgs<ExtArgs>>): Prisma__categoriesClient<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Categories that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {categoriesFindUniqueOrThrowArgs} args - Arguments to find a Categories
-     * @example
-     * // Get one Categories
-     * const categories = await prisma.categories.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends categoriesFindUniqueOrThrowArgs>(args: SelectSubset<T, categoriesFindUniqueOrThrowArgs<ExtArgs>>): Prisma__categoriesClient<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Categories that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {categoriesFindFirstArgs} args - Arguments to find a Categories
-     * @example
-     * // Get one Categories
-     * const categories = await prisma.categories.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends categoriesFindFirstArgs>(args?: SelectSubset<T, categoriesFindFirstArgs<ExtArgs>>): Prisma__categoriesClient<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Categories that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {categoriesFindFirstOrThrowArgs} args - Arguments to find a Categories
-     * @example
-     * // Get one Categories
-     * const categories = await prisma.categories.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends categoriesFindFirstOrThrowArgs>(args?: SelectSubset<T, categoriesFindFirstOrThrowArgs<ExtArgs>>): Prisma__categoriesClient<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Categories that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {categoriesFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Categories
-     * const categories = await prisma.categories.findMany()
-     * 
-     * // Get first 10 Categories
-     * const categories = await prisma.categories.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const categoriesWithIdOnly = await prisma.categories.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends categoriesFindManyArgs>(args?: SelectSubset<T, categoriesFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Categories.
-     * @param {categoriesCreateArgs} args - Arguments to create a Categories.
-     * @example
-     * // Create one Categories
-     * const Categories = await prisma.categories.create({
-     *   data: {
-     *     // ... data to create a Categories
-     *   }
-     * })
-     * 
-     */
-    create<T extends categoriesCreateArgs>(args: SelectSubset<T, categoriesCreateArgs<ExtArgs>>): Prisma__categoriesClient<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Categories.
-     * @param {categoriesCreateManyArgs} args - Arguments to create many Categories.
-     * @example
-     * // Create many Categories
-     * const categories = await prisma.categories.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends categoriesCreateManyArgs>(args?: SelectSubset<T, categoriesCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many Categories and returns the data saved in the database.
-     * @param {categoriesCreateManyAndReturnArgs} args - Arguments to create many Categories.
-     * @example
-     * // Create many Categories
-     * const categories = await prisma.categories.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many Categories and only return the `id`
-     * const categoriesWithIdOnly = await prisma.categories.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends categoriesCreateManyAndReturnArgs>(args?: SelectSubset<T, categoriesCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a Categories.
-     * @param {categoriesDeleteArgs} args - Arguments to delete one Categories.
-     * @example
-     * // Delete one Categories
-     * const Categories = await prisma.categories.delete({
-     *   where: {
-     *     // ... filter to delete one Categories
-     *   }
-     * })
-     * 
-     */
-    delete<T extends categoriesDeleteArgs>(args: SelectSubset<T, categoriesDeleteArgs<ExtArgs>>): Prisma__categoriesClient<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Categories.
-     * @param {categoriesUpdateArgs} args - Arguments to update one Categories.
-     * @example
-     * // Update one Categories
-     * const categories = await prisma.categories.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends categoriesUpdateArgs>(args: SelectSubset<T, categoriesUpdateArgs<ExtArgs>>): Prisma__categoriesClient<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Categories.
-     * @param {categoriesDeleteManyArgs} args - Arguments to filter Categories to delete.
-     * @example
-     * // Delete a few Categories
-     * const { count } = await prisma.categories.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends categoriesDeleteManyArgs>(args?: SelectSubset<T, categoriesDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Categories.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {categoriesUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Categories
-     * const categories = await prisma.categories.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends categoriesUpdateManyArgs>(args: SelectSubset<T, categoriesUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Categories and returns the data updated in the database.
-     * @param {categoriesUpdateManyAndReturnArgs} args - Arguments to update many Categories.
-     * @example
-     * // Update many Categories
-     * const categories = await prisma.categories.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Categories and only return the `id`
-     * const categoriesWithIdOnly = await prisma.categories.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends categoriesUpdateManyAndReturnArgs>(args: SelectSubset<T, categoriesUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one Categories.
-     * @param {categoriesUpsertArgs} args - Arguments to update or create a Categories.
-     * @example
-     * // Update or create a Categories
-     * const categories = await prisma.categories.upsert({
-     *   create: {
-     *     // ... data to create a Categories
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Categories we want to update
-     *   }
-     * })
-     */
-    upsert<T extends categoriesUpsertArgs>(args: SelectSubset<T, categoriesUpsertArgs<ExtArgs>>): Prisma__categoriesClient<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of Categories.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {categoriesCountArgs} args - Arguments to filter Categories to count.
-     * @example
-     * // Count the number of Categories
-     * const count = await prisma.categories.count({
-     *   where: {
-     *     // ... the filter for the Categories we want to count
-     *   }
-     * })
-    **/
-    count<T extends categoriesCountArgs>(
-      args?: Subset<T, categoriesCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], CategoriesCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Categories.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CategoriesAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends CategoriesAggregateArgs>(args: Subset<T, CategoriesAggregateArgs>): Prisma.PrismaPromise<GetCategoriesAggregateType<T>>
-
-    /**
-     * Group by Categories.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {categoriesGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends categoriesGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: categoriesGroupByArgs['orderBy'] }
-        : { orderBy?: categoriesGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, categoriesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCategoriesGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the categories model
-   */
-  readonly fields: categoriesFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for categories.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__categoriesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    blog_tags<T extends categories$blog_tagsArgs<ExtArgs> = {}>(args?: Subset<T, categories$blog_tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$blog_tagsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    categories<T extends categories$categoriesArgs<ExtArgs> = {}>(args?: Subset<T, categories$categoriesArgs<ExtArgs>>): Prisma__categoriesClient<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    other_categories<T extends categories$other_categoriesArgs<ExtArgs> = {}>(args?: Subset<T, categories$other_categoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$categoriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    comments<T extends categories$commentsArgs<ExtArgs> = {}>(args?: Subset<T, categories$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the categories model
-   */
-  interface categoriesFieldRefs {
-    readonly id: FieldRef<"categories", 'String'>
-    readonly name: FieldRef<"categories", 'String'>
-    readonly order: FieldRef<"categories", 'Int'>
-    readonly slug: FieldRef<"categories", 'String'>
-    readonly description: FieldRef<"categories", 'String'>
-    readonly color: FieldRef<"categories", 'String'>
-    readonly isActive: FieldRef<"categories", 'Boolean'>
-    readonly createdAt: FieldRef<"categories", 'DateTime'>
-    readonly updatedAt: FieldRef<"categories", 'DateTime'>
-    readonly parentId: FieldRef<"categories", 'String'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * categories findUnique
-   */
-  export type categoriesFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    /**
-     * Filter, which categories to fetch.
-     */
-    where: categoriesWhereUniqueInput
-  }
-
-  /**
-   * categories findUniqueOrThrow
-   */
-  export type categoriesFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    /**
-     * Filter, which categories to fetch.
-     */
-    where: categoriesWhereUniqueInput
-  }
-
-  /**
-   * categories findFirst
-   */
-  export type categoriesFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    /**
-     * Filter, which categories to fetch.
-     */
-    where?: categoriesWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of categories to fetch.
-     */
-    orderBy?: categoriesOrderByWithRelationInput | categoriesOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for categories.
-     */
-    cursor?: categoriesWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` categories from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` categories.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of categories.
-     */
-    distinct?: CategoriesScalarFieldEnum | CategoriesScalarFieldEnum[]
-  }
-
-  /**
-   * categories findFirstOrThrow
-   */
-  export type categoriesFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    /**
-     * Filter, which categories to fetch.
-     */
-    where?: categoriesWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of categories to fetch.
-     */
-    orderBy?: categoriesOrderByWithRelationInput | categoriesOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for categories.
-     */
-    cursor?: categoriesWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` categories from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` categories.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of categories.
-     */
-    distinct?: CategoriesScalarFieldEnum | CategoriesScalarFieldEnum[]
-  }
-
-  /**
-   * categories findMany
-   */
-  export type categoriesFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    /**
-     * Filter, which categories to fetch.
-     */
-    where?: categoriesWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of categories to fetch.
-     */
-    orderBy?: categoriesOrderByWithRelationInput | categoriesOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing categories.
-     */
-    cursor?: categoriesWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` categories from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` categories.
-     */
-    skip?: number
-    distinct?: CategoriesScalarFieldEnum | CategoriesScalarFieldEnum[]
-  }
-
-  /**
-   * categories create
-   */
-  export type categoriesCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    /**
-     * The data needed to create a categories.
-     */
-    data: XOR<categoriesCreateInput, categoriesUncheckedCreateInput>
-  }
-
-  /**
-   * categories createMany
-   */
-  export type categoriesCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many categories.
-     */
-    data: categoriesCreateManyInput | categoriesCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * categories createManyAndReturn
-   */
-  export type categoriesCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * The data used to create many categories.
-     */
-    data: categoriesCreateManyInput | categoriesCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * categories update
-   */
-  export type categoriesUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    /**
-     * The data needed to update a categories.
-     */
-    data: XOR<categoriesUpdateInput, categoriesUncheckedUpdateInput>
-    /**
-     * Choose, which categories to update.
-     */
-    where: categoriesWhereUniqueInput
-  }
-
-  /**
-   * categories updateMany
-   */
-  export type categoriesUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update categories.
-     */
-    data: XOR<categoriesUpdateManyMutationInput, categoriesUncheckedUpdateManyInput>
-    /**
-     * Filter which categories to update
-     */
-    where?: categoriesWhereInput
-    /**
-     * Limit how many categories to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * categories updateManyAndReturn
-   */
-  export type categoriesUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * The data used to update categories.
-     */
-    data: XOR<categoriesUpdateManyMutationInput, categoriesUncheckedUpdateManyInput>
-    /**
-     * Filter which categories to update
-     */
-    where?: categoriesWhereInput
-    /**
-     * Limit how many categories to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * categories upsert
-   */
-  export type categoriesUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    /**
-     * The filter to search for the categories to update in case it exists.
-     */
-    where: categoriesWhereUniqueInput
-    /**
-     * In case the categories found by the `where` argument doesn't exist, create a new categories with this data.
-     */
-    create: XOR<categoriesCreateInput, categoriesUncheckedCreateInput>
-    /**
-     * In case the categories was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<categoriesUpdateInput, categoriesUncheckedUpdateInput>
-  }
-
-  /**
-   * categories delete
-   */
-  export type categoriesDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    /**
-     * Filter which categories to delete.
-     */
-    where: categoriesWhereUniqueInput
-  }
-
-  /**
-   * categories deleteMany
-   */
-  export type categoriesDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which categories to delete
-     */
-    where?: categoriesWhereInput
-    /**
-     * Limit how many categories to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * categories.blog_tags
-   */
-  export type categories$blog_tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the blog_tags
-     */
-    select?: blog_tagsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the blog_tags
-     */
-    omit?: blog_tagsOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: blog_tagsInclude<ExtArgs> | null
-    where?: blog_tagsWhereInput
-    orderBy?: blog_tagsOrderByWithRelationInput | blog_tagsOrderByWithRelationInput[]
-    cursor?: blog_tagsWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Blog_tagsScalarFieldEnum | Blog_tagsScalarFieldEnum[]
-  }
-
-  /**
-   * categories.categories
-   */
-  export type categories$categoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    where?: categoriesWhereInput
-  }
-
-  /**
-   * categories.other_categories
-   */
-  export type categories$other_categoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-    where?: categoriesWhereInput
-    orderBy?: categoriesOrderByWithRelationInput | categoriesOrderByWithRelationInput[]
-    cursor?: categoriesWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: CategoriesScalarFieldEnum | CategoriesScalarFieldEnum[]
-  }
-
-  /**
-   * categories.comments
-   */
-  export type categories$commentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comment
-     */
-    select?: CommentSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Comment
-     */
-    omit?: CommentOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: CommentInclude<ExtArgs> | null
-    where?: CommentWhereInput
-    orderBy?: CommentOrderByWithRelationInput | CommentOrderByWithRelationInput[]
-    cursor?: CommentWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: CommentScalarFieldEnum | CommentScalarFieldEnum[]
-  }
-
-  /**
-   * categories without action
-   */
-  export type categoriesDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the categories
-     */
-    select?: categoriesSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the categories
-     */
-    omit?: categoriesOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: categoriesInclude<ExtArgs> | null
-  }
-
-
-  /**
    * Model fields
    */
 
@@ -49360,34 +53299,90 @@ export namespace Prisma {
   export type FileVersionScalarFieldEnum = (typeof FileVersionScalarFieldEnum)[keyof typeof FileVersionScalarFieldEnum]
 
 
-  export const CommentScalarFieldEnum: {
+  export const CeremonyScalarFieldEnum: {
     id: 'id',
+    type: 'type',
     title: 'title',
-    order: 'order',
-    content: 'content',
-    mentions: 'mentions',
+    description: 'description',
+    startTime: 'startTime',
+    endTime: 'endTime',
+    location: 'location',
+    status: 'status',
+    agenda: 'agenda',
+    notes: 'notes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    authorId: 'authorId',
-    taskId: 'taskId',
-    userStoryId: 'userStoryId',
-    fileId: 'fileId',
-    itemId: 'itemId',
-    parentCommentId: 'parentCommentId',
-    blogImage: 'blogImage',
-    excerpt: 'excerpt',
-    isActive: 'isActive',
-    isPinned: 'isPinned',
-    isResolved: 'isResolved',
-    metadata: 'metadata',
-    publishedAt: 'publishedAt',
-    readingTime: 'readingTime',
+    sprintId: 'sprintId',
+    projectId: 'projectId',
+    teamId: 'teamId'
+  };
+
+  export type CeremonyScalarFieldEnum = (typeof CeremonyScalarFieldEnum)[keyof typeof CeremonyScalarFieldEnum]
+
+
+  export const PostScalarFieldEnum: {
+    id: 'id',
     slug: 'slug',
-    status: 'status',
-    visibility: 'visibility'
+    title: 'title',
+    order: 'order',
+    excerpt: 'excerpt',
+    content: 'content',
+    published: 'published',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    authorId: 'authorId'
+  };
+
+  export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
+
+
+  export const CommentScalarFieldEnum: {
+    id: 'id',
+    content: 'content',
+    order: 'order',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    postId: 'postId',
+    authorId: 'authorId',
+    parentId: 'parentId'
   };
 
   export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
+
+
+  export const ImageScalarFieldEnum: {
+    id: 'id',
+    url: 'url',
+    order: 'order',
+    alt: 'alt',
+    createdAt: 'createdAt',
+    postId: 'postId',
+    userId: 'userId',
+    commentId: 'commentId'
+  };
+
+  export type ImageScalarFieldEnum = (typeof ImageScalarFieldEnum)[keyof typeof ImageScalarFieldEnum]
+
+
+  export const CategoryScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    order: 'order',
+    slug: 'slug'
+  };
+
+  export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
+
+
+  export const TagScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    order: 'order',
+    slug: 'slug',
+    categoryId: 'categoryId'
+  };
+
+  export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
 
 
   export const ChannelScalarFieldEnum: {
@@ -49566,36 +53561,6 @@ export namespace Prisma {
   };
 
   export type UserStoryAssigneesScalarFieldEnum = (typeof UserStoryAssigneesScalarFieldEnum)[keyof typeof UserStoryAssigneesScalarFieldEnum]
-
-
-  export const Blog_tagsScalarFieldEnum: {
-    id: 'id',
-    name: 'name',
-    order: 'order',
-    color: 'color',
-    isActive: 'isActive',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    categoriesId: 'categoriesId'
-  };
-
-  export type Blog_tagsScalarFieldEnum = (typeof Blog_tagsScalarFieldEnum)[keyof typeof Blog_tagsScalarFieldEnum]
-
-
-  export const CategoriesScalarFieldEnum: {
-    id: 'id',
-    name: 'name',
-    order: 'order',
-    slug: 'slug',
-    description: 'description',
-    color: 'color',
-    isActive: 'isActive',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    parentId: 'parentId'
-  };
-
-  export type CategoriesScalarFieldEnum = (typeof CategoriesScalarFieldEnum)[keyof typeof CategoriesScalarFieldEnum]
 
 
   export const FieldsScalarFieldEnum: {
@@ -49850,16 +53815,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Visibility'
+   * Reference to a field of type 'CeremonyType'
    */
-  export type EnumVisibilityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Visibility'>
+  export type EnumCeremonyTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CeremonyType'>
     
 
 
   /**
-   * Reference to a field of type 'Visibility[]'
+   * Reference to a field of type 'CeremonyType[]'
    */
-  export type ListEnumVisibilityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Visibility[]'>
+  export type ListEnumCeremonyTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CeremonyType[]'>
     
 
 
@@ -49888,6 +53853,20 @@ export namespace Prisma {
    * Reference to a field of type 'ItemStatus[]'
    */
   export type ListEnumItemStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ItemStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Visibility'
+   */
+  export type EnumVisibilityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Visibility'>
+    
+
+
+  /**
+   * Reference to a field of type 'Visibility[]'
+   */
+  export type ListEnumVisibilityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Visibility[]'>
     
 
 
@@ -49944,6 +53923,9 @@ export namespace Prisma {
     projects?: ProjectListRelationFilter
     sprints?: SprintListRelationFilter
     assignedTasks?: TaskListRelationFilter
+    Ceremony?: CeremonyListRelationFilter
+    Image?: ImageListRelationFilter
+    Post?: PostListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -49986,6 +53968,9 @@ export namespace Prisma {
     projects?: ProjectOrderByRelationAggregateInput
     sprints?: SprintOrderByRelationAggregateInput
     assignedTasks?: TaskOrderByRelationAggregateInput
+    Ceremony?: CeremonyOrderByRelationAggregateInput
+    Image?: ImageOrderByRelationAggregateInput
+    Post?: PostOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -50031,6 +54016,9 @@ export namespace Prisma {
     projects?: ProjectListRelationFilter
     sprints?: SprintListRelationFilter
     assignedTasks?: TaskListRelationFilter
+    Ceremony?: CeremonyListRelationFilter
+    Image?: ImageListRelationFilter
+    Post?: PostListRelationFilter
   }, "id" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -50320,6 +54308,7 @@ export namespace Prisma {
     parentTeam?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
     children?: TeamListRelationFilter
     templates?: TemplateListRelationFilter
+    Ceremony?: CeremonyListRelationFilter
   }
 
   export type TeamOrderByWithRelationInput = {
@@ -50338,6 +54327,7 @@ export namespace Prisma {
     parentTeam?: TeamOrderByWithRelationInput
     children?: TeamOrderByRelationAggregateInput
     templates?: TemplateOrderByRelationAggregateInput
+    Ceremony?: CeremonyOrderByRelationAggregateInput
   }
 
   export type TeamWhereUniqueInput = Prisma.AtLeast<{
@@ -50359,6 +54349,7 @@ export namespace Prisma {
     parentTeam?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
     children?: TeamListRelationFilter
     templates?: TemplateListRelationFilter
+    Ceremony?: CeremonyListRelationFilter
   }, "id" | "slug">
 
   export type TeamOrderByWithAggregationInput = {
@@ -50497,6 +54488,7 @@ export namespace Prisma {
     fields?: FieldsListRelationFilter
     user?: UserListRelationFilter
     task?: TaskListRelationFilter
+    Ceremony?: CeremonyListRelationFilter
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -50527,6 +54519,7 @@ export namespace Prisma {
     fields?: fieldsOrderByRelationAggregateInput
     user?: UserOrderByRelationAggregateInput
     task?: TaskOrderByRelationAggregateInput
+    Ceremony?: CeremonyOrderByRelationAggregateInput
   }
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -50560,6 +54553,7 @@ export namespace Prisma {
     fields?: FieldsListRelationFilter
     user?: UserListRelationFilter
     task?: TaskListRelationFilter
+    Ceremony?: CeremonyListRelationFilter
   }, "id">
 
   export type ProjectOrderByWithAggregationInput = {
@@ -51632,6 +55626,7 @@ export namespace Prisma {
     users?: UserListRelationFilter
     userStories?: UserStoryListRelationFilter
     Tasks?: TaskListRelationFilter
+    Ceremony?: CeremonyListRelationFilter
   }
 
   export type SprintOrderByWithRelationInput = {
@@ -51657,6 +55652,7 @@ export namespace Prisma {
     users?: UserOrderByRelationAggregateInput
     userStories?: UserStoryOrderByRelationAggregateInput
     Tasks?: TaskOrderByRelationAggregateInput
+    Ceremony?: CeremonyOrderByRelationAggregateInput
   }
 
   export type SprintWhereUniqueInput = Prisma.AtLeast<{
@@ -51685,6 +55681,7 @@ export namespace Prisma {
     users?: UserListRelationFilter
     userStories?: UserStoryListRelationFilter
     Tasks?: TaskListRelationFilter
+    Ceremony?: CeremonyListRelationFilter
   }, "id">
 
   export type SprintOrderByWithAggregationInput = {
@@ -51984,145 +55981,289 @@ export namespace Prisma {
     authorId?: StringWithAggregatesFilter<"FileVersion"> | string
   }
 
+  export type CeremonyWhereInput = {
+    AND?: CeremonyWhereInput | CeremonyWhereInput[]
+    OR?: CeremonyWhereInput[]
+    NOT?: CeremonyWhereInput | CeremonyWhereInput[]
+    id?: StringFilter<"Ceremony"> | string
+    type?: EnumCeremonyTypeFilter<"Ceremony"> | $Enums.CeremonyType
+    title?: StringFilter<"Ceremony"> | string
+    description?: StringNullableFilter<"Ceremony"> | string | null
+    startTime?: DateTimeFilter<"Ceremony"> | Date | string
+    endTime?: DateTimeFilter<"Ceremony"> | Date | string
+    location?: StringNullableFilter<"Ceremony"> | string | null
+    status?: StringFilter<"Ceremony"> | string
+    agenda?: JsonNullableFilter<"Ceremony">
+    notes?: StringNullableFilter<"Ceremony"> | string | null
+    createdAt?: DateTimeFilter<"Ceremony"> | Date | string
+    updatedAt?: DateTimeFilter<"Ceremony"> | Date | string
+    sprintId?: StringNullableFilter<"Ceremony"> | string | null
+    projectId?: StringFilter<"Ceremony"> | string
+    teamId?: StringNullableFilter<"Ceremony"> | string | null
+    sprint?: XOR<SprintNullableScalarRelationFilter, SprintWhereInput> | null
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
+    attendees?: UserListRelationFilter
+  }
+
+  export type CeremonyOrderByWithRelationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    location?: SortOrderInput | SortOrder
+    status?: SortOrder
+    agenda?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    sprintId?: SortOrderInput | SortOrder
+    projectId?: SortOrder
+    teamId?: SortOrderInput | SortOrder
+    sprint?: SprintOrderByWithRelationInput
+    project?: ProjectOrderByWithRelationInput
+    team?: TeamOrderByWithRelationInput
+    attendees?: UserOrderByRelationAggregateInput
+  }
+
+  export type CeremonyWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: CeremonyWhereInput | CeremonyWhereInput[]
+    OR?: CeremonyWhereInput[]
+    NOT?: CeremonyWhereInput | CeremonyWhereInput[]
+    type?: EnumCeremonyTypeFilter<"Ceremony"> | $Enums.CeremonyType
+    title?: StringFilter<"Ceremony"> | string
+    description?: StringNullableFilter<"Ceremony"> | string | null
+    startTime?: DateTimeFilter<"Ceremony"> | Date | string
+    endTime?: DateTimeFilter<"Ceremony"> | Date | string
+    location?: StringNullableFilter<"Ceremony"> | string | null
+    status?: StringFilter<"Ceremony"> | string
+    agenda?: JsonNullableFilter<"Ceremony">
+    notes?: StringNullableFilter<"Ceremony"> | string | null
+    createdAt?: DateTimeFilter<"Ceremony"> | Date | string
+    updatedAt?: DateTimeFilter<"Ceremony"> | Date | string
+    sprintId?: StringNullableFilter<"Ceremony"> | string | null
+    projectId?: StringFilter<"Ceremony"> | string
+    teamId?: StringNullableFilter<"Ceremony"> | string | null
+    sprint?: XOR<SprintNullableScalarRelationFilter, SprintWhereInput> | null
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
+    attendees?: UserListRelationFilter
+  }, "id">
+
+  export type CeremonyOrderByWithAggregationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    location?: SortOrderInput | SortOrder
+    status?: SortOrder
+    agenda?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    sprintId?: SortOrderInput | SortOrder
+    projectId?: SortOrder
+    teamId?: SortOrderInput | SortOrder
+    _count?: CeremonyCountOrderByAggregateInput
+    _max?: CeremonyMaxOrderByAggregateInput
+    _min?: CeremonyMinOrderByAggregateInput
+  }
+
+  export type CeremonyScalarWhereWithAggregatesInput = {
+    AND?: CeremonyScalarWhereWithAggregatesInput | CeremonyScalarWhereWithAggregatesInput[]
+    OR?: CeremonyScalarWhereWithAggregatesInput[]
+    NOT?: CeremonyScalarWhereWithAggregatesInput | CeremonyScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Ceremony"> | string
+    type?: EnumCeremonyTypeWithAggregatesFilter<"Ceremony"> | $Enums.CeremonyType
+    title?: StringWithAggregatesFilter<"Ceremony"> | string
+    description?: StringNullableWithAggregatesFilter<"Ceremony"> | string | null
+    startTime?: DateTimeWithAggregatesFilter<"Ceremony"> | Date | string
+    endTime?: DateTimeWithAggregatesFilter<"Ceremony"> | Date | string
+    location?: StringNullableWithAggregatesFilter<"Ceremony"> | string | null
+    status?: StringWithAggregatesFilter<"Ceremony"> | string
+    agenda?: JsonNullableWithAggregatesFilter<"Ceremony">
+    notes?: StringNullableWithAggregatesFilter<"Ceremony"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Ceremony"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Ceremony"> | Date | string
+    sprintId?: StringNullableWithAggregatesFilter<"Ceremony"> | string | null
+    projectId?: StringWithAggregatesFilter<"Ceremony"> | string
+    teamId?: StringNullableWithAggregatesFilter<"Ceremony"> | string | null
+  }
+
+  export type PostWhereInput = {
+    AND?: PostWhereInput | PostWhereInput[]
+    OR?: PostWhereInput[]
+    NOT?: PostWhereInput | PostWhereInput[]
+    id?: StringFilter<"Post"> | string
+    slug?: StringFilter<"Post"> | string
+    title?: StringFilter<"Post"> | string
+    order?: IntFilter<"Post"> | number
+    excerpt?: StringNullableFilter<"Post"> | string | null
+    content?: StringFilter<"Post"> | string
+    published?: BoolFilter<"Post"> | boolean
+    createdAt?: DateTimeFilter<"Post"> | Date | string
+    updatedAt?: DateTimeFilter<"Post"> | Date | string
+    authorId?: StringFilter<"Post"> | string
+    comments?: CommentListRelationFilter
+    images?: ImageListRelationFilter
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
+    categories?: CategoryListRelationFilter
+    tags?: TagListRelationFilter
+  }
+
+  export type PostOrderByWithRelationInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    order?: SortOrder
+    excerpt?: SortOrderInput | SortOrder
+    content?: SortOrder
+    published?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    authorId?: SortOrder
+    comments?: CommentOrderByRelationAggregateInput
+    images?: ImageOrderByRelationAggregateInput
+    author?: UserOrderByWithRelationInput
+    categories?: CategoryOrderByRelationAggregateInput
+    tags?: TagOrderByRelationAggregateInput
+  }
+
+  export type PostWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    slug?: string
+    AND?: PostWhereInput | PostWhereInput[]
+    OR?: PostWhereInput[]
+    NOT?: PostWhereInput | PostWhereInput[]
+    title?: StringFilter<"Post"> | string
+    order?: IntFilter<"Post"> | number
+    excerpt?: StringNullableFilter<"Post"> | string | null
+    content?: StringFilter<"Post"> | string
+    published?: BoolFilter<"Post"> | boolean
+    createdAt?: DateTimeFilter<"Post"> | Date | string
+    updatedAt?: DateTimeFilter<"Post"> | Date | string
+    authorId?: StringFilter<"Post"> | string
+    comments?: CommentListRelationFilter
+    images?: ImageListRelationFilter
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
+    categories?: CategoryListRelationFilter
+    tags?: TagListRelationFilter
+  }, "id" | "slug">
+
+  export type PostOrderByWithAggregationInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    order?: SortOrder
+    excerpt?: SortOrderInput | SortOrder
+    content?: SortOrder
+    published?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    authorId?: SortOrder
+    _count?: PostCountOrderByAggregateInput
+    _avg?: PostAvgOrderByAggregateInput
+    _max?: PostMaxOrderByAggregateInput
+    _min?: PostMinOrderByAggregateInput
+    _sum?: PostSumOrderByAggregateInput
+  }
+
+  export type PostScalarWhereWithAggregatesInput = {
+    AND?: PostScalarWhereWithAggregatesInput | PostScalarWhereWithAggregatesInput[]
+    OR?: PostScalarWhereWithAggregatesInput[]
+    NOT?: PostScalarWhereWithAggregatesInput | PostScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Post"> | string
+    slug?: StringWithAggregatesFilter<"Post"> | string
+    title?: StringWithAggregatesFilter<"Post"> | string
+    order?: IntWithAggregatesFilter<"Post"> | number
+    excerpt?: StringNullableWithAggregatesFilter<"Post"> | string | null
+    content?: StringWithAggregatesFilter<"Post"> | string
+    published?: BoolWithAggregatesFilter<"Post"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
+    authorId?: StringWithAggregatesFilter<"Post"> | string
+  }
+
   export type CommentWhereInput = {
     AND?: CommentWhereInput | CommentWhereInput[]
     OR?: CommentWhereInput[]
     NOT?: CommentWhereInput | CommentWhereInput[]
     id?: StringFilter<"Comment"> | string
-    title?: StringFilter<"Comment"> | string
-    order?: IntFilter<"Comment"> | number
     content?: StringFilter<"Comment"> | string
-    mentions?: StringNullableListFilter<"Comment">
+    order?: IntFilter<"Comment"> | number
     createdAt?: DateTimeFilter<"Comment"> | Date | string
     updatedAt?: DateTimeFilter<"Comment"> | Date | string
+    postId?: StringFilter<"Comment"> | string
     authorId?: StringFilter<"Comment"> | string
-    taskId?: StringNullableFilter<"Comment"> | string | null
-    userStoryId?: StringNullableFilter<"Comment"> | string | null
-    fileId?: StringNullableFilter<"Comment"> | string | null
-    itemId?: StringNullableFilter<"Comment"> | string | null
-    parentCommentId?: StringNullableFilter<"Comment"> | string | null
-    blogImage?: StringNullableFilter<"Comment"> | string | null
-    excerpt?: StringNullableFilter<"Comment"> | string | null
-    isActive?: BoolFilter<"Comment"> | boolean
-    isPinned?: BoolFilter<"Comment"> | boolean
-    isResolved?: BoolFilter<"Comment"> | boolean
-    metadata?: JsonNullableFilter<"Comment">
-    publishedAt?: DateTimeNullableFilter<"Comment"> | Date | string | null
-    readingTime?: IntNullableFilter<"Comment"> | number | null
-    slug?: StringNullableFilter<"Comment"> | string | null
-    status?: StringFilter<"Comment"> | string
-    visibility?: EnumVisibilityFilter<"Comment"> | $Enums.Visibility
+    parentId?: StringNullableFilter<"Comment"> | string | null
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
-    file?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
-    item?: XOR<ItemNullableScalarRelationFilter, ItemWhereInput> | null
-    parentComment?: XOR<CommentNullableScalarRelationFilter, CommentWhereInput> | null
+    parent?: XOR<CommentNullableScalarRelationFilter, CommentWhereInput> | null
     replies?: CommentListRelationFilter
-    task?: XOR<TaskNullableScalarRelationFilter, TaskWhereInput> | null
-    userStory?: XOR<UserStoryNullableScalarRelationFilter, UserStoryWhereInput> | null
-    blog_tags?: Blog_tagsListRelationFilter
-    categories?: CategoriesListRelationFilter
+    post?: XOR<PostScalarRelationFilter, PostWhereInput>
+    images?: ImageListRelationFilter
+    Item?: ItemListRelationFilter
+    File?: FileListRelationFilter
+    Task?: TaskListRelationFilter
+    UserStory?: UserStoryListRelationFilter
   }
 
   export type CommentOrderByWithRelationInput = {
     id?: SortOrder
-    title?: SortOrder
-    order?: SortOrder
     content?: SortOrder
-    mentions?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    postId?: SortOrder
     authorId?: SortOrder
-    taskId?: SortOrderInput | SortOrder
-    userStoryId?: SortOrderInput | SortOrder
-    fileId?: SortOrderInput | SortOrder
-    itemId?: SortOrderInput | SortOrder
-    parentCommentId?: SortOrderInput | SortOrder
-    blogImage?: SortOrderInput | SortOrder
-    excerpt?: SortOrderInput | SortOrder
-    isActive?: SortOrder
-    isPinned?: SortOrder
-    isResolved?: SortOrder
-    metadata?: SortOrderInput | SortOrder
-    publishedAt?: SortOrderInput | SortOrder
-    readingTime?: SortOrderInput | SortOrder
-    slug?: SortOrderInput | SortOrder
-    status?: SortOrder
-    visibility?: SortOrder
+    parentId?: SortOrderInput | SortOrder
     author?: UserOrderByWithRelationInput
-    file?: FileOrderByWithRelationInput
-    item?: ItemOrderByWithRelationInput
-    parentComment?: CommentOrderByWithRelationInput
+    parent?: CommentOrderByWithRelationInput
     replies?: CommentOrderByRelationAggregateInput
-    task?: TaskOrderByWithRelationInput
-    userStory?: UserStoryOrderByWithRelationInput
-    blog_tags?: blog_tagsOrderByRelationAggregateInput
-    categories?: categoriesOrderByRelationAggregateInput
+    post?: PostOrderByWithRelationInput
+    images?: ImageOrderByRelationAggregateInput
+    Item?: ItemOrderByRelationAggregateInput
+    File?: FileOrderByRelationAggregateInput
+    Task?: TaskOrderByRelationAggregateInput
+    UserStory?: UserStoryOrderByRelationAggregateInput
   }
 
   export type CommentWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    slug?: string
     AND?: CommentWhereInput | CommentWhereInput[]
     OR?: CommentWhereInput[]
     NOT?: CommentWhereInput | CommentWhereInput[]
-    title?: StringFilter<"Comment"> | string
-    order?: IntFilter<"Comment"> | number
     content?: StringFilter<"Comment"> | string
-    mentions?: StringNullableListFilter<"Comment">
+    order?: IntFilter<"Comment"> | number
     createdAt?: DateTimeFilter<"Comment"> | Date | string
     updatedAt?: DateTimeFilter<"Comment"> | Date | string
+    postId?: StringFilter<"Comment"> | string
     authorId?: StringFilter<"Comment"> | string
-    taskId?: StringNullableFilter<"Comment"> | string | null
-    userStoryId?: StringNullableFilter<"Comment"> | string | null
-    fileId?: StringNullableFilter<"Comment"> | string | null
-    itemId?: StringNullableFilter<"Comment"> | string | null
-    parentCommentId?: StringNullableFilter<"Comment"> | string | null
-    blogImage?: StringNullableFilter<"Comment"> | string | null
-    excerpt?: StringNullableFilter<"Comment"> | string | null
-    isActive?: BoolFilter<"Comment"> | boolean
-    isPinned?: BoolFilter<"Comment"> | boolean
-    isResolved?: BoolFilter<"Comment"> | boolean
-    metadata?: JsonNullableFilter<"Comment">
-    publishedAt?: DateTimeNullableFilter<"Comment"> | Date | string | null
-    readingTime?: IntNullableFilter<"Comment"> | number | null
-    status?: StringFilter<"Comment"> | string
-    visibility?: EnumVisibilityFilter<"Comment"> | $Enums.Visibility
+    parentId?: StringNullableFilter<"Comment"> | string | null
     author?: XOR<UserScalarRelationFilter, UserWhereInput>
-    file?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
-    item?: XOR<ItemNullableScalarRelationFilter, ItemWhereInput> | null
-    parentComment?: XOR<CommentNullableScalarRelationFilter, CommentWhereInput> | null
+    parent?: XOR<CommentNullableScalarRelationFilter, CommentWhereInput> | null
     replies?: CommentListRelationFilter
-    task?: XOR<TaskNullableScalarRelationFilter, TaskWhereInput> | null
-    userStory?: XOR<UserStoryNullableScalarRelationFilter, UserStoryWhereInput> | null
-    blog_tags?: Blog_tagsListRelationFilter
-    categories?: CategoriesListRelationFilter
-  }, "id" | "slug">
+    post?: XOR<PostScalarRelationFilter, PostWhereInput>
+    images?: ImageListRelationFilter
+    Item?: ItemListRelationFilter
+    File?: FileListRelationFilter
+    Task?: TaskListRelationFilter
+    UserStory?: UserStoryListRelationFilter
+  }, "id">
 
   export type CommentOrderByWithAggregationInput = {
     id?: SortOrder
-    title?: SortOrder
-    order?: SortOrder
     content?: SortOrder
-    mentions?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    postId?: SortOrder
     authorId?: SortOrder
-    taskId?: SortOrderInput | SortOrder
-    userStoryId?: SortOrderInput | SortOrder
-    fileId?: SortOrderInput | SortOrder
-    itemId?: SortOrderInput | SortOrder
-    parentCommentId?: SortOrderInput | SortOrder
-    blogImage?: SortOrderInput | SortOrder
-    excerpt?: SortOrderInput | SortOrder
-    isActive?: SortOrder
-    isPinned?: SortOrder
-    isResolved?: SortOrder
-    metadata?: SortOrderInput | SortOrder
-    publishedAt?: SortOrderInput | SortOrder
-    readingTime?: SortOrderInput | SortOrder
-    slug?: SortOrderInput | SortOrder
-    status?: SortOrder
-    visibility?: SortOrder
+    parentId?: SortOrderInput | SortOrder
     _count?: CommentCountOrderByAggregateInput
     _avg?: CommentAvgOrderByAggregateInput
     _max?: CommentMaxOrderByAggregateInput
@@ -52135,29 +56276,206 @@ export namespace Prisma {
     OR?: CommentScalarWhereWithAggregatesInput[]
     NOT?: CommentScalarWhereWithAggregatesInput | CommentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Comment"> | string
-    title?: StringWithAggregatesFilter<"Comment"> | string
-    order?: IntWithAggregatesFilter<"Comment"> | number
     content?: StringWithAggregatesFilter<"Comment"> | string
-    mentions?: StringNullableListFilter<"Comment">
+    order?: IntWithAggregatesFilter<"Comment"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Comment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Comment"> | Date | string
+    postId?: StringWithAggregatesFilter<"Comment"> | string
     authorId?: StringWithAggregatesFilter<"Comment"> | string
-    taskId?: StringNullableWithAggregatesFilter<"Comment"> | string | null
-    userStoryId?: StringNullableWithAggregatesFilter<"Comment"> | string | null
-    fileId?: StringNullableWithAggregatesFilter<"Comment"> | string | null
-    itemId?: StringNullableWithAggregatesFilter<"Comment"> | string | null
-    parentCommentId?: StringNullableWithAggregatesFilter<"Comment"> | string | null
-    blogImage?: StringNullableWithAggregatesFilter<"Comment"> | string | null
-    excerpt?: StringNullableWithAggregatesFilter<"Comment"> | string | null
-    isActive?: BoolWithAggregatesFilter<"Comment"> | boolean
-    isPinned?: BoolWithAggregatesFilter<"Comment"> | boolean
-    isResolved?: BoolWithAggregatesFilter<"Comment"> | boolean
-    metadata?: JsonNullableWithAggregatesFilter<"Comment">
-    publishedAt?: DateTimeNullableWithAggregatesFilter<"Comment"> | Date | string | null
-    readingTime?: IntNullableWithAggregatesFilter<"Comment"> | number | null
-    slug?: StringNullableWithAggregatesFilter<"Comment"> | string | null
-    status?: StringWithAggregatesFilter<"Comment"> | string
-    visibility?: EnumVisibilityWithAggregatesFilter<"Comment"> | $Enums.Visibility
+    parentId?: StringNullableWithAggregatesFilter<"Comment"> | string | null
+  }
+
+  export type ImageWhereInput = {
+    AND?: ImageWhereInput | ImageWhereInput[]
+    OR?: ImageWhereInput[]
+    NOT?: ImageWhereInput | ImageWhereInput[]
+    id?: StringFilter<"Image"> | string
+    url?: StringFilter<"Image"> | string
+    order?: IntFilter<"Image"> | number
+    alt?: StringNullableFilter<"Image"> | string | null
+    createdAt?: DateTimeFilter<"Image"> | Date | string
+    postId?: StringNullableFilter<"Image"> | string | null
+    userId?: StringNullableFilter<"Image"> | string | null
+    commentId?: StringNullableFilter<"Image"> | string | null
+    comment?: XOR<CommentNullableScalarRelationFilter, CommentWhereInput> | null
+    post?: XOR<PostNullableScalarRelationFilter, PostWhereInput> | null
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type ImageOrderByWithRelationInput = {
+    id?: SortOrder
+    url?: SortOrder
+    order?: SortOrder
+    alt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    postId?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    commentId?: SortOrderInput | SortOrder
+    comment?: CommentOrderByWithRelationInput
+    post?: PostOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type ImageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ImageWhereInput | ImageWhereInput[]
+    OR?: ImageWhereInput[]
+    NOT?: ImageWhereInput | ImageWhereInput[]
+    url?: StringFilter<"Image"> | string
+    order?: IntFilter<"Image"> | number
+    alt?: StringNullableFilter<"Image"> | string | null
+    createdAt?: DateTimeFilter<"Image"> | Date | string
+    postId?: StringNullableFilter<"Image"> | string | null
+    userId?: StringNullableFilter<"Image"> | string | null
+    commentId?: StringNullableFilter<"Image"> | string | null
+    comment?: XOR<CommentNullableScalarRelationFilter, CommentWhereInput> | null
+    post?: XOR<PostNullableScalarRelationFilter, PostWhereInput> | null
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type ImageOrderByWithAggregationInput = {
+    id?: SortOrder
+    url?: SortOrder
+    order?: SortOrder
+    alt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    postId?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    commentId?: SortOrderInput | SortOrder
+    _count?: ImageCountOrderByAggregateInput
+    _avg?: ImageAvgOrderByAggregateInput
+    _max?: ImageMaxOrderByAggregateInput
+    _min?: ImageMinOrderByAggregateInput
+    _sum?: ImageSumOrderByAggregateInput
+  }
+
+  export type ImageScalarWhereWithAggregatesInput = {
+    AND?: ImageScalarWhereWithAggregatesInput | ImageScalarWhereWithAggregatesInput[]
+    OR?: ImageScalarWhereWithAggregatesInput[]
+    NOT?: ImageScalarWhereWithAggregatesInput | ImageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Image"> | string
+    url?: StringWithAggregatesFilter<"Image"> | string
+    order?: IntWithAggregatesFilter<"Image"> | number
+    alt?: StringNullableWithAggregatesFilter<"Image"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Image"> | Date | string
+    postId?: StringNullableWithAggregatesFilter<"Image"> | string | null
+    userId?: StringNullableWithAggregatesFilter<"Image"> | string | null
+    commentId?: StringNullableWithAggregatesFilter<"Image"> | string | null
+  }
+
+  export type CategoryWhereInput = {
+    AND?: CategoryWhereInput | CategoryWhereInput[]
+    OR?: CategoryWhereInput[]
+    NOT?: CategoryWhereInput | CategoryWhereInput[]
+    id?: StringFilter<"Category"> | string
+    name?: StringFilter<"Category"> | string
+    order?: IntFilter<"Category"> | number
+    slug?: StringFilter<"Category"> | string
+    posts?: PostListRelationFilter
+    tags?: TagListRelationFilter
+  }
+
+  export type CategoryOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    order?: SortOrder
+    slug?: SortOrder
+    posts?: PostOrderByRelationAggregateInput
+    tags?: TagOrderByRelationAggregateInput
+  }
+
+  export type CategoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    slug?: string
+    AND?: CategoryWhereInput | CategoryWhereInput[]
+    OR?: CategoryWhereInput[]
+    NOT?: CategoryWhereInput | CategoryWhereInput[]
+    order?: IntFilter<"Category"> | number
+    posts?: PostListRelationFilter
+    tags?: TagListRelationFilter
+  }, "id" | "name" | "slug">
+
+  export type CategoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    order?: SortOrder
+    slug?: SortOrder
+    _count?: CategoryCountOrderByAggregateInput
+    _avg?: CategoryAvgOrderByAggregateInput
+    _max?: CategoryMaxOrderByAggregateInput
+    _min?: CategoryMinOrderByAggregateInput
+    _sum?: CategorySumOrderByAggregateInput
+  }
+
+  export type CategoryScalarWhereWithAggregatesInput = {
+    AND?: CategoryScalarWhereWithAggregatesInput | CategoryScalarWhereWithAggregatesInput[]
+    OR?: CategoryScalarWhereWithAggregatesInput[]
+    NOT?: CategoryScalarWhereWithAggregatesInput | CategoryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Category"> | string
+    name?: StringWithAggregatesFilter<"Category"> | string
+    order?: IntWithAggregatesFilter<"Category"> | number
+    slug?: StringWithAggregatesFilter<"Category"> | string
+  }
+
+  export type TagWhereInput = {
+    AND?: TagWhereInput | TagWhereInput[]
+    OR?: TagWhereInput[]
+    NOT?: TagWhereInput | TagWhereInput[]
+    id?: StringFilter<"Tag"> | string
+    name?: StringFilter<"Tag"> | string
+    order?: IntFilter<"Tag"> | number
+    slug?: StringFilter<"Tag"> | string
+    categoryId?: StringFilter<"Tag"> | string
+    category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
+    posts?: PostListRelationFilter
+  }
+
+  export type TagOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    order?: SortOrder
+    slug?: SortOrder
+    categoryId?: SortOrder
+    category?: CategoryOrderByWithRelationInput
+    posts?: PostOrderByRelationAggregateInput
+  }
+
+  export type TagWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    slug?: string
+    AND?: TagWhereInput | TagWhereInput[]
+    OR?: TagWhereInput[]
+    NOT?: TagWhereInput | TagWhereInput[]
+    order?: IntFilter<"Tag"> | number
+    categoryId?: StringFilter<"Tag"> | string
+    category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
+    posts?: PostListRelationFilter
+  }, "id" | "name" | "slug">
+
+  export type TagOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    order?: SortOrder
+    slug?: SortOrder
+    categoryId?: SortOrder
+    _count?: TagCountOrderByAggregateInput
+    _avg?: TagAvgOrderByAggregateInput
+    _max?: TagMaxOrderByAggregateInput
+    _min?: TagMinOrderByAggregateInput
+    _sum?: TagSumOrderByAggregateInput
+  }
+
+  export type TagScalarWhereWithAggregatesInput = {
+    AND?: TagScalarWhereWithAggregatesInput | TagScalarWhereWithAggregatesInput[]
+    OR?: TagScalarWhereWithAggregatesInput[]
+    NOT?: TagScalarWhereWithAggregatesInput | TagScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Tag"> | string
+    name?: StringWithAggregatesFilter<"Tag"> | string
+    order?: IntWithAggregatesFilter<"Tag"> | number
+    slug?: StringWithAggregatesFilter<"Tag"> | string
+    categoryId?: StringWithAggregatesFilter<"Tag"> | string
   }
 
   export type ChannelWhereInput = {
@@ -53114,172 +57432,6 @@ export namespace Prisma {
     B?: StringWithAggregatesFilter<"UserStoryAssignees"> | string
   }
 
-  export type blog_tagsWhereInput = {
-    AND?: blog_tagsWhereInput | blog_tagsWhereInput[]
-    OR?: blog_tagsWhereInput[]
-    NOT?: blog_tagsWhereInput | blog_tagsWhereInput[]
-    id?: StringFilter<"blog_tags"> | string
-    name?: StringFilter<"blog_tags"> | string
-    order?: IntFilter<"blog_tags"> | number
-    color?: StringNullableFilter<"blog_tags"> | string | null
-    isActive?: BoolFilter<"blog_tags"> | boolean
-    createdAt?: DateTimeFilter<"blog_tags"> | Date | string
-    updatedAt?: DateTimeFilter<"blog_tags"> | Date | string
-    categoriesId?: StringNullableFilter<"blog_tags"> | string | null
-    categories?: XOR<CategoriesNullableScalarRelationFilter, categoriesWhereInput> | null
-    comments?: CommentListRelationFilter
-  }
-
-  export type blog_tagsOrderByWithRelationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    order?: SortOrder
-    color?: SortOrderInput | SortOrder
-    isActive?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    categoriesId?: SortOrderInput | SortOrder
-    categories?: categoriesOrderByWithRelationInput
-    comments?: CommentOrderByRelationAggregateInput
-  }
-
-  export type blog_tagsWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: blog_tagsWhereInput | blog_tagsWhereInput[]
-    OR?: blog_tagsWhereInput[]
-    NOT?: blog_tagsWhereInput | blog_tagsWhereInput[]
-    name?: StringFilter<"blog_tags"> | string
-    order?: IntFilter<"blog_tags"> | number
-    color?: StringNullableFilter<"blog_tags"> | string | null
-    isActive?: BoolFilter<"blog_tags"> | boolean
-    createdAt?: DateTimeFilter<"blog_tags"> | Date | string
-    updatedAt?: DateTimeFilter<"blog_tags"> | Date | string
-    categoriesId?: StringNullableFilter<"blog_tags"> | string | null
-    categories?: XOR<CategoriesNullableScalarRelationFilter, categoriesWhereInput> | null
-    comments?: CommentListRelationFilter
-  }, "id">
-
-  export type blog_tagsOrderByWithAggregationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    order?: SortOrder
-    color?: SortOrderInput | SortOrder
-    isActive?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    categoriesId?: SortOrderInput | SortOrder
-    _count?: blog_tagsCountOrderByAggregateInput
-    _avg?: blog_tagsAvgOrderByAggregateInput
-    _max?: blog_tagsMaxOrderByAggregateInput
-    _min?: blog_tagsMinOrderByAggregateInput
-    _sum?: blog_tagsSumOrderByAggregateInput
-  }
-
-  export type blog_tagsScalarWhereWithAggregatesInput = {
-    AND?: blog_tagsScalarWhereWithAggregatesInput | blog_tagsScalarWhereWithAggregatesInput[]
-    OR?: blog_tagsScalarWhereWithAggregatesInput[]
-    NOT?: blog_tagsScalarWhereWithAggregatesInput | blog_tagsScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"blog_tags"> | string
-    name?: StringWithAggregatesFilter<"blog_tags"> | string
-    order?: IntWithAggregatesFilter<"blog_tags"> | number
-    color?: StringNullableWithAggregatesFilter<"blog_tags"> | string | null
-    isActive?: BoolWithAggregatesFilter<"blog_tags"> | boolean
-    createdAt?: DateTimeWithAggregatesFilter<"blog_tags"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"blog_tags"> | Date | string
-    categoriesId?: StringNullableWithAggregatesFilter<"blog_tags"> | string | null
-  }
-
-  export type categoriesWhereInput = {
-    AND?: categoriesWhereInput | categoriesWhereInput[]
-    OR?: categoriesWhereInput[]
-    NOT?: categoriesWhereInput | categoriesWhereInput[]
-    id?: StringFilter<"categories"> | string
-    name?: StringFilter<"categories"> | string
-    order?: IntFilter<"categories"> | number
-    slug?: StringNullableFilter<"categories"> | string | null
-    description?: StringNullableFilter<"categories"> | string | null
-    color?: StringNullableFilter<"categories"> | string | null
-    isActive?: BoolFilter<"categories"> | boolean
-    createdAt?: DateTimeFilter<"categories"> | Date | string
-    updatedAt?: DateTimeFilter<"categories"> | Date | string
-    parentId?: StringNullableFilter<"categories"> | string | null
-    blog_tags?: Blog_tagsListRelationFilter
-    categories?: XOR<CategoriesNullableScalarRelationFilter, categoriesWhereInput> | null
-    other_categories?: CategoriesListRelationFilter
-    comments?: CommentListRelationFilter
-  }
-
-  export type categoriesOrderByWithRelationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    order?: SortOrder
-    slug?: SortOrderInput | SortOrder
-    description?: SortOrderInput | SortOrder
-    color?: SortOrderInput | SortOrder
-    isActive?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    parentId?: SortOrderInput | SortOrder
-    blog_tags?: blog_tagsOrderByRelationAggregateInput
-    categories?: categoriesOrderByWithRelationInput
-    other_categories?: categoriesOrderByRelationAggregateInput
-    comments?: CommentOrderByRelationAggregateInput
-  }
-
-  export type categoriesWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    slug?: string
-    AND?: categoriesWhereInput | categoriesWhereInput[]
-    OR?: categoriesWhereInput[]
-    NOT?: categoriesWhereInput | categoriesWhereInput[]
-    name?: StringFilter<"categories"> | string
-    order?: IntFilter<"categories"> | number
-    description?: StringNullableFilter<"categories"> | string | null
-    color?: StringNullableFilter<"categories"> | string | null
-    isActive?: BoolFilter<"categories"> | boolean
-    createdAt?: DateTimeFilter<"categories"> | Date | string
-    updatedAt?: DateTimeFilter<"categories"> | Date | string
-    parentId?: StringNullableFilter<"categories"> | string | null
-    blog_tags?: Blog_tagsListRelationFilter
-    categories?: XOR<CategoriesNullableScalarRelationFilter, categoriesWhereInput> | null
-    other_categories?: CategoriesListRelationFilter
-    comments?: CommentListRelationFilter
-  }, "id" | "slug">
-
-  export type categoriesOrderByWithAggregationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    order?: SortOrder
-    slug?: SortOrderInput | SortOrder
-    description?: SortOrderInput | SortOrder
-    color?: SortOrderInput | SortOrder
-    isActive?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    parentId?: SortOrderInput | SortOrder
-    _count?: categoriesCountOrderByAggregateInput
-    _avg?: categoriesAvgOrderByAggregateInput
-    _max?: categoriesMaxOrderByAggregateInput
-    _min?: categoriesMinOrderByAggregateInput
-    _sum?: categoriesSumOrderByAggregateInput
-  }
-
-  export type categoriesScalarWhereWithAggregatesInput = {
-    AND?: categoriesScalarWhereWithAggregatesInput | categoriesScalarWhereWithAggregatesInput[]
-    OR?: categoriesScalarWhereWithAggregatesInput[]
-    NOT?: categoriesScalarWhereWithAggregatesInput | categoriesScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"categories"> | string
-    name?: StringWithAggregatesFilter<"categories"> | string
-    order?: IntWithAggregatesFilter<"categories"> | number
-    slug?: StringNullableWithAggregatesFilter<"categories"> | string | null
-    description?: StringNullableWithAggregatesFilter<"categories"> | string | null
-    color?: StringNullableWithAggregatesFilter<"categories"> | string | null
-    isActive?: BoolWithAggregatesFilter<"categories"> | boolean
-    createdAt?: DateTimeWithAggregatesFilter<"categories"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"categories"> | Date | string
-    parentId?: StringNullableWithAggregatesFilter<"categories"> | string | null
-  }
-
   export type fieldsWhereInput = {
     AND?: fieldsWhereInput | fieldsWhereInput[]
     OR?: fieldsWhereInput[]
@@ -53586,6 +57738,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -53628,6 +57783,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUpdateInput = {
@@ -53670,6 +57828,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -53712,6 +57873,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -54036,6 +58200,7 @@ export namespace Prisma {
     parentTeam?: TeamCreateNestedOneWithoutChildrenInput
     children?: TeamCreateNestedManyWithoutParentTeamInput
     templates?: TemplateCreateNestedManyWithoutTeamInput
+    Ceremony?: CeremonyCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUncheckedCreateInput = {
@@ -54053,6 +58218,7 @@ export namespace Prisma {
     members?: TeamMemberUncheckedCreateNestedManyWithoutTeamInput
     children?: TeamUncheckedCreateNestedManyWithoutParentTeamInput
     templates?: TemplateUncheckedCreateNestedManyWithoutTeamInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUpdateInput = {
@@ -54070,6 +58236,7 @@ export namespace Prisma {
     parentTeam?: TeamUpdateOneWithoutChildrenNestedInput
     children?: TeamUpdateManyWithoutParentTeamNestedInput
     templates?: TemplateUpdateManyWithoutTeamNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateInput = {
@@ -54087,6 +58254,7 @@ export namespace Prisma {
     members?: TeamMemberUncheckedUpdateManyWithoutTeamNestedInput
     children?: TeamUncheckedUpdateManyWithoutParentTeamNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutTeamNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamCreateManyInput = {
@@ -54223,6 +58391,7 @@ export namespace Prisma {
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
     task?: TaskCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -54253,6 +58422,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUpdateInput = {
@@ -54283,6 +58453,7 @@ export namespace Prisma {
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
     task?: TaskUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -54313,6 +58484,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyInput = {
@@ -55504,6 +59676,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
     Tasks?: TaskCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyCreateNestedManyWithoutSprintInput
   }
 
   export type SprintUncheckedCreateInput = {
@@ -55528,6 +59701,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
     Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutSprintInput
   }
 
   export type SprintUpdateInput = {
@@ -55552,6 +59726,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintUncheckedUpdateInput = {
@@ -55576,6 +59751,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintCreateManyInput = {
@@ -55907,199 +60083,525 @@ export namespace Prisma {
     authorId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type CommentCreateInput = {
+  export type CeremonyCreateInput = {
     id?: string
+    type: $Enums.CeremonyType
     title: string
-    order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
+    sprint?: SprintCreateNestedOneWithoutCeremonyInput
+    project: ProjectCreateNestedOneWithoutCeremonyInput
+    team?: TeamCreateNestedOneWithoutCeremonyInput
+    attendees?: UserCreateNestedManyWithoutCeremonyInput
+  }
+
+  export type CeremonyUncheckedCreateInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
     status?: string
-    visibility?: $Enums.Visibility
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sprintId?: string | null
+    projectId: string
+    teamId?: string | null
+    attendees?: UserUncheckedCreateNestedManyWithoutCeremonyInput
+  }
+
+  export type CeremonyUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sprint?: SprintUpdateOneWithoutCeremonyNestedInput
+    project?: ProjectUpdateOneRequiredWithoutCeremonyNestedInput
+    team?: TeamUpdateOneWithoutCeremonyNestedInput
+    attendees?: UserUpdateManyWithoutCeremonyNestedInput
+  }
+
+  export type CeremonyUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendees?: UserUncheckedUpdateManyWithoutCeremonyNestedInput
+  }
+
+  export type CeremonyCreateManyInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sprintId?: string | null
+    projectId: string
+    teamId?: string | null
+  }
+
+  export type CeremonyUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CeremonyUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PostCreateInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    comments?: CommentCreateNestedManyWithoutPostInput
+    images?: ImageCreateNestedManyWithoutPostInput
+    author: UserCreateNestedOneWithoutPostInput
+    categories?: CategoryCreateNestedManyWithoutPostsInput
+    tags?: TagCreateNestedManyWithoutPostsInput
+  }
+
+  export type PostUncheckedCreateInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authorId: string
+    comments?: CommentUncheckedCreateNestedManyWithoutPostInput
+    images?: ImageUncheckedCreateNestedManyWithoutPostInput
+    categories?: CategoryUncheckedCreateNestedManyWithoutPostsInput
+    tags?: TagUncheckedCreateNestedManyWithoutPostsInput
+  }
+
+  export type PostUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comments?: CommentUpdateManyWithoutPostNestedInput
+    images?: ImageUpdateManyWithoutPostNestedInput
+    author?: UserUpdateOneRequiredWithoutPostNestedInput
+    categories?: CategoryUpdateManyWithoutPostsNestedInput
+    tags?: TagUpdateManyWithoutPostsNestedInput
+  }
+
+  export type PostUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    comments?: CommentUncheckedUpdateManyWithoutPostNestedInput
+    images?: ImageUncheckedUpdateManyWithoutPostNestedInput
+    categories?: CategoryUncheckedUpdateManyWithoutPostsNestedInput
+    tags?: TagUncheckedUpdateManyWithoutPostsNestedInput
+  }
+
+  export type PostCreateManyInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authorId: string
+  }
+
+  export type PostUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PostUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authorId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CommentCreateInput = {
+    id?: string
+    content: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
     author: UserCreateNestedOneWithoutCommentsInput
-    file?: FileCreateNestedOneWithoutCommentsInput
-    item?: ItemCreateNestedOneWithoutCommentsInput
-    parentComment?: CommentCreateNestedOneWithoutRepliesInput
-    replies?: CommentCreateNestedManyWithoutParentCommentInput
-    task?: TaskCreateNestedOneWithoutCommentsInput
-    userStory?: UserStoryCreateNestedOneWithoutCommentsInput
-    blog_tags?: blog_tagsCreateNestedManyWithoutCommentsInput
-    categories?: categoriesCreateNestedManyWithoutCommentsInput
+    parent?: CommentCreateNestedOneWithoutRepliesInput
+    replies?: CommentCreateNestedManyWithoutParentInput
+    post: PostCreateNestedOneWithoutCommentsInput
+    images?: ImageCreateNestedManyWithoutCommentInput
+    Item?: ItemCreateNestedManyWithoutCommentsInput
+    File?: FileCreateNestedManyWithoutCommentsInput
+    Task?: TaskCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryCreateNestedManyWithoutCommentsInput
   }
 
   export type CommentUncheckedCreateInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    postId: string
     authorId: string
-    taskId?: string | null
-    userStoryId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
-    categories?: categoriesUncheckedCreateNestedManyWithoutCommentsInput
+    parentId?: string | null
+    replies?: CommentUncheckedCreateNestedManyWithoutParentInput
+    images?: ImageUncheckedCreateNestedManyWithoutCommentInput
+    Item?: ItemUncheckedCreateNestedManyWithoutCommentsInput
+    File?: FileUncheckedCreateNestedManyWithoutCommentsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryUncheckedCreateNestedManyWithoutCommentsInput
   }
 
   export type CommentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
-    file?: FileUpdateOneWithoutCommentsNestedInput
-    item?: ItemUpdateOneWithoutCommentsNestedInput
-    parentComment?: CommentUpdateOneWithoutRepliesNestedInput
-    replies?: CommentUpdateManyWithoutParentCommentNestedInput
-    task?: TaskUpdateOneWithoutCommentsNestedInput
-    userStory?: UserStoryUpdateOneWithoutCommentsNestedInput
-    blog_tags?: blog_tagsUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUpdateManyWithoutCommentsNestedInput
+    parent?: CommentUpdateOneWithoutRepliesNestedInput
+    replies?: CommentUpdateManyWithoutParentNestedInput
+    post?: PostUpdateOneRequiredWithoutCommentsNestedInput
+    images?: ImageUpdateManyWithoutCommentNestedInput
+    Item?: ItemUpdateManyWithoutCommentsNestedInput
+    File?: FileUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUncheckedUpdateManyWithoutCommentsNestedInput
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    replies?: CommentUncheckedUpdateManyWithoutParentNestedInput
+    images?: ImageUncheckedUpdateManyWithoutCommentNestedInput
+    Item?: ItemUncheckedUpdateManyWithoutCommentsNestedInput
+    File?: FileUncheckedUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUncheckedUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentCreateManyInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    postId: string
     authorId: string
-    taskId?: string | null
-    userStoryId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
+    parentId?: string | null
   }
 
   export type CommentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
   }
 
   export type CommentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ImageCreateInput = {
+    id?: string
+    url: string
+    order?: number
+    alt?: string | null
+    createdAt?: Date | string
+    comment?: CommentCreateNestedOneWithoutImagesInput
+    post?: PostCreateNestedOneWithoutImagesInput
+    user?: UserCreateNestedOneWithoutImageInput
+  }
+
+  export type ImageUncheckedCreateInput = {
+    id?: string
+    url: string
+    order?: number
+    alt?: string | null
+    createdAt?: Date | string
+    postId?: string | null
+    userId?: string | null
+    commentId?: string | null
+  }
+
+  export type ImageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comment?: CommentUpdateOneWithoutImagesNestedInput
+    post?: PostUpdateOneWithoutImagesNestedInput
+    user?: UserUpdateOneWithoutImageNestedInput
+  }
+
+  export type ImageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    commentId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ImageCreateManyInput = {
+    id?: string
+    url: string
+    order?: number
+    alt?: string | null
+    createdAt?: Date | string
+    postId?: string | null
+    userId?: string | null
+    commentId?: string | null
+  }
+
+  export type ImageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    commentId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CategoryCreateInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    posts?: PostCreateNestedManyWithoutCategoriesInput
+    tags?: TagCreateNestedManyWithoutCategoryInput
+  }
+
+  export type CategoryUncheckedCreateInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    posts?: PostUncheckedCreateNestedManyWithoutCategoriesInput
+    tags?: TagUncheckedCreateNestedManyWithoutCategoryInput
+  }
+
+  export type CategoryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    posts?: PostUpdateManyWithoutCategoriesNestedInput
+    tags?: TagUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type CategoryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    posts?: PostUncheckedUpdateManyWithoutCategoriesNestedInput
+    tags?: TagUncheckedUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type CategoryCreateManyInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+  }
+
+  export type CategoryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CategoryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TagCreateInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    category: CategoryCreateNestedOneWithoutTagsInput
+    posts?: PostCreateNestedManyWithoutTagsInput
+  }
+
+  export type TagUncheckedCreateInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    categoryId: string
+    posts?: PostUncheckedCreateNestedManyWithoutTagsInput
+  }
+
+  export type TagUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    category?: CategoryUpdateOneRequiredWithoutTagsNestedInput
+    posts?: PostUpdateManyWithoutTagsNestedInput
+  }
+
+  export type TagUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+    posts?: PostUncheckedUpdateManyWithoutTagsNestedInput
+  }
+
+  export type TagCreateManyInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    categoryId: string
+  }
+
+  export type TagUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TagUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ChannelCreateInput = {
@@ -57148,188 +61650,6 @@ export namespace Prisma {
     B?: StringFieldUpdateOperationsInput | string
   }
 
-  export type blog_tagsCreateInput = {
-    id: string
-    name: string
-    order?: number
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    categories?: categoriesCreateNestedOneWithoutBlog_tagsInput
-    comments?: CommentCreateNestedManyWithoutBlog_tagsInput
-  }
-
-  export type blog_tagsUncheckedCreateInput = {
-    id: string
-    name: string
-    order?: number
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    categoriesId?: string | null
-    comments?: CommentUncheckedCreateNestedManyWithoutBlog_tagsInput
-  }
-
-  export type blog_tagsUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    categories?: categoriesUpdateOneWithoutBlog_tagsNestedInput
-    comments?: CommentUpdateManyWithoutBlog_tagsNestedInput
-  }
-
-  export type blog_tagsUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    categoriesId?: NullableStringFieldUpdateOperationsInput | string | null
-    comments?: CommentUncheckedUpdateManyWithoutBlog_tagsNestedInput
-  }
-
-  export type blog_tagsCreateManyInput = {
-    id: string
-    name: string
-    order?: number
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    categoriesId?: string | null
-  }
-
-  export type blog_tagsUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type blog_tagsUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    categoriesId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type categoriesCreateInput = {
-    id: string
-    name: string
-    order?: number
-    slug?: string | null
-    description?: string | null
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    blog_tags?: blog_tagsCreateNestedManyWithoutCategoriesInput
-    categories?: categoriesCreateNestedOneWithoutOther_categoriesInput
-    other_categories?: categoriesCreateNestedManyWithoutCategoriesInput
-    comments?: CommentCreateNestedManyWithoutCategoriesInput
-  }
-
-  export type categoriesUncheckedCreateInput = {
-    id: string
-    name: string
-    order?: number
-    slug?: string | null
-    description?: string | null
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    parentId?: string | null
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCategoriesInput
-    other_categories?: categoriesUncheckedCreateNestedManyWithoutCategoriesInput
-    comments?: CommentUncheckedCreateNestedManyWithoutCategoriesInput
-  }
-
-  export type categoriesUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blog_tags?: blog_tagsUpdateManyWithoutCategoriesNestedInput
-    categories?: categoriesUpdateOneWithoutOther_categoriesNestedInput
-    other_categories?: categoriesUpdateManyWithoutCategoriesNestedInput
-    comments?: CommentUpdateManyWithoutCategoriesNestedInput
-  }
-
-  export type categoriesUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCategoriesNestedInput
-    other_categories?: categoriesUncheckedUpdateManyWithoutCategoriesNestedInput
-    comments?: CommentUncheckedUpdateManyWithoutCategoriesNestedInput
-  }
-
-  export type categoriesCreateManyInput = {
-    id: string
-    name: string
-    order?: number
-    slug?: string | null
-    description?: string | null
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    parentId?: string | null
-  }
-
-  export type categoriesUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type categoriesUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    parentId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
   export type fieldsCreateInput = {
     id: string
     name: string
@@ -57851,6 +62171,24 @@ export namespace Prisma {
     none?: SprintWhereInput
   }
 
+  export type CeremonyListRelationFilter = {
+    every?: CeremonyWhereInput
+    some?: CeremonyWhereInput
+    none?: CeremonyWhereInput
+  }
+
+  export type ImageListRelationFilter = {
+    every?: ImageWhereInput
+    some?: ImageWhereInput
+    none?: ImageWhereInput
+  }
+
+  export type PostListRelationFilter = {
+    every?: PostWhereInput
+    some?: PostWhereInput
+    none?: PostWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -57937,6 +62275,18 @@ export namespace Prisma {
   }
 
   export type SprintOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CeremonyOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ImageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PostOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -59470,16 +63820,140 @@ export namespace Prisma {
     size?: SortOrder
   }
 
-  export type EnumVisibilityFilter<$PrismaModel = never> = {
-    equals?: $Enums.Visibility | EnumVisibilityFieldRefInput<$PrismaModel>
-    in?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
-    not?: NestedEnumVisibilityFilter<$PrismaModel> | $Enums.Visibility
+  export type EnumCeremonyTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.CeremonyType | EnumCeremonyTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.CeremonyType[] | ListEnumCeremonyTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CeremonyType[] | ListEnumCeremonyTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumCeremonyTypeFilter<$PrismaModel> | $Enums.CeremonyType
   }
 
-  export type ItemNullableScalarRelationFilter = {
-    is?: ItemWhereInput | null
-    isNot?: ItemWhereInput | null
+  export type CeremonyCountOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    location?: SortOrder
+    status?: SortOrder
+    agenda?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    sprintId?: SortOrder
+    projectId?: SortOrder
+    teamId?: SortOrder
+  }
+
+  export type CeremonyMaxOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    location?: SortOrder
+    status?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    sprintId?: SortOrder
+    projectId?: SortOrder
+    teamId?: SortOrder
+  }
+
+  export type CeremonyMinOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    location?: SortOrder
+    status?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    sprintId?: SortOrder
+    projectId?: SortOrder
+    teamId?: SortOrder
+  }
+
+  export type EnumCeremonyTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CeremonyType | EnumCeremonyTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.CeremonyType[] | ListEnumCeremonyTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CeremonyType[] | ListEnumCeremonyTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumCeremonyTypeWithAggregatesFilter<$PrismaModel> | $Enums.CeremonyType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumCeremonyTypeFilter<$PrismaModel>
+    _max?: NestedEnumCeremonyTypeFilter<$PrismaModel>
+  }
+
+  export type CategoryListRelationFilter = {
+    every?: CategoryWhereInput
+    some?: CategoryWhereInput
+    none?: CategoryWhereInput
+  }
+
+  export type TagListRelationFilter = {
+    every?: TagWhereInput
+    some?: TagWhereInput
+    none?: TagWhereInput
+  }
+
+  export type CategoryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TagOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PostCountOrderByAggregateInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    order?: SortOrder
+    excerpt?: SortOrder
+    content?: SortOrder
+    published?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    authorId?: SortOrder
+  }
+
+  export type PostAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type PostMaxOrderByAggregateInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    order?: SortOrder
+    excerpt?: SortOrder
+    content?: SortOrder
+    published?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    authorId?: SortOrder
+  }
+
+  export type PostMinOrderByAggregateInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    order?: SortOrder
+    excerpt?: SortOrder
+    content?: SortOrder
+    published?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    authorId?: SortOrder
+  }
+
+  export type PostSumOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type CommentNullableScalarRelationFilter = {
@@ -59487,126 +63961,162 @@ export namespace Prisma {
     isNot?: CommentWhereInput | null
   }
 
-  export type TaskNullableScalarRelationFilter = {
-    is?: TaskWhereInput | null
-    isNot?: TaskWhereInput | null
-  }
-
-  export type Blog_tagsListRelationFilter = {
-    every?: blog_tagsWhereInput
-    some?: blog_tagsWhereInput
-    none?: blog_tagsWhereInput
-  }
-
-  export type CategoriesListRelationFilter = {
-    every?: categoriesWhereInput
-    some?: categoriesWhereInput
-    none?: categoriesWhereInput
-  }
-
-  export type blog_tagsOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type categoriesOrderByRelationAggregateInput = {
-    _count?: SortOrder
+  export type PostScalarRelationFilter = {
+    is?: PostWhereInput
+    isNot?: PostWhereInput
   }
 
   export type CommentCountOrderByAggregateInput = {
     id?: SortOrder
-    title?: SortOrder
-    order?: SortOrder
     content?: SortOrder
-    mentions?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    postId?: SortOrder
     authorId?: SortOrder
-    taskId?: SortOrder
-    userStoryId?: SortOrder
-    fileId?: SortOrder
-    itemId?: SortOrder
-    parentCommentId?: SortOrder
-    blogImage?: SortOrder
-    excerpt?: SortOrder
-    isActive?: SortOrder
-    isPinned?: SortOrder
-    isResolved?: SortOrder
-    metadata?: SortOrder
-    publishedAt?: SortOrder
-    readingTime?: SortOrder
-    slug?: SortOrder
-    status?: SortOrder
-    visibility?: SortOrder
+    parentId?: SortOrder
   }
 
   export type CommentAvgOrderByAggregateInput = {
     order?: SortOrder
-    readingTime?: SortOrder
   }
 
   export type CommentMaxOrderByAggregateInput = {
     id?: SortOrder
-    title?: SortOrder
-    order?: SortOrder
     content?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    postId?: SortOrder
     authorId?: SortOrder
-    taskId?: SortOrder
-    userStoryId?: SortOrder
-    fileId?: SortOrder
-    itemId?: SortOrder
-    parentCommentId?: SortOrder
-    blogImage?: SortOrder
-    excerpt?: SortOrder
-    isActive?: SortOrder
-    isPinned?: SortOrder
-    isResolved?: SortOrder
-    publishedAt?: SortOrder
-    readingTime?: SortOrder
-    slug?: SortOrder
-    status?: SortOrder
-    visibility?: SortOrder
+    parentId?: SortOrder
   }
 
   export type CommentMinOrderByAggregateInput = {
     id?: SortOrder
-    title?: SortOrder
-    order?: SortOrder
     content?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    postId?: SortOrder
     authorId?: SortOrder
-    taskId?: SortOrder
-    userStoryId?: SortOrder
-    fileId?: SortOrder
-    itemId?: SortOrder
-    parentCommentId?: SortOrder
-    blogImage?: SortOrder
-    excerpt?: SortOrder
-    isActive?: SortOrder
-    isPinned?: SortOrder
-    isResolved?: SortOrder
-    publishedAt?: SortOrder
-    readingTime?: SortOrder
-    slug?: SortOrder
-    status?: SortOrder
-    visibility?: SortOrder
+    parentId?: SortOrder
   }
 
   export type CommentSumOrderByAggregateInput = {
     order?: SortOrder
-    readingTime?: SortOrder
   }
 
-  export type EnumVisibilityWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Visibility | EnumVisibilityFieldRefInput<$PrismaModel>
-    in?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
-    not?: NestedEnumVisibilityWithAggregatesFilter<$PrismaModel> | $Enums.Visibility
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumVisibilityFilter<$PrismaModel>
-    _max?: NestedEnumVisibilityFilter<$PrismaModel>
+  export type PostNullableScalarRelationFilter = {
+    is?: PostWhereInput | null
+    isNot?: PostWhereInput | null
+  }
+
+  export type ImageCountOrderByAggregateInput = {
+    id?: SortOrder
+    url?: SortOrder
+    order?: SortOrder
+    alt?: SortOrder
+    createdAt?: SortOrder
+    postId?: SortOrder
+    userId?: SortOrder
+    commentId?: SortOrder
+  }
+
+  export type ImageAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type ImageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    url?: SortOrder
+    order?: SortOrder
+    alt?: SortOrder
+    createdAt?: SortOrder
+    postId?: SortOrder
+    userId?: SortOrder
+    commentId?: SortOrder
+  }
+
+  export type ImageMinOrderByAggregateInput = {
+    id?: SortOrder
+    url?: SortOrder
+    order?: SortOrder
+    alt?: SortOrder
+    createdAt?: SortOrder
+    postId?: SortOrder
+    userId?: SortOrder
+    commentId?: SortOrder
+  }
+
+  export type ImageSumOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type CategoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    order?: SortOrder
+    slug?: SortOrder
+  }
+
+  export type CategoryAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type CategoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    order?: SortOrder
+    slug?: SortOrder
+  }
+
+  export type CategoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    order?: SortOrder
+    slug?: SortOrder
+  }
+
+  export type CategorySumOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type CategoryScalarRelationFilter = {
+    is?: CategoryWhereInput
+    isNot?: CategoryWhereInput
+  }
+
+  export type TagCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    order?: SortOrder
+    slug?: SortOrder
+    categoryId?: SortOrder
+  }
+
+  export type TagAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type TagMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    order?: SortOrder
+    slug?: SortOrder
+    categoryId?: SortOrder
+  }
+
+  export type TagMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    order?: SortOrder
+    slug?: SortOrder
+    categoryId?: SortOrder
+  }
+
+  export type TagSumOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type ChannelCountOrderByAggregateInput = {
@@ -59850,6 +64360,16 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>
   }
 
+  export type ItemNullableScalarRelationFilter = {
+    is?: ItemWhereInput | null
+    isNot?: ItemWhereInput | null
+  }
+
+  export type TaskNullableScalarRelationFilter = {
+    is?: TaskWhereInput | null
+    isNot?: TaskWhereInput | null
+  }
+
   export type TimeEntryCountOrderByAggregateInput = {
     id?: SortOrder
     description?: SortOrder
@@ -60010,6 +64530,13 @@ export namespace Prisma {
     not?: NestedEnumItemStatusFilter<$PrismaModel> | $Enums.ItemStatus
   }
 
+  export type EnumVisibilityFilter<$PrismaModel = never> = {
+    equals?: $Enums.Visibility | EnumVisibilityFieldRefInput<$PrismaModel>
+    in?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    not?: NestedEnumVisibilityFilter<$PrismaModel> | $Enums.Visibility
+  }
+
   export type ItemCountOrderByAggregateInput = {
     id?: SortOrder
     type?: SortOrder
@@ -60151,6 +64678,16 @@ export namespace Prisma {
     _max?: NestedEnumItemStatusFilter<$PrismaModel>
   }
 
+  export type EnumVisibilityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Visibility | EnumVisibilityFieldRefInput<$PrismaModel>
+    in?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    not?: NestedEnumVisibilityWithAggregatesFilter<$PrismaModel> | $Enums.Visibility
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumVisibilityFilter<$PrismaModel>
+    _max?: NestedEnumVisibilityFilter<$PrismaModel>
+  }
+
   export type GlossaryCountOrderByAggregateInput = {
     id?: SortOrder
     term?: SortOrder
@@ -60214,99 +64751,6 @@ export namespace Prisma {
   export type UserStoryAssigneesMinOrderByAggregateInput = {
     A?: SortOrder
     B?: SortOrder
-  }
-
-  export type CategoriesNullableScalarRelationFilter = {
-    is?: categoriesWhereInput | null
-    isNot?: categoriesWhereInput | null
-  }
-
-  export type blog_tagsCountOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    order?: SortOrder
-    color?: SortOrder
-    isActive?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    categoriesId?: SortOrder
-  }
-
-  export type blog_tagsAvgOrderByAggregateInput = {
-    order?: SortOrder
-  }
-
-  export type blog_tagsMaxOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    order?: SortOrder
-    color?: SortOrder
-    isActive?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    categoriesId?: SortOrder
-  }
-
-  export type blog_tagsMinOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    order?: SortOrder
-    color?: SortOrder
-    isActive?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    categoriesId?: SortOrder
-  }
-
-  export type blog_tagsSumOrderByAggregateInput = {
-    order?: SortOrder
-  }
-
-  export type categoriesCountOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    order?: SortOrder
-    slug?: SortOrder
-    description?: SortOrder
-    color?: SortOrder
-    isActive?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    parentId?: SortOrder
-  }
-
-  export type categoriesAvgOrderByAggregateInput = {
-    order?: SortOrder
-  }
-
-  export type categoriesMaxOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    order?: SortOrder
-    slug?: SortOrder
-    description?: SortOrder
-    color?: SortOrder
-    isActive?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    parentId?: SortOrder
-  }
-
-  export type categoriesMinOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    order?: SortOrder
-    slug?: SortOrder
-    description?: SortOrder
-    color?: SortOrder
-    isActive?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    parentId?: SortOrder
-  }
-
-  export type categoriesSumOrderByAggregateInput = {
-    order?: SortOrder
   }
 
   export type FieldsNullableScalarRelationFilter = {
@@ -60656,6 +65100,26 @@ export namespace Prisma {
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
+  export type CeremonyCreateNestedManyWithoutAttendeesInput = {
+    create?: XOR<CeremonyCreateWithoutAttendeesInput, CeremonyUncheckedCreateWithoutAttendeesInput> | CeremonyCreateWithoutAttendeesInput[] | CeremonyUncheckedCreateWithoutAttendeesInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutAttendeesInput | CeremonyCreateOrConnectWithoutAttendeesInput[]
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+  }
+
+  export type ImageCreateNestedManyWithoutUserInput = {
+    create?: XOR<ImageCreateWithoutUserInput, ImageUncheckedCreateWithoutUserInput> | ImageCreateWithoutUserInput[] | ImageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageCreateOrConnectWithoutUserInput | ImageCreateOrConnectWithoutUserInput[]
+    createMany?: ImageCreateManyUserInputEnvelope
+    connect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+  }
+
+  export type PostCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
+    createMany?: PostCreateManyAuthorInputEnvelope
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+  }
+
   export type UserStoryAssigneesUncheckedCreateNestedManyWithoutUsersInput = {
     create?: XOR<UserStoryAssigneesCreateWithoutUsersInput, UserStoryAssigneesUncheckedCreateWithoutUsersInput> | UserStoryAssigneesCreateWithoutUsersInput[] | UserStoryAssigneesUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: UserStoryAssigneesCreateOrConnectWithoutUsersInput | UserStoryAssigneesCreateOrConnectWithoutUsersInput[]
@@ -60810,6 +65274,26 @@ export namespace Prisma {
     create?: XOR<TaskCreateWithoutAssigneesInput, TaskUncheckedCreateWithoutAssigneesInput> | TaskCreateWithoutAssigneesInput[] | TaskUncheckedCreateWithoutAssigneesInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutAssigneesInput | TaskCreateOrConnectWithoutAssigneesInput[]
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
+  export type CeremonyUncheckedCreateNestedManyWithoutAttendeesInput = {
+    create?: XOR<CeremonyCreateWithoutAttendeesInput, CeremonyUncheckedCreateWithoutAttendeesInput> | CeremonyCreateWithoutAttendeesInput[] | CeremonyUncheckedCreateWithoutAttendeesInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutAttendeesInput | CeremonyCreateOrConnectWithoutAttendeesInput[]
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+  }
+
+  export type ImageUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ImageCreateWithoutUserInput, ImageUncheckedCreateWithoutUserInput> | ImageCreateWithoutUserInput[] | ImageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageCreateOrConnectWithoutUserInput | ImageCreateOrConnectWithoutUserInput[]
+    createMany?: ImageCreateManyUserInputEnvelope
+    connect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+  }
+
+  export type PostUncheckedCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
+    createMany?: PostCreateManyAuthorInputEnvelope
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -61149,6 +65633,47 @@ export namespace Prisma {
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
+  export type CeremonyUpdateManyWithoutAttendeesNestedInput = {
+    create?: XOR<CeremonyCreateWithoutAttendeesInput, CeremonyUncheckedCreateWithoutAttendeesInput> | CeremonyCreateWithoutAttendeesInput[] | CeremonyUncheckedCreateWithoutAttendeesInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutAttendeesInput | CeremonyCreateOrConnectWithoutAttendeesInput[]
+    upsert?: CeremonyUpsertWithWhereUniqueWithoutAttendeesInput | CeremonyUpsertWithWhereUniqueWithoutAttendeesInput[]
+    set?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    disconnect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    delete?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    update?: CeremonyUpdateWithWhereUniqueWithoutAttendeesInput | CeremonyUpdateWithWhereUniqueWithoutAttendeesInput[]
+    updateMany?: CeremonyUpdateManyWithWhereWithoutAttendeesInput | CeremonyUpdateManyWithWhereWithoutAttendeesInput[]
+    deleteMany?: CeremonyScalarWhereInput | CeremonyScalarWhereInput[]
+  }
+
+  export type ImageUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ImageCreateWithoutUserInput, ImageUncheckedCreateWithoutUserInput> | ImageCreateWithoutUserInput[] | ImageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageCreateOrConnectWithoutUserInput | ImageCreateOrConnectWithoutUserInput[]
+    upsert?: ImageUpsertWithWhereUniqueWithoutUserInput | ImageUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ImageCreateManyUserInputEnvelope
+    set?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    disconnect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    delete?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    connect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    update?: ImageUpdateWithWhereUniqueWithoutUserInput | ImageUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ImageUpdateManyWithWhereWithoutUserInput | ImageUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ImageScalarWhereInput | ImageScalarWhereInput[]
+  }
+
+  export type PostUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
+    upsert?: PostUpsertWithWhereUniqueWithoutAuthorInput | PostUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: PostCreateManyAuthorInputEnvelope
+    set?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    disconnect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    delete?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    update?: PostUpdateWithWhereUniqueWithoutAuthorInput | PostUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: PostUpdateManyWithWhereWithoutAuthorInput | PostUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
+  }
+
   export type UserStoryAssigneesUncheckedUpdateManyWithoutUsersNestedInput = {
     create?: XOR<UserStoryAssigneesCreateWithoutUsersInput, UserStoryAssigneesUncheckedCreateWithoutUsersInput> | UserStoryAssigneesCreateWithoutUsersInput[] | UserStoryAssigneesUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: UserStoryAssigneesCreateOrConnectWithoutUsersInput | UserStoryAssigneesCreateOrConnectWithoutUsersInput[]
@@ -61466,6 +65991,47 @@ export namespace Prisma {
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
+  export type CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput = {
+    create?: XOR<CeremonyCreateWithoutAttendeesInput, CeremonyUncheckedCreateWithoutAttendeesInput> | CeremonyCreateWithoutAttendeesInput[] | CeremonyUncheckedCreateWithoutAttendeesInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutAttendeesInput | CeremonyCreateOrConnectWithoutAttendeesInput[]
+    upsert?: CeremonyUpsertWithWhereUniqueWithoutAttendeesInput | CeremonyUpsertWithWhereUniqueWithoutAttendeesInput[]
+    set?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    disconnect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    delete?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    update?: CeremonyUpdateWithWhereUniqueWithoutAttendeesInput | CeremonyUpdateWithWhereUniqueWithoutAttendeesInput[]
+    updateMany?: CeremonyUpdateManyWithWhereWithoutAttendeesInput | CeremonyUpdateManyWithWhereWithoutAttendeesInput[]
+    deleteMany?: CeremonyScalarWhereInput | CeremonyScalarWhereInput[]
+  }
+
+  export type ImageUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ImageCreateWithoutUserInput, ImageUncheckedCreateWithoutUserInput> | ImageCreateWithoutUserInput[] | ImageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageCreateOrConnectWithoutUserInput | ImageCreateOrConnectWithoutUserInput[]
+    upsert?: ImageUpsertWithWhereUniqueWithoutUserInput | ImageUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ImageCreateManyUserInputEnvelope
+    set?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    disconnect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    delete?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    connect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    update?: ImageUpdateWithWhereUniqueWithoutUserInput | ImageUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ImageUpdateManyWithWhereWithoutUserInput | ImageUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ImageScalarWhereInput | ImageScalarWhereInput[]
+  }
+
+  export type PostUncheckedUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput> | PostCreateWithoutAuthorInput[] | PostUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutAuthorInput | PostCreateOrConnectWithoutAuthorInput[]
+    upsert?: PostUpsertWithWhereUniqueWithoutAuthorInput | PostUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: PostCreateManyAuthorInputEnvelope
+    set?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    disconnect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    delete?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    update?: PostUpdateWithWhereUniqueWithoutAuthorInput | PostUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: PostUpdateManyWithWhereWithoutAuthorInput | PostUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutAccountsInput = {
     create?: XOR<UserCreateWithoutAccountsInput, UserUncheckedCreateWithoutAccountsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAccountsInput
@@ -61528,6 +66094,13 @@ export namespace Prisma {
     connect?: TemplateWhereUniqueInput | TemplateWhereUniqueInput[]
   }
 
+  export type CeremonyCreateNestedManyWithoutTeamInput = {
+    create?: XOR<CeremonyCreateWithoutTeamInput, CeremonyUncheckedCreateWithoutTeamInput> | CeremonyCreateWithoutTeamInput[] | CeremonyUncheckedCreateWithoutTeamInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutTeamInput | CeremonyCreateOrConnectWithoutTeamInput[]
+    createMany?: CeremonyCreateManyTeamInputEnvelope
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+  }
+
   export type fieldsUncheckedCreateNestedManyWithoutTeamsInput = {
     create?: XOR<fieldsCreateWithoutTeamsInput, fieldsUncheckedCreateWithoutTeamsInput> | fieldsCreateWithoutTeamsInput[] | fieldsUncheckedCreateWithoutTeamsInput[]
     connectOrCreate?: fieldsCreateOrConnectWithoutTeamsInput | fieldsCreateOrConnectWithoutTeamsInput[]
@@ -61554,6 +66127,13 @@ export namespace Prisma {
     connectOrCreate?: TemplateCreateOrConnectWithoutTeamInput | TemplateCreateOrConnectWithoutTeamInput[]
     createMany?: TemplateCreateManyTeamInputEnvelope
     connect?: TemplateWhereUniqueInput | TemplateWhereUniqueInput[]
+  }
+
+  export type CeremonyUncheckedCreateNestedManyWithoutTeamInput = {
+    create?: XOR<CeremonyCreateWithoutTeamInput, CeremonyUncheckedCreateWithoutTeamInput> | CeremonyCreateWithoutTeamInput[] | CeremonyUncheckedCreateWithoutTeamInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutTeamInput | CeremonyCreateOrConnectWithoutTeamInput[]
+    createMany?: CeremonyCreateManyTeamInputEnvelope
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -61630,6 +66210,20 @@ export namespace Prisma {
     deleteMany?: TemplateScalarWhereInput | TemplateScalarWhereInput[]
   }
 
+  export type CeremonyUpdateManyWithoutTeamNestedInput = {
+    create?: XOR<CeremonyCreateWithoutTeamInput, CeremonyUncheckedCreateWithoutTeamInput> | CeremonyCreateWithoutTeamInput[] | CeremonyUncheckedCreateWithoutTeamInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutTeamInput | CeremonyCreateOrConnectWithoutTeamInput[]
+    upsert?: CeremonyUpsertWithWhereUniqueWithoutTeamInput | CeremonyUpsertWithWhereUniqueWithoutTeamInput[]
+    createMany?: CeremonyCreateManyTeamInputEnvelope
+    set?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    disconnect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    delete?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    update?: CeremonyUpdateWithWhereUniqueWithoutTeamInput | CeremonyUpdateWithWhereUniqueWithoutTeamInput[]
+    updateMany?: CeremonyUpdateManyWithWhereWithoutTeamInput | CeremonyUpdateManyWithWhereWithoutTeamInput[]
+    deleteMany?: CeremonyScalarWhereInput | CeremonyScalarWhereInput[]
+  }
+
   export type fieldsUncheckedUpdateManyWithoutTeamsNestedInput = {
     create?: XOR<fieldsCreateWithoutTeamsInput, fieldsUncheckedCreateWithoutTeamsInput> | fieldsCreateWithoutTeamsInput[] | fieldsUncheckedCreateWithoutTeamsInput[]
     connectOrCreate?: fieldsCreateOrConnectWithoutTeamsInput | fieldsCreateOrConnectWithoutTeamsInput[]
@@ -61684,6 +66278,20 @@ export namespace Prisma {
     update?: TemplateUpdateWithWhereUniqueWithoutTeamInput | TemplateUpdateWithWhereUniqueWithoutTeamInput[]
     updateMany?: TemplateUpdateManyWithWhereWithoutTeamInput | TemplateUpdateManyWithWhereWithoutTeamInput[]
     deleteMany?: TemplateScalarWhereInput | TemplateScalarWhereInput[]
+  }
+
+  export type CeremonyUncheckedUpdateManyWithoutTeamNestedInput = {
+    create?: XOR<CeremonyCreateWithoutTeamInput, CeremonyUncheckedCreateWithoutTeamInput> | CeremonyCreateWithoutTeamInput[] | CeremonyUncheckedCreateWithoutTeamInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutTeamInput | CeremonyCreateOrConnectWithoutTeamInput[]
+    upsert?: CeremonyUpsertWithWhereUniqueWithoutTeamInput | CeremonyUpsertWithWhereUniqueWithoutTeamInput[]
+    createMany?: CeremonyCreateManyTeamInputEnvelope
+    set?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    disconnect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    delete?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    update?: CeremonyUpdateWithWhereUniqueWithoutTeamInput | CeremonyUpdateWithWhereUniqueWithoutTeamInput[]
+    updateMany?: CeremonyUpdateManyWithWhereWithoutTeamInput | CeremonyUpdateManyWithWhereWithoutTeamInput[]
+    deleteMany?: CeremonyScalarWhereInput | CeremonyScalarWhereInput[]
   }
 
   export type TeamCreateNestedOneWithoutMembersInput = {
@@ -61799,6 +66407,13 @@ export namespace Prisma {
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
+  export type CeremonyCreateNestedManyWithoutProjectInput = {
+    create?: XOR<CeremonyCreateWithoutProjectInput, CeremonyUncheckedCreateWithoutProjectInput> | CeremonyCreateWithoutProjectInput[] | CeremonyUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutProjectInput | CeremonyCreateOrConnectWithoutProjectInput[]
+    createMany?: CeremonyCreateManyProjectInputEnvelope
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+  }
+
   export type ChannelUncheckedCreateNestedManyWithoutProjectInput = {
     create?: XOR<ChannelCreateWithoutProjectInput, ChannelUncheckedCreateWithoutProjectInput> | ChannelCreateWithoutProjectInput[] | ChannelUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ChannelCreateOrConnectWithoutProjectInput | ChannelCreateOrConnectWithoutProjectInput[]
@@ -61878,6 +66493,13 @@ export namespace Prisma {
     connectOrCreate?: TaskCreateOrConnectWithoutProjectInput | TaskCreateOrConnectWithoutProjectInput[]
     createMany?: TaskCreateManyProjectInputEnvelope
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
+  export type CeremonyUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<CeremonyCreateWithoutProjectInput, CeremonyUncheckedCreateWithoutProjectInput> | CeremonyCreateWithoutProjectInput[] | CeremonyUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutProjectInput | CeremonyCreateOrConnectWithoutProjectInput[]
+    createMany?: CeremonyCreateManyProjectInputEnvelope
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
   }
 
   export type ChannelUpdateManyWithoutProjectNestedInput = {
@@ -62045,6 +66667,20 @@ export namespace Prisma {
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
+  export type CeremonyUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<CeremonyCreateWithoutProjectInput, CeremonyUncheckedCreateWithoutProjectInput> | CeremonyCreateWithoutProjectInput[] | CeremonyUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutProjectInput | CeremonyCreateOrConnectWithoutProjectInput[]
+    upsert?: CeremonyUpsertWithWhereUniqueWithoutProjectInput | CeremonyUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: CeremonyCreateManyProjectInputEnvelope
+    set?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    disconnect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    delete?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    update?: CeremonyUpdateWithWhereUniqueWithoutProjectInput | CeremonyUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: CeremonyUpdateManyWithWhereWithoutProjectInput | CeremonyUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: CeremonyScalarWhereInput | CeremonyScalarWhereInput[]
+  }
+
   export type ChannelUncheckedUpdateManyWithoutProjectNestedInput = {
     create?: XOR<ChannelCreateWithoutProjectInput, ChannelUncheckedCreateWithoutProjectInput> | ChannelCreateWithoutProjectInput[] | ChannelUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ChannelCreateOrConnectWithoutProjectInput | ChannelCreateOrConnectWithoutProjectInput[]
@@ -62208,6 +66844,20 @@ export namespace Prisma {
     update?: TaskUpdateWithWhereUniqueWithoutProjectInput | TaskUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: TaskUpdateManyWithWhereWithoutProjectInput | TaskUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
+  export type CeremonyUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<CeremonyCreateWithoutProjectInput, CeremonyUncheckedCreateWithoutProjectInput> | CeremonyCreateWithoutProjectInput[] | CeremonyUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutProjectInput | CeremonyCreateOrConnectWithoutProjectInput[]
+    upsert?: CeremonyUpsertWithWhereUniqueWithoutProjectInput | CeremonyUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: CeremonyCreateManyProjectInputEnvelope
+    set?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    disconnect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    delete?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    update?: CeremonyUpdateWithWhereUniqueWithoutProjectInput | CeremonyUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: CeremonyUpdateManyWithWhereWithoutProjectInput | CeremonyUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: CeremonyScalarWhereInput | CeremonyScalarWhereInput[]
   }
 
   export type ProjectCreateNestedOneWithoutMembersInput = {
@@ -62866,7 +67516,6 @@ export namespace Prisma {
   export type CommentCreateNestedManyWithoutUserStoryInput = {
     create?: XOR<CommentCreateWithoutUserStoryInput, CommentUncheckedCreateWithoutUserStoryInput> | CommentCreateWithoutUserStoryInput[] | CommentUncheckedCreateWithoutUserStoryInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutUserStoryInput | CommentCreateOrConnectWithoutUserStoryInput[]
-    createMany?: CommentCreateManyUserStoryInputEnvelope
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
   }
 
@@ -62944,7 +67593,6 @@ export namespace Prisma {
   export type CommentUncheckedCreateNestedManyWithoutUserStoryInput = {
     create?: XOR<CommentCreateWithoutUserStoryInput, CommentUncheckedCreateWithoutUserStoryInput> | CommentCreateWithoutUserStoryInput[] | CommentUncheckedCreateWithoutUserStoryInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutUserStoryInput | CommentCreateOrConnectWithoutUserStoryInput[]
-    createMany?: CommentCreateManyUserStoryInputEnvelope
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
   }
 
@@ -63032,7 +67680,6 @@ export namespace Prisma {
     create?: XOR<CommentCreateWithoutUserStoryInput, CommentUncheckedCreateWithoutUserStoryInput> | CommentCreateWithoutUserStoryInput[] | CommentUncheckedCreateWithoutUserStoryInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutUserStoryInput | CommentCreateOrConnectWithoutUserStoryInput[]
     upsert?: CommentUpsertWithWhereUniqueWithoutUserStoryInput | CommentUpsertWithWhereUniqueWithoutUserStoryInput[]
-    createMany?: CommentCreateManyUserStoryInputEnvelope
     set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
@@ -63184,7 +67831,6 @@ export namespace Prisma {
     create?: XOR<CommentCreateWithoutUserStoryInput, CommentUncheckedCreateWithoutUserStoryInput> | CommentCreateWithoutUserStoryInput[] | CommentUncheckedCreateWithoutUserStoryInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutUserStoryInput | CommentCreateOrConnectWithoutUserStoryInput[]
     upsert?: CommentUpsertWithWhereUniqueWithoutUserStoryInput | CommentUpsertWithWhereUniqueWithoutUserStoryInput[]
-    createMany?: CommentCreateManyUserStoryInputEnvelope
     set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
@@ -63341,7 +67987,6 @@ export namespace Prisma {
   export type CommentCreateNestedManyWithoutTaskInput = {
     create?: XOR<CommentCreateWithoutTaskInput, CommentUncheckedCreateWithoutTaskInput> | CommentCreateWithoutTaskInput[] | CommentUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutTaskInput | CommentCreateOrConnectWithoutTaskInput[]
-    createMany?: CommentCreateManyTaskInputEnvelope
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
   }
 
@@ -63417,7 +68062,6 @@ export namespace Prisma {
   export type CommentUncheckedCreateNestedManyWithoutTaskInput = {
     create?: XOR<CommentCreateWithoutTaskInput, CommentUncheckedCreateWithoutTaskInput> | CommentCreateWithoutTaskInput[] | CommentUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutTaskInput | CommentCreateOrConnectWithoutTaskInput[]
-    createMany?: CommentCreateManyTaskInputEnvelope
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
   }
 
@@ -63492,7 +68136,6 @@ export namespace Prisma {
     create?: XOR<CommentCreateWithoutTaskInput, CommentUncheckedCreateWithoutTaskInput> | CommentCreateWithoutTaskInput[] | CommentUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutTaskInput | CommentCreateOrConnectWithoutTaskInput[]
     upsert?: CommentUpsertWithWhereUniqueWithoutTaskInput | CommentUpsertWithWhereUniqueWithoutTaskInput[]
-    createMany?: CommentCreateManyTaskInputEnvelope
     set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
@@ -63644,7 +68287,6 @@ export namespace Prisma {
     create?: XOR<CommentCreateWithoutTaskInput, CommentUncheckedCreateWithoutTaskInput> | CommentCreateWithoutTaskInput[] | CommentUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutTaskInput | CommentCreateOrConnectWithoutTaskInput[]
     upsert?: CommentUpsertWithWhereUniqueWithoutTaskInput | CommentUpsertWithWhereUniqueWithoutTaskInput[]
-    createMany?: CommentCreateManyTaskInputEnvelope
     set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
@@ -63847,6 +68489,13 @@ export namespace Prisma {
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
+  export type CeremonyCreateNestedManyWithoutSprintInput = {
+    create?: XOR<CeremonyCreateWithoutSprintInput, CeremonyUncheckedCreateWithoutSprintInput> | CeremonyCreateWithoutSprintInput[] | CeremonyUncheckedCreateWithoutSprintInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutSprintInput | CeremonyCreateOrConnectWithoutSprintInput[]
+    createMany?: CeremonyCreateManySprintInputEnvelope
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+  }
+
   export type FileUncheckedCreateNestedManyWithoutSprintInput = {
     create?: XOR<FileCreateWithoutSprintInput, FileUncheckedCreateWithoutSprintInput> | FileCreateWithoutSprintInput[] | FileUncheckedCreateWithoutSprintInput[]
     connectOrCreate?: FileCreateOrConnectWithoutSprintInput | FileCreateOrConnectWithoutSprintInput[]
@@ -63884,6 +68533,13 @@ export namespace Prisma {
     create?: XOR<TaskCreateWithoutSprintsInput, TaskUncheckedCreateWithoutSprintsInput> | TaskCreateWithoutSprintsInput[] | TaskUncheckedCreateWithoutSprintsInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutSprintsInput | TaskCreateOrConnectWithoutSprintsInput[]
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
+  export type CeremonyUncheckedCreateNestedManyWithoutSprintInput = {
+    create?: XOR<CeremonyCreateWithoutSprintInput, CeremonyUncheckedCreateWithoutSprintInput> | CeremonyCreateWithoutSprintInput[] | CeremonyUncheckedCreateWithoutSprintInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutSprintInput | CeremonyCreateOrConnectWithoutSprintInput[]
+    createMany?: CeremonyCreateManySprintInputEnvelope
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
   }
 
   export type EnumSprintStatusFieldUpdateOperationsInput = {
@@ -63979,6 +68635,20 @@ export namespace Prisma {
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
+  export type CeremonyUpdateManyWithoutSprintNestedInput = {
+    create?: XOR<CeremonyCreateWithoutSprintInput, CeremonyUncheckedCreateWithoutSprintInput> | CeremonyCreateWithoutSprintInput[] | CeremonyUncheckedCreateWithoutSprintInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutSprintInput | CeremonyCreateOrConnectWithoutSprintInput[]
+    upsert?: CeremonyUpsertWithWhereUniqueWithoutSprintInput | CeremonyUpsertWithWhereUniqueWithoutSprintInput[]
+    createMany?: CeremonyCreateManySprintInputEnvelope
+    set?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    disconnect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    delete?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    update?: CeremonyUpdateWithWhereUniqueWithoutSprintInput | CeremonyUpdateWithWhereUniqueWithoutSprintInput[]
+    updateMany?: CeremonyUpdateManyWithWhereWithoutSprintInput | CeremonyUpdateManyWithWhereWithoutSprintInput[]
+    deleteMany?: CeremonyScalarWhereInput | CeremonyScalarWhereInput[]
+  }
+
   export type FileUncheckedUpdateManyWithoutSprintNestedInput = {
     create?: XOR<FileCreateWithoutSprintInput, FileUncheckedCreateWithoutSprintInput> | FileCreateWithoutSprintInput[] | FileUncheckedCreateWithoutSprintInput[]
     connectOrCreate?: FileCreateOrConnectWithoutSprintInput | FileCreateOrConnectWithoutSprintInput[]
@@ -64060,6 +68730,20 @@ export namespace Prisma {
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
+  export type CeremonyUncheckedUpdateManyWithoutSprintNestedInput = {
+    create?: XOR<CeremonyCreateWithoutSprintInput, CeremonyUncheckedCreateWithoutSprintInput> | CeremonyCreateWithoutSprintInput[] | CeremonyUncheckedCreateWithoutSprintInput[]
+    connectOrCreate?: CeremonyCreateOrConnectWithoutSprintInput | CeremonyCreateOrConnectWithoutSprintInput[]
+    upsert?: CeremonyUpsertWithWhereUniqueWithoutSprintInput | CeremonyUpsertWithWhereUniqueWithoutSprintInput[]
+    createMany?: CeremonyCreateManySprintInputEnvelope
+    set?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    disconnect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    delete?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    connect?: CeremonyWhereUniqueInput | CeremonyWhereUniqueInput[]
+    update?: CeremonyUpdateWithWhereUniqueWithoutSprintInput | CeremonyUpdateWithWhereUniqueWithoutSprintInput[]
+    updateMany?: CeremonyUpdateManyWithWhereWithoutSprintInput | CeremonyUpdateManyWithWhereWithoutSprintInput[]
+    deleteMany?: CeremonyScalarWhereInput | CeremonyScalarWhereInput[]
+  }
+
   export type FileCreatetagsInput = {
     set: string[]
   }
@@ -64067,7 +68751,6 @@ export namespace Prisma {
   export type CommentCreateNestedManyWithoutFileInput = {
     create?: XOR<CommentCreateWithoutFileInput, CommentUncheckedCreateWithoutFileInput> | CommentCreateWithoutFileInput[] | CommentUncheckedCreateWithoutFileInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutFileInput | CommentCreateOrConnectWithoutFileInput[]
-    createMany?: CommentCreateManyFileInputEnvelope
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
   }
 
@@ -64136,7 +68819,6 @@ export namespace Prisma {
   export type CommentUncheckedCreateNestedManyWithoutFileInput = {
     create?: XOR<CommentCreateWithoutFileInput, CommentUncheckedCreateWithoutFileInput> | CommentCreateWithoutFileInput[] | CommentUncheckedCreateWithoutFileInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutFileInput | CommentCreateOrConnectWithoutFileInput[]
-    createMany?: CommentCreateManyFileInputEnvelope
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
   }
 
@@ -64185,7 +68867,6 @@ export namespace Prisma {
     create?: XOR<CommentCreateWithoutFileInput, CommentUncheckedCreateWithoutFileInput> | CommentCreateWithoutFileInput[] | CommentUncheckedCreateWithoutFileInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutFileInput | CommentCreateOrConnectWithoutFileInput[]
     upsert?: CommentUpsertWithWhereUniqueWithoutFileInput | CommentUpsertWithWhereUniqueWithoutFileInput[]
-    createMany?: CommentCreateManyFileInputEnvelope
     set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
@@ -64314,7 +68995,6 @@ export namespace Prisma {
     create?: XOR<CommentCreateWithoutFileInput, CommentUncheckedCreateWithoutFileInput> | CommentCreateWithoutFileInput[] | CommentUncheckedCreateWithoutFileInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutFileInput | CommentCreateOrConnectWithoutFileInput[]
     upsert?: CommentUpsertWithWhereUniqueWithoutFileInput | CommentUpsertWithWhereUniqueWithoutFileInput[]
-    createMany?: CommentCreateManyFileInputEnvelope
     set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
@@ -64419,8 +69099,266 @@ export namespace Prisma {
     update?: XOR<XOR<FileUpdateToOneWithWhereWithoutVersionsInput, FileUpdateWithoutVersionsInput>, FileUncheckedUpdateWithoutVersionsInput>
   }
 
-  export type CommentCreatementionsInput = {
-    set: string[]
+  export type SprintCreateNestedOneWithoutCeremonyInput = {
+    create?: XOR<SprintCreateWithoutCeremonyInput, SprintUncheckedCreateWithoutCeremonyInput>
+    connectOrCreate?: SprintCreateOrConnectWithoutCeremonyInput
+    connect?: SprintWhereUniqueInput
+  }
+
+  export type ProjectCreateNestedOneWithoutCeremonyInput = {
+    create?: XOR<ProjectCreateWithoutCeremonyInput, ProjectUncheckedCreateWithoutCeremonyInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutCeremonyInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type TeamCreateNestedOneWithoutCeremonyInput = {
+    create?: XOR<TeamCreateWithoutCeremonyInput, TeamUncheckedCreateWithoutCeremonyInput>
+    connectOrCreate?: TeamCreateOrConnectWithoutCeremonyInput
+    connect?: TeamWhereUniqueInput
+  }
+
+  export type UserCreateNestedManyWithoutCeremonyInput = {
+    create?: XOR<UserCreateWithoutCeremonyInput, UserUncheckedCreateWithoutCeremonyInput> | UserCreateWithoutCeremonyInput[] | UserUncheckedCreateWithoutCeremonyInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutCeremonyInput | UserCreateOrConnectWithoutCeremonyInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutCeremonyInput = {
+    create?: XOR<UserCreateWithoutCeremonyInput, UserUncheckedCreateWithoutCeremonyInput> | UserCreateWithoutCeremonyInput[] | UserUncheckedCreateWithoutCeremonyInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutCeremonyInput | UserCreateOrConnectWithoutCeremonyInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type EnumCeremonyTypeFieldUpdateOperationsInput = {
+    set?: $Enums.CeremonyType
+  }
+
+  export type SprintUpdateOneWithoutCeremonyNestedInput = {
+    create?: XOR<SprintCreateWithoutCeremonyInput, SprintUncheckedCreateWithoutCeremonyInput>
+    connectOrCreate?: SprintCreateOrConnectWithoutCeremonyInput
+    upsert?: SprintUpsertWithoutCeremonyInput
+    disconnect?: SprintWhereInput | boolean
+    delete?: SprintWhereInput | boolean
+    connect?: SprintWhereUniqueInput
+    update?: XOR<XOR<SprintUpdateToOneWithWhereWithoutCeremonyInput, SprintUpdateWithoutCeremonyInput>, SprintUncheckedUpdateWithoutCeremonyInput>
+  }
+
+  export type ProjectUpdateOneRequiredWithoutCeremonyNestedInput = {
+    create?: XOR<ProjectCreateWithoutCeremonyInput, ProjectUncheckedCreateWithoutCeremonyInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutCeremonyInput
+    upsert?: ProjectUpsertWithoutCeremonyInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutCeremonyInput, ProjectUpdateWithoutCeremonyInput>, ProjectUncheckedUpdateWithoutCeremonyInput>
+  }
+
+  export type TeamUpdateOneWithoutCeremonyNestedInput = {
+    create?: XOR<TeamCreateWithoutCeremonyInput, TeamUncheckedCreateWithoutCeremonyInput>
+    connectOrCreate?: TeamCreateOrConnectWithoutCeremonyInput
+    upsert?: TeamUpsertWithoutCeremonyInput
+    disconnect?: TeamWhereInput | boolean
+    delete?: TeamWhereInput | boolean
+    connect?: TeamWhereUniqueInput
+    update?: XOR<XOR<TeamUpdateToOneWithWhereWithoutCeremonyInput, TeamUpdateWithoutCeremonyInput>, TeamUncheckedUpdateWithoutCeremonyInput>
+  }
+
+  export type UserUpdateManyWithoutCeremonyNestedInput = {
+    create?: XOR<UserCreateWithoutCeremonyInput, UserUncheckedCreateWithoutCeremonyInput> | UserCreateWithoutCeremonyInput[] | UserUncheckedCreateWithoutCeremonyInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutCeremonyInput | UserCreateOrConnectWithoutCeremonyInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutCeremonyInput | UserUpsertWithWhereUniqueWithoutCeremonyInput[]
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutCeremonyInput | UserUpdateWithWhereUniqueWithoutCeremonyInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutCeremonyInput | UserUpdateManyWithWhereWithoutCeremonyInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type UserUncheckedUpdateManyWithoutCeremonyNestedInput = {
+    create?: XOR<UserCreateWithoutCeremonyInput, UserUncheckedCreateWithoutCeremonyInput> | UserCreateWithoutCeremonyInput[] | UserUncheckedCreateWithoutCeremonyInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutCeremonyInput | UserCreateOrConnectWithoutCeremonyInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutCeremonyInput | UserUpsertWithWhereUniqueWithoutCeremonyInput[]
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutCeremonyInput | UserUpdateWithWhereUniqueWithoutCeremonyInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutCeremonyInput | UserUpdateManyWithWhereWithoutCeremonyInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type CommentCreateNestedManyWithoutPostInput = {
+    create?: XOR<CommentCreateWithoutPostInput, CommentUncheckedCreateWithoutPostInput> | CommentCreateWithoutPostInput[] | CommentUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: CommentCreateOrConnectWithoutPostInput | CommentCreateOrConnectWithoutPostInput[]
+    createMany?: CommentCreateManyPostInputEnvelope
+    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+  }
+
+  export type ImageCreateNestedManyWithoutPostInput = {
+    create?: XOR<ImageCreateWithoutPostInput, ImageUncheckedCreateWithoutPostInput> | ImageCreateWithoutPostInput[] | ImageUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: ImageCreateOrConnectWithoutPostInput | ImageCreateOrConnectWithoutPostInput[]
+    createMany?: ImageCreateManyPostInputEnvelope
+    connect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+  }
+
+  export type UserCreateNestedOneWithoutPostInput = {
+    create?: XOR<UserCreateWithoutPostInput, UserUncheckedCreateWithoutPostInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPostInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type CategoryCreateNestedManyWithoutPostsInput = {
+    create?: XOR<CategoryCreateWithoutPostsInput, CategoryUncheckedCreateWithoutPostsInput> | CategoryCreateWithoutPostsInput[] | CategoryUncheckedCreateWithoutPostsInput[]
+    connectOrCreate?: CategoryCreateOrConnectWithoutPostsInput | CategoryCreateOrConnectWithoutPostsInput[]
+    connect?: CategoryWhereUniqueInput | CategoryWhereUniqueInput[]
+  }
+
+  export type TagCreateNestedManyWithoutPostsInput = {
+    create?: XOR<TagCreateWithoutPostsInput, TagUncheckedCreateWithoutPostsInput> | TagCreateWithoutPostsInput[] | TagUncheckedCreateWithoutPostsInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutPostsInput | TagCreateOrConnectWithoutPostsInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
+  export type CommentUncheckedCreateNestedManyWithoutPostInput = {
+    create?: XOR<CommentCreateWithoutPostInput, CommentUncheckedCreateWithoutPostInput> | CommentCreateWithoutPostInput[] | CommentUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: CommentCreateOrConnectWithoutPostInput | CommentCreateOrConnectWithoutPostInput[]
+    createMany?: CommentCreateManyPostInputEnvelope
+    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+  }
+
+  export type ImageUncheckedCreateNestedManyWithoutPostInput = {
+    create?: XOR<ImageCreateWithoutPostInput, ImageUncheckedCreateWithoutPostInput> | ImageCreateWithoutPostInput[] | ImageUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: ImageCreateOrConnectWithoutPostInput | ImageCreateOrConnectWithoutPostInput[]
+    createMany?: ImageCreateManyPostInputEnvelope
+    connect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+  }
+
+  export type CategoryUncheckedCreateNestedManyWithoutPostsInput = {
+    create?: XOR<CategoryCreateWithoutPostsInput, CategoryUncheckedCreateWithoutPostsInput> | CategoryCreateWithoutPostsInput[] | CategoryUncheckedCreateWithoutPostsInput[]
+    connectOrCreate?: CategoryCreateOrConnectWithoutPostsInput | CategoryCreateOrConnectWithoutPostsInput[]
+    connect?: CategoryWhereUniqueInput | CategoryWhereUniqueInput[]
+  }
+
+  export type TagUncheckedCreateNestedManyWithoutPostsInput = {
+    create?: XOR<TagCreateWithoutPostsInput, TagUncheckedCreateWithoutPostsInput> | TagCreateWithoutPostsInput[] | TagUncheckedCreateWithoutPostsInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutPostsInput | TagCreateOrConnectWithoutPostsInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
+  export type CommentUpdateManyWithoutPostNestedInput = {
+    create?: XOR<CommentCreateWithoutPostInput, CommentUncheckedCreateWithoutPostInput> | CommentCreateWithoutPostInput[] | CommentUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: CommentCreateOrConnectWithoutPostInput | CommentCreateOrConnectWithoutPostInput[]
+    upsert?: CommentUpsertWithWhereUniqueWithoutPostInput | CommentUpsertWithWhereUniqueWithoutPostInput[]
+    createMany?: CommentCreateManyPostInputEnvelope
+    set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    update?: CommentUpdateWithWhereUniqueWithoutPostInput | CommentUpdateWithWhereUniqueWithoutPostInput[]
+    updateMany?: CommentUpdateManyWithWhereWithoutPostInput | CommentUpdateManyWithWhereWithoutPostInput[]
+    deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
+  }
+
+  export type ImageUpdateManyWithoutPostNestedInput = {
+    create?: XOR<ImageCreateWithoutPostInput, ImageUncheckedCreateWithoutPostInput> | ImageCreateWithoutPostInput[] | ImageUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: ImageCreateOrConnectWithoutPostInput | ImageCreateOrConnectWithoutPostInput[]
+    upsert?: ImageUpsertWithWhereUniqueWithoutPostInput | ImageUpsertWithWhereUniqueWithoutPostInput[]
+    createMany?: ImageCreateManyPostInputEnvelope
+    set?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    disconnect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    delete?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    connect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    update?: ImageUpdateWithWhereUniqueWithoutPostInput | ImageUpdateWithWhereUniqueWithoutPostInput[]
+    updateMany?: ImageUpdateManyWithWhereWithoutPostInput | ImageUpdateManyWithWhereWithoutPostInput[]
+    deleteMany?: ImageScalarWhereInput | ImageScalarWhereInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutPostNestedInput = {
+    create?: XOR<UserCreateWithoutPostInput, UserUncheckedCreateWithoutPostInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPostInput
+    upsert?: UserUpsertWithoutPostInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPostInput, UserUpdateWithoutPostInput>, UserUncheckedUpdateWithoutPostInput>
+  }
+
+  export type CategoryUpdateManyWithoutPostsNestedInput = {
+    create?: XOR<CategoryCreateWithoutPostsInput, CategoryUncheckedCreateWithoutPostsInput> | CategoryCreateWithoutPostsInput[] | CategoryUncheckedCreateWithoutPostsInput[]
+    connectOrCreate?: CategoryCreateOrConnectWithoutPostsInput | CategoryCreateOrConnectWithoutPostsInput[]
+    upsert?: CategoryUpsertWithWhereUniqueWithoutPostsInput | CategoryUpsertWithWhereUniqueWithoutPostsInput[]
+    set?: CategoryWhereUniqueInput | CategoryWhereUniqueInput[]
+    disconnect?: CategoryWhereUniqueInput | CategoryWhereUniqueInput[]
+    delete?: CategoryWhereUniqueInput | CategoryWhereUniqueInput[]
+    connect?: CategoryWhereUniqueInput | CategoryWhereUniqueInput[]
+    update?: CategoryUpdateWithWhereUniqueWithoutPostsInput | CategoryUpdateWithWhereUniqueWithoutPostsInput[]
+    updateMany?: CategoryUpdateManyWithWhereWithoutPostsInput | CategoryUpdateManyWithWhereWithoutPostsInput[]
+    deleteMany?: CategoryScalarWhereInput | CategoryScalarWhereInput[]
+  }
+
+  export type TagUpdateManyWithoutPostsNestedInput = {
+    create?: XOR<TagCreateWithoutPostsInput, TagUncheckedCreateWithoutPostsInput> | TagCreateWithoutPostsInput[] | TagUncheckedCreateWithoutPostsInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutPostsInput | TagCreateOrConnectWithoutPostsInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutPostsInput | TagUpsertWithWhereUniqueWithoutPostsInput[]
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutPostsInput | TagUpdateWithWhereUniqueWithoutPostsInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutPostsInput | TagUpdateManyWithWhereWithoutPostsInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
+  export type CommentUncheckedUpdateManyWithoutPostNestedInput = {
+    create?: XOR<CommentCreateWithoutPostInput, CommentUncheckedCreateWithoutPostInput> | CommentCreateWithoutPostInput[] | CommentUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: CommentCreateOrConnectWithoutPostInput | CommentCreateOrConnectWithoutPostInput[]
+    upsert?: CommentUpsertWithWhereUniqueWithoutPostInput | CommentUpsertWithWhereUniqueWithoutPostInput[]
+    createMany?: CommentCreateManyPostInputEnvelope
+    set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    update?: CommentUpdateWithWhereUniqueWithoutPostInput | CommentUpdateWithWhereUniqueWithoutPostInput[]
+    updateMany?: CommentUpdateManyWithWhereWithoutPostInput | CommentUpdateManyWithWhereWithoutPostInput[]
+    deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
+  }
+
+  export type ImageUncheckedUpdateManyWithoutPostNestedInput = {
+    create?: XOR<ImageCreateWithoutPostInput, ImageUncheckedCreateWithoutPostInput> | ImageCreateWithoutPostInput[] | ImageUncheckedCreateWithoutPostInput[]
+    connectOrCreate?: ImageCreateOrConnectWithoutPostInput | ImageCreateOrConnectWithoutPostInput[]
+    upsert?: ImageUpsertWithWhereUniqueWithoutPostInput | ImageUpsertWithWhereUniqueWithoutPostInput[]
+    createMany?: ImageCreateManyPostInputEnvelope
+    set?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    disconnect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    delete?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    connect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    update?: ImageUpdateWithWhereUniqueWithoutPostInput | ImageUpdateWithWhereUniqueWithoutPostInput[]
+    updateMany?: ImageUpdateManyWithWhereWithoutPostInput | ImageUpdateManyWithWhereWithoutPostInput[]
+    deleteMany?: ImageScalarWhereInput | ImageScalarWhereInput[]
+  }
+
+  export type CategoryUncheckedUpdateManyWithoutPostsNestedInput = {
+    create?: XOR<CategoryCreateWithoutPostsInput, CategoryUncheckedCreateWithoutPostsInput> | CategoryCreateWithoutPostsInput[] | CategoryUncheckedCreateWithoutPostsInput[]
+    connectOrCreate?: CategoryCreateOrConnectWithoutPostsInput | CategoryCreateOrConnectWithoutPostsInput[]
+    upsert?: CategoryUpsertWithWhereUniqueWithoutPostsInput | CategoryUpsertWithWhereUniqueWithoutPostsInput[]
+    set?: CategoryWhereUniqueInput | CategoryWhereUniqueInput[]
+    disconnect?: CategoryWhereUniqueInput | CategoryWhereUniqueInput[]
+    delete?: CategoryWhereUniqueInput | CategoryWhereUniqueInput[]
+    connect?: CategoryWhereUniqueInput | CategoryWhereUniqueInput[]
+    update?: CategoryUpdateWithWhereUniqueWithoutPostsInput | CategoryUpdateWithWhereUniqueWithoutPostsInput[]
+    updateMany?: CategoryUpdateManyWithWhereWithoutPostsInput | CategoryUpdateManyWithWhereWithoutPostsInput[]
+    deleteMany?: CategoryScalarWhereInput | CategoryScalarWhereInput[]
+  }
+
+  export type TagUncheckedUpdateManyWithoutPostsNestedInput = {
+    create?: XOR<TagCreateWithoutPostsInput, TagUncheckedCreateWithoutPostsInput> | TagCreateWithoutPostsInput[] | TagUncheckedCreateWithoutPostsInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutPostsInput | TagCreateOrConnectWithoutPostsInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutPostsInput | TagUpsertWithWhereUniqueWithoutPostsInput[]
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutPostsInput | TagUpdateWithWhereUniqueWithoutPostsInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutPostsInput | TagUpdateManyWithWhereWithoutPostsInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutCommentsInput = {
@@ -64429,81 +69367,92 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type FileCreateNestedOneWithoutCommentsInput = {
-    create?: XOR<FileCreateWithoutCommentsInput, FileUncheckedCreateWithoutCommentsInput>
-    connectOrCreate?: FileCreateOrConnectWithoutCommentsInput
-    connect?: FileWhereUniqueInput
-  }
-
-  export type ItemCreateNestedOneWithoutCommentsInput = {
-    create?: XOR<ItemCreateWithoutCommentsInput, ItemUncheckedCreateWithoutCommentsInput>
-    connectOrCreate?: ItemCreateOrConnectWithoutCommentsInput
-    connect?: ItemWhereUniqueInput
-  }
-
   export type CommentCreateNestedOneWithoutRepliesInput = {
     create?: XOR<CommentCreateWithoutRepliesInput, CommentUncheckedCreateWithoutRepliesInput>
     connectOrCreate?: CommentCreateOrConnectWithoutRepliesInput
     connect?: CommentWhereUniqueInput
   }
 
-  export type CommentCreateNestedManyWithoutParentCommentInput = {
-    create?: XOR<CommentCreateWithoutParentCommentInput, CommentUncheckedCreateWithoutParentCommentInput> | CommentCreateWithoutParentCommentInput[] | CommentUncheckedCreateWithoutParentCommentInput[]
-    connectOrCreate?: CommentCreateOrConnectWithoutParentCommentInput | CommentCreateOrConnectWithoutParentCommentInput[]
-    createMany?: CommentCreateManyParentCommentInputEnvelope
+  export type CommentCreateNestedManyWithoutParentInput = {
+    create?: XOR<CommentCreateWithoutParentInput, CommentUncheckedCreateWithoutParentInput> | CommentCreateWithoutParentInput[] | CommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: CommentCreateOrConnectWithoutParentInput | CommentCreateOrConnectWithoutParentInput[]
+    createMany?: CommentCreateManyParentInputEnvelope
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
   }
 
-  export type TaskCreateNestedOneWithoutCommentsInput = {
-    create?: XOR<TaskCreateWithoutCommentsInput, TaskUncheckedCreateWithoutCommentsInput>
-    connectOrCreate?: TaskCreateOrConnectWithoutCommentsInput
-    connect?: TaskWhereUniqueInput
+  export type PostCreateNestedOneWithoutCommentsInput = {
+    create?: XOR<PostCreateWithoutCommentsInput, PostUncheckedCreateWithoutCommentsInput>
+    connectOrCreate?: PostCreateOrConnectWithoutCommentsInput
+    connect?: PostWhereUniqueInput
   }
 
-  export type UserStoryCreateNestedOneWithoutCommentsInput = {
-    create?: XOR<UserStoryCreateWithoutCommentsInput, UserStoryUncheckedCreateWithoutCommentsInput>
-    connectOrCreate?: UserStoryCreateOrConnectWithoutCommentsInput
-    connect?: UserStoryWhereUniqueInput
+  export type ImageCreateNestedManyWithoutCommentInput = {
+    create?: XOR<ImageCreateWithoutCommentInput, ImageUncheckedCreateWithoutCommentInput> | ImageCreateWithoutCommentInput[] | ImageUncheckedCreateWithoutCommentInput[]
+    connectOrCreate?: ImageCreateOrConnectWithoutCommentInput | ImageCreateOrConnectWithoutCommentInput[]
+    createMany?: ImageCreateManyCommentInputEnvelope
+    connect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
   }
 
-  export type blog_tagsCreateNestedManyWithoutCommentsInput = {
-    create?: XOR<blog_tagsCreateWithoutCommentsInput, blog_tagsUncheckedCreateWithoutCommentsInput> | blog_tagsCreateWithoutCommentsInput[] | blog_tagsUncheckedCreateWithoutCommentsInput[]
-    connectOrCreate?: blog_tagsCreateOrConnectWithoutCommentsInput | blog_tagsCreateOrConnectWithoutCommentsInput[]
-    connect?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
+  export type ItemCreateNestedManyWithoutCommentsInput = {
+    create?: XOR<ItemCreateWithoutCommentsInput, ItemUncheckedCreateWithoutCommentsInput> | ItemCreateWithoutCommentsInput[] | ItemUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: ItemCreateOrConnectWithoutCommentsInput | ItemCreateOrConnectWithoutCommentsInput[]
+    connect?: ItemWhereUniqueInput | ItemWhereUniqueInput[]
   }
 
-  export type categoriesCreateNestedManyWithoutCommentsInput = {
-    create?: XOR<categoriesCreateWithoutCommentsInput, categoriesUncheckedCreateWithoutCommentsInput> | categoriesCreateWithoutCommentsInput[] | categoriesUncheckedCreateWithoutCommentsInput[]
-    connectOrCreate?: categoriesCreateOrConnectWithoutCommentsInput | categoriesCreateOrConnectWithoutCommentsInput[]
-    connect?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
+  export type FileCreateNestedManyWithoutCommentsInput = {
+    create?: XOR<FileCreateWithoutCommentsInput, FileUncheckedCreateWithoutCommentsInput> | FileCreateWithoutCommentsInput[] | FileUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutCommentsInput | FileCreateOrConnectWithoutCommentsInput[]
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
-  export type CommentUncheckedCreateNestedManyWithoutParentCommentInput = {
-    create?: XOR<CommentCreateWithoutParentCommentInput, CommentUncheckedCreateWithoutParentCommentInput> | CommentCreateWithoutParentCommentInput[] | CommentUncheckedCreateWithoutParentCommentInput[]
-    connectOrCreate?: CommentCreateOrConnectWithoutParentCommentInput | CommentCreateOrConnectWithoutParentCommentInput[]
-    createMany?: CommentCreateManyParentCommentInputEnvelope
+  export type TaskCreateNestedManyWithoutCommentsInput = {
+    create?: XOR<TaskCreateWithoutCommentsInput, TaskUncheckedCreateWithoutCommentsInput> | TaskCreateWithoutCommentsInput[] | TaskUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutCommentsInput | TaskCreateOrConnectWithoutCommentsInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
+  export type UserStoryCreateNestedManyWithoutCommentsInput = {
+    create?: XOR<UserStoryCreateWithoutCommentsInput, UserStoryUncheckedCreateWithoutCommentsInput> | UserStoryCreateWithoutCommentsInput[] | UserStoryUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: UserStoryCreateOrConnectWithoutCommentsInput | UserStoryCreateOrConnectWithoutCommentsInput[]
+    connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+  }
+
+  export type CommentUncheckedCreateNestedManyWithoutParentInput = {
+    create?: XOR<CommentCreateWithoutParentInput, CommentUncheckedCreateWithoutParentInput> | CommentCreateWithoutParentInput[] | CommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: CommentCreateOrConnectWithoutParentInput | CommentCreateOrConnectWithoutParentInput[]
+    createMany?: CommentCreateManyParentInputEnvelope
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
   }
 
-  export type blog_tagsUncheckedCreateNestedManyWithoutCommentsInput = {
-    create?: XOR<blog_tagsCreateWithoutCommentsInput, blog_tagsUncheckedCreateWithoutCommentsInput> | blog_tagsCreateWithoutCommentsInput[] | blog_tagsUncheckedCreateWithoutCommentsInput[]
-    connectOrCreate?: blog_tagsCreateOrConnectWithoutCommentsInput | blog_tagsCreateOrConnectWithoutCommentsInput[]
-    connect?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
+  export type ImageUncheckedCreateNestedManyWithoutCommentInput = {
+    create?: XOR<ImageCreateWithoutCommentInput, ImageUncheckedCreateWithoutCommentInput> | ImageCreateWithoutCommentInput[] | ImageUncheckedCreateWithoutCommentInput[]
+    connectOrCreate?: ImageCreateOrConnectWithoutCommentInput | ImageCreateOrConnectWithoutCommentInput[]
+    createMany?: ImageCreateManyCommentInputEnvelope
+    connect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
   }
 
-  export type categoriesUncheckedCreateNestedManyWithoutCommentsInput = {
-    create?: XOR<categoriesCreateWithoutCommentsInput, categoriesUncheckedCreateWithoutCommentsInput> | categoriesCreateWithoutCommentsInput[] | categoriesUncheckedCreateWithoutCommentsInput[]
-    connectOrCreate?: categoriesCreateOrConnectWithoutCommentsInput | categoriesCreateOrConnectWithoutCommentsInput[]
-    connect?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
+  export type ItemUncheckedCreateNestedManyWithoutCommentsInput = {
+    create?: XOR<ItemCreateWithoutCommentsInput, ItemUncheckedCreateWithoutCommentsInput> | ItemCreateWithoutCommentsInput[] | ItemUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: ItemCreateOrConnectWithoutCommentsInput | ItemCreateOrConnectWithoutCommentsInput[]
+    connect?: ItemWhereUniqueInput | ItemWhereUniqueInput[]
   }
 
-  export type CommentUpdatementionsInput = {
-    set?: string[]
-    push?: string | string[]
+  export type FileUncheckedCreateNestedManyWithoutCommentsInput = {
+    create?: XOR<FileCreateWithoutCommentsInput, FileUncheckedCreateWithoutCommentsInput> | FileCreateWithoutCommentsInput[] | FileUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutCommentsInput | FileCreateOrConnectWithoutCommentsInput[]
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
-  export type EnumVisibilityFieldUpdateOperationsInput = {
-    set?: $Enums.Visibility
+  export type TaskUncheckedCreateNestedManyWithoutCommentsInput = {
+    create?: XOR<TaskCreateWithoutCommentsInput, TaskUncheckedCreateWithoutCommentsInput> | TaskCreateWithoutCommentsInput[] | TaskUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutCommentsInput | TaskCreateOrConnectWithoutCommentsInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
+  export type UserStoryUncheckedCreateNestedManyWithoutCommentsInput = {
+    create?: XOR<UserStoryCreateWithoutCommentsInput, UserStoryUncheckedCreateWithoutCommentsInput> | UserStoryCreateWithoutCommentsInput[] | UserStoryUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: UserStoryCreateOrConnectWithoutCommentsInput | UserStoryCreateOrConnectWithoutCommentsInput[]
+    connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
   }
 
   export type UserUpdateOneRequiredWithoutCommentsNestedInput = {
@@ -64512,26 +69461,6 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutCommentsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCommentsInput, UserUpdateWithoutCommentsInput>, UserUncheckedUpdateWithoutCommentsInput>
-  }
-
-  export type FileUpdateOneWithoutCommentsNestedInput = {
-    create?: XOR<FileCreateWithoutCommentsInput, FileUncheckedCreateWithoutCommentsInput>
-    connectOrCreate?: FileCreateOrConnectWithoutCommentsInput
-    upsert?: FileUpsertWithoutCommentsInput
-    disconnect?: FileWhereInput | boolean
-    delete?: FileWhereInput | boolean
-    connect?: FileWhereUniqueInput
-    update?: XOR<XOR<FileUpdateToOneWithWhereWithoutCommentsInput, FileUpdateWithoutCommentsInput>, FileUncheckedUpdateWithoutCommentsInput>
-  }
-
-  export type ItemUpdateOneWithoutCommentsNestedInput = {
-    create?: XOR<ItemCreateWithoutCommentsInput, ItemUncheckedCreateWithoutCommentsInput>
-    connectOrCreate?: ItemCreateOrConnectWithoutCommentsInput
-    upsert?: ItemUpsertWithoutCommentsInput
-    disconnect?: ItemWhereInput | boolean
-    delete?: ItemWhereInput | boolean
-    connect?: ItemWhereUniqueInput
-    update?: XOR<XOR<ItemUpdateToOneWithWhereWithoutCommentsInput, ItemUpdateWithoutCommentsInput>, ItemUncheckedUpdateWithoutCommentsInput>
   }
 
   export type CommentUpdateOneWithoutRepliesNestedInput = {
@@ -64544,104 +69473,352 @@ export namespace Prisma {
     update?: XOR<XOR<CommentUpdateToOneWithWhereWithoutRepliesInput, CommentUpdateWithoutRepliesInput>, CommentUncheckedUpdateWithoutRepliesInput>
   }
 
-  export type CommentUpdateManyWithoutParentCommentNestedInput = {
-    create?: XOR<CommentCreateWithoutParentCommentInput, CommentUncheckedCreateWithoutParentCommentInput> | CommentCreateWithoutParentCommentInput[] | CommentUncheckedCreateWithoutParentCommentInput[]
-    connectOrCreate?: CommentCreateOrConnectWithoutParentCommentInput | CommentCreateOrConnectWithoutParentCommentInput[]
-    upsert?: CommentUpsertWithWhereUniqueWithoutParentCommentInput | CommentUpsertWithWhereUniqueWithoutParentCommentInput[]
-    createMany?: CommentCreateManyParentCommentInputEnvelope
+  export type CommentUpdateManyWithoutParentNestedInput = {
+    create?: XOR<CommentCreateWithoutParentInput, CommentUncheckedCreateWithoutParentInput> | CommentCreateWithoutParentInput[] | CommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: CommentCreateOrConnectWithoutParentInput | CommentCreateOrConnectWithoutParentInput[]
+    upsert?: CommentUpsertWithWhereUniqueWithoutParentInput | CommentUpsertWithWhereUniqueWithoutParentInput[]
+    createMany?: CommentCreateManyParentInputEnvelope
     set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    update?: CommentUpdateWithWhereUniqueWithoutParentCommentInput | CommentUpdateWithWhereUniqueWithoutParentCommentInput[]
-    updateMany?: CommentUpdateManyWithWhereWithoutParentCommentInput | CommentUpdateManyWithWhereWithoutParentCommentInput[]
+    update?: CommentUpdateWithWhereUniqueWithoutParentInput | CommentUpdateWithWhereUniqueWithoutParentInput[]
+    updateMany?: CommentUpdateManyWithWhereWithoutParentInput | CommentUpdateManyWithWhereWithoutParentInput[]
     deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
   }
 
-  export type TaskUpdateOneWithoutCommentsNestedInput = {
-    create?: XOR<TaskCreateWithoutCommentsInput, TaskUncheckedCreateWithoutCommentsInput>
-    connectOrCreate?: TaskCreateOrConnectWithoutCommentsInput
-    upsert?: TaskUpsertWithoutCommentsInput
-    disconnect?: TaskWhereInput | boolean
-    delete?: TaskWhereInput | boolean
-    connect?: TaskWhereUniqueInput
-    update?: XOR<XOR<TaskUpdateToOneWithWhereWithoutCommentsInput, TaskUpdateWithoutCommentsInput>, TaskUncheckedUpdateWithoutCommentsInput>
+  export type PostUpdateOneRequiredWithoutCommentsNestedInput = {
+    create?: XOR<PostCreateWithoutCommentsInput, PostUncheckedCreateWithoutCommentsInput>
+    connectOrCreate?: PostCreateOrConnectWithoutCommentsInput
+    upsert?: PostUpsertWithoutCommentsInput
+    connect?: PostWhereUniqueInput
+    update?: XOR<XOR<PostUpdateToOneWithWhereWithoutCommentsInput, PostUpdateWithoutCommentsInput>, PostUncheckedUpdateWithoutCommentsInput>
   }
 
-  export type UserStoryUpdateOneWithoutCommentsNestedInput = {
-    create?: XOR<UserStoryCreateWithoutCommentsInput, UserStoryUncheckedCreateWithoutCommentsInput>
-    connectOrCreate?: UserStoryCreateOrConnectWithoutCommentsInput
-    upsert?: UserStoryUpsertWithoutCommentsInput
-    disconnect?: UserStoryWhereInput | boolean
-    delete?: UserStoryWhereInput | boolean
-    connect?: UserStoryWhereUniqueInput
-    update?: XOR<XOR<UserStoryUpdateToOneWithWhereWithoutCommentsInput, UserStoryUpdateWithoutCommentsInput>, UserStoryUncheckedUpdateWithoutCommentsInput>
+  export type ImageUpdateManyWithoutCommentNestedInput = {
+    create?: XOR<ImageCreateWithoutCommentInput, ImageUncheckedCreateWithoutCommentInput> | ImageCreateWithoutCommentInput[] | ImageUncheckedCreateWithoutCommentInput[]
+    connectOrCreate?: ImageCreateOrConnectWithoutCommentInput | ImageCreateOrConnectWithoutCommentInput[]
+    upsert?: ImageUpsertWithWhereUniqueWithoutCommentInput | ImageUpsertWithWhereUniqueWithoutCommentInput[]
+    createMany?: ImageCreateManyCommentInputEnvelope
+    set?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    disconnect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    delete?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    connect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    update?: ImageUpdateWithWhereUniqueWithoutCommentInput | ImageUpdateWithWhereUniqueWithoutCommentInput[]
+    updateMany?: ImageUpdateManyWithWhereWithoutCommentInput | ImageUpdateManyWithWhereWithoutCommentInput[]
+    deleteMany?: ImageScalarWhereInput | ImageScalarWhereInput[]
   }
 
-  export type blog_tagsUpdateManyWithoutCommentsNestedInput = {
-    create?: XOR<blog_tagsCreateWithoutCommentsInput, blog_tagsUncheckedCreateWithoutCommentsInput> | blog_tagsCreateWithoutCommentsInput[] | blog_tagsUncheckedCreateWithoutCommentsInput[]
-    connectOrCreate?: blog_tagsCreateOrConnectWithoutCommentsInput | blog_tagsCreateOrConnectWithoutCommentsInput[]
-    upsert?: blog_tagsUpsertWithWhereUniqueWithoutCommentsInput | blog_tagsUpsertWithWhereUniqueWithoutCommentsInput[]
-    set?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    disconnect?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    delete?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    connect?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    update?: blog_tagsUpdateWithWhereUniqueWithoutCommentsInput | blog_tagsUpdateWithWhereUniqueWithoutCommentsInput[]
-    updateMany?: blog_tagsUpdateManyWithWhereWithoutCommentsInput | blog_tagsUpdateManyWithWhereWithoutCommentsInput[]
-    deleteMany?: blog_tagsScalarWhereInput | blog_tagsScalarWhereInput[]
+  export type ItemUpdateManyWithoutCommentsNestedInput = {
+    create?: XOR<ItemCreateWithoutCommentsInput, ItemUncheckedCreateWithoutCommentsInput> | ItemCreateWithoutCommentsInput[] | ItemUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: ItemCreateOrConnectWithoutCommentsInput | ItemCreateOrConnectWithoutCommentsInput[]
+    upsert?: ItemUpsertWithWhereUniqueWithoutCommentsInput | ItemUpsertWithWhereUniqueWithoutCommentsInput[]
+    set?: ItemWhereUniqueInput | ItemWhereUniqueInput[]
+    disconnect?: ItemWhereUniqueInput | ItemWhereUniqueInput[]
+    delete?: ItemWhereUniqueInput | ItemWhereUniqueInput[]
+    connect?: ItemWhereUniqueInput | ItemWhereUniqueInput[]
+    update?: ItemUpdateWithWhereUniqueWithoutCommentsInput | ItemUpdateWithWhereUniqueWithoutCommentsInput[]
+    updateMany?: ItemUpdateManyWithWhereWithoutCommentsInput | ItemUpdateManyWithWhereWithoutCommentsInput[]
+    deleteMany?: ItemScalarWhereInput | ItemScalarWhereInput[]
   }
 
-  export type categoriesUpdateManyWithoutCommentsNestedInput = {
-    create?: XOR<categoriesCreateWithoutCommentsInput, categoriesUncheckedCreateWithoutCommentsInput> | categoriesCreateWithoutCommentsInput[] | categoriesUncheckedCreateWithoutCommentsInput[]
-    connectOrCreate?: categoriesCreateOrConnectWithoutCommentsInput | categoriesCreateOrConnectWithoutCommentsInput[]
-    upsert?: categoriesUpsertWithWhereUniqueWithoutCommentsInput | categoriesUpsertWithWhereUniqueWithoutCommentsInput[]
-    set?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    disconnect?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    delete?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    connect?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    update?: categoriesUpdateWithWhereUniqueWithoutCommentsInput | categoriesUpdateWithWhereUniqueWithoutCommentsInput[]
-    updateMany?: categoriesUpdateManyWithWhereWithoutCommentsInput | categoriesUpdateManyWithWhereWithoutCommentsInput[]
-    deleteMany?: categoriesScalarWhereInput | categoriesScalarWhereInput[]
+  export type FileUpdateManyWithoutCommentsNestedInput = {
+    create?: XOR<FileCreateWithoutCommentsInput, FileUncheckedCreateWithoutCommentsInput> | FileCreateWithoutCommentsInput[] | FileUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutCommentsInput | FileCreateOrConnectWithoutCommentsInput[]
+    upsert?: FileUpsertWithWhereUniqueWithoutCommentsInput | FileUpsertWithWhereUniqueWithoutCommentsInput[]
+    set?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    update?: FileUpdateWithWhereUniqueWithoutCommentsInput | FileUpdateWithWhereUniqueWithoutCommentsInput[]
+    updateMany?: FileUpdateManyWithWhereWithoutCommentsInput | FileUpdateManyWithWhereWithoutCommentsInput[]
+    deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
   }
 
-  export type CommentUncheckedUpdateManyWithoutParentCommentNestedInput = {
-    create?: XOR<CommentCreateWithoutParentCommentInput, CommentUncheckedCreateWithoutParentCommentInput> | CommentCreateWithoutParentCommentInput[] | CommentUncheckedCreateWithoutParentCommentInput[]
-    connectOrCreate?: CommentCreateOrConnectWithoutParentCommentInput | CommentCreateOrConnectWithoutParentCommentInput[]
-    upsert?: CommentUpsertWithWhereUniqueWithoutParentCommentInput | CommentUpsertWithWhereUniqueWithoutParentCommentInput[]
-    createMany?: CommentCreateManyParentCommentInputEnvelope
+  export type TaskUpdateManyWithoutCommentsNestedInput = {
+    create?: XOR<TaskCreateWithoutCommentsInput, TaskUncheckedCreateWithoutCommentsInput> | TaskCreateWithoutCommentsInput[] | TaskUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutCommentsInput | TaskCreateOrConnectWithoutCommentsInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutCommentsInput | TaskUpsertWithWhereUniqueWithoutCommentsInput[]
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutCommentsInput | TaskUpdateWithWhereUniqueWithoutCommentsInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutCommentsInput | TaskUpdateManyWithWhereWithoutCommentsInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
+  export type UserStoryUpdateManyWithoutCommentsNestedInput = {
+    create?: XOR<UserStoryCreateWithoutCommentsInput, UserStoryUncheckedCreateWithoutCommentsInput> | UserStoryCreateWithoutCommentsInput[] | UserStoryUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: UserStoryCreateOrConnectWithoutCommentsInput | UserStoryCreateOrConnectWithoutCommentsInput[]
+    upsert?: UserStoryUpsertWithWhereUniqueWithoutCommentsInput | UserStoryUpsertWithWhereUniqueWithoutCommentsInput[]
+    set?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    disconnect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    delete?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    update?: UserStoryUpdateWithWhereUniqueWithoutCommentsInput | UserStoryUpdateWithWhereUniqueWithoutCommentsInput[]
+    updateMany?: UserStoryUpdateManyWithWhereWithoutCommentsInput | UserStoryUpdateManyWithWhereWithoutCommentsInput[]
+    deleteMany?: UserStoryScalarWhereInput | UserStoryScalarWhereInput[]
+  }
+
+  export type CommentUncheckedUpdateManyWithoutParentNestedInput = {
+    create?: XOR<CommentCreateWithoutParentInput, CommentUncheckedCreateWithoutParentInput> | CommentCreateWithoutParentInput[] | CommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: CommentCreateOrConnectWithoutParentInput | CommentCreateOrConnectWithoutParentInput[]
+    upsert?: CommentUpsertWithWhereUniqueWithoutParentInput | CommentUpsertWithWhereUniqueWithoutParentInput[]
+    createMany?: CommentCreateManyParentInputEnvelope
     set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    update?: CommentUpdateWithWhereUniqueWithoutParentCommentInput | CommentUpdateWithWhereUniqueWithoutParentCommentInput[]
-    updateMany?: CommentUpdateManyWithWhereWithoutParentCommentInput | CommentUpdateManyWithWhereWithoutParentCommentInput[]
+    update?: CommentUpdateWithWhereUniqueWithoutParentInput | CommentUpdateWithWhereUniqueWithoutParentInput[]
+    updateMany?: CommentUpdateManyWithWhereWithoutParentInput | CommentUpdateManyWithWhereWithoutParentInput[]
     deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
   }
 
-  export type blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput = {
-    create?: XOR<blog_tagsCreateWithoutCommentsInput, blog_tagsUncheckedCreateWithoutCommentsInput> | blog_tagsCreateWithoutCommentsInput[] | blog_tagsUncheckedCreateWithoutCommentsInput[]
-    connectOrCreate?: blog_tagsCreateOrConnectWithoutCommentsInput | blog_tagsCreateOrConnectWithoutCommentsInput[]
-    upsert?: blog_tagsUpsertWithWhereUniqueWithoutCommentsInput | blog_tagsUpsertWithWhereUniqueWithoutCommentsInput[]
-    set?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    disconnect?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    delete?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    connect?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    update?: blog_tagsUpdateWithWhereUniqueWithoutCommentsInput | blog_tagsUpdateWithWhereUniqueWithoutCommentsInput[]
-    updateMany?: blog_tagsUpdateManyWithWhereWithoutCommentsInput | blog_tagsUpdateManyWithWhereWithoutCommentsInput[]
-    deleteMany?: blog_tagsScalarWhereInput | blog_tagsScalarWhereInput[]
+  export type ImageUncheckedUpdateManyWithoutCommentNestedInput = {
+    create?: XOR<ImageCreateWithoutCommentInput, ImageUncheckedCreateWithoutCommentInput> | ImageCreateWithoutCommentInput[] | ImageUncheckedCreateWithoutCommentInput[]
+    connectOrCreate?: ImageCreateOrConnectWithoutCommentInput | ImageCreateOrConnectWithoutCommentInput[]
+    upsert?: ImageUpsertWithWhereUniqueWithoutCommentInput | ImageUpsertWithWhereUniqueWithoutCommentInput[]
+    createMany?: ImageCreateManyCommentInputEnvelope
+    set?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    disconnect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    delete?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    connect?: ImageWhereUniqueInput | ImageWhereUniqueInput[]
+    update?: ImageUpdateWithWhereUniqueWithoutCommentInput | ImageUpdateWithWhereUniqueWithoutCommentInput[]
+    updateMany?: ImageUpdateManyWithWhereWithoutCommentInput | ImageUpdateManyWithWhereWithoutCommentInput[]
+    deleteMany?: ImageScalarWhereInput | ImageScalarWhereInput[]
   }
 
-  export type categoriesUncheckedUpdateManyWithoutCommentsNestedInput = {
-    create?: XOR<categoriesCreateWithoutCommentsInput, categoriesUncheckedCreateWithoutCommentsInput> | categoriesCreateWithoutCommentsInput[] | categoriesUncheckedCreateWithoutCommentsInput[]
-    connectOrCreate?: categoriesCreateOrConnectWithoutCommentsInput | categoriesCreateOrConnectWithoutCommentsInput[]
-    upsert?: categoriesUpsertWithWhereUniqueWithoutCommentsInput | categoriesUpsertWithWhereUniqueWithoutCommentsInput[]
-    set?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    disconnect?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    delete?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    connect?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    update?: categoriesUpdateWithWhereUniqueWithoutCommentsInput | categoriesUpdateWithWhereUniqueWithoutCommentsInput[]
-    updateMany?: categoriesUpdateManyWithWhereWithoutCommentsInput | categoriesUpdateManyWithWhereWithoutCommentsInput[]
-    deleteMany?: categoriesScalarWhereInput | categoriesScalarWhereInput[]
+  export type ItemUncheckedUpdateManyWithoutCommentsNestedInput = {
+    create?: XOR<ItemCreateWithoutCommentsInput, ItemUncheckedCreateWithoutCommentsInput> | ItemCreateWithoutCommentsInput[] | ItemUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: ItemCreateOrConnectWithoutCommentsInput | ItemCreateOrConnectWithoutCommentsInput[]
+    upsert?: ItemUpsertWithWhereUniqueWithoutCommentsInput | ItemUpsertWithWhereUniqueWithoutCommentsInput[]
+    set?: ItemWhereUniqueInput | ItemWhereUniqueInput[]
+    disconnect?: ItemWhereUniqueInput | ItemWhereUniqueInput[]
+    delete?: ItemWhereUniqueInput | ItemWhereUniqueInput[]
+    connect?: ItemWhereUniqueInput | ItemWhereUniqueInput[]
+    update?: ItemUpdateWithWhereUniqueWithoutCommentsInput | ItemUpdateWithWhereUniqueWithoutCommentsInput[]
+    updateMany?: ItemUpdateManyWithWhereWithoutCommentsInput | ItemUpdateManyWithWhereWithoutCommentsInput[]
+    deleteMany?: ItemScalarWhereInput | ItemScalarWhereInput[]
+  }
+
+  export type FileUncheckedUpdateManyWithoutCommentsNestedInput = {
+    create?: XOR<FileCreateWithoutCommentsInput, FileUncheckedCreateWithoutCommentsInput> | FileCreateWithoutCommentsInput[] | FileUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutCommentsInput | FileCreateOrConnectWithoutCommentsInput[]
+    upsert?: FileUpsertWithWhereUniqueWithoutCommentsInput | FileUpsertWithWhereUniqueWithoutCommentsInput[]
+    set?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    update?: FileUpdateWithWhereUniqueWithoutCommentsInput | FileUpdateWithWhereUniqueWithoutCommentsInput[]
+    updateMany?: FileUpdateManyWithWhereWithoutCommentsInput | FileUpdateManyWithWhereWithoutCommentsInput[]
+    deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
+  }
+
+  export type TaskUncheckedUpdateManyWithoutCommentsNestedInput = {
+    create?: XOR<TaskCreateWithoutCommentsInput, TaskUncheckedCreateWithoutCommentsInput> | TaskCreateWithoutCommentsInput[] | TaskUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutCommentsInput | TaskCreateOrConnectWithoutCommentsInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutCommentsInput | TaskUpsertWithWhereUniqueWithoutCommentsInput[]
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutCommentsInput | TaskUpdateWithWhereUniqueWithoutCommentsInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutCommentsInput | TaskUpdateManyWithWhereWithoutCommentsInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
+  export type UserStoryUncheckedUpdateManyWithoutCommentsNestedInput = {
+    create?: XOR<UserStoryCreateWithoutCommentsInput, UserStoryUncheckedCreateWithoutCommentsInput> | UserStoryCreateWithoutCommentsInput[] | UserStoryUncheckedCreateWithoutCommentsInput[]
+    connectOrCreate?: UserStoryCreateOrConnectWithoutCommentsInput | UserStoryCreateOrConnectWithoutCommentsInput[]
+    upsert?: UserStoryUpsertWithWhereUniqueWithoutCommentsInput | UserStoryUpsertWithWhereUniqueWithoutCommentsInput[]
+    set?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    disconnect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    delete?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    connect?: UserStoryWhereUniqueInput | UserStoryWhereUniqueInput[]
+    update?: UserStoryUpdateWithWhereUniqueWithoutCommentsInput | UserStoryUpdateWithWhereUniqueWithoutCommentsInput[]
+    updateMany?: UserStoryUpdateManyWithWhereWithoutCommentsInput | UserStoryUpdateManyWithWhereWithoutCommentsInput[]
+    deleteMany?: UserStoryScalarWhereInput | UserStoryScalarWhereInput[]
+  }
+
+  export type CommentCreateNestedOneWithoutImagesInput = {
+    create?: XOR<CommentCreateWithoutImagesInput, CommentUncheckedCreateWithoutImagesInput>
+    connectOrCreate?: CommentCreateOrConnectWithoutImagesInput
+    connect?: CommentWhereUniqueInput
+  }
+
+  export type PostCreateNestedOneWithoutImagesInput = {
+    create?: XOR<PostCreateWithoutImagesInput, PostUncheckedCreateWithoutImagesInput>
+    connectOrCreate?: PostCreateOrConnectWithoutImagesInput
+    connect?: PostWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutImageInput = {
+    create?: XOR<UserCreateWithoutImageInput, UserUncheckedCreateWithoutImageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutImageInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type CommentUpdateOneWithoutImagesNestedInput = {
+    create?: XOR<CommentCreateWithoutImagesInput, CommentUncheckedCreateWithoutImagesInput>
+    connectOrCreate?: CommentCreateOrConnectWithoutImagesInput
+    upsert?: CommentUpsertWithoutImagesInput
+    disconnect?: CommentWhereInput | boolean
+    delete?: CommentWhereInput | boolean
+    connect?: CommentWhereUniqueInput
+    update?: XOR<XOR<CommentUpdateToOneWithWhereWithoutImagesInput, CommentUpdateWithoutImagesInput>, CommentUncheckedUpdateWithoutImagesInput>
+  }
+
+  export type PostUpdateOneWithoutImagesNestedInput = {
+    create?: XOR<PostCreateWithoutImagesInput, PostUncheckedCreateWithoutImagesInput>
+    connectOrCreate?: PostCreateOrConnectWithoutImagesInput
+    upsert?: PostUpsertWithoutImagesInput
+    disconnect?: PostWhereInput | boolean
+    delete?: PostWhereInput | boolean
+    connect?: PostWhereUniqueInput
+    update?: XOR<XOR<PostUpdateToOneWithWhereWithoutImagesInput, PostUpdateWithoutImagesInput>, PostUncheckedUpdateWithoutImagesInput>
+  }
+
+  export type UserUpdateOneWithoutImageNestedInput = {
+    create?: XOR<UserCreateWithoutImageInput, UserUncheckedCreateWithoutImageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutImageInput
+    upsert?: UserUpsertWithoutImageInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutImageInput, UserUpdateWithoutImageInput>, UserUncheckedUpdateWithoutImageInput>
+  }
+
+  export type PostCreateNestedManyWithoutCategoriesInput = {
+    create?: XOR<PostCreateWithoutCategoriesInput, PostUncheckedCreateWithoutCategoriesInput> | PostCreateWithoutCategoriesInput[] | PostUncheckedCreateWithoutCategoriesInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutCategoriesInput | PostCreateOrConnectWithoutCategoriesInput[]
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+  }
+
+  export type TagCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<TagCreateWithoutCategoryInput, TagUncheckedCreateWithoutCategoryInput> | TagCreateWithoutCategoryInput[] | TagUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutCategoryInput | TagCreateOrConnectWithoutCategoryInput[]
+    createMany?: TagCreateManyCategoryInputEnvelope
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
+  export type PostUncheckedCreateNestedManyWithoutCategoriesInput = {
+    create?: XOR<PostCreateWithoutCategoriesInput, PostUncheckedCreateWithoutCategoriesInput> | PostCreateWithoutCategoriesInput[] | PostUncheckedCreateWithoutCategoriesInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutCategoriesInput | PostCreateOrConnectWithoutCategoriesInput[]
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+  }
+
+  export type TagUncheckedCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<TagCreateWithoutCategoryInput, TagUncheckedCreateWithoutCategoryInput> | TagCreateWithoutCategoryInput[] | TagUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutCategoryInput | TagCreateOrConnectWithoutCategoryInput[]
+    createMany?: TagCreateManyCategoryInputEnvelope
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
+  export type PostUpdateManyWithoutCategoriesNestedInput = {
+    create?: XOR<PostCreateWithoutCategoriesInput, PostUncheckedCreateWithoutCategoriesInput> | PostCreateWithoutCategoriesInput[] | PostUncheckedCreateWithoutCategoriesInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutCategoriesInput | PostCreateOrConnectWithoutCategoriesInput[]
+    upsert?: PostUpsertWithWhereUniqueWithoutCategoriesInput | PostUpsertWithWhereUniqueWithoutCategoriesInput[]
+    set?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    disconnect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    delete?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    update?: PostUpdateWithWhereUniqueWithoutCategoriesInput | PostUpdateWithWhereUniqueWithoutCategoriesInput[]
+    updateMany?: PostUpdateManyWithWhereWithoutCategoriesInput | PostUpdateManyWithWhereWithoutCategoriesInput[]
+    deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
+  }
+
+  export type TagUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<TagCreateWithoutCategoryInput, TagUncheckedCreateWithoutCategoryInput> | TagCreateWithoutCategoryInput[] | TagUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutCategoryInput | TagCreateOrConnectWithoutCategoryInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutCategoryInput | TagUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: TagCreateManyCategoryInputEnvelope
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutCategoryInput | TagUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutCategoryInput | TagUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
+  export type PostUncheckedUpdateManyWithoutCategoriesNestedInput = {
+    create?: XOR<PostCreateWithoutCategoriesInput, PostUncheckedCreateWithoutCategoriesInput> | PostCreateWithoutCategoriesInput[] | PostUncheckedCreateWithoutCategoriesInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutCategoriesInput | PostCreateOrConnectWithoutCategoriesInput[]
+    upsert?: PostUpsertWithWhereUniqueWithoutCategoriesInput | PostUpsertWithWhereUniqueWithoutCategoriesInput[]
+    set?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    disconnect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    delete?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    update?: PostUpdateWithWhereUniqueWithoutCategoriesInput | PostUpdateWithWhereUniqueWithoutCategoriesInput[]
+    updateMany?: PostUpdateManyWithWhereWithoutCategoriesInput | PostUpdateManyWithWhereWithoutCategoriesInput[]
+    deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
+  }
+
+  export type TagUncheckedUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<TagCreateWithoutCategoryInput, TagUncheckedCreateWithoutCategoryInput> | TagCreateWithoutCategoryInput[] | TagUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutCategoryInput | TagCreateOrConnectWithoutCategoryInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutCategoryInput | TagUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: TagCreateManyCategoryInputEnvelope
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutCategoryInput | TagUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutCategoryInput | TagUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
+  export type CategoryCreateNestedOneWithoutTagsInput = {
+    create?: XOR<CategoryCreateWithoutTagsInput, CategoryUncheckedCreateWithoutTagsInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutTagsInput
+    connect?: CategoryWhereUniqueInput
+  }
+
+  export type PostCreateNestedManyWithoutTagsInput = {
+    create?: XOR<PostCreateWithoutTagsInput, PostUncheckedCreateWithoutTagsInput> | PostCreateWithoutTagsInput[] | PostUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutTagsInput | PostCreateOrConnectWithoutTagsInput[]
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+  }
+
+  export type PostUncheckedCreateNestedManyWithoutTagsInput = {
+    create?: XOR<PostCreateWithoutTagsInput, PostUncheckedCreateWithoutTagsInput> | PostCreateWithoutTagsInput[] | PostUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutTagsInput | PostCreateOrConnectWithoutTagsInput[]
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+  }
+
+  export type CategoryUpdateOneRequiredWithoutTagsNestedInput = {
+    create?: XOR<CategoryCreateWithoutTagsInput, CategoryUncheckedCreateWithoutTagsInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutTagsInput
+    upsert?: CategoryUpsertWithoutTagsInput
+    connect?: CategoryWhereUniqueInput
+    update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutTagsInput, CategoryUpdateWithoutTagsInput>, CategoryUncheckedUpdateWithoutTagsInput>
+  }
+
+  export type PostUpdateManyWithoutTagsNestedInput = {
+    create?: XOR<PostCreateWithoutTagsInput, PostUncheckedCreateWithoutTagsInput> | PostCreateWithoutTagsInput[] | PostUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutTagsInput | PostCreateOrConnectWithoutTagsInput[]
+    upsert?: PostUpsertWithWhereUniqueWithoutTagsInput | PostUpsertWithWhereUniqueWithoutTagsInput[]
+    set?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    disconnect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    delete?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    update?: PostUpdateWithWhereUniqueWithoutTagsInput | PostUpdateWithWhereUniqueWithoutTagsInput[]
+    updateMany?: PostUpdateManyWithWhereWithoutTagsInput | PostUpdateManyWithWhereWithoutTagsInput[]
+    deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
+  }
+
+  export type PostUncheckedUpdateManyWithoutTagsNestedInput = {
+    create?: XOR<PostCreateWithoutTagsInput, PostUncheckedCreateWithoutTagsInput> | PostCreateWithoutTagsInput[] | PostUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: PostCreateOrConnectWithoutTagsInput | PostCreateOrConnectWithoutTagsInput[]
+    upsert?: PostUpsertWithWhereUniqueWithoutTagsInput | PostUpsertWithWhereUniqueWithoutTagsInput[]
+    set?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    disconnect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    delete?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+    update?: PostUpdateWithWhereUniqueWithoutTagsInput | PostUpdateWithWhereUniqueWithoutTagsInput[]
+    updateMany?: PostUpdateManyWithWhereWithoutTagsInput | PostUpdateManyWithWhereWithoutTagsInput[]
+    deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
   }
 
   export type ChannelMemberCreateNestedManyWithoutChannelInput = {
@@ -64950,7 +70127,6 @@ export namespace Prisma {
   export type CommentCreateNestedManyWithoutItemInput = {
     create?: XOR<CommentCreateWithoutItemInput, CommentUncheckedCreateWithoutItemInput> | CommentCreateWithoutItemInput[] | CommentUncheckedCreateWithoutItemInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutItemInput | CommentCreateOrConnectWithoutItemInput[]
-    createMany?: CommentCreateManyItemInputEnvelope
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
   }
 
@@ -65001,7 +70177,6 @@ export namespace Prisma {
   export type CommentUncheckedCreateNestedManyWithoutItemInput = {
     create?: XOR<CommentCreateWithoutItemInput, CommentUncheckedCreateWithoutItemInput> | CommentCreateWithoutItemInput[] | CommentUncheckedCreateWithoutItemInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutItemInput | CommentCreateOrConnectWithoutItemInput[]
-    createMany?: CommentCreateManyItemInputEnvelope
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
   }
 
@@ -65039,11 +70214,14 @@ export namespace Prisma {
     set?: $Enums.ItemStatus
   }
 
+  export type EnumVisibilityFieldUpdateOperationsInput = {
+    set?: $Enums.Visibility
+  }
+
   export type CommentUpdateManyWithoutItemNestedInput = {
     create?: XOR<CommentCreateWithoutItemInput, CommentUncheckedCreateWithoutItemInput> | CommentCreateWithoutItemInput[] | CommentUncheckedCreateWithoutItemInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutItemInput | CommentCreateOrConnectWithoutItemInput[]
     upsert?: CommentUpsertWithWhereUniqueWithoutItemInput | CommentUpsertWithWhereUniqueWithoutItemInput[]
-    createMany?: CommentCreateManyItemInputEnvelope
     set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
@@ -65139,7 +70317,6 @@ export namespace Prisma {
     create?: XOR<CommentCreateWithoutItemInput, CommentUncheckedCreateWithoutItemInput> | CommentCreateWithoutItemInput[] | CommentUncheckedCreateWithoutItemInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutItemInput | CommentCreateOrConnectWithoutItemInput[]
     upsert?: CommentUpsertWithWhereUniqueWithoutItemInput | CommentUpsertWithWhereUniqueWithoutItemInput[]
-    createMany?: CommentCreateManyItemInputEnvelope
     set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
     delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
@@ -65229,198 +70406,6 @@ export namespace Prisma {
     upsert?: UserStoryUpsertWithoutUserStoryAssigneesInput
     connect?: UserStoryWhereUniqueInput
     update?: XOR<XOR<UserStoryUpdateToOneWithWhereWithoutUserStoryAssigneesInput, UserStoryUpdateWithoutUserStoryAssigneesInput>, UserStoryUncheckedUpdateWithoutUserStoryAssigneesInput>
-  }
-
-  export type categoriesCreateNestedOneWithoutBlog_tagsInput = {
-    create?: XOR<categoriesCreateWithoutBlog_tagsInput, categoriesUncheckedCreateWithoutBlog_tagsInput>
-    connectOrCreate?: categoriesCreateOrConnectWithoutBlog_tagsInput
-    connect?: categoriesWhereUniqueInput
-  }
-
-  export type CommentCreateNestedManyWithoutBlog_tagsInput = {
-    create?: XOR<CommentCreateWithoutBlog_tagsInput, CommentUncheckedCreateWithoutBlog_tagsInput> | CommentCreateWithoutBlog_tagsInput[] | CommentUncheckedCreateWithoutBlog_tagsInput[]
-    connectOrCreate?: CommentCreateOrConnectWithoutBlog_tagsInput | CommentCreateOrConnectWithoutBlog_tagsInput[]
-    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-  }
-
-  export type CommentUncheckedCreateNestedManyWithoutBlog_tagsInput = {
-    create?: XOR<CommentCreateWithoutBlog_tagsInput, CommentUncheckedCreateWithoutBlog_tagsInput> | CommentCreateWithoutBlog_tagsInput[] | CommentUncheckedCreateWithoutBlog_tagsInput[]
-    connectOrCreate?: CommentCreateOrConnectWithoutBlog_tagsInput | CommentCreateOrConnectWithoutBlog_tagsInput[]
-    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-  }
-
-  export type categoriesUpdateOneWithoutBlog_tagsNestedInput = {
-    create?: XOR<categoriesCreateWithoutBlog_tagsInput, categoriesUncheckedCreateWithoutBlog_tagsInput>
-    connectOrCreate?: categoriesCreateOrConnectWithoutBlog_tagsInput
-    upsert?: categoriesUpsertWithoutBlog_tagsInput
-    disconnect?: categoriesWhereInput | boolean
-    delete?: categoriesWhereInput | boolean
-    connect?: categoriesWhereUniqueInput
-    update?: XOR<XOR<categoriesUpdateToOneWithWhereWithoutBlog_tagsInput, categoriesUpdateWithoutBlog_tagsInput>, categoriesUncheckedUpdateWithoutBlog_tagsInput>
-  }
-
-  export type CommentUpdateManyWithoutBlog_tagsNestedInput = {
-    create?: XOR<CommentCreateWithoutBlog_tagsInput, CommentUncheckedCreateWithoutBlog_tagsInput> | CommentCreateWithoutBlog_tagsInput[] | CommentUncheckedCreateWithoutBlog_tagsInput[]
-    connectOrCreate?: CommentCreateOrConnectWithoutBlog_tagsInput | CommentCreateOrConnectWithoutBlog_tagsInput[]
-    upsert?: CommentUpsertWithWhereUniqueWithoutBlog_tagsInput | CommentUpsertWithWhereUniqueWithoutBlog_tagsInput[]
-    set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    update?: CommentUpdateWithWhereUniqueWithoutBlog_tagsInput | CommentUpdateWithWhereUniqueWithoutBlog_tagsInput[]
-    updateMany?: CommentUpdateManyWithWhereWithoutBlog_tagsInput | CommentUpdateManyWithWhereWithoutBlog_tagsInput[]
-    deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
-  }
-
-  export type CommentUncheckedUpdateManyWithoutBlog_tagsNestedInput = {
-    create?: XOR<CommentCreateWithoutBlog_tagsInput, CommentUncheckedCreateWithoutBlog_tagsInput> | CommentCreateWithoutBlog_tagsInput[] | CommentUncheckedCreateWithoutBlog_tagsInput[]
-    connectOrCreate?: CommentCreateOrConnectWithoutBlog_tagsInput | CommentCreateOrConnectWithoutBlog_tagsInput[]
-    upsert?: CommentUpsertWithWhereUniqueWithoutBlog_tagsInput | CommentUpsertWithWhereUniqueWithoutBlog_tagsInput[]
-    set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    update?: CommentUpdateWithWhereUniqueWithoutBlog_tagsInput | CommentUpdateWithWhereUniqueWithoutBlog_tagsInput[]
-    updateMany?: CommentUpdateManyWithWhereWithoutBlog_tagsInput | CommentUpdateManyWithWhereWithoutBlog_tagsInput[]
-    deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
-  }
-
-  export type blog_tagsCreateNestedManyWithoutCategoriesInput = {
-    create?: XOR<blog_tagsCreateWithoutCategoriesInput, blog_tagsUncheckedCreateWithoutCategoriesInput> | blog_tagsCreateWithoutCategoriesInput[] | blog_tagsUncheckedCreateWithoutCategoriesInput[]
-    connectOrCreate?: blog_tagsCreateOrConnectWithoutCategoriesInput | blog_tagsCreateOrConnectWithoutCategoriesInput[]
-    createMany?: blog_tagsCreateManyCategoriesInputEnvelope
-    connect?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-  }
-
-  export type categoriesCreateNestedOneWithoutOther_categoriesInput = {
-    create?: XOR<categoriesCreateWithoutOther_categoriesInput, categoriesUncheckedCreateWithoutOther_categoriesInput>
-    connectOrCreate?: categoriesCreateOrConnectWithoutOther_categoriesInput
-    connect?: categoriesWhereUniqueInput
-  }
-
-  export type categoriesCreateNestedManyWithoutCategoriesInput = {
-    create?: XOR<categoriesCreateWithoutCategoriesInput, categoriesUncheckedCreateWithoutCategoriesInput> | categoriesCreateWithoutCategoriesInput[] | categoriesUncheckedCreateWithoutCategoriesInput[]
-    connectOrCreate?: categoriesCreateOrConnectWithoutCategoriesInput | categoriesCreateOrConnectWithoutCategoriesInput[]
-    createMany?: categoriesCreateManyCategoriesInputEnvelope
-    connect?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-  }
-
-  export type CommentCreateNestedManyWithoutCategoriesInput = {
-    create?: XOR<CommentCreateWithoutCategoriesInput, CommentUncheckedCreateWithoutCategoriesInput> | CommentCreateWithoutCategoriesInput[] | CommentUncheckedCreateWithoutCategoriesInput[]
-    connectOrCreate?: CommentCreateOrConnectWithoutCategoriesInput | CommentCreateOrConnectWithoutCategoriesInput[]
-    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-  }
-
-  export type blog_tagsUncheckedCreateNestedManyWithoutCategoriesInput = {
-    create?: XOR<blog_tagsCreateWithoutCategoriesInput, blog_tagsUncheckedCreateWithoutCategoriesInput> | blog_tagsCreateWithoutCategoriesInput[] | blog_tagsUncheckedCreateWithoutCategoriesInput[]
-    connectOrCreate?: blog_tagsCreateOrConnectWithoutCategoriesInput | blog_tagsCreateOrConnectWithoutCategoriesInput[]
-    createMany?: blog_tagsCreateManyCategoriesInputEnvelope
-    connect?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-  }
-
-  export type categoriesUncheckedCreateNestedManyWithoutCategoriesInput = {
-    create?: XOR<categoriesCreateWithoutCategoriesInput, categoriesUncheckedCreateWithoutCategoriesInput> | categoriesCreateWithoutCategoriesInput[] | categoriesUncheckedCreateWithoutCategoriesInput[]
-    connectOrCreate?: categoriesCreateOrConnectWithoutCategoriesInput | categoriesCreateOrConnectWithoutCategoriesInput[]
-    createMany?: categoriesCreateManyCategoriesInputEnvelope
-    connect?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-  }
-
-  export type CommentUncheckedCreateNestedManyWithoutCategoriesInput = {
-    create?: XOR<CommentCreateWithoutCategoriesInput, CommentUncheckedCreateWithoutCategoriesInput> | CommentCreateWithoutCategoriesInput[] | CommentUncheckedCreateWithoutCategoriesInput[]
-    connectOrCreate?: CommentCreateOrConnectWithoutCategoriesInput | CommentCreateOrConnectWithoutCategoriesInput[]
-    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-  }
-
-  export type blog_tagsUpdateManyWithoutCategoriesNestedInput = {
-    create?: XOR<blog_tagsCreateWithoutCategoriesInput, blog_tagsUncheckedCreateWithoutCategoriesInput> | blog_tagsCreateWithoutCategoriesInput[] | blog_tagsUncheckedCreateWithoutCategoriesInput[]
-    connectOrCreate?: blog_tagsCreateOrConnectWithoutCategoriesInput | blog_tagsCreateOrConnectWithoutCategoriesInput[]
-    upsert?: blog_tagsUpsertWithWhereUniqueWithoutCategoriesInput | blog_tagsUpsertWithWhereUniqueWithoutCategoriesInput[]
-    createMany?: blog_tagsCreateManyCategoriesInputEnvelope
-    set?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    disconnect?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    delete?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    connect?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    update?: blog_tagsUpdateWithWhereUniqueWithoutCategoriesInput | blog_tagsUpdateWithWhereUniqueWithoutCategoriesInput[]
-    updateMany?: blog_tagsUpdateManyWithWhereWithoutCategoriesInput | blog_tagsUpdateManyWithWhereWithoutCategoriesInput[]
-    deleteMany?: blog_tagsScalarWhereInput | blog_tagsScalarWhereInput[]
-  }
-
-  export type categoriesUpdateOneWithoutOther_categoriesNestedInput = {
-    create?: XOR<categoriesCreateWithoutOther_categoriesInput, categoriesUncheckedCreateWithoutOther_categoriesInput>
-    connectOrCreate?: categoriesCreateOrConnectWithoutOther_categoriesInput
-    upsert?: categoriesUpsertWithoutOther_categoriesInput
-    disconnect?: categoriesWhereInput | boolean
-    delete?: categoriesWhereInput | boolean
-    connect?: categoriesWhereUniqueInput
-    update?: XOR<XOR<categoriesUpdateToOneWithWhereWithoutOther_categoriesInput, categoriesUpdateWithoutOther_categoriesInput>, categoriesUncheckedUpdateWithoutOther_categoriesInput>
-  }
-
-  export type categoriesUpdateManyWithoutCategoriesNestedInput = {
-    create?: XOR<categoriesCreateWithoutCategoriesInput, categoriesUncheckedCreateWithoutCategoriesInput> | categoriesCreateWithoutCategoriesInput[] | categoriesUncheckedCreateWithoutCategoriesInput[]
-    connectOrCreate?: categoriesCreateOrConnectWithoutCategoriesInput | categoriesCreateOrConnectWithoutCategoriesInput[]
-    upsert?: categoriesUpsertWithWhereUniqueWithoutCategoriesInput | categoriesUpsertWithWhereUniqueWithoutCategoriesInput[]
-    createMany?: categoriesCreateManyCategoriesInputEnvelope
-    set?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    disconnect?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    delete?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    connect?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    update?: categoriesUpdateWithWhereUniqueWithoutCategoriesInput | categoriesUpdateWithWhereUniqueWithoutCategoriesInput[]
-    updateMany?: categoriesUpdateManyWithWhereWithoutCategoriesInput | categoriesUpdateManyWithWhereWithoutCategoriesInput[]
-    deleteMany?: categoriesScalarWhereInput | categoriesScalarWhereInput[]
-  }
-
-  export type CommentUpdateManyWithoutCategoriesNestedInput = {
-    create?: XOR<CommentCreateWithoutCategoriesInput, CommentUncheckedCreateWithoutCategoriesInput> | CommentCreateWithoutCategoriesInput[] | CommentUncheckedCreateWithoutCategoriesInput[]
-    connectOrCreate?: CommentCreateOrConnectWithoutCategoriesInput | CommentCreateOrConnectWithoutCategoriesInput[]
-    upsert?: CommentUpsertWithWhereUniqueWithoutCategoriesInput | CommentUpsertWithWhereUniqueWithoutCategoriesInput[]
-    set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    update?: CommentUpdateWithWhereUniqueWithoutCategoriesInput | CommentUpdateWithWhereUniqueWithoutCategoriesInput[]
-    updateMany?: CommentUpdateManyWithWhereWithoutCategoriesInput | CommentUpdateManyWithWhereWithoutCategoriesInput[]
-    deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
-  }
-
-  export type blog_tagsUncheckedUpdateManyWithoutCategoriesNestedInput = {
-    create?: XOR<blog_tagsCreateWithoutCategoriesInput, blog_tagsUncheckedCreateWithoutCategoriesInput> | blog_tagsCreateWithoutCategoriesInput[] | blog_tagsUncheckedCreateWithoutCategoriesInput[]
-    connectOrCreate?: blog_tagsCreateOrConnectWithoutCategoriesInput | blog_tagsCreateOrConnectWithoutCategoriesInput[]
-    upsert?: blog_tagsUpsertWithWhereUniqueWithoutCategoriesInput | blog_tagsUpsertWithWhereUniqueWithoutCategoriesInput[]
-    createMany?: blog_tagsCreateManyCategoriesInputEnvelope
-    set?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    disconnect?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    delete?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    connect?: blog_tagsWhereUniqueInput | blog_tagsWhereUniqueInput[]
-    update?: blog_tagsUpdateWithWhereUniqueWithoutCategoriesInput | blog_tagsUpdateWithWhereUniqueWithoutCategoriesInput[]
-    updateMany?: blog_tagsUpdateManyWithWhereWithoutCategoriesInput | blog_tagsUpdateManyWithWhereWithoutCategoriesInput[]
-    deleteMany?: blog_tagsScalarWhereInput | blog_tagsScalarWhereInput[]
-  }
-
-  export type categoriesUncheckedUpdateManyWithoutCategoriesNestedInput = {
-    create?: XOR<categoriesCreateWithoutCategoriesInput, categoriesUncheckedCreateWithoutCategoriesInput> | categoriesCreateWithoutCategoriesInput[] | categoriesUncheckedCreateWithoutCategoriesInput[]
-    connectOrCreate?: categoriesCreateOrConnectWithoutCategoriesInput | categoriesCreateOrConnectWithoutCategoriesInput[]
-    upsert?: categoriesUpsertWithWhereUniqueWithoutCategoriesInput | categoriesUpsertWithWhereUniqueWithoutCategoriesInput[]
-    createMany?: categoriesCreateManyCategoriesInputEnvelope
-    set?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    disconnect?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    delete?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    connect?: categoriesWhereUniqueInput | categoriesWhereUniqueInput[]
-    update?: categoriesUpdateWithWhereUniqueWithoutCategoriesInput | categoriesUpdateWithWhereUniqueWithoutCategoriesInput[]
-    updateMany?: categoriesUpdateManyWithWhereWithoutCategoriesInput | categoriesUpdateManyWithWhereWithoutCategoriesInput[]
-    deleteMany?: categoriesScalarWhereInput | categoriesScalarWhereInput[]
-  }
-
-  export type CommentUncheckedUpdateManyWithoutCategoriesNestedInput = {
-    create?: XOR<CommentCreateWithoutCategoriesInput, CommentUncheckedCreateWithoutCategoriesInput> | CommentCreateWithoutCategoriesInput[] | CommentUncheckedCreateWithoutCategoriesInput[]
-    connectOrCreate?: CommentCreateOrConnectWithoutCategoriesInput | CommentCreateOrConnectWithoutCategoriesInput[]
-    upsert?: CommentUpsertWithWhereUniqueWithoutCategoriesInput | CommentUpsertWithWhereUniqueWithoutCategoriesInput[]
-    set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
-    update?: CommentUpdateWithWhereUniqueWithoutCategoriesInput | CommentUpdateWithWhereUniqueWithoutCategoriesInput[]
-    updateMany?: CommentUpdateManyWithWhereWithoutCategoriesInput | CommentUpdateManyWithWhereWithoutCategoriesInput[]
-    deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
   }
 
   export type fieldsCreateenumValuesInput = {
@@ -65895,21 +70880,21 @@ export namespace Prisma {
     _max?: NestedEnumFileTypeFilter<$PrismaModel>
   }
 
-  export type NestedEnumVisibilityFilter<$PrismaModel = never> = {
-    equals?: $Enums.Visibility | EnumVisibilityFieldRefInput<$PrismaModel>
-    in?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
-    not?: NestedEnumVisibilityFilter<$PrismaModel> | $Enums.Visibility
+  export type NestedEnumCeremonyTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.CeremonyType | EnumCeremonyTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.CeremonyType[] | ListEnumCeremonyTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CeremonyType[] | ListEnumCeremonyTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumCeremonyTypeFilter<$PrismaModel> | $Enums.CeremonyType
   }
 
-  export type NestedEnumVisibilityWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Visibility | EnumVisibilityFieldRefInput<$PrismaModel>
-    in?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
-    not?: NestedEnumVisibilityWithAggregatesFilter<$PrismaModel> | $Enums.Visibility
+  export type NestedEnumCeremonyTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CeremonyType | EnumCeremonyTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.CeremonyType[] | ListEnumCeremonyTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CeremonyType[] | ListEnumCeremonyTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumCeremonyTypeWithAggregatesFilter<$PrismaModel> | $Enums.CeremonyType
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumVisibilityFilter<$PrismaModel>
-    _max?: NestedEnumVisibilityFilter<$PrismaModel>
+    _min?: NestedEnumCeremonyTypeFilter<$PrismaModel>
+    _max?: NestedEnumCeremonyTypeFilter<$PrismaModel>
   }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -65966,6 +70951,13 @@ export namespace Prisma {
     not?: NestedEnumItemStatusFilter<$PrismaModel> | $Enums.ItemStatus
   }
 
+  export type NestedEnumVisibilityFilter<$PrismaModel = never> = {
+    equals?: $Enums.Visibility | EnumVisibilityFieldRefInput<$PrismaModel>
+    in?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    not?: NestedEnumVisibilityFilter<$PrismaModel> | $Enums.Visibility
+  }
+
   export type NestedEnumPriorityNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Priority | EnumPriorityFieldRefInput<$PrismaModel> | null
     in?: $Enums.Priority[] | ListEnumPriorityFieldRefInput<$PrismaModel> | null
@@ -65984,6 +70976,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumItemStatusFilter<$PrismaModel>
     _max?: NestedEnumItemStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumVisibilityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Visibility | EnumVisibilityFieldRefInput<$PrismaModel>
+    in?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    not?: NestedEnumVisibilityWithAggregatesFilter<$PrismaModel> | $Enums.Visibility
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumVisibilityFilter<$PrismaModel>
+    _max?: NestedEnumVisibilityFilter<$PrismaModel>
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
@@ -66133,60 +71135,34 @@ export namespace Prisma {
 
   export type CommentCreateWithoutAuthorInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    file?: FileCreateNestedOneWithoutCommentsInput
-    item?: ItemCreateNestedOneWithoutCommentsInput
-    parentComment?: CommentCreateNestedOneWithoutRepliesInput
-    replies?: CommentCreateNestedManyWithoutParentCommentInput
-    task?: TaskCreateNestedOneWithoutCommentsInput
-    userStory?: UserStoryCreateNestedOneWithoutCommentsInput
-    blog_tags?: blog_tagsCreateNestedManyWithoutCommentsInput
-    categories?: categoriesCreateNestedManyWithoutCommentsInput
+    parent?: CommentCreateNestedOneWithoutRepliesInput
+    replies?: CommentCreateNestedManyWithoutParentInput
+    post: PostCreateNestedOneWithoutCommentsInput
+    images?: ImageCreateNestedManyWithoutCommentInput
+    Item?: ItemCreateNestedManyWithoutCommentsInput
+    File?: FileCreateNestedManyWithoutCommentsInput
+    Task?: TaskCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryCreateNestedManyWithoutCommentsInput
   }
 
   export type CommentUncheckedCreateWithoutAuthorInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    taskId?: string | null
-    userStoryId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
-    categories?: categoriesUncheckedCreateNestedManyWithoutCommentsInput
+    postId: string
+    parentId?: string | null
+    replies?: CommentUncheckedCreateNestedManyWithoutParentInput
+    images?: ImageUncheckedCreateNestedManyWithoutCommentInput
+    Item?: ItemUncheckedCreateNestedManyWithoutCommentsInput
+    File?: FileUncheckedCreateNestedManyWithoutCommentsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryUncheckedCreateNestedManyWithoutCommentsInput
   }
 
   export type CommentCreateOrConnectWithoutAuthorInput = {
@@ -67034,6 +72010,7 @@ export namespace Prisma {
     templates?: TemplateCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     task?: TaskCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutUserInput = {
@@ -67063,6 +72040,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutUserInput = {
@@ -67091,6 +72069,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryCreateNestedManyWithoutSprintInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
     Tasks?: TaskCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyCreateNestedManyWithoutSprintInput
   }
 
   export type SprintUncheckedCreateWithoutUsersInput = {
@@ -67114,6 +72093,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutSprintInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
     Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutSprintInput
   }
 
   export type SprintCreateOrConnectWithoutUsersInput = {
@@ -67188,6 +72168,119 @@ export namespace Prisma {
   export type TaskCreateOrConnectWithoutAssigneesInput = {
     where: TaskWhereUniqueInput
     create: XOR<TaskCreateWithoutAssigneesInput, TaskUncheckedCreateWithoutAssigneesInput>
+  }
+
+  export type CeremonyCreateWithoutAttendeesInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sprint?: SprintCreateNestedOneWithoutCeremonyInput
+    project: ProjectCreateNestedOneWithoutCeremonyInput
+    team?: TeamCreateNestedOneWithoutCeremonyInput
+  }
+
+  export type CeremonyUncheckedCreateWithoutAttendeesInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sprintId?: string | null
+    projectId: string
+    teamId?: string | null
+  }
+
+  export type CeremonyCreateOrConnectWithoutAttendeesInput = {
+    where: CeremonyWhereUniqueInput
+    create: XOR<CeremonyCreateWithoutAttendeesInput, CeremonyUncheckedCreateWithoutAttendeesInput>
+  }
+
+  export type ImageCreateWithoutUserInput = {
+    id?: string
+    url: string
+    order?: number
+    alt?: string | null
+    createdAt?: Date | string
+    comment?: CommentCreateNestedOneWithoutImagesInput
+    post?: PostCreateNestedOneWithoutImagesInput
+  }
+
+  export type ImageUncheckedCreateWithoutUserInput = {
+    id?: string
+    url: string
+    order?: number
+    alt?: string | null
+    createdAt?: Date | string
+    postId?: string | null
+    commentId?: string | null
+  }
+
+  export type ImageCreateOrConnectWithoutUserInput = {
+    where: ImageWhereUniqueInput
+    create: XOR<ImageCreateWithoutUserInput, ImageUncheckedCreateWithoutUserInput>
+  }
+
+  export type ImageCreateManyUserInputEnvelope = {
+    data: ImageCreateManyUserInput | ImageCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PostCreateWithoutAuthorInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    comments?: CommentCreateNestedManyWithoutPostInput
+    images?: ImageCreateNestedManyWithoutPostInput
+    categories?: CategoryCreateNestedManyWithoutPostsInput
+    tags?: TagCreateNestedManyWithoutPostsInput
+  }
+
+  export type PostUncheckedCreateWithoutAuthorInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    comments?: CommentUncheckedCreateNestedManyWithoutPostInput
+    images?: ImageUncheckedCreateNestedManyWithoutPostInput
+    categories?: CategoryUncheckedCreateNestedManyWithoutPostsInput
+    tags?: TagUncheckedCreateNestedManyWithoutPostsInput
+  }
+
+  export type PostCreateOrConnectWithoutAuthorInput = {
+    where: PostWhereUniqueInput
+    create: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type PostCreateManyAuthorInputEnvelope = {
+    data: PostCreateManyAuthorInput | PostCreateManyAuthorInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserStoryAssigneesUpsertWithWhereUniqueWithoutUsersInput = {
@@ -67331,29 +72424,13 @@ export namespace Prisma {
     OR?: CommentScalarWhereInput[]
     NOT?: CommentScalarWhereInput | CommentScalarWhereInput[]
     id?: StringFilter<"Comment"> | string
-    title?: StringFilter<"Comment"> | string
-    order?: IntFilter<"Comment"> | number
     content?: StringFilter<"Comment"> | string
-    mentions?: StringNullableListFilter<"Comment">
+    order?: IntFilter<"Comment"> | number
     createdAt?: DateTimeFilter<"Comment"> | Date | string
     updatedAt?: DateTimeFilter<"Comment"> | Date | string
+    postId?: StringFilter<"Comment"> | string
     authorId?: StringFilter<"Comment"> | string
-    taskId?: StringNullableFilter<"Comment"> | string | null
-    userStoryId?: StringNullableFilter<"Comment"> | string | null
-    fileId?: StringNullableFilter<"Comment"> | string | null
-    itemId?: StringNullableFilter<"Comment"> | string | null
-    parentCommentId?: StringNullableFilter<"Comment"> | string | null
-    blogImage?: StringNullableFilter<"Comment"> | string | null
-    excerpt?: StringNullableFilter<"Comment"> | string | null
-    isActive?: BoolFilter<"Comment"> | boolean
-    isPinned?: BoolFilter<"Comment"> | boolean
-    isResolved?: BoolFilter<"Comment"> | boolean
-    metadata?: JsonNullableFilter<"Comment">
-    publishedAt?: DateTimeNullableFilter<"Comment"> | Date | string | null
-    readingTime?: IntNullableFilter<"Comment"> | number | null
-    slug?: StringNullableFilter<"Comment"> | string | null
-    status?: StringFilter<"Comment"> | string
-    visibility?: EnumVisibilityFilter<"Comment"> | $Enums.Visibility
+    parentId?: StringNullableFilter<"Comment"> | string | null
   }
 
   export type FeatureUpsertWithWhereUniqueWithoutUsersInput = {
@@ -67998,6 +73075,105 @@ export namespace Prisma {
     data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutAssigneesInput>
   }
 
+  export type CeremonyUpsertWithWhereUniqueWithoutAttendeesInput = {
+    where: CeremonyWhereUniqueInput
+    update: XOR<CeremonyUpdateWithoutAttendeesInput, CeremonyUncheckedUpdateWithoutAttendeesInput>
+    create: XOR<CeremonyCreateWithoutAttendeesInput, CeremonyUncheckedCreateWithoutAttendeesInput>
+  }
+
+  export type CeremonyUpdateWithWhereUniqueWithoutAttendeesInput = {
+    where: CeremonyWhereUniqueInput
+    data: XOR<CeremonyUpdateWithoutAttendeesInput, CeremonyUncheckedUpdateWithoutAttendeesInput>
+  }
+
+  export type CeremonyUpdateManyWithWhereWithoutAttendeesInput = {
+    where: CeremonyScalarWhereInput
+    data: XOR<CeremonyUpdateManyMutationInput, CeremonyUncheckedUpdateManyWithoutAttendeesInput>
+  }
+
+  export type CeremonyScalarWhereInput = {
+    AND?: CeremonyScalarWhereInput | CeremonyScalarWhereInput[]
+    OR?: CeremonyScalarWhereInput[]
+    NOT?: CeremonyScalarWhereInput | CeremonyScalarWhereInput[]
+    id?: StringFilter<"Ceremony"> | string
+    type?: EnumCeremonyTypeFilter<"Ceremony"> | $Enums.CeremonyType
+    title?: StringFilter<"Ceremony"> | string
+    description?: StringNullableFilter<"Ceremony"> | string | null
+    startTime?: DateTimeFilter<"Ceremony"> | Date | string
+    endTime?: DateTimeFilter<"Ceremony"> | Date | string
+    location?: StringNullableFilter<"Ceremony"> | string | null
+    status?: StringFilter<"Ceremony"> | string
+    agenda?: JsonNullableFilter<"Ceremony">
+    notes?: StringNullableFilter<"Ceremony"> | string | null
+    createdAt?: DateTimeFilter<"Ceremony"> | Date | string
+    updatedAt?: DateTimeFilter<"Ceremony"> | Date | string
+    sprintId?: StringNullableFilter<"Ceremony"> | string | null
+    projectId?: StringFilter<"Ceremony"> | string
+    teamId?: StringNullableFilter<"Ceremony"> | string | null
+  }
+
+  export type ImageUpsertWithWhereUniqueWithoutUserInput = {
+    where: ImageWhereUniqueInput
+    update: XOR<ImageUpdateWithoutUserInput, ImageUncheckedUpdateWithoutUserInput>
+    create: XOR<ImageCreateWithoutUserInput, ImageUncheckedCreateWithoutUserInput>
+  }
+
+  export type ImageUpdateWithWhereUniqueWithoutUserInput = {
+    where: ImageWhereUniqueInput
+    data: XOR<ImageUpdateWithoutUserInput, ImageUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ImageUpdateManyWithWhereWithoutUserInput = {
+    where: ImageScalarWhereInput
+    data: XOR<ImageUpdateManyMutationInput, ImageUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ImageScalarWhereInput = {
+    AND?: ImageScalarWhereInput | ImageScalarWhereInput[]
+    OR?: ImageScalarWhereInput[]
+    NOT?: ImageScalarWhereInput | ImageScalarWhereInput[]
+    id?: StringFilter<"Image"> | string
+    url?: StringFilter<"Image"> | string
+    order?: IntFilter<"Image"> | number
+    alt?: StringNullableFilter<"Image"> | string | null
+    createdAt?: DateTimeFilter<"Image"> | Date | string
+    postId?: StringNullableFilter<"Image"> | string | null
+    userId?: StringNullableFilter<"Image"> | string | null
+    commentId?: StringNullableFilter<"Image"> | string | null
+  }
+
+  export type PostUpsertWithWhereUniqueWithoutAuthorInput = {
+    where: PostWhereUniqueInput
+    update: XOR<PostUpdateWithoutAuthorInput, PostUncheckedUpdateWithoutAuthorInput>
+    create: XOR<PostCreateWithoutAuthorInput, PostUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type PostUpdateWithWhereUniqueWithoutAuthorInput = {
+    where: PostWhereUniqueInput
+    data: XOR<PostUpdateWithoutAuthorInput, PostUncheckedUpdateWithoutAuthorInput>
+  }
+
+  export type PostUpdateManyWithWhereWithoutAuthorInput = {
+    where: PostScalarWhereInput
+    data: XOR<PostUpdateManyMutationInput, PostUncheckedUpdateManyWithoutAuthorInput>
+  }
+
+  export type PostScalarWhereInput = {
+    AND?: PostScalarWhereInput | PostScalarWhereInput[]
+    OR?: PostScalarWhereInput[]
+    NOT?: PostScalarWhereInput | PostScalarWhereInput[]
+    id?: StringFilter<"Post"> | string
+    slug?: StringFilter<"Post"> | string
+    title?: StringFilter<"Post"> | string
+    order?: IntFilter<"Post"> | number
+    excerpt?: StringNullableFilter<"Post"> | string | null
+    content?: StringFilter<"Post"> | string
+    published?: BoolFilter<"Post"> | boolean
+    createdAt?: DateTimeFilter<"Post"> | Date | string
+    updatedAt?: DateTimeFilter<"Post"> | Date | string
+    authorId?: StringFilter<"Post"> | string
+  }
+
   export type UserCreateWithoutAccountsInput = {
     id?: string
     name?: string | null
@@ -68037,6 +73213,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -68078,6 +73257,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -68135,6 +73317,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -68176,6 +73361,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -68217,6 +73405,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -68258,6 +73449,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -68315,6 +73509,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -68356,6 +73553,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type fieldsCreateWithoutTeamsInput = {
@@ -68482,6 +73682,7 @@ export namespace Prisma {
     members?: TeamMemberCreateNestedManyWithoutTeamInput
     parentTeam?: TeamCreateNestedOneWithoutChildrenInput
     templates?: TemplateCreateNestedManyWithoutTeamInput
+    Ceremony?: CeremonyCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUncheckedCreateWithoutChildrenInput = {
@@ -68498,6 +73699,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutTeamsInput
     members?: TeamMemberUncheckedCreateNestedManyWithoutTeamInput
     templates?: TemplateUncheckedCreateNestedManyWithoutTeamInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutTeamInput
   }
 
   export type TeamCreateOrConnectWithoutChildrenInput = {
@@ -68519,6 +73721,7 @@ export namespace Prisma {
     members?: TeamMemberCreateNestedManyWithoutTeamInput
     children?: TeamCreateNestedManyWithoutParentTeamInput
     templates?: TemplateCreateNestedManyWithoutTeamInput
+    Ceremony?: CeremonyCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUncheckedCreateWithoutParentTeamInput = {
@@ -68535,6 +73738,7 @@ export namespace Prisma {
     members?: TeamMemberUncheckedCreateNestedManyWithoutTeamInput
     children?: TeamUncheckedCreateNestedManyWithoutParentTeamInput
     templates?: TemplateUncheckedCreateNestedManyWithoutTeamInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutTeamInput
   }
 
   export type TeamCreateOrConnectWithoutParentTeamInput = {
@@ -68586,6 +73790,52 @@ export namespace Prisma {
 
   export type TemplateCreateManyTeamInputEnvelope = {
     data: TemplateCreateManyTeamInput | TemplateCreateManyTeamInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CeremonyCreateWithoutTeamInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sprint?: SprintCreateNestedOneWithoutCeremonyInput
+    project: ProjectCreateNestedOneWithoutCeremonyInput
+    attendees?: UserCreateNestedManyWithoutCeremonyInput
+  }
+
+  export type CeremonyUncheckedCreateWithoutTeamInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sprintId?: string | null
+    projectId: string
+    attendees?: UserUncheckedCreateNestedManyWithoutCeremonyInput
+  }
+
+  export type CeremonyCreateOrConnectWithoutTeamInput = {
+    where: CeremonyWhereUniqueInput
+    create: XOR<CeremonyCreateWithoutTeamInput, CeremonyUncheckedCreateWithoutTeamInput>
+  }
+
+  export type CeremonyCreateManyTeamInputEnvelope = {
+    data: CeremonyCreateManyTeamInput | CeremonyCreateManyTeamInput[]
     skipDuplicates?: boolean
   }
 
@@ -68646,6 +73896,7 @@ export namespace Prisma {
     members?: TeamMemberUpdateManyWithoutTeamNestedInput
     parentTeam?: TeamUpdateOneWithoutChildrenNestedInput
     templates?: TemplateUpdateManyWithoutTeamNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateWithoutChildrenInput = {
@@ -68662,6 +73913,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutTeamsNestedInput
     members?: TeamMemberUncheckedUpdateManyWithoutTeamNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutTeamNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUpsertWithWhereUniqueWithoutParentTeamInput = {
@@ -68732,6 +73984,22 @@ export namespace Prisma {
     projectId?: StringNullableFilter<"Template"> | string | null
   }
 
+  export type CeremonyUpsertWithWhereUniqueWithoutTeamInput = {
+    where: CeremonyWhereUniqueInput
+    update: XOR<CeremonyUpdateWithoutTeamInput, CeremonyUncheckedUpdateWithoutTeamInput>
+    create: XOR<CeremonyCreateWithoutTeamInput, CeremonyUncheckedCreateWithoutTeamInput>
+  }
+
+  export type CeremonyUpdateWithWhereUniqueWithoutTeamInput = {
+    where: CeremonyWhereUniqueInput
+    data: XOR<CeremonyUpdateWithoutTeamInput, CeremonyUncheckedUpdateWithoutTeamInput>
+  }
+
+  export type CeremonyUpdateManyWithWhereWithoutTeamInput = {
+    where: CeremonyScalarWhereInput
+    data: XOR<CeremonyUpdateManyMutationInput, CeremonyUncheckedUpdateManyWithoutTeamInput>
+  }
+
   export type TeamCreateWithoutMembersInput = {
     id?: string
     name: string
@@ -68746,6 +74014,7 @@ export namespace Prisma {
     parentTeam?: TeamCreateNestedOneWithoutChildrenInput
     children?: TeamCreateNestedManyWithoutParentTeamInput
     templates?: TemplateCreateNestedManyWithoutTeamInput
+    Ceremony?: CeremonyCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUncheckedCreateWithoutMembersInput = {
@@ -68762,6 +74031,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutTeamsInput
     children?: TeamUncheckedCreateNestedManyWithoutParentTeamInput
     templates?: TemplateUncheckedCreateNestedManyWithoutTeamInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutTeamInput
   }
 
   export type TeamCreateOrConnectWithoutMembersInput = {
@@ -68808,6 +74078,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationMembershipsInput = {
@@ -68849,6 +74122,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationMembershipsInput = {
@@ -68881,6 +74157,7 @@ export namespace Prisma {
     parentTeam?: TeamUpdateOneWithoutChildrenNestedInput
     children?: TeamUpdateManyWithoutParentTeamNestedInput
     templates?: TemplateUpdateManyWithoutTeamNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateWithoutMembersInput = {
@@ -68897,6 +74174,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutTeamsNestedInput
     children?: TeamUncheckedUpdateManyWithoutParentTeamNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutTeamNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutTeamNestedInput
   }
 
   export type UserUpsertWithoutOrganizationMembershipsInput = {
@@ -68949,6 +74227,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationMembershipsInput = {
@@ -68990,6 +74271,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type ChannelCreateWithoutProjectInput = {
@@ -69140,6 +74424,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
     Tasks?: TaskCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyCreateNestedManyWithoutSprintInput
   }
 
   export type SprintUncheckedCreateWithoutProjectInput = {
@@ -69163,6 +74448,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
     Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutSprintInput
   }
 
   export type SprintCreateOrConnectWithoutProjectInput = {
@@ -69573,6 +74859,9 @@ export namespace Prisma {
     assignedItems?: ItemCreateNestedManyWithoutAssigneesInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutProjectsInput = {
@@ -69614,6 +74903,9 @@ export namespace Prisma {
     assignedItems?: ItemUncheckedCreateNestedManyWithoutAssigneesInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutProjectsInput = {
@@ -69692,6 +74984,52 @@ export namespace Prisma {
 
   export type TaskCreateManyProjectInputEnvelope = {
     data: TaskCreateManyProjectInput | TaskCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CeremonyCreateWithoutProjectInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sprint?: SprintCreateNestedOneWithoutCeremonyInput
+    team?: TeamCreateNestedOneWithoutCeremonyInput
+    attendees?: UserCreateNestedManyWithoutCeremonyInput
+  }
+
+  export type CeremonyUncheckedCreateWithoutProjectInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sprintId?: string | null
+    teamId?: string | null
+    attendees?: UserUncheckedCreateNestedManyWithoutCeremonyInput
+  }
+
+  export type CeremonyCreateOrConnectWithoutProjectInput = {
+    where: CeremonyWhereUniqueInput
+    create: XOR<CeremonyCreateWithoutProjectInput, CeremonyUncheckedCreateWithoutProjectInput>
+  }
+
+  export type CeremonyCreateManyProjectInputEnvelope = {
+    data: CeremonyCreateManyProjectInput | CeremonyCreateManyProjectInput[]
     skipDuplicates?: boolean
   }
 
@@ -69943,6 +75281,22 @@ export namespace Prisma {
     data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutProjectInput>
   }
 
+  export type CeremonyUpsertWithWhereUniqueWithoutProjectInput = {
+    where: CeremonyWhereUniqueInput
+    update: XOR<CeremonyUpdateWithoutProjectInput, CeremonyUncheckedUpdateWithoutProjectInput>
+    create: XOR<CeremonyCreateWithoutProjectInput, CeremonyUncheckedCreateWithoutProjectInput>
+  }
+
+  export type CeremonyUpdateWithWhereUniqueWithoutProjectInput = {
+    where: CeremonyWhereUniqueInput
+    data: XOR<CeremonyUpdateWithoutProjectInput, CeremonyUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type CeremonyUpdateManyWithWhereWithoutProjectInput = {
+    where: CeremonyScalarWhereInput
+    data: XOR<CeremonyUpdateManyMutationInput, CeremonyUncheckedUpdateManyWithoutProjectInput>
+  }
+
   export type ProjectCreateWithoutMembersInput = {
     id?: string
     name: string
@@ -69970,6 +75324,7 @@ export namespace Prisma {
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
     task?: TaskCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutMembersInput = {
@@ -69999,6 +75354,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutMembersInput = {
@@ -70045,6 +75401,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutProjectMembershipsInput = {
@@ -70086,6 +75445,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutProjectMembershipsInput = {
@@ -70131,6 +75493,7 @@ export namespace Prisma {
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
     task?: TaskUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutMembersInput = {
@@ -70160,6 +75523,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutProjectMembershipsInput = {
@@ -70212,6 +75576,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectMembershipsInput = {
@@ -70253,6 +75620,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type EpicCreateWithoutInitiativeInput = {
@@ -70328,6 +75698,7 @@ export namespace Prisma {
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
     task?: TaskCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutInitiativesInput = {
@@ -70357,6 +75728,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutInitiativesInput = {
@@ -70403,6 +75775,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutInitiativesInput = {
@@ -70444,6 +75819,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutInitiativesInput = {
@@ -70505,6 +75883,7 @@ export namespace Prisma {
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
     task?: TaskUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutInitiativesInput = {
@@ -70534,6 +75913,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutInitiativesInput = {
@@ -70586,6 +75966,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInitiativesInput = {
@@ -70627,6 +76010,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type InitiativeCreateWithoutEpicsInput = {
@@ -70905,6 +76291,7 @@ export namespace Prisma {
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
     task?: TaskCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutEpicInput = {
@@ -70934,6 +76321,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutEpicInput = {
@@ -71378,6 +76766,7 @@ export namespace Prisma {
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
     task?: TaskCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutFeaturesInput = {
@@ -71407,6 +76796,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutFeaturesInput = {
@@ -71453,6 +76843,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutFeaturesInput = {
@@ -71494,6 +76887,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutFeaturesInput = {
@@ -71876,6 +77272,7 @@ export namespace Prisma {
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
     task?: TaskUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutFeaturesInput = {
@@ -71905,6 +77302,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutFeaturesInput = {
@@ -71957,6 +77355,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFeaturesInput = {
@@ -71998,6 +77399,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type FileUpsertWithWhereUniqueWithoutFeatureInput = {
@@ -72316,70 +77720,39 @@ export namespace Prisma {
 
   export type CommentCreateWithoutUserStoryInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
-    file?: FileCreateNestedOneWithoutCommentsInput
-    item?: ItemCreateNestedOneWithoutCommentsInput
-    parentComment?: CommentCreateNestedOneWithoutRepliesInput
-    replies?: CommentCreateNestedManyWithoutParentCommentInput
-    task?: TaskCreateNestedOneWithoutCommentsInput
-    blog_tags?: blog_tagsCreateNestedManyWithoutCommentsInput
-    categories?: categoriesCreateNestedManyWithoutCommentsInput
+    parent?: CommentCreateNestedOneWithoutRepliesInput
+    replies?: CommentCreateNestedManyWithoutParentInput
+    post: PostCreateNestedOneWithoutCommentsInput
+    images?: ImageCreateNestedManyWithoutCommentInput
+    Item?: ItemCreateNestedManyWithoutCommentsInput
+    File?: FileCreateNestedManyWithoutCommentsInput
+    Task?: TaskCreateNestedManyWithoutCommentsInput
   }
 
   export type CommentUncheckedCreateWithoutUserStoryInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    postId: string
     authorId: string
-    taskId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
-    categories?: categoriesUncheckedCreateNestedManyWithoutCommentsInput
+    parentId?: string | null
+    replies?: CommentUncheckedCreateNestedManyWithoutParentInput
+    images?: ImageUncheckedCreateNestedManyWithoutCommentInput
+    Item?: ItemUncheckedCreateNestedManyWithoutCommentsInput
+    File?: FileUncheckedCreateNestedManyWithoutCommentsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutCommentsInput
   }
 
   export type CommentCreateOrConnectWithoutUserStoryInput = {
     where: CommentWhereUniqueInput
     create: XOR<CommentCreateWithoutUserStoryInput, CommentUncheckedCreateWithoutUserStoryInput>
-  }
-
-  export type CommentCreateManyUserStoryInputEnvelope = {
-    data: CommentCreateManyUserStoryInput | CommentCreateManyUserStoryInput[]
-    skipDuplicates?: boolean
   }
 
   export type FileCreateWithoutUserStoryInput = {
@@ -72533,6 +77906,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutCreatedUserStoriesInput = {
@@ -72574,6 +77950,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutCreatedUserStoriesInput = {
@@ -72721,6 +78100,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryCreateNestedManyWithoutSprintInput
     users?: UserCreateNestedManyWithoutSprintsInput
     Tasks?: TaskCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyCreateNestedManyWithoutSprintInput
   }
 
   export type SprintUncheckedCreateWithoutUserStoriesInput = {
@@ -72744,6 +78124,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutSprintInput
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
     Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutSprintInput
   }
 
   export type SprintCreateOrConnectWithoutUserStoriesInput = {
@@ -72888,6 +78269,7 @@ export namespace Prisma {
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
     task?: TaskCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutUserStoryInput = {
@@ -72917,6 +78299,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutUserStoryInput = {
@@ -73038,6 +78421,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedUserStoriesInput = {
@@ -73079,6 +78465,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type FeatureUpsertWithoutUserStoriesInput = {
@@ -73549,70 +78938,39 @@ export namespace Prisma {
 
   export type CommentCreateWithoutTaskInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
-    file?: FileCreateNestedOneWithoutCommentsInput
-    item?: ItemCreateNestedOneWithoutCommentsInput
-    parentComment?: CommentCreateNestedOneWithoutRepliesInput
-    replies?: CommentCreateNestedManyWithoutParentCommentInput
-    userStory?: UserStoryCreateNestedOneWithoutCommentsInput
-    blog_tags?: blog_tagsCreateNestedManyWithoutCommentsInput
-    categories?: categoriesCreateNestedManyWithoutCommentsInput
+    parent?: CommentCreateNestedOneWithoutRepliesInput
+    replies?: CommentCreateNestedManyWithoutParentInput
+    post: PostCreateNestedOneWithoutCommentsInput
+    images?: ImageCreateNestedManyWithoutCommentInput
+    Item?: ItemCreateNestedManyWithoutCommentsInput
+    File?: FileCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryCreateNestedManyWithoutCommentsInput
   }
 
   export type CommentUncheckedCreateWithoutTaskInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    postId: string
     authorId: string
-    userStoryId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
-    categories?: categoriesUncheckedCreateNestedManyWithoutCommentsInput
+    parentId?: string | null
+    replies?: CommentUncheckedCreateNestedManyWithoutParentInput
+    images?: ImageUncheckedCreateNestedManyWithoutCommentInput
+    Item?: ItemUncheckedCreateNestedManyWithoutCommentsInput
+    File?: FileUncheckedCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryUncheckedCreateNestedManyWithoutCommentsInput
   }
 
   export type CommentCreateOrConnectWithoutTaskInput = {
     where: CommentWhereUniqueInput
     create: XOR<CommentCreateWithoutTaskInput, CommentUncheckedCreateWithoutTaskInput>
-  }
-
-  export type CommentCreateManyTaskInputEnvelope = {
-    data: CommentCreateManyTaskInput | CommentCreateManyTaskInput[]
-    skipDuplicates?: boolean
   }
 
   export type FileCreateWithoutTaskInput = {
@@ -73764,6 +79122,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryCreateNestedManyWithoutSprintInput
     users?: UserCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyCreateNestedManyWithoutSprintInput
   }
 
   export type SprintUncheckedCreateWithoutTasksInput = {
@@ -73787,6 +79146,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutSprintInput
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutSprintInput
   }
 
   export type SprintCreateOrConnectWithoutTasksInput = {
@@ -73861,6 +79221,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutCreatedTasksInput = {
@@ -73902,6 +79265,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutCreatedTasksInput = {
@@ -73936,6 +79302,7 @@ export namespace Prisma {
     templates?: TemplateCreateNestedManyWithoutProjectInput
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutTaskInput = {
@@ -73965,6 +79332,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutTaskInput = {
@@ -74053,6 +79421,9 @@ export namespace Prisma {
     assignedItems?: ItemCreateNestedManyWithoutAssigneesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutAssignedTasksInput = {
@@ -74094,6 +79465,9 @@ export namespace Prisma {
     assignedItems?: ItemUncheckedCreateNestedManyWithoutAssigneesInput
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutAssignedTasksInput = {
@@ -74382,6 +79756,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedTasksInput = {
@@ -74423,6 +79800,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type ProjectUpsertWithoutTaskInput = {
@@ -74463,6 +79843,7 @@ export namespace Prisma {
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutTaskInput = {
@@ -74492,6 +79873,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TimeEntryUpsertWithWhereUniqueWithoutTaskInput = {
@@ -75047,6 +80429,7 @@ export namespace Prisma {
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
     task?: TaskCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutSprintsInput = {
@@ -75076,6 +80459,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutSprintsInput = {
@@ -75164,6 +80548,9 @@ export namespace Prisma {
     assignedItems?: ItemCreateNestedManyWithoutAssigneesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutSprintsInput = {
@@ -75205,6 +80592,9 @@ export namespace Prisma {
     assignedItems?: ItemUncheckedCreateNestedManyWithoutAssigneesInput
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutSprintsInput = {
@@ -75350,6 +80740,52 @@ export namespace Prisma {
     create: XOR<TaskCreateWithoutSprintsInput, TaskUncheckedCreateWithoutSprintsInput>
   }
 
+  export type CeremonyCreateWithoutSprintInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutCeremonyInput
+    team?: TeamCreateNestedOneWithoutCeremonyInput
+    attendees?: UserCreateNestedManyWithoutCeremonyInput
+  }
+
+  export type CeremonyUncheckedCreateWithoutSprintInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectId: string
+    teamId?: string | null
+    attendees?: UserUncheckedCreateNestedManyWithoutCeremonyInput
+  }
+
+  export type CeremonyCreateOrConnectWithoutSprintInput = {
+    where: CeremonyWhereUniqueInput
+    create: XOR<CeremonyCreateWithoutSprintInput, CeremonyUncheckedCreateWithoutSprintInput>
+  }
+
+  export type CeremonyCreateManySprintInputEnvelope = {
+    data: CeremonyCreateManySprintInput | CeremonyCreateManySprintInput[]
+    skipDuplicates?: boolean
+  }
+
   export type FileUpsertWithWhereUniqueWithoutSprintInput = {
     where: FileWhereUniqueInput
     update: XOR<FileUpdateWithoutSprintInput, FileUncheckedUpdateWithoutSprintInput>
@@ -75420,6 +80856,7 @@ export namespace Prisma {
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
     task?: TaskUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutSprintsInput = {
@@ -75449,6 +80886,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TimeEntryUpsertWithWhereUniqueWithoutSprintInput = {
@@ -75515,72 +80953,57 @@ export namespace Prisma {
     data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutSprintsInput>
   }
 
+  export type CeremonyUpsertWithWhereUniqueWithoutSprintInput = {
+    where: CeremonyWhereUniqueInput
+    update: XOR<CeremonyUpdateWithoutSprintInput, CeremonyUncheckedUpdateWithoutSprintInput>
+    create: XOR<CeremonyCreateWithoutSprintInput, CeremonyUncheckedCreateWithoutSprintInput>
+  }
+
+  export type CeremonyUpdateWithWhereUniqueWithoutSprintInput = {
+    where: CeremonyWhereUniqueInput
+    data: XOR<CeremonyUpdateWithoutSprintInput, CeremonyUncheckedUpdateWithoutSprintInput>
+  }
+
+  export type CeremonyUpdateManyWithWhereWithoutSprintInput = {
+    where: CeremonyScalarWhereInput
+    data: XOR<CeremonyUpdateManyMutationInput, CeremonyUncheckedUpdateManyWithoutSprintInput>
+  }
+
   export type CommentCreateWithoutFileInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
-    item?: ItemCreateNestedOneWithoutCommentsInput
-    parentComment?: CommentCreateNestedOneWithoutRepliesInput
-    replies?: CommentCreateNestedManyWithoutParentCommentInput
-    task?: TaskCreateNestedOneWithoutCommentsInput
-    userStory?: UserStoryCreateNestedOneWithoutCommentsInput
-    blog_tags?: blog_tagsCreateNestedManyWithoutCommentsInput
-    categories?: categoriesCreateNestedManyWithoutCommentsInput
+    parent?: CommentCreateNestedOneWithoutRepliesInput
+    replies?: CommentCreateNestedManyWithoutParentInput
+    post: PostCreateNestedOneWithoutCommentsInput
+    images?: ImageCreateNestedManyWithoutCommentInput
+    Item?: ItemCreateNestedManyWithoutCommentsInput
+    Task?: TaskCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryCreateNestedManyWithoutCommentsInput
   }
 
   export type CommentUncheckedCreateWithoutFileInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    postId: string
     authorId: string
-    taskId?: string | null
-    userStoryId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
-    categories?: categoriesUncheckedCreateNestedManyWithoutCommentsInput
+    parentId?: string | null
+    replies?: CommentUncheckedCreateNestedManyWithoutParentInput
+    images?: ImageUncheckedCreateNestedManyWithoutCommentInput
+    Item?: ItemUncheckedCreateNestedManyWithoutCommentsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryUncheckedCreateNestedManyWithoutCommentsInput
   }
 
   export type CommentCreateOrConnectWithoutFileInput = {
     where: CommentWhereUniqueInput
     create: XOR<CommentCreateWithoutFileInput, CommentUncheckedCreateWithoutFileInput>
-  }
-
-  export type CommentCreateManyFileInputEnvelope = {
-    data: CommentCreateManyFileInput | CommentCreateManyFileInput[]
-    skipDuplicates?: boolean
   }
 
   export type FileVersionCreateWithoutFileInput = {
@@ -75840,6 +81263,7 @@ export namespace Prisma {
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
     task?: TaskCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutFilesInput = {
@@ -75869,6 +81293,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutFilesInput = {
@@ -75897,6 +81322,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
     Tasks?: TaskCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyCreateNestedManyWithoutSprintInput
   }
 
   export type SprintUncheckedCreateWithoutFilesInput = {
@@ -75920,6 +81346,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
     Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutSprintInput
   }
 
   export type SprintCreateOrConnectWithoutFilesInput = {
@@ -76035,6 +81462,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutFileUploadsInput = {
@@ -76076,6 +81506,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutFileUploadsInput = {
@@ -76461,6 +81894,7 @@ export namespace Prisma {
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
     task?: TaskUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutFilesInput = {
@@ -76490,6 +81924,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type SprintUpsertWithoutFilesInput = {
@@ -76524,6 +81959,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutFilesInput = {
@@ -76547,6 +81983,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutSprintNestedInput
   }
 
   export type TaskUpsertWithWhereUniqueWithoutFilesInput = {
@@ -76711,6 +82148,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutFileVersionInput = {
@@ -76752,6 +82192,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutFileVersionInput = {
@@ -76874,6 +82317,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFileVersionInput = {
@@ -76915,6 +82361,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type FileUpsertWithoutVersionsInput = {
@@ -76988,6 +82437,838 @@ export namespace Prisma {
     items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
   }
 
+  export type SprintCreateWithoutCeremonyInput = {
+    id?: string
+    name: string
+    order?: number
+    goal?: string | null
+    description?: string | null
+    startDate: Date | string
+    endDate: Date | string
+    status?: $Enums.SprintStatus
+    capacity?: number | null
+    velocity?: number | null
+    burndownData?: NullableJsonNullValueInput | InputJsonValue
+    retrospective?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    files?: FileCreateNestedManyWithoutSprintInput
+    items?: ItemCreateNestedManyWithoutSprintInput
+    project: ProjectCreateNestedOneWithoutSprintsInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutSprintInput
+    users?: UserCreateNestedManyWithoutSprintsInput
+    userStories?: UserStoryCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskCreateNestedManyWithoutSprintsInput
+  }
+
+  export type SprintUncheckedCreateWithoutCeremonyInput = {
+    id?: string
+    name: string
+    order?: number
+    goal?: string | null
+    description?: string | null
+    startDate: Date | string
+    endDate: Date | string
+    status?: $Enums.SprintStatus
+    capacity?: number | null
+    velocity?: number | null
+    burndownData?: NullableJsonNullValueInput | InputJsonValue
+    retrospective?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectId: string
+    files?: FileUncheckedCreateNestedManyWithoutSprintInput
+    items?: ItemUncheckedCreateNestedManyWithoutSprintInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutSprintInput
+    users?: UserUncheckedCreateNestedManyWithoutSprintsInput
+    userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
+    Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
+  }
+
+  export type SprintCreateOrConnectWithoutCeremonyInput = {
+    where: SprintWhereUniqueInput
+    create: XOR<SprintCreateWithoutCeremonyInput, SprintUncheckedCreateWithoutCeremonyInput>
+  }
+
+  export type ProjectCreateWithoutCeremonyInput = {
+    id?: string
+    name: string
+    description?: string | null
+    slug: string
+    key: string
+    order?: number
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    status?: string
+    visibility?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channels?: ChannelCreateNestedManyWithoutProjectInput
+    initiatives?: InitiativeCreateNestedManyWithoutProjectInput
+    epic?: EpicCreateNestedManyWithoutProjectInput
+    sprints?: SprintCreateNestedManyWithoutProjectInput
+    userStory?: UserStoryCreateNestedManyWithoutProjectInput
+    features?: FeatureCreateNestedManyWithoutProjectInput
+    files?: FileCreateNestedManyWithoutProjectInput
+    members?: ProjectMemberCreateNestedManyWithoutProjectInput
+    templates?: TemplateCreateNestedManyWithoutProjectInput
+    fields?: fieldsCreateNestedManyWithoutProjectsInput
+    user?: UserCreateNestedManyWithoutProjectsInput
+    task?: TaskCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutCeremonyInput = {
+    id?: string
+    name: string
+    description?: string | null
+    slug: string
+    key: string
+    order?: number
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    status?: string
+    visibility?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
+    initiatives?: InitiativeUncheckedCreateNestedManyWithoutProjectInput
+    epic?: EpicUncheckedCreateNestedManyWithoutProjectInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutProjectInput
+    userStory?: UserStoryUncheckedCreateNestedManyWithoutProjectInput
+    features?: FeatureUncheckedCreateNestedManyWithoutProjectInput
+    files?: FileUncheckedCreateNestedManyWithoutProjectInput
+    members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
+    templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
+    fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
+    user?: UserUncheckedCreateNestedManyWithoutProjectsInput
+    task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutCeremonyInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutCeremonyInput, ProjectUncheckedCreateWithoutCeremonyInput>
+  }
+
+  export type TeamCreateWithoutCeremonyInput = {
+    id?: string
+    name: string
+    order?: number
+    description?: string | null
+    slug: string
+    logoUrl?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    fields?: fieldsCreateNestedManyWithoutTeamsInput
+    members?: TeamMemberCreateNestedManyWithoutTeamInput
+    parentTeam?: TeamCreateNestedOneWithoutChildrenInput
+    children?: TeamCreateNestedManyWithoutParentTeamInput
+    templates?: TemplateCreateNestedManyWithoutTeamInput
+  }
+
+  export type TeamUncheckedCreateWithoutCeremonyInput = {
+    id?: string
+    name: string
+    order?: number
+    description?: string | null
+    slug: string
+    logoUrl?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    parentTeamId?: string | null
+    fields?: fieldsUncheckedCreateNestedManyWithoutTeamsInput
+    members?: TeamMemberUncheckedCreateNestedManyWithoutTeamInput
+    children?: TeamUncheckedCreateNestedManyWithoutParentTeamInput
+    templates?: TemplateUncheckedCreateNestedManyWithoutTeamInput
+  }
+
+  export type TeamCreateOrConnectWithoutCeremonyInput = {
+    where: TeamWhereUniqueInput
+    create: XOR<TeamCreateWithoutCeremonyInput, TeamUncheckedCreateWithoutCeremonyInput>
+  }
+
+  export type UserCreateWithoutCeremonyInput = {
+    id?: string
+    name?: string | null
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    username?: string | null
+    firstName?: string | null
+    lastName?: string | null
+    bio?: string | null
+    timezone?: string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    twoFactorEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUsersInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    ChannelMember?: ChannelMemberCreateNestedManyWithoutUserInput
+    comments?: CommentCreateNestedManyWithoutAuthorInput
+    features?: FeatureCreateNestedManyWithoutUsersInput
+    fields?: fieldsCreateNestedManyWithoutUsersInput
+    FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
+    initiatives?: InitiativeCreateNestedManyWithoutUserInput
+    ownedItems?: ItemCreateNestedManyWithoutUserInput
+    Message?: MessageCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    createdTasks?: TaskCreateNestedManyWithoutCreatorInput
+    organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
+    createdUserStories?: UserStoryCreateNestedManyWithoutCreatorInput
+    assignedItems?: ItemCreateNestedManyWithoutAssigneesInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    sprints?: SprintCreateNestedManyWithoutUsersInput
+    assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
+  }
+
+  export type UserUncheckedCreateWithoutCeremonyInput = {
+    id?: string
+    name?: string | null
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    username?: string | null
+    firstName?: string | null
+    lastName?: string | null
+    bio?: string | null
+    timezone?: string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    twoFactorEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUsersInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    ChannelMember?: ChannelMemberUncheckedCreateNestedManyWithoutUserInput
+    comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
+    features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
+    fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
+    FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
+    initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
+    ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
+    Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
+    organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
+    createdUserStories?: UserStoryUncheckedCreateNestedManyWithoutCreatorInput
+    assignedItems?: ItemUncheckedCreateNestedManyWithoutAssigneesInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
+  }
+
+  export type UserCreateOrConnectWithoutCeremonyInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCeremonyInput, UserUncheckedCreateWithoutCeremonyInput>
+  }
+
+  export type SprintUpsertWithoutCeremonyInput = {
+    update: XOR<SprintUpdateWithoutCeremonyInput, SprintUncheckedUpdateWithoutCeremonyInput>
+    create: XOR<SprintCreateWithoutCeremonyInput, SprintUncheckedCreateWithoutCeremonyInput>
+    where?: SprintWhereInput
+  }
+
+  export type SprintUpdateToOneWithWhereWithoutCeremonyInput = {
+    where?: SprintWhereInput
+    data: XOR<SprintUpdateWithoutCeremonyInput, SprintUncheckedUpdateWithoutCeremonyInput>
+  }
+
+  export type SprintUpdateWithoutCeremonyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    goal?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumSprintStatusFieldUpdateOperationsInput | $Enums.SprintStatus
+    capacity?: NullableIntFieldUpdateOperationsInput | number | null
+    velocity?: NullableFloatFieldUpdateOperationsInput | number | null
+    burndownData?: NullableJsonNullValueInput | InputJsonValue
+    retrospective?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    files?: FileUpdateManyWithoutSprintNestedInput
+    items?: ItemUpdateManyWithoutSprintNestedInput
+    project?: ProjectUpdateOneRequiredWithoutSprintsNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutSprintNestedInput
+    users?: UserUpdateManyWithoutSprintsNestedInput
+    userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUpdateManyWithoutSprintsNestedInput
+  }
+
+  export type SprintUncheckedUpdateWithoutCeremonyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    goal?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumSprintStatusFieldUpdateOperationsInput | $Enums.SprintStatus
+    capacity?: NullableIntFieldUpdateOperationsInput | number | null
+    velocity?: NullableFloatFieldUpdateOperationsInput | number | null
+    burndownData?: NullableJsonNullValueInput | InputJsonValue
+    retrospective?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    files?: FileUncheckedUpdateManyWithoutSprintNestedInput
+    items?: ItemUncheckedUpdateManyWithoutSprintNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutSprintNestedInput
+    users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
+    userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
+    Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
+  }
+
+  export type ProjectUpsertWithoutCeremonyInput = {
+    update: XOR<ProjectUpdateWithoutCeremonyInput, ProjectUncheckedUpdateWithoutCeremonyInput>
+    create: XOR<ProjectCreateWithoutCeremonyInput, ProjectUncheckedCreateWithoutCeremonyInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutCeremonyInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutCeremonyInput, ProjectUncheckedUpdateWithoutCeremonyInput>
+  }
+
+  export type ProjectUpdateWithoutCeremonyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channels?: ChannelUpdateManyWithoutProjectNestedInput
+    initiatives?: InitiativeUpdateManyWithoutProjectNestedInput
+    epic?: EpicUpdateManyWithoutProjectNestedInput
+    sprints?: SprintUpdateManyWithoutProjectNestedInput
+    userStory?: UserStoryUpdateManyWithoutProjectNestedInput
+    features?: FeatureUpdateManyWithoutProjectNestedInput
+    files?: FileUpdateManyWithoutProjectNestedInput
+    members?: ProjectMemberUpdateManyWithoutProjectNestedInput
+    templates?: TemplateUpdateManyWithoutProjectNestedInput
+    fields?: fieldsUpdateManyWithoutProjectsNestedInput
+    user?: UserUpdateManyWithoutProjectsNestedInput
+    task?: TaskUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutCeremonyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
+    initiatives?: InitiativeUncheckedUpdateManyWithoutProjectNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutProjectNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutProjectNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutProjectNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutProjectNestedInput
+    files?: FileUncheckedUpdateManyWithoutProjectNestedInput
+    members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
+    templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
+    fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
+    user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
+    task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type TeamUpsertWithoutCeremonyInput = {
+    update: XOR<TeamUpdateWithoutCeremonyInput, TeamUncheckedUpdateWithoutCeremonyInput>
+    create: XOR<TeamCreateWithoutCeremonyInput, TeamUncheckedCreateWithoutCeremonyInput>
+    where?: TeamWhereInput
+  }
+
+  export type TeamUpdateToOneWithWhereWithoutCeremonyInput = {
+    where?: TeamWhereInput
+    data: XOR<TeamUpdateWithoutCeremonyInput, TeamUncheckedUpdateWithoutCeremonyInput>
+  }
+
+  export type TeamUpdateWithoutCeremonyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fields?: fieldsUpdateManyWithoutTeamsNestedInput
+    members?: TeamMemberUpdateManyWithoutTeamNestedInput
+    parentTeam?: TeamUpdateOneWithoutChildrenNestedInput
+    children?: TeamUpdateManyWithoutParentTeamNestedInput
+    templates?: TemplateUpdateManyWithoutTeamNestedInput
+  }
+
+  export type TeamUncheckedUpdateWithoutCeremonyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    parentTeamId?: NullableStringFieldUpdateOperationsInput | string | null
+    fields?: fieldsUncheckedUpdateManyWithoutTeamsNestedInput
+    members?: TeamMemberUncheckedUpdateManyWithoutTeamNestedInput
+    children?: TeamUncheckedUpdateManyWithoutParentTeamNestedInput
+    templates?: TemplateUncheckedUpdateManyWithoutTeamNestedInput
+  }
+
+  export type UserUpsertWithWhereUniqueWithoutCeremonyInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutCeremonyInput, UserUncheckedUpdateWithoutCeremonyInput>
+    create: XOR<UserCreateWithoutCeremonyInput, UserUncheckedCreateWithoutCeremonyInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutCeremonyInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutCeremonyInput, UserUncheckedUpdateWithoutCeremonyInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutCeremonyInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutCeremonyInput>
+  }
+
+  export type CommentCreateWithoutPostInput = {
+    id?: string
+    content: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    author: UserCreateNestedOneWithoutCommentsInput
+    parent?: CommentCreateNestedOneWithoutRepliesInput
+    replies?: CommentCreateNestedManyWithoutParentInput
+    images?: ImageCreateNestedManyWithoutCommentInput
+    Item?: ItemCreateNestedManyWithoutCommentsInput
+    File?: FileCreateNestedManyWithoutCommentsInput
+    Task?: TaskCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryCreateNestedManyWithoutCommentsInput
+  }
+
+  export type CommentUncheckedCreateWithoutPostInput = {
+    id?: string
+    content: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authorId: string
+    parentId?: string | null
+    replies?: CommentUncheckedCreateNestedManyWithoutParentInput
+    images?: ImageUncheckedCreateNestedManyWithoutCommentInput
+    Item?: ItemUncheckedCreateNestedManyWithoutCommentsInput
+    File?: FileUncheckedCreateNestedManyWithoutCommentsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryUncheckedCreateNestedManyWithoutCommentsInput
+  }
+
+  export type CommentCreateOrConnectWithoutPostInput = {
+    where: CommentWhereUniqueInput
+    create: XOR<CommentCreateWithoutPostInput, CommentUncheckedCreateWithoutPostInput>
+  }
+
+  export type CommentCreateManyPostInputEnvelope = {
+    data: CommentCreateManyPostInput | CommentCreateManyPostInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ImageCreateWithoutPostInput = {
+    id?: string
+    url: string
+    order?: number
+    alt?: string | null
+    createdAt?: Date | string
+    comment?: CommentCreateNestedOneWithoutImagesInput
+    user?: UserCreateNestedOneWithoutImageInput
+  }
+
+  export type ImageUncheckedCreateWithoutPostInput = {
+    id?: string
+    url: string
+    order?: number
+    alt?: string | null
+    createdAt?: Date | string
+    userId?: string | null
+    commentId?: string | null
+  }
+
+  export type ImageCreateOrConnectWithoutPostInput = {
+    where: ImageWhereUniqueInput
+    create: XOR<ImageCreateWithoutPostInput, ImageUncheckedCreateWithoutPostInput>
+  }
+
+  export type ImageCreateManyPostInputEnvelope = {
+    data: ImageCreateManyPostInput | ImageCreateManyPostInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserCreateWithoutPostInput = {
+    id?: string
+    name?: string | null
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    username?: string | null
+    firstName?: string | null
+    lastName?: string | null
+    bio?: string | null
+    timezone?: string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    twoFactorEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUsersInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    ChannelMember?: ChannelMemberCreateNestedManyWithoutUserInput
+    comments?: CommentCreateNestedManyWithoutAuthorInput
+    features?: FeatureCreateNestedManyWithoutUsersInput
+    fields?: fieldsCreateNestedManyWithoutUsersInput
+    FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
+    initiatives?: InitiativeCreateNestedManyWithoutUserInput
+    ownedItems?: ItemCreateNestedManyWithoutUserInput
+    Message?: MessageCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    createdTasks?: TaskCreateNestedManyWithoutCreatorInput
+    organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
+    createdUserStories?: UserStoryCreateNestedManyWithoutCreatorInput
+    assignedItems?: ItemCreateNestedManyWithoutAssigneesInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    sprints?: SprintCreateNestedManyWithoutUsersInput
+    assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPostInput = {
+    id?: string
+    name?: string | null
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    username?: string | null
+    firstName?: string | null
+    lastName?: string | null
+    bio?: string | null
+    timezone?: string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    twoFactorEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUsersInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    ChannelMember?: ChannelMemberUncheckedCreateNestedManyWithoutUserInput
+    comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
+    features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
+    fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
+    FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
+    initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
+    ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
+    Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
+    organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
+    createdUserStories?: UserStoryUncheckedCreateNestedManyWithoutCreatorInput
+    assignedItems?: ItemUncheckedCreateNestedManyWithoutAssigneesInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPostInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPostInput, UserUncheckedCreateWithoutPostInput>
+  }
+
+  export type CategoryCreateWithoutPostsInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    tags?: TagCreateNestedManyWithoutCategoryInput
+  }
+
+  export type CategoryUncheckedCreateWithoutPostsInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    tags?: TagUncheckedCreateNestedManyWithoutCategoryInput
+  }
+
+  export type CategoryCreateOrConnectWithoutPostsInput = {
+    where: CategoryWhereUniqueInput
+    create: XOR<CategoryCreateWithoutPostsInput, CategoryUncheckedCreateWithoutPostsInput>
+  }
+
+  export type TagCreateWithoutPostsInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    category: CategoryCreateNestedOneWithoutTagsInput
+  }
+
+  export type TagUncheckedCreateWithoutPostsInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    categoryId: string
+  }
+
+  export type TagCreateOrConnectWithoutPostsInput = {
+    where: TagWhereUniqueInput
+    create: XOR<TagCreateWithoutPostsInput, TagUncheckedCreateWithoutPostsInput>
+  }
+
+  export type CommentUpsertWithWhereUniqueWithoutPostInput = {
+    where: CommentWhereUniqueInput
+    update: XOR<CommentUpdateWithoutPostInput, CommentUncheckedUpdateWithoutPostInput>
+    create: XOR<CommentCreateWithoutPostInput, CommentUncheckedCreateWithoutPostInput>
+  }
+
+  export type CommentUpdateWithWhereUniqueWithoutPostInput = {
+    where: CommentWhereUniqueInput
+    data: XOR<CommentUpdateWithoutPostInput, CommentUncheckedUpdateWithoutPostInput>
+  }
+
+  export type CommentUpdateManyWithWhereWithoutPostInput = {
+    where: CommentScalarWhereInput
+    data: XOR<CommentUpdateManyMutationInput, CommentUncheckedUpdateManyWithoutPostInput>
+  }
+
+  export type ImageUpsertWithWhereUniqueWithoutPostInput = {
+    where: ImageWhereUniqueInput
+    update: XOR<ImageUpdateWithoutPostInput, ImageUncheckedUpdateWithoutPostInput>
+    create: XOR<ImageCreateWithoutPostInput, ImageUncheckedCreateWithoutPostInput>
+  }
+
+  export type ImageUpdateWithWhereUniqueWithoutPostInput = {
+    where: ImageWhereUniqueInput
+    data: XOR<ImageUpdateWithoutPostInput, ImageUncheckedUpdateWithoutPostInput>
+  }
+
+  export type ImageUpdateManyWithWhereWithoutPostInput = {
+    where: ImageScalarWhereInput
+    data: XOR<ImageUpdateManyMutationInput, ImageUncheckedUpdateManyWithoutPostInput>
+  }
+
+  export type UserUpsertWithoutPostInput = {
+    update: XOR<UserUpdateWithoutPostInput, UserUncheckedUpdateWithoutPostInput>
+    create: XOR<UserCreateWithoutPostInput, UserUncheckedCreateWithoutPostInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPostInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPostInput, UserUncheckedUpdateWithoutPostInput>
+  }
+
+  export type UserUpdateWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUsersNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    ChannelMember?: ChannelMemberUpdateManyWithoutUserNestedInput
+    comments?: CommentUpdateManyWithoutAuthorNestedInput
+    features?: FeatureUpdateManyWithoutUsersNestedInput
+    fields?: fieldsUpdateManyWithoutUsersNestedInput
+    FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
+    initiatives?: InitiativeUpdateManyWithoutUserNestedInput
+    ownedItems?: ItemUpdateManyWithoutUserNestedInput
+    Message?: MessageUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
+    organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
+    createdUserStories?: UserStoryUpdateManyWithoutCreatorNestedInput
+    assignedItems?: ItemUpdateManyWithoutAssigneesNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    sprints?: SprintUpdateManyWithoutUsersNestedInput
+    assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUsersNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    ChannelMember?: ChannelMemberUncheckedUpdateManyWithoutUserNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
+    fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
+    FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
+    initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
+    ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
+    Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
+    organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
+    createdUserStories?: UserStoryUncheckedUpdateManyWithoutCreatorNestedInput
+    assignedItems?: ItemUncheckedUpdateManyWithoutAssigneesNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type CategoryUpsertWithWhereUniqueWithoutPostsInput = {
+    where: CategoryWhereUniqueInput
+    update: XOR<CategoryUpdateWithoutPostsInput, CategoryUncheckedUpdateWithoutPostsInput>
+    create: XOR<CategoryCreateWithoutPostsInput, CategoryUncheckedCreateWithoutPostsInput>
+  }
+
+  export type CategoryUpdateWithWhereUniqueWithoutPostsInput = {
+    where: CategoryWhereUniqueInput
+    data: XOR<CategoryUpdateWithoutPostsInput, CategoryUncheckedUpdateWithoutPostsInput>
+  }
+
+  export type CategoryUpdateManyWithWhereWithoutPostsInput = {
+    where: CategoryScalarWhereInput
+    data: XOR<CategoryUpdateManyMutationInput, CategoryUncheckedUpdateManyWithoutPostsInput>
+  }
+
+  export type CategoryScalarWhereInput = {
+    AND?: CategoryScalarWhereInput | CategoryScalarWhereInput[]
+    OR?: CategoryScalarWhereInput[]
+    NOT?: CategoryScalarWhereInput | CategoryScalarWhereInput[]
+    id?: StringFilter<"Category"> | string
+    name?: StringFilter<"Category"> | string
+    order?: IntFilter<"Category"> | number
+    slug?: StringFilter<"Category"> | string
+  }
+
+  export type TagUpsertWithWhereUniqueWithoutPostsInput = {
+    where: TagWhereUniqueInput
+    update: XOR<TagUpdateWithoutPostsInput, TagUncheckedUpdateWithoutPostsInput>
+    create: XOR<TagCreateWithoutPostsInput, TagUncheckedCreateWithoutPostsInput>
+  }
+
+  export type TagUpdateWithWhereUniqueWithoutPostsInput = {
+    where: TagWhereUniqueInput
+    data: XOR<TagUpdateWithoutPostsInput, TagUncheckedUpdateWithoutPostsInput>
+  }
+
+  export type TagUpdateManyWithWhereWithoutPostsInput = {
+    where: TagScalarWhereInput
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutPostsInput>
+  }
+
+  export type TagScalarWhereInput = {
+    AND?: TagScalarWhereInput | TagScalarWhereInput[]
+    OR?: TagScalarWhereInput[]
+    NOT?: TagScalarWhereInput | TagScalarWhereInput[]
+    id?: StringFilter<"Tag"> | string
+    name?: StringFilter<"Tag"> | string
+    order?: IntFilter<"Tag"> | number
+    slug?: StringFilter<"Tag"> | string
+    categoryId?: StringFilter<"Tag"> | string
+  }
+
   export type UserCreateWithoutCommentsInput = {
     id?: string
     name?: string | null
@@ -77027,6 +83308,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutCommentsInput = {
@@ -77068,6 +83352,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutCommentsInput = {
@@ -77075,69 +83362,150 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutCommentsInput, UserUncheckedCreateWithoutCommentsInput>
   }
 
-  export type FileCreateWithoutCommentsInput = {
+  export type CommentCreateWithoutRepliesInput = {
     id?: string
-    name: string
+    content: string
     order?: number
-    type: $Enums.FileType
-    mimeType?: string | null
-    path?: string | null
-    description?: string | null
-    import?: string | null
-    use?: string | null
-    export?: string | null
-    script?: string | null
-    version?: number
-    isFolder?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    versions?: FileVersionCreateNestedManyWithoutFileInput
-    feature?: FeatureCreateNestedOneWithoutFilesInput
-    parent?: FileCreateNestedOneWithoutChildrenInput
-    children?: FileCreateNestedManyWithoutParentInput
-    project: ProjectCreateNestedOneWithoutFilesInput
-    sprint?: SprintCreateNestedOneWithoutFilesInput
-    task?: TaskCreateNestedManyWithoutFilesInput
-    author?: UserCreateNestedManyWithoutFileUploadsInput
-    userStory?: UserStoryCreateNestedOneWithoutFilesInput
-    items?: ItemCreateNestedManyWithoutFilesInput
+    author: UserCreateNestedOneWithoutCommentsInput
+    parent?: CommentCreateNestedOneWithoutRepliesInput
+    post: PostCreateNestedOneWithoutCommentsInput
+    images?: ImageCreateNestedManyWithoutCommentInput
+    Item?: ItemCreateNestedManyWithoutCommentsInput
+    File?: FileCreateNestedManyWithoutCommentsInput
+    Task?: TaskCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryCreateNestedManyWithoutCommentsInput
   }
 
-  export type FileUncheckedCreateWithoutCommentsInput = {
+  export type CommentUncheckedCreateWithoutRepliesInput = {
     id?: string
-    name: string
+    content: string
     order?: number
-    type: $Enums.FileType
-    mimeType?: string | null
-    path?: string | null
-    description?: string | null
-    import?: string | null
-    use?: string | null
-    export?: string | null
-    script?: string | null
-    version?: number
-    isFolder?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
+    postId: string
+    authorId: string
     parentId?: string | null
-    projectId: string
-    featureId?: string | null
-    userStoryId?: string | null
-    sprintId?: string | null
-    versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
-    children?: FileUncheckedCreateNestedManyWithoutParentInput
-    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
-    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
-    items?: ItemUncheckedCreateNestedManyWithoutFilesInput
+    images?: ImageUncheckedCreateNestedManyWithoutCommentInput
+    Item?: ItemUncheckedCreateNestedManyWithoutCommentsInput
+    File?: FileUncheckedCreateNestedManyWithoutCommentsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryUncheckedCreateNestedManyWithoutCommentsInput
   }
 
-  export type FileCreateOrConnectWithoutCommentsInput = {
-    where: FileWhereUniqueInput
-    create: XOR<FileCreateWithoutCommentsInput, FileUncheckedCreateWithoutCommentsInput>
+  export type CommentCreateOrConnectWithoutRepliesInput = {
+    where: CommentWhereUniqueInput
+    create: XOR<CommentCreateWithoutRepliesInput, CommentUncheckedCreateWithoutRepliesInput>
+  }
+
+  export type CommentCreateWithoutParentInput = {
+    id?: string
+    content: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    author: UserCreateNestedOneWithoutCommentsInput
+    replies?: CommentCreateNestedManyWithoutParentInput
+    post: PostCreateNestedOneWithoutCommentsInput
+    images?: ImageCreateNestedManyWithoutCommentInput
+    Item?: ItemCreateNestedManyWithoutCommentsInput
+    File?: FileCreateNestedManyWithoutCommentsInput
+    Task?: TaskCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryCreateNestedManyWithoutCommentsInput
+  }
+
+  export type CommentUncheckedCreateWithoutParentInput = {
+    id?: string
+    content: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    postId: string
+    authorId: string
+    replies?: CommentUncheckedCreateNestedManyWithoutParentInput
+    images?: ImageUncheckedCreateNestedManyWithoutCommentInput
+    Item?: ItemUncheckedCreateNestedManyWithoutCommentsInput
+    File?: FileUncheckedCreateNestedManyWithoutCommentsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryUncheckedCreateNestedManyWithoutCommentsInput
+  }
+
+  export type CommentCreateOrConnectWithoutParentInput = {
+    where: CommentWhereUniqueInput
+    create: XOR<CommentCreateWithoutParentInput, CommentUncheckedCreateWithoutParentInput>
+  }
+
+  export type CommentCreateManyParentInputEnvelope = {
+    data: CommentCreateManyParentInput | CommentCreateManyParentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PostCreateWithoutCommentsInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    images?: ImageCreateNestedManyWithoutPostInput
+    author: UserCreateNestedOneWithoutPostInput
+    categories?: CategoryCreateNestedManyWithoutPostsInput
+    tags?: TagCreateNestedManyWithoutPostsInput
+  }
+
+  export type PostUncheckedCreateWithoutCommentsInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authorId: string
+    images?: ImageUncheckedCreateNestedManyWithoutPostInput
+    categories?: CategoryUncheckedCreateNestedManyWithoutPostsInput
+    tags?: TagUncheckedCreateNestedManyWithoutPostsInput
+  }
+
+  export type PostCreateOrConnectWithoutCommentsInput = {
+    where: PostWhereUniqueInput
+    create: XOR<PostCreateWithoutCommentsInput, PostUncheckedCreateWithoutCommentsInput>
+  }
+
+  export type ImageCreateWithoutCommentInput = {
+    id?: string
+    url: string
+    order?: number
+    alt?: string | null
+    createdAt?: Date | string
+    post?: PostCreateNestedOneWithoutImagesInput
+    user?: UserCreateNestedOneWithoutImageInput
+  }
+
+  export type ImageUncheckedCreateWithoutCommentInput = {
+    id?: string
+    url: string
+    order?: number
+    alt?: string | null
+    createdAt?: Date | string
+    postId?: string | null
+    userId?: string | null
+  }
+
+  export type ImageCreateOrConnectWithoutCommentInput = {
+    where: ImageWhereUniqueInput
+    create: XOR<ImageCreateWithoutCommentInput, ImageUncheckedCreateWithoutCommentInput>
+  }
+
+  export type ImageCreateManyCommentInputEnvelope = {
+    data: ImageCreateManyCommentInput | ImageCreateManyCommentInput[]
+    skipDuplicates?: boolean
   }
 
   export type ItemCreateWithoutCommentsInput = {
@@ -77223,135 +83591,69 @@ export namespace Prisma {
     create: XOR<ItemCreateWithoutCommentsInput, ItemUncheckedCreateWithoutCommentsInput>
   }
 
-  export type CommentCreateWithoutRepliesInput = {
+  export type FileCreateWithoutCommentsInput = {
     id?: string
-    title: string
+    name: string
     order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
+    type: $Enums.FileType
+    mimeType?: string | null
+    path?: string | null
+    description?: string | null
+    import?: string | null
+    use?: string | null
+    export?: string | null
+    script?: string | null
+    version?: number
+    isFolder?: boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    author: UserCreateNestedOneWithoutCommentsInput
-    file?: FileCreateNestedOneWithoutCommentsInput
-    item?: ItemCreateNestedOneWithoutCommentsInput
-    parentComment?: CommentCreateNestedOneWithoutRepliesInput
-    task?: TaskCreateNestedOneWithoutCommentsInput
-    userStory?: UserStoryCreateNestedOneWithoutCommentsInput
-    blog_tags?: blog_tagsCreateNestedManyWithoutCommentsInput
-    categories?: categoriesCreateNestedManyWithoutCommentsInput
+    versions?: FileVersionCreateNestedManyWithoutFileInput
+    feature?: FeatureCreateNestedOneWithoutFilesInput
+    parent?: FileCreateNestedOneWithoutChildrenInput
+    children?: FileCreateNestedManyWithoutParentInput
+    project: ProjectCreateNestedOneWithoutFilesInput
+    sprint?: SprintCreateNestedOneWithoutFilesInput
+    task?: TaskCreateNestedManyWithoutFilesInput
+    author?: UserCreateNestedManyWithoutFileUploadsInput
+    userStory?: UserStoryCreateNestedOneWithoutFilesInput
+    items?: ItemCreateNestedManyWithoutFilesInput
   }
 
-  export type CommentUncheckedCreateWithoutRepliesInput = {
+  export type FileUncheckedCreateWithoutCommentsInput = {
     id?: string
-    title: string
+    name: string
     order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
+    type: $Enums.FileType
+    mimeType?: string | null
+    path?: string | null
+    description?: string | null
+    import?: string | null
+    use?: string | null
+    export?: string | null
+    script?: string | null
+    version?: number
+    isFolder?: boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    tags?: FileCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    authorId: string
-    taskId?: string | null
+    parentId?: string | null
+    projectId: string
+    featureId?: string | null
     userStoryId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
-    categories?: categoriesUncheckedCreateNestedManyWithoutCommentsInput
+    sprintId?: string | null
+    versions?: FileVersionUncheckedCreateNestedManyWithoutFileInput
+    children?: FileUncheckedCreateNestedManyWithoutParentInput
+    task?: TaskUncheckedCreateNestedManyWithoutFilesInput
+    author?: UserUncheckedCreateNestedManyWithoutFileUploadsInput
+    items?: ItemUncheckedCreateNestedManyWithoutFilesInput
   }
 
-  export type CommentCreateOrConnectWithoutRepliesInput = {
-    where: CommentWhereUniqueInput
-    create: XOR<CommentCreateWithoutRepliesInput, CommentUncheckedCreateWithoutRepliesInput>
-  }
-
-  export type CommentCreateWithoutParentCommentInput = {
-    id?: string
-    title: string
-    order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    author: UserCreateNestedOneWithoutCommentsInput
-    file?: FileCreateNestedOneWithoutCommentsInput
-    item?: ItemCreateNestedOneWithoutCommentsInput
-    replies?: CommentCreateNestedManyWithoutParentCommentInput
-    task?: TaskCreateNestedOneWithoutCommentsInput
-    userStory?: UserStoryCreateNestedOneWithoutCommentsInput
-    blog_tags?: blog_tagsCreateNestedManyWithoutCommentsInput
-    categories?: categoriesCreateNestedManyWithoutCommentsInput
-  }
-
-  export type CommentUncheckedCreateWithoutParentCommentInput = {
-    id?: string
-    title: string
-    order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    authorId: string
-    taskId?: string | null
-    userStoryId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
-    categories?: categoriesUncheckedCreateNestedManyWithoutCommentsInput
-  }
-
-  export type CommentCreateOrConnectWithoutParentCommentInput = {
-    where: CommentWhereUniqueInput
-    create: XOR<CommentCreateWithoutParentCommentInput, CommentUncheckedCreateWithoutParentCommentInput>
-  }
-
-  export type CommentCreateManyParentCommentInputEnvelope = {
-    data: CommentCreateManyParentCommentInput | CommentCreateManyParentCommentInput[]
-    skipDuplicates?: boolean
+  export type FileCreateOrConnectWithoutCommentsInput = {
+    where: FileWhereUniqueInput
+    create: XOR<FileCreateWithoutCommentsInput, FileUncheckedCreateWithoutCommentsInput>
   }
 
   export type TaskCreateWithoutCommentsInput = {
@@ -77492,68 +83794,6 @@ export namespace Prisma {
     create: XOR<UserStoryCreateWithoutCommentsInput, UserStoryUncheckedCreateWithoutCommentsInput>
   }
 
-  export type blog_tagsCreateWithoutCommentsInput = {
-    id: string
-    name: string
-    order?: number
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    categories?: categoriesCreateNestedOneWithoutBlog_tagsInput
-  }
-
-  export type blog_tagsUncheckedCreateWithoutCommentsInput = {
-    id: string
-    name: string
-    order?: number
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    categoriesId?: string | null
-  }
-
-  export type blog_tagsCreateOrConnectWithoutCommentsInput = {
-    where: blog_tagsWhereUniqueInput
-    create: XOR<blog_tagsCreateWithoutCommentsInput, blog_tagsUncheckedCreateWithoutCommentsInput>
-  }
-
-  export type categoriesCreateWithoutCommentsInput = {
-    id: string
-    name: string
-    order?: number
-    slug?: string | null
-    description?: string | null
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    blog_tags?: blog_tagsCreateNestedManyWithoutCategoriesInput
-    categories?: categoriesCreateNestedOneWithoutOther_categoriesInput
-    other_categories?: categoriesCreateNestedManyWithoutCategoriesInput
-  }
-
-  export type categoriesUncheckedCreateWithoutCommentsInput = {
-    id: string
-    name: string
-    order?: number
-    slug?: string | null
-    description?: string | null
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    parentId?: string | null
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCategoriesInput
-    other_categories?: categoriesUncheckedCreateNestedManyWithoutCategoriesInput
-  }
-
-  export type categoriesCreateOrConnectWithoutCommentsInput = {
-    where: categoriesWhereUniqueInput
-    create: XOR<categoriesCreateWithoutCommentsInput, categoriesUncheckedCreateWithoutCommentsInput>
-  }
-
   export type UserUpsertWithoutCommentsInput = {
     update: XOR<UserUpdateWithoutCommentsInput, UserUncheckedUpdateWithoutCommentsInput>
     create: XOR<UserCreateWithoutCommentsInput, UserUncheckedCreateWithoutCommentsInput>
@@ -77604,6 +83844,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCommentsInput = {
@@ -77645,166 +83888,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
-  }
-
-  export type FileUpsertWithoutCommentsInput = {
-    update: XOR<FileUpdateWithoutCommentsInput, FileUncheckedUpdateWithoutCommentsInput>
-    create: XOR<FileCreateWithoutCommentsInput, FileUncheckedCreateWithoutCommentsInput>
-    where?: FileWhereInput
-  }
-
-  export type FileUpdateToOneWithWhereWithoutCommentsInput = {
-    where?: FileWhereInput
-    data: XOR<FileUpdateWithoutCommentsInput, FileUncheckedUpdateWithoutCommentsInput>
-  }
-
-  export type FileUpdateWithoutCommentsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
-    mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    path?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableStringFieldUpdateOperationsInput | string | null
-    use?: NullableStringFieldUpdateOperationsInput | string | null
-    export?: NullableStringFieldUpdateOperationsInput | string | null
-    script?: NullableStringFieldUpdateOperationsInput | string | null
-    version?: IntFieldUpdateOperationsInput | number
-    isFolder?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    tags?: FileUpdatetagsInput | string[]
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    versions?: FileVersionUpdateManyWithoutFileNestedInput
-    feature?: FeatureUpdateOneWithoutFilesNestedInput
-    parent?: FileUpdateOneWithoutChildrenNestedInput
-    children?: FileUpdateManyWithoutParentNestedInput
-    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
-    sprint?: SprintUpdateOneWithoutFilesNestedInput
-    task?: TaskUpdateManyWithoutFilesNestedInput
-    author?: UserUpdateManyWithoutFileUploadsNestedInput
-    userStory?: UserStoryUpdateOneWithoutFilesNestedInput
-    items?: ItemUpdateManyWithoutFilesNestedInput
-  }
-
-  export type FileUncheckedUpdateWithoutCommentsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
-    mimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    path?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    import?: NullableStringFieldUpdateOperationsInput | string | null
-    use?: NullableStringFieldUpdateOperationsInput | string | null
-    export?: NullableStringFieldUpdateOperationsInput | string | null
-    script?: NullableStringFieldUpdateOperationsInput | string | null
-    version?: IntFieldUpdateOperationsInput | number
-    isFolder?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    tags?: FileUpdatetagsInput | string[]
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: StringFieldUpdateOperationsInput | string
-    featureId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
-    versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
-    children?: FileUncheckedUpdateManyWithoutParentNestedInput
-    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
-    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
-    items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
-  }
-
-  export type ItemUpsertWithoutCommentsInput = {
-    update: XOR<ItemUpdateWithoutCommentsInput, ItemUncheckedUpdateWithoutCommentsInput>
-    create: XOR<ItemCreateWithoutCommentsInput, ItemUncheckedCreateWithoutCommentsInput>
-    where?: ItemWhereInput
-  }
-
-  export type ItemUpdateToOneWithWhereWithoutCommentsInput = {
-    where?: ItemWhereInput
-    data: XOR<ItemUpdateWithoutCommentsInput, ItemUncheckedUpdateWithoutCommentsInput>
-  }
-
-  export type ItemUpdateWithoutCommentsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    objective?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: StringFieldUpdateOperationsInput | string
-    key?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: NullableEnumPriorityFieldUpdateOperationsInput | $Enums.Priority | null
-    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
-    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
-    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
-    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
-    effort?: NullableIntFieldUpdateOperationsInput | number | null
-    progress?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: EnumItemStatusFieldUpdateOperationsInput | $Enums.ItemStatus
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    settings?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    text?: NullableJsonNullValueInput | InputJsonValue
-    backlogPosition?: NullableIntFieldUpdateOperationsInput | number | null
-    DoD?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    estimatedHours?: NullableIntFieldUpdateOperationsInput | number | null
-    actualHours?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    parent?: ItemUpdateOneWithoutChildrenNestedInput
-    children?: ItemUpdateManyWithoutParentNestedInput
-    sprint?: SprintUpdateOneWithoutItemsNestedInput
-    user?: UserUpdateOneRequiredWithoutOwnedItemsNestedInput
-    timeEntries?: TimeEntryUpdateManyWithoutItemNestedInput
-    files?: FileUpdateManyWithoutItemsNestedInput
-    assignees?: UserUpdateManyWithoutAssignedItemsNestedInput
-  }
-
-  export type ItemUncheckedUpdateWithoutCommentsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    type?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    objective?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: StringFieldUpdateOperationsInput | string
-    key?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: NullableEnumPriorityFieldUpdateOperationsInput | $Enums.Priority | null
-    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
-    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
-    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
-    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
-    effort?: NullableIntFieldUpdateOperationsInput | number | null
-    progress?: NullableIntFieldUpdateOperationsInput | number | null
-    status?: EnumItemStatusFieldUpdateOperationsInput | $Enums.ItemStatus
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    settings?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    text?: NullableJsonNullValueInput | InputJsonValue
-    backlogPosition?: NullableIntFieldUpdateOperationsInput | number | null
-    DoD?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    estimatedHours?: NullableIntFieldUpdateOperationsInput | number | null
-    actualHours?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
-    children?: ItemUncheckedUpdateManyWithoutParentNestedInput
-    timeEntries?: TimeEntryUncheckedUpdateManyWithoutItemNestedInput
-    files?: FileUncheckedUpdateManyWithoutItemsNestedInput
-    assignees?: UserUncheckedUpdateManyWithoutAssignedItemsNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type CommentUpsertWithoutRepliesInput = {
@@ -77820,288 +83906,721 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutRepliesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
-    file?: FileUpdateOneWithoutCommentsNestedInput
-    item?: ItemUpdateOneWithoutCommentsNestedInput
-    parentComment?: CommentUpdateOneWithoutRepliesNestedInput
-    task?: TaskUpdateOneWithoutCommentsNestedInput
-    userStory?: UserStoryUpdateOneWithoutCommentsNestedInput
-    blog_tags?: blog_tagsUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUpdateManyWithoutCommentsNestedInput
+    parent?: CommentUpdateOneWithoutRepliesNestedInput
+    post?: PostUpdateOneRequiredWithoutCommentsNestedInput
+    images?: ImageUpdateManyWithoutCommentNestedInput
+    Item?: ItemUpdateManyWithoutCommentsNestedInput
+    File?: FileUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentUncheckedUpdateWithoutRepliesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ImageUncheckedUpdateManyWithoutCommentNestedInput
+    Item?: ItemUncheckedUpdateManyWithoutCommentsNestedInput
+    File?: FileUncheckedUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUncheckedUpdateManyWithoutCommentsNestedInput
+  }
+
+  export type CommentUpsertWithWhereUniqueWithoutParentInput = {
+    where: CommentWhereUniqueInput
+    update: XOR<CommentUpdateWithoutParentInput, CommentUncheckedUpdateWithoutParentInput>
+    create: XOR<CommentCreateWithoutParentInput, CommentUncheckedCreateWithoutParentInput>
+  }
+
+  export type CommentUpdateWithWhereUniqueWithoutParentInput = {
+    where: CommentWhereUniqueInput
+    data: XOR<CommentUpdateWithoutParentInput, CommentUncheckedUpdateWithoutParentInput>
+  }
+
+  export type CommentUpdateManyWithWhereWithoutParentInput = {
+    where: CommentScalarWhereInput
+    data: XOR<CommentUpdateManyMutationInput, CommentUncheckedUpdateManyWithoutParentInput>
+  }
+
+  export type PostUpsertWithoutCommentsInput = {
+    update: XOR<PostUpdateWithoutCommentsInput, PostUncheckedUpdateWithoutCommentsInput>
+    create: XOR<PostCreateWithoutCommentsInput, PostUncheckedCreateWithoutCommentsInput>
+    where?: PostWhereInput
+  }
+
+  export type PostUpdateToOneWithWhereWithoutCommentsInput = {
+    where?: PostWhereInput
+    data: XOR<PostUpdateWithoutCommentsInput, PostUncheckedUpdateWithoutCommentsInput>
+  }
+
+  export type PostUpdateWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    images?: ImageUpdateManyWithoutPostNestedInput
+    author?: UserUpdateOneRequiredWithoutPostNestedInput
+    categories?: CategoryUpdateManyWithoutPostsNestedInput
+    tags?: TagUpdateManyWithoutPostsNestedInput
+  }
+
+  export type PostUncheckedUpdateWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUncheckedUpdateManyWithoutCommentsNestedInput
+    images?: ImageUncheckedUpdateManyWithoutPostNestedInput
+    categories?: CategoryUncheckedUpdateManyWithoutPostsNestedInput
+    tags?: TagUncheckedUpdateManyWithoutPostsNestedInput
   }
 
-  export type CommentUpsertWithWhereUniqueWithoutParentCommentInput = {
-    where: CommentWhereUniqueInput
-    update: XOR<CommentUpdateWithoutParentCommentInput, CommentUncheckedUpdateWithoutParentCommentInput>
-    create: XOR<CommentCreateWithoutParentCommentInput, CommentUncheckedCreateWithoutParentCommentInput>
+  export type ImageUpsertWithWhereUniqueWithoutCommentInput = {
+    where: ImageWhereUniqueInput
+    update: XOR<ImageUpdateWithoutCommentInput, ImageUncheckedUpdateWithoutCommentInput>
+    create: XOR<ImageCreateWithoutCommentInput, ImageUncheckedCreateWithoutCommentInput>
   }
 
-  export type CommentUpdateWithWhereUniqueWithoutParentCommentInput = {
-    where: CommentWhereUniqueInput
-    data: XOR<CommentUpdateWithoutParentCommentInput, CommentUncheckedUpdateWithoutParentCommentInput>
+  export type ImageUpdateWithWhereUniqueWithoutCommentInput = {
+    where: ImageWhereUniqueInput
+    data: XOR<ImageUpdateWithoutCommentInput, ImageUncheckedUpdateWithoutCommentInput>
   }
 
-  export type CommentUpdateManyWithWhereWithoutParentCommentInput = {
-    where: CommentScalarWhereInput
-    data: XOR<CommentUpdateManyMutationInput, CommentUncheckedUpdateManyWithoutParentCommentInput>
+  export type ImageUpdateManyWithWhereWithoutCommentInput = {
+    where: ImageScalarWhereInput
+    data: XOR<ImageUpdateManyMutationInput, ImageUncheckedUpdateManyWithoutCommentInput>
   }
 
-  export type TaskUpsertWithoutCommentsInput = {
+  export type ItemUpsertWithWhereUniqueWithoutCommentsInput = {
+    where: ItemWhereUniqueInput
+    update: XOR<ItemUpdateWithoutCommentsInput, ItemUncheckedUpdateWithoutCommentsInput>
+    create: XOR<ItemCreateWithoutCommentsInput, ItemUncheckedCreateWithoutCommentsInput>
+  }
+
+  export type ItemUpdateWithWhereUniqueWithoutCommentsInput = {
+    where: ItemWhereUniqueInput
+    data: XOR<ItemUpdateWithoutCommentsInput, ItemUncheckedUpdateWithoutCommentsInput>
+  }
+
+  export type ItemUpdateManyWithWhereWithoutCommentsInput = {
+    where: ItemScalarWhereInput
+    data: XOR<ItemUpdateManyMutationInput, ItemUncheckedUpdateManyWithoutCommentsInput>
+  }
+
+  export type FileUpsertWithWhereUniqueWithoutCommentsInput = {
+    where: FileWhereUniqueInput
+    update: XOR<FileUpdateWithoutCommentsInput, FileUncheckedUpdateWithoutCommentsInput>
+    create: XOR<FileCreateWithoutCommentsInput, FileUncheckedCreateWithoutCommentsInput>
+  }
+
+  export type FileUpdateWithWhereUniqueWithoutCommentsInput = {
+    where: FileWhereUniqueInput
+    data: XOR<FileUpdateWithoutCommentsInput, FileUncheckedUpdateWithoutCommentsInput>
+  }
+
+  export type FileUpdateManyWithWhereWithoutCommentsInput = {
+    where: FileScalarWhereInput
+    data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutCommentsInput>
+  }
+
+  export type TaskUpsertWithWhereUniqueWithoutCommentsInput = {
+    where: TaskWhereUniqueInput
     update: XOR<TaskUpdateWithoutCommentsInput, TaskUncheckedUpdateWithoutCommentsInput>
     create: XOR<TaskCreateWithoutCommentsInput, TaskUncheckedCreateWithoutCommentsInput>
-    where?: TaskWhereInput
   }
 
-  export type TaskUpdateToOneWithWhereWithoutCommentsInput = {
-    where?: TaskWhereInput
+  export type TaskUpdateWithWhereUniqueWithoutCommentsInput = {
+    where: TaskWhereUniqueInput
     data: XOR<TaskUpdateWithoutCommentsInput, TaskUncheckedUpdateWithoutCommentsInput>
   }
 
-  export type TaskUpdateWithoutCommentsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    type?: StringFieldUpdateOperationsInput | string
-    position?: IntFieldUpdateOperationsInput | number
-    labels?: TaskUpdatelabelsInput | string[]
-    tags?: TaskUpdatetagsInput | string[]
-    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    files?: FileUpdateManyWithoutTaskNestedInput
-    features?: FeatureUpdateManyWithoutTasksNestedInput
-    sprints?: SprintUpdateManyWithoutTasksNestedInput
-    dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
-    creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
-    project?: ProjectUpdateOneWithoutTaskNestedInput
-    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
-    assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
-    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
-    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
-    epic?: EpicUpdateManyWithoutTasksNestedInput
+  export type TaskUpdateManyWithWhereWithoutCommentsInput = {
+    where: TaskScalarWhereInput
+    data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutCommentsInput>
   }
 
-  export type TaskUncheckedUpdateWithoutCommentsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    type?: StringFieldUpdateOperationsInput | string
-    position?: IntFieldUpdateOperationsInput | number
-    labels?: TaskUpdatelabelsInput | string[]
-    tags?: TaskUpdatetagsInput | string[]
-    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    projectId?: StringFieldUpdateOperationsInput | string
-    creatorId?: StringFieldUpdateOperationsInput | string
-    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    files?: FileUncheckedUpdateManyWithoutTaskNestedInput
-    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
-    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
-    dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
-    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
-    assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
-    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
-    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
-    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
-  }
-
-  export type UserStoryUpsertWithoutCommentsInput = {
+  export type UserStoryUpsertWithWhereUniqueWithoutCommentsInput = {
+    where: UserStoryWhereUniqueInput
     update: XOR<UserStoryUpdateWithoutCommentsInput, UserStoryUncheckedUpdateWithoutCommentsInput>
     create: XOR<UserStoryCreateWithoutCommentsInput, UserStoryUncheckedCreateWithoutCommentsInput>
-    where?: UserStoryWhereInput
   }
 
-  export type UserStoryUpdateToOneWithWhereWithoutCommentsInput = {
-    where?: UserStoryWhereInput
+  export type UserStoryUpdateWithWhereUniqueWithoutCommentsInput = {
+    where: UserStoryWhereUniqueInput
     data: XOR<UserStoryUpdateWithoutCommentsInput, UserStoryUncheckedUpdateWithoutCommentsInput>
   }
 
-  export type UserStoryUpdateWithoutCommentsInput = {
+  export type UserStoryUpdateManyWithWhereWithoutCommentsInput = {
+    where: UserStoryScalarWhereInput
+    data: XOR<UserStoryUpdateManyMutationInput, UserStoryUncheckedUpdateManyWithoutCommentsInput>
+  }
+
+  export type CommentCreateWithoutImagesInput = {
+    id?: string
+    content: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    author: UserCreateNestedOneWithoutCommentsInput
+    parent?: CommentCreateNestedOneWithoutRepliesInput
+    replies?: CommentCreateNestedManyWithoutParentInput
+    post: PostCreateNestedOneWithoutCommentsInput
+    Item?: ItemCreateNestedManyWithoutCommentsInput
+    File?: FileCreateNestedManyWithoutCommentsInput
+    Task?: TaskCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryCreateNestedManyWithoutCommentsInput
+  }
+
+  export type CommentUncheckedCreateWithoutImagesInput = {
+    id?: string
+    content: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    postId: string
+    authorId: string
+    parentId?: string | null
+    replies?: CommentUncheckedCreateNestedManyWithoutParentInput
+    Item?: ItemUncheckedCreateNestedManyWithoutCommentsInput
+    File?: FileUncheckedCreateNestedManyWithoutCommentsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryUncheckedCreateNestedManyWithoutCommentsInput
+  }
+
+  export type CommentCreateOrConnectWithoutImagesInput = {
+    where: CommentWhereUniqueInput
+    create: XOR<CommentCreateWithoutImagesInput, CommentUncheckedCreateWithoutImagesInput>
+  }
+
+  export type PostCreateWithoutImagesInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    comments?: CommentCreateNestedManyWithoutPostInput
+    author: UserCreateNestedOneWithoutPostInput
+    categories?: CategoryCreateNestedManyWithoutPostsInput
+    tags?: TagCreateNestedManyWithoutPostsInput
+  }
+
+  export type PostUncheckedCreateWithoutImagesInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authorId: string
+    comments?: CommentUncheckedCreateNestedManyWithoutPostInput
+    categories?: CategoryUncheckedCreateNestedManyWithoutPostsInput
+    tags?: TagUncheckedCreateNestedManyWithoutPostsInput
+  }
+
+  export type PostCreateOrConnectWithoutImagesInput = {
+    where: PostWhereUniqueInput
+    create: XOR<PostCreateWithoutImagesInput, PostUncheckedCreateWithoutImagesInput>
+  }
+
+  export type UserCreateWithoutImageInput = {
+    id?: string
+    name?: string | null
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    username?: string | null
+    firstName?: string | null
+    lastName?: string | null
+    bio?: string | null
+    timezone?: string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    twoFactorEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    UserStoryAssignees?: UserStoryAssigneesCreateNestedManyWithoutUsersInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    ChannelMember?: ChannelMemberCreateNestedManyWithoutUserInput
+    comments?: CommentCreateNestedManyWithoutAuthorInput
+    features?: FeatureCreateNestedManyWithoutUsersInput
+    fields?: fieldsCreateNestedManyWithoutUsersInput
+    FileVersion?: FileVersionCreateNestedManyWithoutAuthorInput
+    fileUploads?: FileCreateNestedManyWithoutAuthorInput
+    initiatives?: InitiativeCreateNestedManyWithoutUserInput
+    ownedItems?: ItemCreateNestedManyWithoutUserInput
+    Message?: MessageCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    projectMemberships?: ProjectMemberCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    createdTasks?: TaskCreateNestedManyWithoutCreatorInput
+    organizationMemberships?: TeamMemberCreateNestedManyWithoutUserInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
+    createdUserStories?: UserStoryCreateNestedManyWithoutCreatorInput
+    assignedItems?: ItemCreateNestedManyWithoutAssigneesInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    sprints?: SprintCreateNestedManyWithoutUsersInput
+    assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
+  }
+
+  export type UserUncheckedCreateWithoutImageInput = {
+    id?: string
+    name?: string | null
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    username?: string | null
+    firstName?: string | null
+    lastName?: string | null
+    bio?: string | null
+    timezone?: string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    twoFactorEnabled?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    UserStoryAssignees?: UserStoryAssigneesUncheckedCreateNestedManyWithoutUsersInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    ChannelMember?: ChannelMemberUncheckedCreateNestedManyWithoutUserInput
+    comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
+    features?: FeatureUncheckedCreateNestedManyWithoutUsersInput
+    fields?: fieldsUncheckedCreateNestedManyWithoutUsersInput
+    FileVersion?: FileVersionUncheckedCreateNestedManyWithoutAuthorInput
+    fileUploads?: FileUncheckedCreateNestedManyWithoutAuthorInput
+    initiatives?: InitiativeUncheckedCreateNestedManyWithoutUserInput
+    ownedItems?: ItemUncheckedCreateNestedManyWithoutUserInput
+    Message?: MessageUncheckedCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    projectMemberships?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
+    organizationMemberships?: TeamMemberUncheckedCreateNestedManyWithoutUserInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
+    createdUserStories?: UserStoryUncheckedCreateNestedManyWithoutCreatorInput
+    assignedItems?: ItemUncheckedCreateNestedManyWithoutAssigneesInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
+  }
+
+  export type UserCreateOrConnectWithoutImageInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutImageInput, UserUncheckedCreateWithoutImageInput>
+  }
+
+  export type CommentUpsertWithoutImagesInput = {
+    update: XOR<CommentUpdateWithoutImagesInput, CommentUncheckedUpdateWithoutImagesInput>
+    create: XOR<CommentCreateWithoutImagesInput, CommentUncheckedCreateWithoutImagesInput>
+    where?: CommentWhereInput
+  }
+
+  export type CommentUpdateToOneWithWhereWithoutImagesInput = {
+    where?: CommentWhereInput
+    data: XOR<CommentUpdateWithoutImagesInput, CommentUncheckedUpdateWithoutImagesInput>
+  }
+
+  export type CommentUpdateWithoutImagesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
-    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
-    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
-    effort?: NullableIntFieldUpdateOperationsInput | number | null
-    position?: IntFieldUpdateOperationsInput | number
-    labels?: UserStoryUpdatelabelsInput | string[]
-    tags?: UserStoryUpdatetagsInput | string[]
-    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
-    files?: FileUpdateManyWithoutUserStoryNestedInput
-    timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
-    creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
-    feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
-    dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
-    dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
-    sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
-    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
-    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
-    Project?: ProjectUpdateManyWithoutUserStoryNestedInput
+    author?: UserUpdateOneRequiredWithoutCommentsNestedInput
+    parent?: CommentUpdateOneWithoutRepliesNestedInput
+    replies?: CommentUpdateManyWithoutParentNestedInput
+    post?: PostUpdateOneRequiredWithoutCommentsNestedInput
+    Item?: ItemUpdateManyWithoutCommentsNestedInput
+    File?: FileUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUpdateManyWithoutCommentsNestedInput
   }
 
-  export type UserStoryUncheckedUpdateWithoutCommentsInput = {
+  export type CommentUncheckedUpdateWithoutImagesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
-    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
-    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
-    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
-    effort?: NullableIntFieldUpdateOperationsInput | number | null
-    position?: IntFieldUpdateOperationsInput | number
-    labels?: UserStoryUpdatelabelsInput | string[]
-    tags?: UserStoryUpdatetagsInput | string[]
-    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
-    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    featureId?: StringFieldUpdateOperationsInput | string
-    creatorId?: StringFieldUpdateOperationsInput | string
-    UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
-    files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
-    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
-    dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
-    dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
-    sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
-    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
-    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
-    Project?: ProjectUncheckedUpdateManyWithoutUserStoryNestedInput
+    postId?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    replies?: CommentUncheckedUpdateManyWithoutParentNestedInput
+    Item?: ItemUncheckedUpdateManyWithoutCommentsNestedInput
+    File?: FileUncheckedUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUncheckedUpdateManyWithoutCommentsNestedInput
   }
 
-  export type blog_tagsUpsertWithWhereUniqueWithoutCommentsInput = {
-    where: blog_tagsWhereUniqueInput
-    update: XOR<blog_tagsUpdateWithoutCommentsInput, blog_tagsUncheckedUpdateWithoutCommentsInput>
-    create: XOR<blog_tagsCreateWithoutCommentsInput, blog_tagsUncheckedCreateWithoutCommentsInput>
+  export type PostUpsertWithoutImagesInput = {
+    update: XOR<PostUpdateWithoutImagesInput, PostUncheckedUpdateWithoutImagesInput>
+    create: XOR<PostCreateWithoutImagesInput, PostUncheckedCreateWithoutImagesInput>
+    where?: PostWhereInput
   }
 
-  export type blog_tagsUpdateWithWhereUniqueWithoutCommentsInput = {
-    where: blog_tagsWhereUniqueInput
-    data: XOR<blog_tagsUpdateWithoutCommentsInput, blog_tagsUncheckedUpdateWithoutCommentsInput>
+  export type PostUpdateToOneWithWhereWithoutImagesInput = {
+    where?: PostWhereInput
+    data: XOR<PostUpdateWithoutImagesInput, PostUncheckedUpdateWithoutImagesInput>
   }
 
-  export type blog_tagsUpdateManyWithWhereWithoutCommentsInput = {
-    where: blog_tagsScalarWhereInput
-    data: XOR<blog_tagsUpdateManyMutationInput, blog_tagsUncheckedUpdateManyWithoutCommentsInput>
+  export type PostUpdateWithoutImagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comments?: CommentUpdateManyWithoutPostNestedInput
+    author?: UserUpdateOneRequiredWithoutPostNestedInput
+    categories?: CategoryUpdateManyWithoutPostsNestedInput
+    tags?: TagUpdateManyWithoutPostsNestedInput
   }
 
-  export type blog_tagsScalarWhereInput = {
-    AND?: blog_tagsScalarWhereInput | blog_tagsScalarWhereInput[]
-    OR?: blog_tagsScalarWhereInput[]
-    NOT?: blog_tagsScalarWhereInput | blog_tagsScalarWhereInput[]
-    id?: StringFilter<"blog_tags"> | string
-    name?: StringFilter<"blog_tags"> | string
-    order?: IntFilter<"blog_tags"> | number
-    color?: StringNullableFilter<"blog_tags"> | string | null
-    isActive?: BoolFilter<"blog_tags"> | boolean
-    createdAt?: DateTimeFilter<"blog_tags"> | Date | string
-    updatedAt?: DateTimeFilter<"blog_tags"> | Date | string
-    categoriesId?: StringNullableFilter<"blog_tags"> | string | null
+  export type PostUncheckedUpdateWithoutImagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    comments?: CommentUncheckedUpdateManyWithoutPostNestedInput
+    categories?: CategoryUncheckedUpdateManyWithoutPostsNestedInput
+    tags?: TagUncheckedUpdateManyWithoutPostsNestedInput
   }
 
-  export type categoriesUpsertWithWhereUniqueWithoutCommentsInput = {
-    where: categoriesWhereUniqueInput
-    update: XOR<categoriesUpdateWithoutCommentsInput, categoriesUncheckedUpdateWithoutCommentsInput>
-    create: XOR<categoriesCreateWithoutCommentsInput, categoriesUncheckedCreateWithoutCommentsInput>
+  export type UserUpsertWithoutImageInput = {
+    update: XOR<UserUpdateWithoutImageInput, UserUncheckedUpdateWithoutImageInput>
+    create: XOR<UserCreateWithoutImageInput, UserUncheckedCreateWithoutImageInput>
+    where?: UserWhereInput
   }
 
-  export type categoriesUpdateWithWhereUniqueWithoutCommentsInput = {
-    where: categoriesWhereUniqueInput
-    data: XOR<categoriesUpdateWithoutCommentsInput, categoriesUncheckedUpdateWithoutCommentsInput>
+  export type UserUpdateToOneWithWhereWithoutImageInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutImageInput, UserUncheckedUpdateWithoutImageInput>
   }
 
-  export type categoriesUpdateManyWithWhereWithoutCommentsInput = {
-    where: categoriesScalarWhereInput
-    data: XOR<categoriesUpdateManyMutationInput, categoriesUncheckedUpdateManyWithoutCommentsInput>
+  export type UserUpdateWithoutImageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUsersNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    ChannelMember?: ChannelMemberUpdateManyWithoutUserNestedInput
+    comments?: CommentUpdateManyWithoutAuthorNestedInput
+    features?: FeatureUpdateManyWithoutUsersNestedInput
+    fields?: fieldsUpdateManyWithoutUsersNestedInput
+    FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
+    initiatives?: InitiativeUpdateManyWithoutUserNestedInput
+    ownedItems?: ItemUpdateManyWithoutUserNestedInput
+    Message?: MessageUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
+    organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
+    createdUserStories?: UserStoryUpdateManyWithoutCreatorNestedInput
+    assignedItems?: ItemUpdateManyWithoutAssigneesNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    sprints?: SprintUpdateManyWithoutUsersNestedInput
+    assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
-  export type categoriesScalarWhereInput = {
-    AND?: categoriesScalarWhereInput | categoriesScalarWhereInput[]
-    OR?: categoriesScalarWhereInput[]
-    NOT?: categoriesScalarWhereInput | categoriesScalarWhereInput[]
-    id?: StringFilter<"categories"> | string
-    name?: StringFilter<"categories"> | string
-    order?: IntFilter<"categories"> | number
-    slug?: StringNullableFilter<"categories"> | string | null
-    description?: StringNullableFilter<"categories"> | string | null
-    color?: StringNullableFilter<"categories"> | string | null
-    isActive?: BoolFilter<"categories"> | boolean
-    createdAt?: DateTimeFilter<"categories"> | Date | string
-    updatedAt?: DateTimeFilter<"categories"> | Date | string
-    parentId?: StringNullableFilter<"categories"> | string | null
+  export type UserUncheckedUpdateWithoutImageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUsersNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    ChannelMember?: ChannelMemberUncheckedUpdateManyWithoutUserNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
+    fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
+    FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
+    initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
+    ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
+    Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
+    organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
+    createdUserStories?: UserStoryUncheckedUpdateManyWithoutCreatorNestedInput
+    assignedItems?: ItemUncheckedUpdateManyWithoutAssigneesNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+  }
+
+  export type PostCreateWithoutCategoriesInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    comments?: CommentCreateNestedManyWithoutPostInput
+    images?: ImageCreateNestedManyWithoutPostInput
+    author: UserCreateNestedOneWithoutPostInput
+    tags?: TagCreateNestedManyWithoutPostsInput
+  }
+
+  export type PostUncheckedCreateWithoutCategoriesInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authorId: string
+    comments?: CommentUncheckedCreateNestedManyWithoutPostInput
+    images?: ImageUncheckedCreateNestedManyWithoutPostInput
+    tags?: TagUncheckedCreateNestedManyWithoutPostsInput
+  }
+
+  export type PostCreateOrConnectWithoutCategoriesInput = {
+    where: PostWhereUniqueInput
+    create: XOR<PostCreateWithoutCategoriesInput, PostUncheckedCreateWithoutCategoriesInput>
+  }
+
+  export type TagCreateWithoutCategoryInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    posts?: PostCreateNestedManyWithoutTagsInput
+  }
+
+  export type TagUncheckedCreateWithoutCategoryInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    posts?: PostUncheckedCreateNestedManyWithoutTagsInput
+  }
+
+  export type TagCreateOrConnectWithoutCategoryInput = {
+    where: TagWhereUniqueInput
+    create: XOR<TagCreateWithoutCategoryInput, TagUncheckedCreateWithoutCategoryInput>
+  }
+
+  export type TagCreateManyCategoryInputEnvelope = {
+    data: TagCreateManyCategoryInput | TagCreateManyCategoryInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PostUpsertWithWhereUniqueWithoutCategoriesInput = {
+    where: PostWhereUniqueInput
+    update: XOR<PostUpdateWithoutCategoriesInput, PostUncheckedUpdateWithoutCategoriesInput>
+    create: XOR<PostCreateWithoutCategoriesInput, PostUncheckedCreateWithoutCategoriesInput>
+  }
+
+  export type PostUpdateWithWhereUniqueWithoutCategoriesInput = {
+    where: PostWhereUniqueInput
+    data: XOR<PostUpdateWithoutCategoriesInput, PostUncheckedUpdateWithoutCategoriesInput>
+  }
+
+  export type PostUpdateManyWithWhereWithoutCategoriesInput = {
+    where: PostScalarWhereInput
+    data: XOR<PostUpdateManyMutationInput, PostUncheckedUpdateManyWithoutCategoriesInput>
+  }
+
+  export type TagUpsertWithWhereUniqueWithoutCategoryInput = {
+    where: TagWhereUniqueInput
+    update: XOR<TagUpdateWithoutCategoryInput, TagUncheckedUpdateWithoutCategoryInput>
+    create: XOR<TagCreateWithoutCategoryInput, TagUncheckedCreateWithoutCategoryInput>
+  }
+
+  export type TagUpdateWithWhereUniqueWithoutCategoryInput = {
+    where: TagWhereUniqueInput
+    data: XOR<TagUpdateWithoutCategoryInput, TagUncheckedUpdateWithoutCategoryInput>
+  }
+
+  export type TagUpdateManyWithWhereWithoutCategoryInput = {
+    where: TagScalarWhereInput
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutCategoryInput>
+  }
+
+  export type CategoryCreateWithoutTagsInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    posts?: PostCreateNestedManyWithoutCategoriesInput
+  }
+
+  export type CategoryUncheckedCreateWithoutTagsInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+    posts?: PostUncheckedCreateNestedManyWithoutCategoriesInput
+  }
+
+  export type CategoryCreateOrConnectWithoutTagsInput = {
+    where: CategoryWhereUniqueInput
+    create: XOR<CategoryCreateWithoutTagsInput, CategoryUncheckedCreateWithoutTagsInput>
+  }
+
+  export type PostCreateWithoutTagsInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    comments?: CommentCreateNestedManyWithoutPostInput
+    images?: ImageCreateNestedManyWithoutPostInput
+    author: UserCreateNestedOneWithoutPostInput
+    categories?: CategoryCreateNestedManyWithoutPostsInput
+  }
+
+  export type PostUncheckedCreateWithoutTagsInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authorId: string
+    comments?: CommentUncheckedCreateNestedManyWithoutPostInput
+    images?: ImageUncheckedCreateNestedManyWithoutPostInput
+    categories?: CategoryUncheckedCreateNestedManyWithoutPostsInput
+  }
+
+  export type PostCreateOrConnectWithoutTagsInput = {
+    where: PostWhereUniqueInput
+    create: XOR<PostCreateWithoutTagsInput, PostUncheckedCreateWithoutTagsInput>
+  }
+
+  export type CategoryUpsertWithoutTagsInput = {
+    update: XOR<CategoryUpdateWithoutTagsInput, CategoryUncheckedUpdateWithoutTagsInput>
+    create: XOR<CategoryCreateWithoutTagsInput, CategoryUncheckedCreateWithoutTagsInput>
+    where?: CategoryWhereInput
+  }
+
+  export type CategoryUpdateToOneWithWhereWithoutTagsInput = {
+    where?: CategoryWhereInput
+    data: XOR<CategoryUpdateWithoutTagsInput, CategoryUncheckedUpdateWithoutTagsInput>
+  }
+
+  export type CategoryUpdateWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    posts?: PostUpdateManyWithoutCategoriesNestedInput
+  }
+
+  export type CategoryUncheckedUpdateWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    posts?: PostUncheckedUpdateManyWithoutCategoriesNestedInput
+  }
+
+  export type PostUpsertWithWhereUniqueWithoutTagsInput = {
+    where: PostWhereUniqueInput
+    update: XOR<PostUpdateWithoutTagsInput, PostUncheckedUpdateWithoutTagsInput>
+    create: XOR<PostCreateWithoutTagsInput, PostUncheckedCreateWithoutTagsInput>
+  }
+
+  export type PostUpdateWithWhereUniqueWithoutTagsInput = {
+    where: PostWhereUniqueInput
+    data: XOR<PostUpdateWithoutTagsInput, PostUncheckedUpdateWithoutTagsInput>
+  }
+
+  export type PostUpdateManyWithWhereWithoutTagsInput = {
+    where: PostScalarWhereInput
+    data: XOR<PostUpdateManyMutationInput, PostUncheckedUpdateManyWithoutTagsInput>
   }
 
   export type ChannelMemberCreateWithoutChannelInput = {
@@ -78157,6 +84676,7 @@ export namespace Prisma {
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
     task?: TaskCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutChannelsInput = {
@@ -78186,6 +84706,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutChannelsInput = {
@@ -78281,6 +84802,7 @@ export namespace Prisma {
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
     task?: TaskUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutChannelsInput = {
@@ -78310,6 +84832,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type MessageUpsertWithWhereUniqueWithoutChannelInput = {
@@ -78400,6 +84923,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutChannelMemberInput = {
@@ -78441,6 +84967,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutChannelMemberInput = {
@@ -78537,6 +85066,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChannelMemberInput = {
@@ -78578,6 +85110,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserCreateWithoutMessageInput = {
@@ -78619,6 +85154,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutMessageInput = {
@@ -78660,6 +85198,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutMessageInput = {
@@ -78750,6 +85291,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMessageInput = {
@@ -78791,6 +85335,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type ChannelUpsertWithoutMessagesInput = {
@@ -78859,6 +85406,7 @@ export namespace Prisma {
     fields?: fieldsCreateNestedManyWithoutProjectsInput
     user?: UserCreateNestedManyWithoutProjectsInput
     task?: TaskCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutTemplatesInput = {
@@ -78888,6 +85436,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutProjectsInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutTemplatesInput = {
@@ -78909,6 +85458,7 @@ export namespace Prisma {
     members?: TeamMemberCreateNestedManyWithoutTeamInput
     parentTeam?: TeamCreateNestedOneWithoutChildrenInput
     children?: TeamCreateNestedManyWithoutParentTeamInput
+    Ceremony?: CeremonyCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUncheckedCreateWithoutTemplatesInput = {
@@ -78925,6 +85475,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedCreateNestedManyWithoutTeamsInput
     members?: TeamMemberUncheckedCreateNestedManyWithoutTeamInput
     children?: TeamUncheckedCreateNestedManyWithoutParentTeamInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutTeamInput
   }
 
   export type TeamCreateOrConnectWithoutTemplatesInput = {
@@ -78970,6 +85521,7 @@ export namespace Prisma {
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
     task?: TaskUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutTemplatesInput = {
@@ -78999,6 +85551,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TeamUpsertWithoutTemplatesInput = {
@@ -79026,6 +85579,7 @@ export namespace Prisma {
     members?: TeamMemberUpdateManyWithoutTeamNestedInput
     parentTeam?: TeamUpdateOneWithoutChildrenNestedInput
     children?: TeamUpdateManyWithoutParentTeamNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateWithoutTemplatesInput = {
@@ -79042,6 +85596,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutTeamsNestedInput
     members?: TeamMemberUncheckedUpdateManyWithoutTeamNestedInput
     children?: TeamUncheckedUpdateManyWithoutParentTeamNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutTeamNestedInput
   }
 
   export type ItemCreateWithoutTimeEntriesInput = {
@@ -79148,6 +85703,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
     Tasks?: TaskCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyCreateNestedManyWithoutSprintInput
   }
 
   export type SprintUncheckedCreateWithoutTimeEntriesInput = {
@@ -79171,6 +85727,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
     Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutSprintInput
   }
 
   export type SprintCreateOrConnectWithoutTimeEntriesInput = {
@@ -79286,6 +85843,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutTimeEntriesInput = {
@@ -79327,6 +85887,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutTimeEntriesInput = {
@@ -79524,6 +86087,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutTimeEntriesInput = {
@@ -79547,6 +86111,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutSprintNestedInput
   }
 
   export type TaskUpsertWithoutTimeEntriesInput = {
@@ -79674,6 +86239,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTimeEntriesInput = {
@@ -79715,6 +86283,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserStoryUpsertWithoutTimeEntriesInput = {
@@ -79831,6 +86402,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -79872,6 +86446,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -79929,6 +86506,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -79970,6 +86550,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -80011,6 +86594,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -80052,6 +86638,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -80109,6 +86698,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -80150,74 +86742,46 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type CommentCreateWithoutItemInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
     author: UserCreateNestedOneWithoutCommentsInput
-    file?: FileCreateNestedOneWithoutCommentsInput
-    parentComment?: CommentCreateNestedOneWithoutRepliesInput
-    replies?: CommentCreateNestedManyWithoutParentCommentInput
-    task?: TaskCreateNestedOneWithoutCommentsInput
-    userStory?: UserStoryCreateNestedOneWithoutCommentsInput
-    blog_tags?: blog_tagsCreateNestedManyWithoutCommentsInput
-    categories?: categoriesCreateNestedManyWithoutCommentsInput
+    parent?: CommentCreateNestedOneWithoutRepliesInput
+    replies?: CommentCreateNestedManyWithoutParentInput
+    post: PostCreateNestedOneWithoutCommentsInput
+    images?: ImageCreateNestedManyWithoutCommentInput
+    File?: FileCreateNestedManyWithoutCommentsInput
+    Task?: TaskCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryCreateNestedManyWithoutCommentsInput
   }
 
   export type CommentUncheckedCreateWithoutItemInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    postId: string
     authorId: string
-    taskId?: string | null
-    userStoryId?: string | null
-    fileId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
-    categories?: categoriesUncheckedCreateNestedManyWithoutCommentsInput
+    parentId?: string | null
+    replies?: CommentUncheckedCreateNestedManyWithoutParentInput
+    images?: ImageUncheckedCreateNestedManyWithoutCommentInput
+    File?: FileUncheckedCreateNestedManyWithoutCommentsInput
+    Task?: TaskUncheckedCreateNestedManyWithoutCommentsInput
+    UserStory?: UserStoryUncheckedCreateNestedManyWithoutCommentsInput
   }
 
   export type CommentCreateOrConnectWithoutItemInput = {
     where: CommentWhereUniqueInput
     create: XOR<CommentCreateWithoutItemInput, CommentUncheckedCreateWithoutItemInput>
-  }
-
-  export type CommentCreateManyItemInputEnvelope = {
-    data: CommentCreateManyItemInput | CommentCreateManyItemInput[]
-    skipDuplicates?: boolean
   }
 
   export type ItemCreateWithoutChildrenInput = {
@@ -80412,6 +86976,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryCreateNestedManyWithoutSprintsInput
     Tasks?: TaskCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyCreateNestedManyWithoutSprintInput
   }
 
   export type SprintUncheckedCreateWithoutItemsInput = {
@@ -80435,6 +87000,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutSprintsInput
     userStories?: UserStoryUncheckedCreateNestedManyWithoutSprintsInput
     Tasks?: TaskUncheckedCreateNestedManyWithoutSprintsInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutSprintInput
   }
 
   export type SprintCreateOrConnectWithoutItemsInput = {
@@ -80481,6 +87047,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutOwnedItemsInput = {
@@ -80522,6 +87091,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutOwnedItemsInput = {
@@ -80675,6 +87247,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutAssignedItemsInput = {
@@ -80716,6 +87291,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutAssignedItemsInput = {
@@ -80876,6 +87454,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutItemsInput = {
@@ -80899,6 +87478,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutSprintNestedInput
   }
 
   export type UserUpsertWithoutOwnedItemsInput = {
@@ -80951,6 +87531,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedItemsInput = {
@@ -80992,6 +87575,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type TimeEntryUpsertWithWhereUniqueWithoutItemInput = {
@@ -81081,6 +87667,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutUserStoryAssigneesInput = {
@@ -81122,6 +87711,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutUserStoryAssigneesInput = {
@@ -81248,6 +87840,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserStoryAssigneesInput = {
@@ -81289,6 +87884,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserStoryUpsertWithoutUserStoryAssigneesInput = {
@@ -81366,420 +87964,6 @@ export namespace Prisma {
     Project?: ProjectUncheckedUpdateManyWithoutUserStoryNestedInput
   }
 
-  export type categoriesCreateWithoutBlog_tagsInput = {
-    id: string
-    name: string
-    order?: number
-    slug?: string | null
-    description?: string | null
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    categories?: categoriesCreateNestedOneWithoutOther_categoriesInput
-    other_categories?: categoriesCreateNestedManyWithoutCategoriesInput
-    comments?: CommentCreateNestedManyWithoutCategoriesInput
-  }
-
-  export type categoriesUncheckedCreateWithoutBlog_tagsInput = {
-    id: string
-    name: string
-    order?: number
-    slug?: string | null
-    description?: string | null
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    parentId?: string | null
-    other_categories?: categoriesUncheckedCreateNestedManyWithoutCategoriesInput
-    comments?: CommentUncheckedCreateNestedManyWithoutCategoriesInput
-  }
-
-  export type categoriesCreateOrConnectWithoutBlog_tagsInput = {
-    where: categoriesWhereUniqueInput
-    create: XOR<categoriesCreateWithoutBlog_tagsInput, categoriesUncheckedCreateWithoutBlog_tagsInput>
-  }
-
-  export type CommentCreateWithoutBlog_tagsInput = {
-    id?: string
-    title: string
-    order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    author: UserCreateNestedOneWithoutCommentsInput
-    file?: FileCreateNestedOneWithoutCommentsInput
-    item?: ItemCreateNestedOneWithoutCommentsInput
-    parentComment?: CommentCreateNestedOneWithoutRepliesInput
-    replies?: CommentCreateNestedManyWithoutParentCommentInput
-    task?: TaskCreateNestedOneWithoutCommentsInput
-    userStory?: UserStoryCreateNestedOneWithoutCommentsInput
-    categories?: categoriesCreateNestedManyWithoutCommentsInput
-  }
-
-  export type CommentUncheckedCreateWithoutBlog_tagsInput = {
-    id?: string
-    title: string
-    order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    authorId: string
-    taskId?: string | null
-    userStoryId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
-    categories?: categoriesUncheckedCreateNestedManyWithoutCommentsInput
-  }
-
-  export type CommentCreateOrConnectWithoutBlog_tagsInput = {
-    where: CommentWhereUniqueInput
-    create: XOR<CommentCreateWithoutBlog_tagsInput, CommentUncheckedCreateWithoutBlog_tagsInput>
-  }
-
-  export type categoriesUpsertWithoutBlog_tagsInput = {
-    update: XOR<categoriesUpdateWithoutBlog_tagsInput, categoriesUncheckedUpdateWithoutBlog_tagsInput>
-    create: XOR<categoriesCreateWithoutBlog_tagsInput, categoriesUncheckedCreateWithoutBlog_tagsInput>
-    where?: categoriesWhereInput
-  }
-
-  export type categoriesUpdateToOneWithWhereWithoutBlog_tagsInput = {
-    where?: categoriesWhereInput
-    data: XOR<categoriesUpdateWithoutBlog_tagsInput, categoriesUncheckedUpdateWithoutBlog_tagsInput>
-  }
-
-  export type categoriesUpdateWithoutBlog_tagsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    categories?: categoriesUpdateOneWithoutOther_categoriesNestedInput
-    other_categories?: categoriesUpdateManyWithoutCategoriesNestedInput
-    comments?: CommentUpdateManyWithoutCategoriesNestedInput
-  }
-
-  export type categoriesUncheckedUpdateWithoutBlog_tagsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    other_categories?: categoriesUncheckedUpdateManyWithoutCategoriesNestedInput
-    comments?: CommentUncheckedUpdateManyWithoutCategoriesNestedInput
-  }
-
-  export type CommentUpsertWithWhereUniqueWithoutBlog_tagsInput = {
-    where: CommentWhereUniqueInput
-    update: XOR<CommentUpdateWithoutBlog_tagsInput, CommentUncheckedUpdateWithoutBlog_tagsInput>
-    create: XOR<CommentCreateWithoutBlog_tagsInput, CommentUncheckedCreateWithoutBlog_tagsInput>
-  }
-
-  export type CommentUpdateWithWhereUniqueWithoutBlog_tagsInput = {
-    where: CommentWhereUniqueInput
-    data: XOR<CommentUpdateWithoutBlog_tagsInput, CommentUncheckedUpdateWithoutBlog_tagsInput>
-  }
-
-  export type CommentUpdateManyWithWhereWithoutBlog_tagsInput = {
-    where: CommentScalarWhereInput
-    data: XOR<CommentUpdateManyMutationInput, CommentUncheckedUpdateManyWithoutBlog_tagsInput>
-  }
-
-  export type blog_tagsCreateWithoutCategoriesInput = {
-    id: string
-    name: string
-    order?: number
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    comments?: CommentCreateNestedManyWithoutBlog_tagsInput
-  }
-
-  export type blog_tagsUncheckedCreateWithoutCategoriesInput = {
-    id: string
-    name: string
-    order?: number
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    comments?: CommentUncheckedCreateNestedManyWithoutBlog_tagsInput
-  }
-
-  export type blog_tagsCreateOrConnectWithoutCategoriesInput = {
-    where: blog_tagsWhereUniqueInput
-    create: XOR<blog_tagsCreateWithoutCategoriesInput, blog_tagsUncheckedCreateWithoutCategoriesInput>
-  }
-
-  export type blog_tagsCreateManyCategoriesInputEnvelope = {
-    data: blog_tagsCreateManyCategoriesInput | blog_tagsCreateManyCategoriesInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type categoriesCreateWithoutOther_categoriesInput = {
-    id: string
-    name: string
-    order?: number
-    slug?: string | null
-    description?: string | null
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    blog_tags?: blog_tagsCreateNestedManyWithoutCategoriesInput
-    categories?: categoriesCreateNestedOneWithoutOther_categoriesInput
-    comments?: CommentCreateNestedManyWithoutCategoriesInput
-  }
-
-  export type categoriesUncheckedCreateWithoutOther_categoriesInput = {
-    id: string
-    name: string
-    order?: number
-    slug?: string | null
-    description?: string | null
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    parentId?: string | null
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCategoriesInput
-    comments?: CommentUncheckedCreateNestedManyWithoutCategoriesInput
-  }
-
-  export type categoriesCreateOrConnectWithoutOther_categoriesInput = {
-    where: categoriesWhereUniqueInput
-    create: XOR<categoriesCreateWithoutOther_categoriesInput, categoriesUncheckedCreateWithoutOther_categoriesInput>
-  }
-
-  export type categoriesCreateWithoutCategoriesInput = {
-    id: string
-    name: string
-    order?: number
-    slug?: string | null
-    description?: string | null
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    blog_tags?: blog_tagsCreateNestedManyWithoutCategoriesInput
-    other_categories?: categoriesCreateNestedManyWithoutCategoriesInput
-    comments?: CommentCreateNestedManyWithoutCategoriesInput
-  }
-
-  export type categoriesUncheckedCreateWithoutCategoriesInput = {
-    id: string
-    name: string
-    order?: number
-    slug?: string | null
-    description?: string | null
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCategoriesInput
-    other_categories?: categoriesUncheckedCreateNestedManyWithoutCategoriesInput
-    comments?: CommentUncheckedCreateNestedManyWithoutCategoriesInput
-  }
-
-  export type categoriesCreateOrConnectWithoutCategoriesInput = {
-    where: categoriesWhereUniqueInput
-    create: XOR<categoriesCreateWithoutCategoriesInput, categoriesUncheckedCreateWithoutCategoriesInput>
-  }
-
-  export type categoriesCreateManyCategoriesInputEnvelope = {
-    data: categoriesCreateManyCategoriesInput | categoriesCreateManyCategoriesInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type CommentCreateWithoutCategoriesInput = {
-    id?: string
-    title: string
-    order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    author: UserCreateNestedOneWithoutCommentsInput
-    file?: FileCreateNestedOneWithoutCommentsInput
-    item?: ItemCreateNestedOneWithoutCommentsInput
-    parentComment?: CommentCreateNestedOneWithoutRepliesInput
-    replies?: CommentCreateNestedManyWithoutParentCommentInput
-    task?: TaskCreateNestedOneWithoutCommentsInput
-    userStory?: UserStoryCreateNestedOneWithoutCommentsInput
-    blog_tags?: blog_tagsCreateNestedManyWithoutCommentsInput
-  }
-
-  export type CommentUncheckedCreateWithoutCategoriesInput = {
-    id?: string
-    title: string
-    order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    authorId: string
-    taskId?: string | null
-    userStoryId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-    replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
-    blog_tags?: blog_tagsUncheckedCreateNestedManyWithoutCommentsInput
-  }
-
-  export type CommentCreateOrConnectWithoutCategoriesInput = {
-    where: CommentWhereUniqueInput
-    create: XOR<CommentCreateWithoutCategoriesInput, CommentUncheckedCreateWithoutCategoriesInput>
-  }
-
-  export type blog_tagsUpsertWithWhereUniqueWithoutCategoriesInput = {
-    where: blog_tagsWhereUniqueInput
-    update: XOR<blog_tagsUpdateWithoutCategoriesInput, blog_tagsUncheckedUpdateWithoutCategoriesInput>
-    create: XOR<blog_tagsCreateWithoutCategoriesInput, blog_tagsUncheckedCreateWithoutCategoriesInput>
-  }
-
-  export type blog_tagsUpdateWithWhereUniqueWithoutCategoriesInput = {
-    where: blog_tagsWhereUniqueInput
-    data: XOR<blog_tagsUpdateWithoutCategoriesInput, blog_tagsUncheckedUpdateWithoutCategoriesInput>
-  }
-
-  export type blog_tagsUpdateManyWithWhereWithoutCategoriesInput = {
-    where: blog_tagsScalarWhereInput
-    data: XOR<blog_tagsUpdateManyMutationInput, blog_tagsUncheckedUpdateManyWithoutCategoriesInput>
-  }
-
-  export type categoriesUpsertWithoutOther_categoriesInput = {
-    update: XOR<categoriesUpdateWithoutOther_categoriesInput, categoriesUncheckedUpdateWithoutOther_categoriesInput>
-    create: XOR<categoriesCreateWithoutOther_categoriesInput, categoriesUncheckedCreateWithoutOther_categoriesInput>
-    where?: categoriesWhereInput
-  }
-
-  export type categoriesUpdateToOneWithWhereWithoutOther_categoriesInput = {
-    where?: categoriesWhereInput
-    data: XOR<categoriesUpdateWithoutOther_categoriesInput, categoriesUncheckedUpdateWithoutOther_categoriesInput>
-  }
-
-  export type categoriesUpdateWithoutOther_categoriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blog_tags?: blog_tagsUpdateManyWithoutCategoriesNestedInput
-    categories?: categoriesUpdateOneWithoutOther_categoriesNestedInput
-    comments?: CommentUpdateManyWithoutCategoriesNestedInput
-  }
-
-  export type categoriesUncheckedUpdateWithoutOther_categoriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCategoriesNestedInput
-    comments?: CommentUncheckedUpdateManyWithoutCategoriesNestedInput
-  }
-
-  export type categoriesUpsertWithWhereUniqueWithoutCategoriesInput = {
-    where: categoriesWhereUniqueInput
-    update: XOR<categoriesUpdateWithoutCategoriesInput, categoriesUncheckedUpdateWithoutCategoriesInput>
-    create: XOR<categoriesCreateWithoutCategoriesInput, categoriesUncheckedCreateWithoutCategoriesInput>
-  }
-
-  export type categoriesUpdateWithWhereUniqueWithoutCategoriesInput = {
-    where: categoriesWhereUniqueInput
-    data: XOR<categoriesUpdateWithoutCategoriesInput, categoriesUncheckedUpdateWithoutCategoriesInput>
-  }
-
-  export type categoriesUpdateManyWithWhereWithoutCategoriesInput = {
-    where: categoriesScalarWhereInput
-    data: XOR<categoriesUpdateManyMutationInput, categoriesUncheckedUpdateManyWithoutCategoriesInput>
-  }
-
-  export type CommentUpsertWithWhereUniqueWithoutCategoriesInput = {
-    where: CommentWhereUniqueInput
-    update: XOR<CommentUpdateWithoutCategoriesInput, CommentUncheckedUpdateWithoutCategoriesInput>
-    create: XOR<CommentCreateWithoutCategoriesInput, CommentUncheckedCreateWithoutCategoriesInput>
-  }
-
-  export type CommentUpdateWithWhereUniqueWithoutCategoriesInput = {
-    where: CommentWhereUniqueInput
-    data: XOR<CommentUpdateWithoutCategoriesInput, CommentUncheckedUpdateWithoutCategoriesInput>
-  }
-
-  export type CommentUpdateManyWithWhereWithoutCategoriesInput = {
-    where: CommentScalarWhereInput
-    data: XOR<CommentUpdateManyMutationInput, CommentUncheckedUpdateManyWithoutCategoriesInput>
-  }
-
   export type UserCreateWithoutFieldsInput = {
     id?: string
     name?: string | null
@@ -81819,6 +88003,9 @@ export namespace Prisma {
     projects?: ProjectCreateNestedManyWithoutUserInput
     sprints?: SprintCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyCreateNestedManyWithoutAttendeesInput
+    Image?: ImageCreateNestedManyWithoutUserInput
+    Post?: PostCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutFieldsInput = {
@@ -81860,6 +88047,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     sprints?: SprintUncheckedCreateNestedManyWithoutUsersInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneesInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutAttendeesInput
+    Image?: ImageUncheckedCreateNestedManyWithoutUserInput
+    Post?: PostUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutFieldsInput = {
@@ -82053,6 +88243,7 @@ export namespace Prisma {
     templates?: TemplateCreateNestedManyWithoutProjectInput
     user?: UserCreateNestedManyWithoutProjectsInput
     task?: TaskCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutFieldsInput = {
@@ -82082,6 +88273,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedCreateNestedManyWithoutProjectInput
     user?: UserUncheckedCreateNestedManyWithoutProjectsInput
     task?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutFieldsInput = {
@@ -82103,6 +88295,7 @@ export namespace Prisma {
     parentTeam?: TeamCreateNestedOneWithoutChildrenInput
     children?: TeamCreateNestedManyWithoutParentTeamInput
     templates?: TemplateCreateNestedManyWithoutTeamInput
+    Ceremony?: CeremonyCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUncheckedCreateWithoutFieldsInput = {
@@ -82119,6 +88312,7 @@ export namespace Prisma {
     members?: TeamMemberUncheckedCreateNestedManyWithoutTeamInput
     children?: TeamUncheckedCreateNestedManyWithoutParentTeamInput
     templates?: TemplateUncheckedCreateNestedManyWithoutTeamInput
+    Ceremony?: CeremonyUncheckedCreateNestedManyWithoutTeamInput
   }
 
   export type TeamCreateOrConnectWithoutFieldsInput = {
@@ -82176,6 +88370,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFieldsInput = {
@@ -82217,6 +88414,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type fieldsUpsertWithoutOther_fieldsInput = {
@@ -82356,6 +88556,7 @@ export namespace Prisma {
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
     task?: TaskUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutFieldsInput = {
@@ -82385,6 +88586,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TeamUpsertWithoutFieldsInput = {
@@ -82412,6 +88614,7 @@ export namespace Prisma {
     parentTeam?: TeamUpdateOneWithoutChildrenNestedInput
     children?: TeamUpdateManyWithoutParentTeamNestedInput
     templates?: TemplateUpdateManyWithoutTeamNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateWithoutFieldsInput = {
@@ -82428,6 +88631,7 @@ export namespace Prisma {
     members?: TeamMemberUncheckedUpdateManyWithoutTeamNestedInput
     children?: TeamUncheckedUpdateManyWithoutParentTeamNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutTeamNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutTeamNestedInput
   }
 
   export type UserStoryAssigneesCreateManyUsersInput = {
@@ -82472,28 +88676,12 @@ export namespace Prisma {
 
   export type CommentCreateManyAuthorInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    taskId?: string | null
-    userStoryId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
+    postId: string
+    parentId?: string | null
   }
 
   export type FeatureCreateManyUsersInput = {
@@ -82728,6 +88916,28 @@ export namespace Prisma {
     featureId: string
   }
 
+  export type ImageCreateManyUserInput = {
+    id?: string
+    url: string
+    order?: number
+    alt?: string | null
+    createdAt?: Date | string
+    postId?: string | null
+    commentId?: string | null
+  }
+
+  export type PostCreateManyAuthorInput = {
+    id?: string
+    slug: string
+    title: string
+    order?: number
+    excerpt?: string | null
+    content: string
+    published?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type UserStoryAssigneesUpdateWithoutUsersInput = {
     user_stories?: UserStoryUpdateOneRequiredWithoutUserStoryAssigneesNestedInput
   }
@@ -82850,86 +89060,44 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    file?: FileUpdateOneWithoutCommentsNestedInput
-    item?: ItemUpdateOneWithoutCommentsNestedInput
-    parentComment?: CommentUpdateOneWithoutRepliesNestedInput
-    replies?: CommentUpdateManyWithoutParentCommentNestedInput
-    task?: TaskUpdateOneWithoutCommentsNestedInput
-    userStory?: UserStoryUpdateOneWithoutCommentsNestedInput
-    blog_tags?: blog_tagsUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUpdateManyWithoutCommentsNestedInput
+    parent?: CommentUpdateOneWithoutRepliesNestedInput
+    replies?: CommentUpdateManyWithoutParentNestedInput
+    post?: PostUpdateOneRequiredWithoutCommentsNestedInput
+    images?: ImageUpdateManyWithoutCommentNestedInput
+    Item?: ItemUpdateManyWithoutCommentsNestedInput
+    File?: FileUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentUncheckedUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUncheckedUpdateManyWithoutCommentsNestedInput
+    postId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    replies?: CommentUncheckedUpdateManyWithoutParentNestedInput
+    images?: ImageUncheckedUpdateManyWithoutCommentNestedInput
+    Item?: ItemUncheckedUpdateManyWithoutCommentsNestedInput
+    File?: FileUncheckedUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUncheckedUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentUncheckedUpdateManyWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
+    postId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FeatureUpdateWithoutUsersInput = {
@@ -83919,6 +90087,7 @@ export namespace Prisma {
     templates?: TemplateUpdateManyWithoutProjectNestedInput
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     task?: TaskUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -83948,6 +90117,7 @@ export namespace Prisma {
     templates?: TemplateUncheckedUpdateManyWithoutProjectNestedInput
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutUserInput = {
@@ -83989,6 +90159,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUpdateManyWithoutSprintNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutUsersInput = {
@@ -84012,6 +90183,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutSprintNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintUncheckedUpdateManyWithoutUsersInput = {
@@ -84119,6 +90291,134 @@ export namespace Prisma {
     userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type CeremonyUpdateWithoutAttendeesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sprint?: SprintUpdateOneWithoutCeremonyNestedInput
+    project?: ProjectUpdateOneRequiredWithoutCeremonyNestedInput
+    team?: TeamUpdateOneWithoutCeremonyNestedInput
+  }
+
+  export type CeremonyUncheckedUpdateWithoutAttendeesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CeremonyUncheckedUpdateManyWithoutAttendeesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ImageUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comment?: CommentUpdateOneWithoutImagesNestedInput
+    post?: PostUpdateOneWithoutImagesNestedInput
+  }
+
+  export type ImageUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    commentId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ImageUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    commentId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PostUpdateWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comments?: CommentUpdateManyWithoutPostNestedInput
+    images?: ImageUpdateManyWithoutPostNestedInput
+    categories?: CategoryUpdateManyWithoutPostsNestedInput
+    tags?: TagUpdateManyWithoutPostsNestedInput
+  }
+
+  export type PostUncheckedUpdateWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comments?: CommentUncheckedUpdateManyWithoutPostNestedInput
+    images?: ImageUncheckedUpdateManyWithoutPostNestedInput
+    categories?: CategoryUncheckedUpdateManyWithoutPostsNestedInput
+    tags?: TagUncheckedUpdateManyWithoutPostsNestedInput
+  }
+
+  export type PostUncheckedUpdateManyWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type fieldsCreateManyTeamsInput = {
     id: string
     name: string
@@ -84189,6 +90489,23 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     projectId?: string | null
+  }
+
+  export type CeremonyCreateManyTeamInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sprintId?: string | null
+    projectId: string
   }
 
   export type fieldsUpdateWithoutTeamsInput = {
@@ -84339,6 +90656,7 @@ export namespace Prisma {
     members?: TeamMemberUpdateManyWithoutTeamNestedInput
     children?: TeamUpdateManyWithoutParentTeamNestedInput
     templates?: TemplateUpdateManyWithoutTeamNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateWithoutParentTeamInput = {
@@ -84355,6 +90673,7 @@ export namespace Prisma {
     members?: TeamMemberUncheckedUpdateManyWithoutTeamNestedInput
     children?: TeamUncheckedUpdateManyWithoutParentTeamNestedInput
     templates?: TemplateUncheckedUpdateManyWithoutTeamNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateManyWithoutParentTeamInput = {
@@ -84415,6 +90734,59 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CeremonyUpdateWithoutTeamInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sprint?: SprintUpdateOneWithoutCeremonyNestedInput
+    project?: ProjectUpdateOneRequiredWithoutCeremonyNestedInput
+    attendees?: UserUpdateManyWithoutCeremonyNestedInput
+  }
+
+  export type CeremonyUncheckedUpdateWithoutTeamInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
+    attendees?: UserUncheckedUpdateManyWithoutCeremonyNestedInput
+  }
+
+  export type CeremonyUncheckedUpdateManyWithoutTeamInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ChannelCreateManyProjectInput = {
@@ -84593,6 +90965,23 @@ export namespace Prisma {
     userstoryId?: string | null
   }
 
+  export type CeremonyCreateManyProjectInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sprintId?: string | null
+    teamId?: string | null
+  }
+
   export type ChannelUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -84761,6 +91150,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutProjectInput = {
@@ -84784,6 +91174,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintUncheckedUpdateManyWithoutProjectInput = {
@@ -85276,6 +91667,9 @@ export namespace Prisma {
     assignedItems?: ItemUpdateManyWithoutAssigneesNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectsInput = {
@@ -85317,6 +91711,9 @@ export namespace Prisma {
     assignedItems?: ItemUncheckedUpdateManyWithoutAssigneesNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutProjectsInput = {
@@ -85422,6 +91819,59 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     creatorId?: StringFieldUpdateOperationsInput | string
     userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CeremonyUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sprint?: SprintUpdateOneWithoutCeremonyNestedInput
+    team?: TeamUpdateOneWithoutCeremonyNestedInput
+    attendees?: UserUpdateManyWithoutCeremonyNestedInput
+  }
+
+  export type CeremonyUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendees?: UserUncheckedUpdateManyWithoutCeremonyNestedInput
+  }
+
+  export type CeremonyUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type EpicCreateManyInitiativeInput = {
@@ -85793,6 +92243,7 @@ export namespace Prisma {
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
     task?: TaskUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutEpicInput = {
@@ -85822,6 +92273,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutEpicInput = {
@@ -86325,32 +92777,6 @@ export namespace Prisma {
     A: string
   }
 
-  export type CommentCreateManyUserStoryInput = {
-    id?: string
-    title: string
-    order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    authorId: string
-    taskId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-  }
-
   export type FileCreateManyUserStoryInput = {
     id?: string
     name: string
@@ -86423,86 +92849,45 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
-    file?: FileUpdateOneWithoutCommentsNestedInput
-    item?: ItemUpdateOneWithoutCommentsNestedInput
-    parentComment?: CommentUpdateOneWithoutRepliesNestedInput
-    replies?: CommentUpdateManyWithoutParentCommentNestedInput
-    task?: TaskUpdateOneWithoutCommentsNestedInput
-    blog_tags?: blog_tagsUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUpdateManyWithoutCommentsNestedInput
+    parent?: CommentUpdateOneWithoutRepliesNestedInput
+    replies?: CommentUpdateManyWithoutParentNestedInput
+    post?: PostUpdateOneRequiredWithoutCommentsNestedInput
+    images?: ImageUpdateManyWithoutCommentNestedInput
+    Item?: ItemUpdateManyWithoutCommentsNestedInput
+    File?: FileUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentUncheckedUpdateWithoutUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUncheckedUpdateManyWithoutCommentsNestedInput
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    replies?: CommentUncheckedUpdateManyWithoutParentNestedInput
+    images?: ImageUncheckedUpdateManyWithoutCommentNestedInput
+    Item?: ItemUncheckedUpdateManyWithoutCommentsNestedInput
+    File?: FileUncheckedUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentUncheckedUpdateManyWithoutUserStoryInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FileUpdateWithoutUserStoryInput = {
@@ -86712,6 +93097,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUpdateManyWithoutSprintNestedInput
     users?: UserUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutUserStoriesInput = {
@@ -86735,6 +93121,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutSprintNestedInput
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
     Tasks?: TaskUncheckedUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintUncheckedUpdateManyWithoutUserStoriesInput = {
@@ -86920,6 +93307,7 @@ export namespace Prisma {
     fields?: fieldsUpdateManyWithoutProjectsNestedInput
     user?: UserUpdateManyWithoutProjectsNestedInput
     task?: TaskUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutUserStoryInput = {
@@ -86949,6 +93337,7 @@ export namespace Prisma {
     fields?: fieldsUncheckedUpdateManyWithoutProjectsNestedInput
     user?: UserUncheckedUpdateManyWithoutProjectsNestedInput
     task?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutUserStoryInput = {
@@ -86967,32 +93356,6 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CommentCreateManyTaskInput = {
-    id?: string
-    title: string
-    order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    authorId: string
-    userStoryId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
   }
 
   export type TaskDependencyCreateManyDependentTaskInput = {
@@ -87031,86 +93394,45 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
-    file?: FileUpdateOneWithoutCommentsNestedInput
-    item?: ItemUpdateOneWithoutCommentsNestedInput
-    parentComment?: CommentUpdateOneWithoutRepliesNestedInput
-    replies?: CommentUpdateManyWithoutParentCommentNestedInput
-    userStory?: UserStoryUpdateOneWithoutCommentsNestedInput
-    blog_tags?: blog_tagsUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUpdateManyWithoutCommentsNestedInput
+    parent?: CommentUpdateOneWithoutRepliesNestedInput
+    replies?: CommentUpdateManyWithoutParentNestedInput
+    post?: PostUpdateOneRequiredWithoutCommentsNestedInput
+    images?: ImageUpdateManyWithoutCommentNestedInput
+    Item?: ItemUpdateManyWithoutCommentsNestedInput
+    File?: FileUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentUncheckedUpdateWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUncheckedUpdateManyWithoutCommentsNestedInput
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    replies?: CommentUncheckedUpdateManyWithoutParentNestedInput
+    images?: ImageUncheckedUpdateManyWithoutCommentNestedInput
+    Item?: ItemUncheckedUpdateManyWithoutCommentsNestedInput
+    File?: FileUncheckedUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUncheckedUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentUncheckedUpdateManyWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FileUpdateWithoutTaskInput = {
@@ -87301,6 +93623,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUpdateManyWithoutSprintNestedInput
     users?: UserUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintUncheckedUpdateWithoutTasksInput = {
@@ -87324,6 +93647,7 @@ export namespace Prisma {
     timeEntries?: TimeEntryUncheckedUpdateManyWithoutSprintNestedInput
     users?: UserUncheckedUpdateManyWithoutSprintsNestedInput
     userStories?: UserStoryUncheckedUpdateManyWithoutSprintsNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutSprintNestedInput
   }
 
   export type SprintUncheckedUpdateManyWithoutTasksInput = {
@@ -87458,6 +93782,9 @@ export namespace Prisma {
     assignedItems?: ItemUpdateManyWithoutAssigneesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedTasksInput = {
@@ -87499,6 +93826,9 @@ export namespace Prisma {
     assignedItems?: ItemUncheckedUpdateManyWithoutAssigneesNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutAssignedTasksInput = {
@@ -87757,6 +94087,23 @@ export namespace Prisma {
     taskId?: string | null
     userStoryId?: string | null
     itemId?: string | null
+  }
+
+  export type CeremonyCreateManySprintInput = {
+    id?: string
+    type: $Enums.CeremonyType
+    title: string
+    description?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    location?: string | null
+    status?: string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectId: string
+    teamId?: string | null
   }
 
   export type FileUpdateWithoutSprintInput = {
@@ -88042,6 +94389,9 @@ export namespace Prisma {
     assignedItems?: ItemUpdateManyWithoutAssigneesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSprintsInput = {
@@ -88083,6 +94433,9 @@ export namespace Prisma {
     assignedItems?: ItemUncheckedUpdateManyWithoutAssigneesNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutSprintsInput = {
@@ -88278,30 +94631,57 @@ export namespace Prisma {
     userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type CommentCreateManyFileInput = {
-    id?: string
-    title: string
-    order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    authorId: string
-    taskId?: string | null
-    userStoryId?: string | null
-    itemId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
+  export type CeremonyUpdateWithoutSprintInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutCeremonyNestedInput
+    team?: TeamUpdateOneWithoutCeremonyNestedInput
+    attendees?: UserUpdateManyWithoutCeremonyNestedInput
+  }
+
+  export type CeremonyUncheckedUpdateWithoutSprintInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendees?: UserUncheckedUpdateManyWithoutCeremonyNestedInput
+  }
+
+  export type CeremonyUncheckedUpdateManyWithoutSprintInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumCeremonyTypeFieldUpdateOperationsInput | $Enums.CeremonyType
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    agenda?: NullableJsonNullValueInput | InputJsonValue
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FileVersionCreateManyFileInput = {
@@ -88341,86 +94721,45 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutFileInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
-    item?: ItemUpdateOneWithoutCommentsNestedInput
-    parentComment?: CommentUpdateOneWithoutRepliesNestedInput
-    replies?: CommentUpdateManyWithoutParentCommentNestedInput
-    task?: TaskUpdateOneWithoutCommentsNestedInput
-    userStory?: UserStoryUpdateOneWithoutCommentsNestedInput
-    blog_tags?: blog_tagsUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUpdateManyWithoutCommentsNestedInput
+    parent?: CommentUpdateOneWithoutRepliesNestedInput
+    replies?: CommentUpdateManyWithoutParentNestedInput
+    post?: PostUpdateOneRequiredWithoutCommentsNestedInput
+    images?: ImageUpdateManyWithoutCommentNestedInput
+    Item?: ItemUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentUncheckedUpdateWithoutFileInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUncheckedUpdateManyWithoutCommentsNestedInput
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    replies?: CommentUncheckedUpdateManyWithoutParentNestedInput
+    images?: ImageUncheckedUpdateManyWithoutCommentNestedInput
+    Item?: ItemUncheckedUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUncheckedUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentUncheckedUpdateManyWithoutFileInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FileVersionUpdateWithoutFileInput = {
@@ -88666,6 +95005,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFileUploadsInput = {
@@ -88707,6 +95049,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutFileUploadsInput = {
@@ -88841,190 +95186,834 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type CommentCreateManyParentCommentInput = {
+  export type UserUpdateWithoutCeremonyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUsersNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    ChannelMember?: ChannelMemberUpdateManyWithoutUserNestedInput
+    comments?: CommentUpdateManyWithoutAuthorNestedInput
+    features?: FeatureUpdateManyWithoutUsersNestedInput
+    fields?: fieldsUpdateManyWithoutUsersNestedInput
+    FileVersion?: FileVersionUpdateManyWithoutAuthorNestedInput
+    fileUploads?: FileUpdateManyWithoutAuthorNestedInput
+    initiatives?: InitiativeUpdateManyWithoutUserNestedInput
+    ownedItems?: ItemUpdateManyWithoutUserNestedInput
+    Message?: MessageUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    projectMemberships?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
+    organizationMemberships?: TeamMemberUpdateManyWithoutUserNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
+    createdUserStories?: UserStoryUpdateManyWithoutCreatorNestedInput
+    assignedItems?: ItemUpdateManyWithoutAssigneesNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    sprints?: SprintUpdateManyWithoutUsersNestedInput
+    assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCeremonyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUsersNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    ChannelMember?: ChannelMemberUncheckedUpdateManyWithoutUserNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutUsersNestedInput
+    fields?: fieldsUncheckedUpdateManyWithoutUsersNestedInput
+    FileVersion?: FileVersionUncheckedUpdateManyWithoutAuthorNestedInput
+    fileUploads?: FileUncheckedUpdateManyWithoutAuthorNestedInput
+    initiatives?: InitiativeUncheckedUpdateManyWithoutUserNestedInput
+    ownedItems?: ItemUncheckedUpdateManyWithoutUserNestedInput
+    Message?: MessageUncheckedUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    projectMemberships?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
+    organizationMemberships?: TeamMemberUncheckedUpdateManyWithoutUserNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
+    createdUserStories?: UserStoryUncheckedUpdateManyWithoutCreatorNestedInput
+    assignedItems?: ItemUncheckedUpdateManyWithoutAssigneesNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutCeremonyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommentCreateManyPostInput = {
     id?: string
-    title: string
-    order?: number
     content: string
-    mentions?: CommentCreatementionsInput | string[]
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
-    taskId?: string | null
-    userStoryId?: string | null
-    fileId?: string | null
-    itemId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
+    parentId?: string | null
   }
 
-  export type CommentUpdateWithoutParentCommentInput = {
+  export type ImageCreateManyPostInput = {
+    id?: string
+    url: string
+    order?: number
+    alt?: string | null
+    createdAt?: Date | string
+    userId?: string | null
+    commentId?: string | null
+  }
+
+  export type CommentUpdateWithoutPostInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
-    file?: FileUpdateOneWithoutCommentsNestedInput
-    item?: ItemUpdateOneWithoutCommentsNestedInput
-    replies?: CommentUpdateManyWithoutParentCommentNestedInput
-    task?: TaskUpdateOneWithoutCommentsNestedInput
-    userStory?: UserStoryUpdateOneWithoutCommentsNestedInput
-    blog_tags?: blog_tagsUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUpdateManyWithoutCommentsNestedInput
+    parent?: CommentUpdateOneWithoutRepliesNestedInput
+    replies?: CommentUpdateManyWithoutParentNestedInput
+    images?: ImageUpdateManyWithoutCommentNestedInput
+    Item?: ItemUpdateManyWithoutCommentsNestedInput
+    File?: FileUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUpdateManyWithoutCommentsNestedInput
   }
 
-  export type CommentUncheckedUpdateWithoutParentCommentInput = {
+  export type CommentUncheckedUpdateWithoutPostInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUncheckedUpdateManyWithoutCommentsNestedInput
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    replies?: CommentUncheckedUpdateManyWithoutParentNestedInput
+    images?: ImageUncheckedUpdateManyWithoutCommentNestedInput
+    Item?: ItemUncheckedUpdateManyWithoutCommentsNestedInput
+    File?: FileUncheckedUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUncheckedUpdateManyWithoutCommentsNestedInput
   }
 
-  export type CommentUncheckedUpdateManyWithoutParentCommentInput = {
+  export type CommentUncheckedUpdateManyWithoutPostInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ImageUpdateWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comment?: CommentUpdateOneWithoutImagesNestedInput
+    user?: UserUpdateOneWithoutImageNestedInput
+  }
+
+  export type ImageUncheckedUpdateWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    commentId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ImageUncheckedUpdateManyWithoutPostInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    commentId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CategoryUpdateWithoutPostsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    tags?: TagUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type CategoryUncheckedUpdateWithoutPostsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    tags?: TagUncheckedUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type CategoryUncheckedUpdateManyWithoutPostsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TagUpdateWithoutPostsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    category?: CategoryUpdateOneRequiredWithoutTagsNestedInput
+  }
+
+  export type TagUncheckedUpdateWithoutPostsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TagUncheckedUpdateManyWithoutPostsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CommentCreateManyParentInput = {
+    id?: string
+    content: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    postId: string
+    authorId: string
+  }
+
+  export type ImageCreateManyCommentInput = {
+    id?: string
+    url: string
+    order?: number
+    alt?: string | null
+    createdAt?: Date | string
+    postId?: string | null
+    userId?: string | null
+  }
+
+  export type CommentUpdateWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    author?: UserUpdateOneRequiredWithoutCommentsNestedInput
+    replies?: CommentUpdateManyWithoutParentNestedInput
+    post?: PostUpdateOneRequiredWithoutCommentsNestedInput
+    images?: ImageUpdateManyWithoutCommentNestedInput
+    Item?: ItemUpdateManyWithoutCommentsNestedInput
+    File?: FileUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUpdateManyWithoutCommentsNestedInput
+  }
+
+  export type CommentUncheckedUpdateWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    replies?: CommentUncheckedUpdateManyWithoutParentNestedInput
+    images?: ImageUncheckedUpdateManyWithoutCommentNestedInput
+    Item?: ItemUncheckedUpdateManyWithoutCommentsNestedInput
+    File?: FileUncheckedUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUncheckedUpdateManyWithoutCommentsNestedInput
+  }
+
+  export type CommentUncheckedUpdateManyWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ImageUpdateWithoutCommentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    post?: PostUpdateOneWithoutImagesNestedInput
+    user?: UserUpdateOneWithoutImageNestedInput
+  }
+
+  export type ImageUncheckedUpdateWithoutCommentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ImageUncheckedUpdateManyWithoutCommentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    alt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ItemUpdateWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    key?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: NullableEnumPriorityFieldUpdateOperationsInput | $Enums.Priority | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    progress?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumItemStatusFieldUpdateOperationsInput | $Enums.ItemStatus
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-  }
-
-  export type blog_tagsUpdateWithoutCommentsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    color?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    text?: NullableJsonNullValueInput | InputJsonValue
+    backlogPosition?: NullableIntFieldUpdateOperationsInput | number | null
+    DoD?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableIntFieldUpdateOperationsInput | number | null
+    actualHours?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    categories?: categoriesUpdateOneWithoutBlog_tagsNestedInput
+    parent?: ItemUpdateOneWithoutChildrenNestedInput
+    children?: ItemUpdateManyWithoutParentNestedInput
+    sprint?: SprintUpdateOneWithoutItemsNestedInput
+    user?: UserUpdateOneRequiredWithoutOwnedItemsNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutItemNestedInput
+    files?: FileUpdateManyWithoutItemsNestedInput
+    assignees?: UserUpdateManyWithoutAssignedItemsNestedInput
   }
 
-  export type blog_tagsUncheckedUpdateWithoutCommentsInput = {
+  export type ItemUncheckedUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    categoriesId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type blog_tagsUncheckedUpdateManyWithoutCommentsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    categoriesId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type categoriesUpdateWithoutCommentsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    key?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: NullableEnumPriorityFieldUpdateOperationsInput | $Enums.Priority | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    progress?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumItemStatusFieldUpdateOperationsInput | $Enums.ItemStatus
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    text?: NullableJsonNullValueInput | InputJsonValue
+    backlogPosition?: NullableIntFieldUpdateOperationsInput | number | null
+    DoD?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blog_tags?: blog_tagsUpdateManyWithoutCategoriesNestedInput
-    categories?: categoriesUpdateOneWithoutOther_categoriesNestedInput
-    other_categories?: categoriesUpdateManyWithoutCategoriesNestedInput
-  }
-
-  export type categoriesUncheckedUpdateWithoutCommentsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableIntFieldUpdateOperationsInput | number | null
+    actualHours?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCategoriesNestedInput
-    other_categories?: categoriesUncheckedUpdateManyWithoutCategoriesNestedInput
+    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    children?: ItemUncheckedUpdateManyWithoutParentNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutItemNestedInput
+    files?: FileUncheckedUpdateManyWithoutItemsNestedInput
+    assignees?: UserUncheckedUpdateManyWithoutAssignedItemsNestedInput
   }
 
-  export type categoriesUncheckedUpdateManyWithoutCommentsInput = {
+  export type ItemUncheckedUpdateManyWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    key?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: NullableEnumPriorityFieldUpdateOperationsInput | $Enums.Priority | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    progress?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumItemStatusFieldUpdateOperationsInput | $Enums.ItemStatus
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    text?: NullableJsonNullValueInput | InputJsonValue
+    backlogPosition?: NullableIntFieldUpdateOperationsInput | number | null
+    DoD?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    estimatedHours?: NullableIntFieldUpdateOperationsInput | number | null
+    actualHours?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type FileUpdateWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
+    mimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    path?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
+    script?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    isFolder?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    tags?: FileUpdatetagsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    versions?: FileVersionUpdateManyWithoutFileNestedInput
+    feature?: FeatureUpdateOneWithoutFilesNestedInput
+    parent?: FileUpdateOneWithoutChildrenNestedInput
+    children?: FileUpdateManyWithoutParentNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFilesNestedInput
+    sprint?: SprintUpdateOneWithoutFilesNestedInput
+    task?: TaskUpdateManyWithoutFilesNestedInput
+    author?: UserUpdateManyWithoutFileUploadsNestedInput
+    userStory?: UserStoryUpdateOneWithoutFilesNestedInput
+    items?: ItemUpdateManyWithoutFilesNestedInput
+  }
+
+  export type FileUncheckedUpdateWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
+    mimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    path?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
+    script?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    isFolder?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    tags?: FileUpdatetagsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
+    featureId?: NullableStringFieldUpdateOperationsInput | string | null
+    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+    versions?: FileVersionUncheckedUpdateManyWithoutFileNestedInput
+    children?: FileUncheckedUpdateManyWithoutParentNestedInput
+    task?: TaskUncheckedUpdateManyWithoutFilesNestedInput
+    author?: UserUncheckedUpdateManyWithoutFileUploadsNestedInput
+    items?: ItemUncheckedUpdateManyWithoutFilesNestedInput
+  }
+
+  export type FileUncheckedUpdateManyWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    type?: EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
+    mimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    path?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    import?: NullableStringFieldUpdateOperationsInput | string | null
+    use?: NullableStringFieldUpdateOperationsInput | string | null
+    export?: NullableStringFieldUpdateOperationsInput | string | null
+    script?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    isFolder?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    tags?: FileUpdatetagsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
+    featureId?: NullableStringFieldUpdateOperationsInput | string | null
+    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    sprintId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TaskUpdateWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    files?: FileUpdateManyWithoutTaskNestedInput
+    features?: FeatureUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUpdateManyWithoutDependentTaskNestedInput
+    creator?: UserUpdateOneRequiredWithoutCreatedTasksNestedInput
+    project?: ProjectUpdateOneWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
+    assignees?: UserUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUpdateManyWithoutTasksNestedInput
+    epic?: EpicUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    files?: FileUncheckedUpdateManyWithoutTaskNestedInput
+    features?: FeatureUncheckedUpdateManyWithoutTasksNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutTasksNestedInput
+    dependencies?: TaskDependencyUncheckedUpdateManyWithoutDependentTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
+    assignees?: UserUncheckedUpdateManyWithoutAssignedTasksNestedInput
+    askDependency?: TaskDependencyUncheckedUpdateManyWithoutDependsOnTaskNestedInput
+    userStory?: UserStoryUncheckedUpdateManyWithoutTasksNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateManyWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    type?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: TaskUpdatelabelsInput | string[]
+    tags?: TaskUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
+    userstoryId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UserStoryUpdateWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: UserStoryUpdatelabelsInput | string[]
+    tags?: UserStoryUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    UserStoryAssignees?: UserStoryAssigneesUpdateManyWithoutUser_storiesNestedInput
+    files?: FileUpdateManyWithoutUserStoryNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserStoryNestedInput
+    creator?: UserUpdateOneRequiredWithoutCreatedUserStoriesNestedInput
+    feature?: FeatureUpdateOneRequiredWithoutUserStoriesNestedInput
+    dependencies?: UserStoryDependencyUpdateManyWithoutDependentUserStoryNestedInput
+    dependents?: UserStoryDependencyUpdateManyWithoutDependsOnUserStoryNestedInput
+    sprints?: SprintUpdateManyWithoutUserStoriesNestedInput
+    epic?: EpicUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUpdateManyWithoutUserStoryNestedInput
+    Project?: ProjectUpdateManyWithoutUserStoryNestedInput
+  }
+
+  export type UserStoryUncheckedUpdateWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: UserStoryUpdatelabelsInput | string[]
+    tags?: UserStoryUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    featureId?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
+    UserStoryAssignees?: UserStoryAssigneesUncheckedUpdateManyWithoutUser_storiesNestedInput
+    files?: FileUncheckedUpdateManyWithoutUserStoryNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserStoryNestedInput
+    dependencies?: UserStoryDependencyUncheckedUpdateManyWithoutDependentUserStoryNestedInput
+    dependents?: UserStoryDependencyUncheckedUpdateManyWithoutDependsOnUserStoryNestedInput
+    sprints?: SprintUncheckedUpdateManyWithoutUserStoriesNestedInput
+    epic?: EpicUncheckedUpdateManyWithoutUserstoriesNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserStoryNestedInput
+    Project?: ProjectUncheckedUpdateManyWithoutUserStoryNestedInput
+  }
+
+  export type UserStoryUncheckedUpdateManyWithoutCommentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    acceptanceCriteria?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    storyPoints?: NullableIntFieldUpdateOperationsInput | number | null
+    businessValue?: NullableIntFieldUpdateOperationsInput | number | null
+    technicalRisk?: NullableIntFieldUpdateOperationsInput | number | null
+    effort?: NullableIntFieldUpdateOperationsInput | number | null
+    position?: IntFieldUpdateOperationsInput | number
+    labels?: UserStoryUpdatelabelsInput | string[]
+    tags?: UserStoryUpdatetagsInput | string[]
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    featureId?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TagCreateManyCategoryInput = {
+    id?: string
+    name: string
+    order?: number
+    slug: string
+  }
+
+  export type PostUpdateWithoutCategoriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comments?: CommentUpdateManyWithoutPostNestedInput
+    images?: ImageUpdateManyWithoutPostNestedInput
+    author?: UserUpdateOneRequiredWithoutPostNestedInput
+    tags?: TagUpdateManyWithoutPostsNestedInput
+  }
+
+  export type PostUncheckedUpdateWithoutCategoriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    comments?: CommentUncheckedUpdateManyWithoutPostNestedInput
+    images?: ImageUncheckedUpdateManyWithoutPostNestedInput
+    tags?: TagUncheckedUpdateManyWithoutPostsNestedInput
+  }
+
+  export type PostUncheckedUpdateManyWithoutCategoriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authorId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TagUpdateWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    posts?: PostUpdateManyWithoutTagsNestedInput
+  }
+
+  export type TagUncheckedUpdateWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+    posts?: PostUncheckedUpdateManyWithoutTagsNestedInput
+  }
+
+  export type TagUncheckedUpdateManyWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    slug?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PostUpdateWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comments?: CommentUpdateManyWithoutPostNestedInput
+    images?: ImageUpdateManyWithoutPostNestedInput
+    author?: UserUpdateOneRequiredWithoutPostNestedInput
+    categories?: CategoryUpdateManyWithoutPostsNestedInput
+  }
+
+  export type PostUncheckedUpdateWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    comments?: CommentUncheckedUpdateManyWithoutPostNestedInput
+    images?: ImageUncheckedUpdateManyWithoutPostNestedInput
+    categories?: CategoryUncheckedUpdateManyWithoutPostsNestedInput
+  }
+
+  export type PostUncheckedUpdateManyWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authorId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ChannelMemberCreateManyChannelInput = {
@@ -89107,32 +96096,6 @@ export namespace Prisma {
     authorId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type CommentCreateManyItemInput = {
-    id?: string
-    title: string
-    order?: number
-    content: string
-    mentions?: CommentCreatementionsInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    authorId: string
-    taskId?: string | null
-    userStoryId?: string | null
-    fileId?: string | null
-    parentCommentId?: string | null
-    blogImage?: string | null
-    excerpt?: string | null
-    isActive?: boolean
-    isPinned?: boolean
-    isResolved?: boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: Date | string | null
-    readingTime?: number | null
-    slug?: string | null
-    status?: string
-    visibility?: $Enums.Visibility
-  }
-
   export type ItemCreateManyParentInput = {
     id?: string
     type: string
@@ -89185,86 +96148,45 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutItemInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     author?: UserUpdateOneRequiredWithoutCommentsNestedInput
-    file?: FileUpdateOneWithoutCommentsNestedInput
-    parentComment?: CommentUpdateOneWithoutRepliesNestedInput
-    replies?: CommentUpdateManyWithoutParentCommentNestedInput
-    task?: TaskUpdateOneWithoutCommentsNestedInput
-    userStory?: UserStoryUpdateOneWithoutCommentsNestedInput
-    blog_tags?: blog_tagsUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUpdateManyWithoutCommentsNestedInput
+    parent?: CommentUpdateOneWithoutRepliesNestedInput
+    replies?: CommentUpdateManyWithoutParentNestedInput
+    post?: PostUpdateOneRequiredWithoutCommentsNestedInput
+    images?: ImageUpdateManyWithoutCommentNestedInput
+    File?: FileUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentUncheckedUpdateWithoutItemInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
-    categories?: categoriesUncheckedUpdateManyWithoutCommentsNestedInput
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    replies?: CommentUncheckedUpdateManyWithoutParentNestedInput
+    images?: ImageUncheckedUpdateManyWithoutCommentNestedInput
+    File?: FileUncheckedUpdateManyWithoutCommentsNestedInput
+    Task?: TaskUncheckedUpdateManyWithoutCommentsNestedInput
+    UserStory?: UserStoryUncheckedUpdateManyWithoutCommentsNestedInput
   }
 
   export type CommentUncheckedUpdateManyWithoutItemInput = {
     id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    postId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ItemUpdateWithoutParentInput = {
@@ -89551,6 +96473,9 @@ export namespace Prisma {
     projects?: ProjectUpdateManyWithoutUserNestedInput
     sprints?: SprintUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUpdateManyWithoutUserNestedInput
+    Post?: PostUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedItemsInput = {
@@ -89592,6 +96517,9 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     sprints?: SprintUncheckedUpdateManyWithoutUsersNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneesNestedInput
+    Ceremony?: CeremonyUncheckedUpdateManyWithoutAttendeesNestedInput
+    Image?: ImageUncheckedUpdateManyWithoutUserNestedInput
+    Post?: PostUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutAssignedItemsInput = {
@@ -89611,272 +96539,6 @@ export namespace Prisma {
     twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CommentUpdateWithoutBlog_tagsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    author?: UserUpdateOneRequiredWithoutCommentsNestedInput
-    file?: FileUpdateOneWithoutCommentsNestedInput
-    item?: ItemUpdateOneWithoutCommentsNestedInput
-    parentComment?: CommentUpdateOneWithoutRepliesNestedInput
-    replies?: CommentUpdateManyWithoutParentCommentNestedInput
-    task?: TaskUpdateOneWithoutCommentsNestedInput
-    userStory?: UserStoryUpdateOneWithoutCommentsNestedInput
-    categories?: categoriesUpdateManyWithoutCommentsNestedInput
-  }
-
-  export type CommentUncheckedUpdateWithoutBlog_tagsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
-    categories?: categoriesUncheckedUpdateManyWithoutCommentsNestedInput
-  }
-
-  export type CommentUncheckedUpdateManyWithoutBlog_tagsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-  }
-
-  export type blog_tagsCreateManyCategoriesInput = {
-    id: string
-    name: string
-    order?: number
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-  }
-
-  export type categoriesCreateManyCategoriesInput = {
-    id: string
-    name: string
-    order?: number
-    slug?: string | null
-    description?: string | null
-    color?: string | null
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt: Date | string
-  }
-
-  export type blog_tagsUpdateWithoutCategoriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    comments?: CommentUpdateManyWithoutBlog_tagsNestedInput
-  }
-
-  export type blog_tagsUncheckedUpdateWithoutCategoriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    comments?: CommentUncheckedUpdateManyWithoutBlog_tagsNestedInput
-  }
-
-  export type blog_tagsUncheckedUpdateManyWithoutCategoriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type categoriesUpdateWithoutCategoriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blog_tags?: blog_tagsUpdateManyWithoutCategoriesNestedInput
-    other_categories?: categoriesUpdateManyWithoutCategoriesNestedInput
-    comments?: CommentUpdateManyWithoutCategoriesNestedInput
-  }
-
-  export type categoriesUncheckedUpdateWithoutCategoriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCategoriesNestedInput
-    other_categories?: categoriesUncheckedUpdateManyWithoutCategoriesNestedInput
-    comments?: CommentUncheckedUpdateManyWithoutCategoriesNestedInput
-  }
-
-  export type categoriesUncheckedUpdateManyWithoutCategoriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CommentUpdateWithoutCategoriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    author?: UserUpdateOneRequiredWithoutCommentsNestedInput
-    file?: FileUpdateOneWithoutCommentsNestedInput
-    item?: ItemUpdateOneWithoutCommentsNestedInput
-    parentComment?: CommentUpdateOneWithoutRepliesNestedInput
-    replies?: CommentUpdateManyWithoutParentCommentNestedInput
-    task?: TaskUpdateOneWithoutCommentsNestedInput
-    userStory?: UserStoryUpdateOneWithoutCommentsNestedInput
-    blog_tags?: blog_tagsUpdateManyWithoutCommentsNestedInput
-  }
-
-  export type CommentUncheckedUpdateWithoutCategoriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
-    blog_tags?: blog_tagsUncheckedUpdateManyWithoutCommentsNestedInput
-  }
-
-  export type CommentUncheckedUpdateManyWithoutCategoriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    content?: StringFieldUpdateOperationsInput | string
-    mentions?: CommentUpdatementionsInput | string[]
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    authorId?: StringFieldUpdateOperationsInput | string
-    taskId?: NullableStringFieldUpdateOperationsInput | string | null
-    userStoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    fileId?: NullableStringFieldUpdateOperationsInput | string | null
-    itemId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
-    blogImage?: NullableStringFieldUpdateOperationsInput | string | null
-    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    isPinned?: BoolFieldUpdateOperationsInput | boolean
-    isResolved?: BoolFieldUpdateOperationsInput | boolean
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readingTime?: NullableIntFieldUpdateOperationsInput | number | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
   }
 
   export type fieldsCreateManyFieldsInput = {

@@ -51,6 +51,9 @@ model User {
   assignedTasks           Task[]               @relation("TaskAssignees")
 
   @@map("users")
+  Ceremony Ceremony[] @relation("CeremonyAttendees")
+  Image Image[]
+  Post Post[]
 }
 
 model Account {
@@ -121,6 +124,7 @@ model Team {
   templates    Template[] /// Templates associés
 
   @@map("teams")
+  Ceremony Ceremony[]
 }
 
 model TeamMember {
@@ -169,6 +173,7 @@ model Project {
 //team        Team[]
   @@map("projects")
  
+  Ceremony Ceremony[]
 }
 
 model ProjectMember {
@@ -266,7 +271,7 @@ model Feature {
 
   @@map("features")
   
-}
+} 
 
 model FeatureDependency {
   id                 String   @id @default(cuid())
@@ -412,6 +417,7 @@ model Sprint {
   
   @@map("sprints")
   
+  Ceremony Ceremony[]
 }
 
 model File {
@@ -422,7 +428,7 @@ model File {
   mimeType    String?
   path        String? /// Chemin dans l'application
   description String?
-  import      String?
+  import      String?//  props ou arguments et autre import
   use         String? // Cas d'usage (bibliothèque, lib, utils, store, hook, ...)
   export      String?
   script      String? // script du fichier
@@ -469,42 +475,126 @@ model FileVersion {
   @@map("file_versions")
 }
 
-model Comment {
-  id              String       @id @default(cuid())
-  title           String
-  order           Int          @default(1000)
-  content         String
-  mentions        String[]     @default([])
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  authorId        String
-  taskId          String?
-  userStoryId     String?
-  fileId          String?
-  itemId          String?
-  parentCommentId String?
-  blogImage       String?
-  excerpt         String?
-  isActive        Boolean      @default(true)
-  isPinned        Boolean      @default(false)
-  isResolved      Boolean      @default(false)
-  metadata        Json?        @default("{}")
-  publishedAt     DateTime?
-  readingTime     Int?
-  slug            String?      @unique
-  status          String       @default("DRAFT")
-  visibility      Visibility   @default(PRIVATE)
-  author          User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  file            File?        @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  item            Item?        @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  parentComment   Comment?     @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
-  replies         Comment[]    @relation("CommentReplies")
-  task            Task?        @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  userStory       UserStory?   @relation(fields: [userStoryId], references: [id], onDelete: Cascade)
-  blog_tags       blog_tags[]  @relation("CommentBlogTags")
-  categories      categories[] @relation("CommentCategories")
+model Ceremony {
+  id          String        @id @default(cuid())
+  type        CeremonyType  // SPRINT_PLANNING, DAILY_SCRUM, etc.
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  location    String?       // Salle ou lien vidéo
+  status      String        @default("PLANNED")
+  agenda      Json?         // Ordre du jour
+  notes       String?       // Compte-rendu
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  // Relations
+  sprintId    String?
+  projectId   String
+  teamId      String?
+  
+  sprint      Sprint?       @relation(fields: [sprintId], references: [id])
+  project     Project       @relation(fields: [projectId], references: [id])
+  team        Team?         @relation(fields: [teamId], references: [id])
+  attendees   User[]        @relation("CeremonyAttendees") // Participants : user ou teams????
+  
+  @@map("ceremonies")
+}
 
-  @@map("comments")
+enum CeremonyType {
+  SPRINT_PLANNING
+  DAILY_SCRUM
+  SPRINT_REVIEW
+  RETROSPECTIVE
+  BACKLOG_REFINEMENT
+}
+
+
+model Post {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  order     Int      @default(10)
+  excerpt   String?
+  content   String
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  authorId  String
+
+  comments   Comment[]
+  images     Image[]
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categories Category[] @relation("PostCategories")
+  tags       Tag[]      @relation("PostTags")
+
+  @@map("post")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  order     Int      @default(10)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  postId    String
+  authorId  String
+  parentId  String?
+
+  author  User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies Comment[] @relation("CommentReplies")
+  post    Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  images  Image[]
+
+  @@map("comment")
+  Item Item[]
+  File File[]
+  Task Task[]
+  UserStory UserStory[]
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  url       String
+  order     Int      @default(10)
+  alt       String?
+  createdAt DateTime @default(now())
+  postId    String?
+  userId    String?
+  commentId String?
+
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("image")
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String @unique
+  order Int    @default(10)
+  slug  String @unique
+
+  posts Post[] @relation("PostCategories")
+  tags  Tag[]  @relation("CategoryTags")
+
+  @@map("category")
+}
+
+model Tag {
+  id         String @id @default(cuid())
+  name       String @unique
+  order      Int    @default(10)
+  slug       String @unique
+  categoryId String
+
+  category Category @relation("CategoryTags", fields: [categoryId], references: [id], onDelete: Cascade)
+  posts    Post[]   @relation("PostTags")
+
+  @@map("tag")
 }
 
 model Channel {
@@ -703,36 +793,6 @@ model UserStoryAssignees {
   @@id([A, B], map: "_UserStoryAssignees_AB_pkey")
   @@index([B], map: "_UserStoryAssignees_B_index")
   @@map("_UserStoryAssignees")
-}
-
-model blog_tags {
-  id           String      @id
-  name         String
-  order        Int         @default(1000)
-  color        String?
-  isActive     Boolean     @default(true)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime
-  categoriesId String?
-  categories   categories? @relation(fields: [categoriesId], references: [id])
-  comments     Comment[]   @relation("CommentBlogTags")
-}
-
-model categories {
-  id               String       @id
-  name             String
-  order            Int          @default(1000)
-  slug             String?      @unique
-  description      String?
-  color            String?
-  isActive         Boolean      @default(true)
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime
-  parentId         String?
-  blog_tags        blog_tags[]
-  categories       categories?  @relation("categoriesTocategories", fields: [parentId], references: [id])
-  other_categories categories[] @relation("categoriesTocategories")
-  comments         Comment[]    @relation("CommentCategories")
 }
 
 model fields {
