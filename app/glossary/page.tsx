@@ -13,8 +13,8 @@
  * - React Suspense pour les composants client
  * - shadcn/ui: Button, Input, Card, Select, Switch, Badge, Pagination
  * - TypeScript strict mode
- * - Prisma models: Glossary, User
- */
+ * - Prisma models: Glossary, User 
+ */ 
 
 import React, { JSX, Suspense } from "react";
 import { Metadata } from "next";

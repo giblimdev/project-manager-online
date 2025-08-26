@@ -684,6 +684,8 @@ model Glossary {
   description String?
   type        String   @default("TERM") // "TERM" "ACRONYM" "CONCEPT" "TOOL" "PROCESS" "ROLE" "METHODOLOGY" "FRAMEWORK" "TECHNOLOGY"
   category    String?  @default("") // champ libre ('SCRUM'...) 
+    metadata    Json?    @default("{}") // ✅ Ajout du champ metadata
+
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -772,6 +774,18 @@ model fields {
   projects     Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   teams        Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
+
+model helpDev {
+  id                   String   @id @default(uuid()) @db.Uuid
+  titre                String
+  presentationProjet   String?
+  section              Json[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("helpDev")
+}
+
 
 enum UserRole {
   ADMIN

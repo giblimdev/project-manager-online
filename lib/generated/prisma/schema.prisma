@@ -679,15 +679,17 @@ model Item {
 }
 
 model Glossary {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   term        String //titre
-  order       Int      @default(1000)
+  order       Int     @default(1000)
   description String?
-  type        String   @default("TERM") // "TERM" "ACRONYM" "CONCEPT" "TOOL" "PROCESS" "ROLE" "METHODOLOGY" "FRAMEWORK" "TECHNOLOGY"
-  category    String?  @default("") // champ libre ('SCRUM'...) 
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  type        String  @default("TERM") // "TERM" "ACRONYM" "CONCEPT" "TOOL" "PROCESS" "ROLE" "METHODOLOGY" "FRAMEWORK" "TECHNOLOGY"
+  category    String? @default("") // champ libre ('SCRUM'...) 
+  metadata    Json?   @default("{}") // ✅ Ajout du champ metadata
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("glossary")
 }
@@ -772,6 +774,17 @@ model fields {
   other_fields fields[] @relation("fieldsTofields")
   projects     Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   teams        Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model helpDev {
+  id                 String   @id @default(uuid()) @db.Uuid
+  titre              String
+  presentationProjet String?
+  section            Json[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("helpDev")
 }
 
 enum UserRole {

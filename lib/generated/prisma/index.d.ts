@@ -178,6 +178,11 @@ export type categories = $Result.DefaultSelection<Prisma.$categoriesPayload>
  * 
  */
 export type fields = $Result.DefaultSelection<Prisma.$fieldsPayload>
+/**
+ * Model helpDev
+ * 
+ */
+export type helpDev = $Result.DefaultSelection<Prisma.$helpDevPayload>
 
 /**
  * Enums
@@ -781,6 +786,16 @@ export class PrismaClient<
     * ```
     */
   get fields(): Prisma.fieldsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.helpDev`: Exposes CRUD operations for the **helpDev** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more HelpDevs
+    * const helpDevs = await prisma.helpDev.findMany()
+    * ```
+    */
+  get helpDev(): Prisma.helpDevDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1253,7 +1268,8 @@ export namespace Prisma {
     UserStoryAssignees: 'UserStoryAssignees',
     blog_tags: 'blog_tags',
     categories: 'categories',
-    fields: 'fields'
+    fields: 'fields',
+    helpDev: 'helpDev'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1272,7 +1288,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "account" | "session" | "verification" | "team" | "teamMember" | "project" | "projectMember" | "initiative" | "epic" | "feature" | "featureDependency" | "userStory" | "userStoryDependency" | "task" | "taskDependency" | "sprint" | "file" | "fileVersion" | "comment" | "channel" | "channelMember" | "message" | "template" | "timeEntry" | "notification" | "auditLog" | "item" | "glossary" | "userStoryAssignees" | "blog_tags" | "categories" | "fields"
+      modelProps: "user" | "account" | "session" | "verification" | "team" | "teamMember" | "project" | "projectMember" | "initiative" | "epic" | "feature" | "featureDependency" | "userStory" | "userStoryDependency" | "task" | "taskDependency" | "sprint" | "file" | "fileVersion" | "comment" | "channel" | "channelMember" | "message" | "template" | "timeEntry" | "notification" | "auditLog" | "item" | "glossary" | "userStoryAssignees" | "blog_tags" | "categories" | "fields" | "helpDev"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3718,6 +3734,80 @@ export namespace Prisma {
           }
         }
       }
+      helpDev: {
+        payload: Prisma.$helpDevPayload<ExtArgs>
+        fields: Prisma.helpDevFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.helpDevFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$helpDevPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.helpDevFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$helpDevPayload>
+          }
+          findFirst: {
+            args: Prisma.helpDevFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$helpDevPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.helpDevFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$helpDevPayload>
+          }
+          findMany: {
+            args: Prisma.helpDevFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$helpDevPayload>[]
+          }
+          create: {
+            args: Prisma.helpDevCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$helpDevPayload>
+          }
+          createMany: {
+            args: Prisma.helpDevCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.helpDevCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$helpDevPayload>[]
+          }
+          delete: {
+            args: Prisma.helpDevDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$helpDevPayload>
+          }
+          update: {
+            args: Prisma.helpDevUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$helpDevPayload>
+          }
+          deleteMany: {
+            args: Prisma.helpDevDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.helpDevUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.helpDevUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$helpDevPayload>[]
+          }
+          upsert: {
+            args: Prisma.helpDevUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$helpDevPayload>
+          }
+          aggregate: {
+            args: Prisma.HelpDevAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateHelpDev>
+          }
+          groupBy: {
+            args: Prisma.helpDevGroupByArgs<ExtArgs>
+            result: $Utils.Optional<HelpDevGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.helpDevCountArgs<ExtArgs>
+            result: $Utils.Optional<HelpDevCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -3835,6 +3925,7 @@ export namespace Prisma {
     blog_tags?: blog_tagsOmit
     categories?: categoriesOmit
     fields?: fieldsOmit
+    helpDev?: helpDevOmit
   }
 
   /* Types for Logging */
@@ -41816,6 +41907,7 @@ export namespace Prisma {
     description: number
     type: number
     category: number
+    metadata: number
     isActive: number
     createdAt: number
     updatedAt: number
@@ -41862,6 +41954,7 @@ export namespace Prisma {
     description?: true
     type?: true
     category?: true
+    metadata?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -41961,6 +42054,7 @@ export namespace Prisma {
     description: string | null
     type: string
     category: string | null
+    metadata: JsonValue | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -41992,6 +42086,7 @@ export namespace Prisma {
     description?: boolean
     type?: boolean
     category?: boolean
+    metadata?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -42004,6 +42099,7 @@ export namespace Prisma {
     description?: boolean
     type?: boolean
     category?: boolean
+    metadata?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -42016,6 +42112,7 @@ export namespace Prisma {
     description?: boolean
     type?: boolean
     category?: boolean
+    metadata?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -42028,12 +42125,13 @@ export namespace Prisma {
     description?: boolean
     type?: boolean
     category?: boolean
+    metadata?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type GlossaryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "term" | "order" | "description" | "type" | "category" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["glossary"]>
+  export type GlossaryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "term" | "order" | "description" | "type" | "category" | "metadata" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["glossary"]>
 
   export type $GlossaryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Glossary"
@@ -42045,6 +42143,7 @@ export namespace Prisma {
       description: string | null
       type: string
       category: string | null
+      metadata: Prisma.JsonValue | null
       isActive: boolean
       createdAt: Date
       updatedAt: Date
@@ -42477,6 +42576,7 @@ export namespace Prisma {
     readonly description: FieldRef<"Glossary", 'String'>
     readonly type: FieldRef<"Glossary", 'String'>
     readonly category: FieldRef<"Glossary", 'String'>
+    readonly metadata: FieldRef<"Glossary", 'Json'>
     readonly isActive: FieldRef<"Glossary", 'Boolean'>
     readonly createdAt: FieldRef<"Glossary", 'DateTime'>
     readonly updatedAt: FieldRef<"Glossary", 'DateTime'>
@@ -47891,6 +47991,1010 @@ export namespace Prisma {
 
 
   /**
+   * Model helpDev
+   */
+
+  export type AggregateHelpDev = {
+    _count: HelpDevCountAggregateOutputType | null
+    _min: HelpDevMinAggregateOutputType | null
+    _max: HelpDevMaxAggregateOutputType | null
+  }
+
+  export type HelpDevMinAggregateOutputType = {
+    id: string | null
+    titre: string | null
+    presentationProjet: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type HelpDevMaxAggregateOutputType = {
+    id: string | null
+    titre: string | null
+    presentationProjet: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type HelpDevCountAggregateOutputType = {
+    id: number
+    titre: number
+    presentationProjet: number
+    section: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type HelpDevMinAggregateInputType = {
+    id?: true
+    titre?: true
+    presentationProjet?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type HelpDevMaxAggregateInputType = {
+    id?: true
+    titre?: true
+    presentationProjet?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type HelpDevCountAggregateInputType = {
+    id?: true
+    titre?: true
+    presentationProjet?: true
+    section?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type HelpDevAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which helpDev to aggregate.
+     */
+    where?: helpDevWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of helpDevs to fetch.
+     */
+    orderBy?: helpDevOrderByWithRelationInput | helpDevOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: helpDevWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` helpDevs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` helpDevs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned helpDevs
+    **/
+    _count?: true | HelpDevCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: HelpDevMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: HelpDevMaxAggregateInputType
+  }
+
+  export type GetHelpDevAggregateType<T extends HelpDevAggregateArgs> = {
+        [P in keyof T & keyof AggregateHelpDev]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateHelpDev[P]>
+      : GetScalarType<T[P], AggregateHelpDev[P]>
+  }
+
+
+
+
+  export type helpDevGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: helpDevWhereInput
+    orderBy?: helpDevOrderByWithAggregationInput | helpDevOrderByWithAggregationInput[]
+    by: HelpDevScalarFieldEnum[] | HelpDevScalarFieldEnum
+    having?: helpDevScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: HelpDevCountAggregateInputType | true
+    _min?: HelpDevMinAggregateInputType
+    _max?: HelpDevMaxAggregateInputType
+  }
+
+  export type HelpDevGroupByOutputType = {
+    id: string
+    titre: string
+    presentationProjet: string | null
+    section: JsonValue[]
+    createdAt: Date
+    updatedAt: Date
+    _count: HelpDevCountAggregateOutputType | null
+    _min: HelpDevMinAggregateOutputType | null
+    _max: HelpDevMaxAggregateOutputType | null
+  }
+
+  type GetHelpDevGroupByPayload<T extends helpDevGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<HelpDevGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof HelpDevGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], HelpDevGroupByOutputType[P]>
+            : GetScalarType<T[P], HelpDevGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type helpDevSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    titre?: boolean
+    presentationProjet?: boolean
+    section?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["helpDev"]>
+
+  export type helpDevSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    titre?: boolean
+    presentationProjet?: boolean
+    section?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["helpDev"]>
+
+  export type helpDevSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    titre?: boolean
+    presentationProjet?: boolean
+    section?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["helpDev"]>
+
+  export type helpDevSelectScalar = {
+    id?: boolean
+    titre?: boolean
+    presentationProjet?: boolean
+    section?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type helpDevOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "titre" | "presentationProjet" | "section" | "createdAt" | "updatedAt", ExtArgs["result"]["helpDev"]>
+
+  export type $helpDevPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "helpDev"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      titre: string
+      presentationProjet: string | null
+      section: Prisma.JsonValue[]
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["helpDev"]>
+    composites: {}
+  }
+
+  type helpDevGetPayload<S extends boolean | null | undefined | helpDevDefaultArgs> = $Result.GetResult<Prisma.$helpDevPayload, S>
+
+  type helpDevCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<helpDevFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: HelpDevCountAggregateInputType | true
+    }
+
+  export interface helpDevDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['helpDev'], meta: { name: 'helpDev' } }
+    /**
+     * Find zero or one HelpDev that matches the filter.
+     * @param {helpDevFindUniqueArgs} args - Arguments to find a HelpDev
+     * @example
+     * // Get one HelpDev
+     * const helpDev = await prisma.helpDev.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends helpDevFindUniqueArgs>(args: SelectSubset<T, helpDevFindUniqueArgs<ExtArgs>>): Prisma__helpDevClient<$Result.GetResult<Prisma.$helpDevPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one HelpDev that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {helpDevFindUniqueOrThrowArgs} args - Arguments to find a HelpDev
+     * @example
+     * // Get one HelpDev
+     * const helpDev = await prisma.helpDev.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends helpDevFindUniqueOrThrowArgs>(args: SelectSubset<T, helpDevFindUniqueOrThrowArgs<ExtArgs>>): Prisma__helpDevClient<$Result.GetResult<Prisma.$helpDevPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first HelpDev that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {helpDevFindFirstArgs} args - Arguments to find a HelpDev
+     * @example
+     * // Get one HelpDev
+     * const helpDev = await prisma.helpDev.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends helpDevFindFirstArgs>(args?: SelectSubset<T, helpDevFindFirstArgs<ExtArgs>>): Prisma__helpDevClient<$Result.GetResult<Prisma.$helpDevPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first HelpDev that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {helpDevFindFirstOrThrowArgs} args - Arguments to find a HelpDev
+     * @example
+     * // Get one HelpDev
+     * const helpDev = await prisma.helpDev.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends helpDevFindFirstOrThrowArgs>(args?: SelectSubset<T, helpDevFindFirstOrThrowArgs<ExtArgs>>): Prisma__helpDevClient<$Result.GetResult<Prisma.$helpDevPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more HelpDevs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {helpDevFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all HelpDevs
+     * const helpDevs = await prisma.helpDev.findMany()
+     * 
+     * // Get first 10 HelpDevs
+     * const helpDevs = await prisma.helpDev.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const helpDevWithIdOnly = await prisma.helpDev.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends helpDevFindManyArgs>(args?: SelectSubset<T, helpDevFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$helpDevPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a HelpDev.
+     * @param {helpDevCreateArgs} args - Arguments to create a HelpDev.
+     * @example
+     * // Create one HelpDev
+     * const HelpDev = await prisma.helpDev.create({
+     *   data: {
+     *     // ... data to create a HelpDev
+     *   }
+     * })
+     * 
+     */
+    create<T extends helpDevCreateArgs>(args: SelectSubset<T, helpDevCreateArgs<ExtArgs>>): Prisma__helpDevClient<$Result.GetResult<Prisma.$helpDevPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many HelpDevs.
+     * @param {helpDevCreateManyArgs} args - Arguments to create many HelpDevs.
+     * @example
+     * // Create many HelpDevs
+     * const helpDev = await prisma.helpDev.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends helpDevCreateManyArgs>(args?: SelectSubset<T, helpDevCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many HelpDevs and returns the data saved in the database.
+     * @param {helpDevCreateManyAndReturnArgs} args - Arguments to create many HelpDevs.
+     * @example
+     * // Create many HelpDevs
+     * const helpDev = await prisma.helpDev.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many HelpDevs and only return the `id`
+     * const helpDevWithIdOnly = await prisma.helpDev.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends helpDevCreateManyAndReturnArgs>(args?: SelectSubset<T, helpDevCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$helpDevPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a HelpDev.
+     * @param {helpDevDeleteArgs} args - Arguments to delete one HelpDev.
+     * @example
+     * // Delete one HelpDev
+     * const HelpDev = await prisma.helpDev.delete({
+     *   where: {
+     *     // ... filter to delete one HelpDev
+     *   }
+     * })
+     * 
+     */
+    delete<T extends helpDevDeleteArgs>(args: SelectSubset<T, helpDevDeleteArgs<ExtArgs>>): Prisma__helpDevClient<$Result.GetResult<Prisma.$helpDevPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one HelpDev.
+     * @param {helpDevUpdateArgs} args - Arguments to update one HelpDev.
+     * @example
+     * // Update one HelpDev
+     * const helpDev = await prisma.helpDev.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends helpDevUpdateArgs>(args: SelectSubset<T, helpDevUpdateArgs<ExtArgs>>): Prisma__helpDevClient<$Result.GetResult<Prisma.$helpDevPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more HelpDevs.
+     * @param {helpDevDeleteManyArgs} args - Arguments to filter HelpDevs to delete.
+     * @example
+     * // Delete a few HelpDevs
+     * const { count } = await prisma.helpDev.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends helpDevDeleteManyArgs>(args?: SelectSubset<T, helpDevDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more HelpDevs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {helpDevUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many HelpDevs
+     * const helpDev = await prisma.helpDev.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends helpDevUpdateManyArgs>(args: SelectSubset<T, helpDevUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more HelpDevs and returns the data updated in the database.
+     * @param {helpDevUpdateManyAndReturnArgs} args - Arguments to update many HelpDevs.
+     * @example
+     * // Update many HelpDevs
+     * const helpDev = await prisma.helpDev.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more HelpDevs and only return the `id`
+     * const helpDevWithIdOnly = await prisma.helpDev.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends helpDevUpdateManyAndReturnArgs>(args: SelectSubset<T, helpDevUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$helpDevPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one HelpDev.
+     * @param {helpDevUpsertArgs} args - Arguments to update or create a HelpDev.
+     * @example
+     * // Update or create a HelpDev
+     * const helpDev = await prisma.helpDev.upsert({
+     *   create: {
+     *     // ... data to create a HelpDev
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the HelpDev we want to update
+     *   }
+     * })
+     */
+    upsert<T extends helpDevUpsertArgs>(args: SelectSubset<T, helpDevUpsertArgs<ExtArgs>>): Prisma__helpDevClient<$Result.GetResult<Prisma.$helpDevPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of HelpDevs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {helpDevCountArgs} args - Arguments to filter HelpDevs to count.
+     * @example
+     * // Count the number of HelpDevs
+     * const count = await prisma.helpDev.count({
+     *   where: {
+     *     // ... the filter for the HelpDevs we want to count
+     *   }
+     * })
+    **/
+    count<T extends helpDevCountArgs>(
+      args?: Subset<T, helpDevCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], HelpDevCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a HelpDev.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HelpDevAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends HelpDevAggregateArgs>(args: Subset<T, HelpDevAggregateArgs>): Prisma.PrismaPromise<GetHelpDevAggregateType<T>>
+
+    /**
+     * Group by HelpDev.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {helpDevGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends helpDevGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: helpDevGroupByArgs['orderBy'] }
+        : { orderBy?: helpDevGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, helpDevGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetHelpDevGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the helpDev model
+   */
+  readonly fields: helpDevFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for helpDev.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__helpDevClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the helpDev model
+   */
+  interface helpDevFieldRefs {
+    readonly id: FieldRef<"helpDev", 'String'>
+    readonly titre: FieldRef<"helpDev", 'String'>
+    readonly presentationProjet: FieldRef<"helpDev", 'String'>
+    readonly section: FieldRef<"helpDev", 'Json[]'>
+    readonly createdAt: FieldRef<"helpDev", 'DateTime'>
+    readonly updatedAt: FieldRef<"helpDev", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * helpDev findUnique
+   */
+  export type helpDevFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the helpDev
+     */
+    select?: helpDevSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the helpDev
+     */
+    omit?: helpDevOmit<ExtArgs> | null
+    /**
+     * Filter, which helpDev to fetch.
+     */
+    where: helpDevWhereUniqueInput
+  }
+
+  /**
+   * helpDev findUniqueOrThrow
+   */
+  export type helpDevFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the helpDev
+     */
+    select?: helpDevSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the helpDev
+     */
+    omit?: helpDevOmit<ExtArgs> | null
+    /**
+     * Filter, which helpDev to fetch.
+     */
+    where: helpDevWhereUniqueInput
+  }
+
+  /**
+   * helpDev findFirst
+   */
+  export type helpDevFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the helpDev
+     */
+    select?: helpDevSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the helpDev
+     */
+    omit?: helpDevOmit<ExtArgs> | null
+    /**
+     * Filter, which helpDev to fetch.
+     */
+    where?: helpDevWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of helpDevs to fetch.
+     */
+    orderBy?: helpDevOrderByWithRelationInput | helpDevOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for helpDevs.
+     */
+    cursor?: helpDevWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` helpDevs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` helpDevs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of helpDevs.
+     */
+    distinct?: HelpDevScalarFieldEnum | HelpDevScalarFieldEnum[]
+  }
+
+  /**
+   * helpDev findFirstOrThrow
+   */
+  export type helpDevFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the helpDev
+     */
+    select?: helpDevSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the helpDev
+     */
+    omit?: helpDevOmit<ExtArgs> | null
+    /**
+     * Filter, which helpDev to fetch.
+     */
+    where?: helpDevWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of helpDevs to fetch.
+     */
+    orderBy?: helpDevOrderByWithRelationInput | helpDevOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for helpDevs.
+     */
+    cursor?: helpDevWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` helpDevs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` helpDevs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of helpDevs.
+     */
+    distinct?: HelpDevScalarFieldEnum | HelpDevScalarFieldEnum[]
+  }
+
+  /**
+   * helpDev findMany
+   */
+  export type helpDevFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the helpDev
+     */
+    select?: helpDevSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the helpDev
+     */
+    omit?: helpDevOmit<ExtArgs> | null
+    /**
+     * Filter, which helpDevs to fetch.
+     */
+    where?: helpDevWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of helpDevs to fetch.
+     */
+    orderBy?: helpDevOrderByWithRelationInput | helpDevOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing helpDevs.
+     */
+    cursor?: helpDevWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` helpDevs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` helpDevs.
+     */
+    skip?: number
+    distinct?: HelpDevScalarFieldEnum | HelpDevScalarFieldEnum[]
+  }
+
+  /**
+   * helpDev create
+   */
+  export type helpDevCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the helpDev
+     */
+    select?: helpDevSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the helpDev
+     */
+    omit?: helpDevOmit<ExtArgs> | null
+    /**
+     * The data needed to create a helpDev.
+     */
+    data: XOR<helpDevCreateInput, helpDevUncheckedCreateInput>
+  }
+
+  /**
+   * helpDev createMany
+   */
+  export type helpDevCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many helpDevs.
+     */
+    data: helpDevCreateManyInput | helpDevCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * helpDev createManyAndReturn
+   */
+  export type helpDevCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the helpDev
+     */
+    select?: helpDevSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the helpDev
+     */
+    omit?: helpDevOmit<ExtArgs> | null
+    /**
+     * The data used to create many helpDevs.
+     */
+    data: helpDevCreateManyInput | helpDevCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * helpDev update
+   */
+  export type helpDevUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the helpDev
+     */
+    select?: helpDevSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the helpDev
+     */
+    omit?: helpDevOmit<ExtArgs> | null
+    /**
+     * The data needed to update a helpDev.
+     */
+    data: XOR<helpDevUpdateInput, helpDevUncheckedUpdateInput>
+    /**
+     * Choose, which helpDev to update.
+     */
+    where: helpDevWhereUniqueInput
+  }
+
+  /**
+   * helpDev updateMany
+   */
+  export type helpDevUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update helpDevs.
+     */
+    data: XOR<helpDevUpdateManyMutationInput, helpDevUncheckedUpdateManyInput>
+    /**
+     * Filter which helpDevs to update
+     */
+    where?: helpDevWhereInput
+    /**
+     * Limit how many helpDevs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * helpDev updateManyAndReturn
+   */
+  export type helpDevUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the helpDev
+     */
+    select?: helpDevSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the helpDev
+     */
+    omit?: helpDevOmit<ExtArgs> | null
+    /**
+     * The data used to update helpDevs.
+     */
+    data: XOR<helpDevUpdateManyMutationInput, helpDevUncheckedUpdateManyInput>
+    /**
+     * Filter which helpDevs to update
+     */
+    where?: helpDevWhereInput
+    /**
+     * Limit how many helpDevs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * helpDev upsert
+   */
+  export type helpDevUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the helpDev
+     */
+    select?: helpDevSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the helpDev
+     */
+    omit?: helpDevOmit<ExtArgs> | null
+    /**
+     * The filter to search for the helpDev to update in case it exists.
+     */
+    where: helpDevWhereUniqueInput
+    /**
+     * In case the helpDev found by the `where` argument doesn't exist, create a new helpDev with this data.
+     */
+    create: XOR<helpDevCreateInput, helpDevUncheckedCreateInput>
+    /**
+     * In case the helpDev was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<helpDevUpdateInput, helpDevUncheckedUpdateInput>
+  }
+
+  /**
+   * helpDev delete
+   */
+  export type helpDevDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the helpDev
+     */
+    select?: helpDevSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the helpDev
+     */
+    omit?: helpDevOmit<ExtArgs> | null
+    /**
+     * Filter which helpDev to delete.
+     */
+    where: helpDevWhereUniqueInput
+  }
+
+  /**
+   * helpDev deleteMany
+   */
+  export type helpDevDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which helpDevs to delete
+     */
+    where?: helpDevWhereInput
+    /**
+     * Limit how many helpDevs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * helpDev without action
+   */
+  export type helpDevDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the helpDev
+     */
+    select?: helpDevSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the helpDev
+     */
+    omit?: helpDevOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -48447,6 +49551,7 @@ export namespace Prisma {
     description: 'description',
     type: 'type',
     category: 'category',
+    metadata: 'metadata',
     isActive: 'isActive',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -48530,6 +49635,18 @@ export namespace Prisma {
   };
 
   export type FieldsScalarFieldEnum = (typeof FieldsScalarFieldEnum)[keyof typeof FieldsScalarFieldEnum]
+
+
+  export const HelpDevScalarFieldEnum: {
+    id: 'id',
+    titre: 'titre',
+    presentationProjet: 'presentationProjet',
+    section: 'section',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type HelpDevScalarFieldEnum = (typeof HelpDevScalarFieldEnum)[keyof typeof HelpDevScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -48771,6 +49888,13 @@ export namespace Prisma {
    * Reference to a field of type 'ItemStatus[]'
    */
   export type ListEnumItemStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ItemStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json[]'
+   */
+  export type ListJsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json[]'>
     
   /**
    * Deep Input Types
@@ -51877,6 +53001,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Glossary"> | string | null
     type?: StringFilter<"Glossary"> | string
     category?: StringNullableFilter<"Glossary"> | string | null
+    metadata?: JsonNullableFilter<"Glossary">
     isActive?: BoolFilter<"Glossary"> | boolean
     createdAt?: DateTimeFilter<"Glossary"> | Date | string
     updatedAt?: DateTimeFilter<"Glossary"> | Date | string
@@ -51889,6 +53014,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     type?: SortOrder
     category?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -51904,6 +53030,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Glossary"> | string | null
     type?: StringFilter<"Glossary"> | string
     category?: StringNullableFilter<"Glossary"> | string | null
+    metadata?: JsonNullableFilter<"Glossary">
     isActive?: BoolFilter<"Glossary"> | boolean
     createdAt?: DateTimeFilter<"Glossary"> | Date | string
     updatedAt?: DateTimeFilter<"Glossary"> | Date | string
@@ -51916,6 +53043,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     type?: SortOrder
     category?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -51936,6 +53064,7 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Glossary"> | string | null
     type?: StringWithAggregatesFilter<"Glossary"> | string
     category?: StringNullableWithAggregatesFilter<"Glossary"> | string | null
+    metadata?: JsonNullableWithAggregatesFilter<"Glossary">
     isActive?: BoolWithAggregatesFilter<"Glossary"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Glossary"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Glossary"> | Date | string
@@ -52358,6 +53487,63 @@ export namespace Prisma {
     ownerId?: StringWithAggregatesFilter<"fields"> | string
     projectId?: StringNullableWithAggregatesFilter<"fields"> | string | null
     teamId?: StringNullableWithAggregatesFilter<"fields"> | string | null
+  }
+
+  export type helpDevWhereInput = {
+    AND?: helpDevWhereInput | helpDevWhereInput[]
+    OR?: helpDevWhereInput[]
+    NOT?: helpDevWhereInput | helpDevWhereInput[]
+    id?: UuidFilter<"helpDev"> | string
+    titre?: StringFilter<"helpDev"> | string
+    presentationProjet?: StringNullableFilter<"helpDev"> | string | null
+    section?: JsonNullableListFilter<"helpDev">
+    createdAt?: DateTimeFilter<"helpDev"> | Date | string
+    updatedAt?: DateTimeFilter<"helpDev"> | Date | string
+  }
+
+  export type helpDevOrderByWithRelationInput = {
+    id?: SortOrder
+    titre?: SortOrder
+    presentationProjet?: SortOrderInput | SortOrder
+    section?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type helpDevWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: helpDevWhereInput | helpDevWhereInput[]
+    OR?: helpDevWhereInput[]
+    NOT?: helpDevWhereInput | helpDevWhereInput[]
+    titre?: StringFilter<"helpDev"> | string
+    presentationProjet?: StringNullableFilter<"helpDev"> | string | null
+    section?: JsonNullableListFilter<"helpDev">
+    createdAt?: DateTimeFilter<"helpDev"> | Date | string
+    updatedAt?: DateTimeFilter<"helpDev"> | Date | string
+  }, "id">
+
+  export type helpDevOrderByWithAggregationInput = {
+    id?: SortOrder
+    titre?: SortOrder
+    presentationProjet?: SortOrderInput | SortOrder
+    section?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: helpDevCountOrderByAggregateInput
+    _max?: helpDevMaxOrderByAggregateInput
+    _min?: helpDevMinOrderByAggregateInput
+  }
+
+  export type helpDevScalarWhereWithAggregatesInput = {
+    AND?: helpDevScalarWhereWithAggregatesInput | helpDevScalarWhereWithAggregatesInput[]
+    OR?: helpDevScalarWhereWithAggregatesInput[]
+    NOT?: helpDevScalarWhereWithAggregatesInput | helpDevScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"helpDev"> | string
+    titre?: StringWithAggregatesFilter<"helpDev"> | string
+    presentationProjet?: StringNullableWithAggregatesFilter<"helpDev"> | string | null
+    section?: JsonNullableListFilter<"helpDev">
+    createdAt?: DateTimeWithAggregatesFilter<"helpDev"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"helpDev"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -55844,6 +57030,7 @@ export namespace Prisma {
     description?: string | null
     type?: string
     category?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -55856,6 +57043,7 @@ export namespace Prisma {
     description?: string | null
     type?: string
     category?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -55868,6 +57056,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55880,6 +57069,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55892,6 +57082,7 @@ export namespace Prisma {
     description?: string | null
     type?: string
     category?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -55904,6 +57095,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55916,6 +57108,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -56387,6 +57580,69 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type helpDevCreateInput = {
+    id?: string
+    titre: string
+    presentationProjet?: string | null
+    section?: helpDevCreatesectionInput | InputJsonValue[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type helpDevUncheckedCreateInput = {
+    id?: string
+    titre: string
+    presentationProjet?: string | null
+    section?: helpDevCreatesectionInput | InputJsonValue[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type helpDevUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    titre?: StringFieldUpdateOperationsInput | string
+    presentationProjet?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: helpDevUpdatesectionInput | InputJsonValue[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type helpDevUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    titre?: StringFieldUpdateOperationsInput | string
+    presentationProjet?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: helpDevUpdatesectionInput | InputJsonValue[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type helpDevCreateManyInput = {
+    id?: string
+    titre: string
+    presentationProjet?: string | null
+    section?: helpDevCreatesectionInput | InputJsonValue[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type helpDevUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    titre?: StringFieldUpdateOperationsInput | string
+    presentationProjet?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: helpDevUpdatesectionInput | InputJsonValue[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type helpDevUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    titre?: StringFieldUpdateOperationsInput | string
+    presentationProjet?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: helpDevUpdatesectionInput | InputJsonValue[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -58902,6 +60158,7 @@ export namespace Prisma {
     description?: SortOrder
     type?: SortOrder
     category?: SortOrder
+    metadata?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -59175,6 +60432,72 @@ export namespace Prisma {
     minValue?: SortOrder
     maxValue?: SortOrder
     order?: SortOrder
+  }
+
+  export type UuidFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidFilter<$PrismaModel> | string
+  }
+  export type JsonNullableListFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableListFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableListFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableListFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableListFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableListFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue[] | ListJsonFieldRefInput<$PrismaModel> | null
+    has?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    hasEvery?: InputJsonValue[] | ListJsonFieldRefInput<$PrismaModel>
+    hasSome?: InputJsonValue[] | ListJsonFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type helpDevCountOrderByAggregateInput = {
+    id?: SortOrder
+    titre?: SortOrder
+    presentationProjet?: SortOrder
+    section?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type helpDevMaxOrderByAggregateInput = {
+    id?: SortOrder
+    titre?: SortOrder
+    presentationProjet?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type helpDevMinOrderByAggregateInput = {
+    id?: SortOrder
+    titre?: SortOrder
+    presentationProjet?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UuidWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
   }
 
   export type UserStoryAssigneesCreateNestedManyWithoutUsersInput = {
@@ -64222,6 +65545,15 @@ export namespace Prisma {
     deleteMany?: fieldsScalarWhereInput | fieldsScalarWhereInput[]
   }
 
+  export type helpDevCreatesectionInput = {
+    set: InputJsonValue[]
+  }
+
+  export type helpDevUpdatesectionInput = {
+    set?: InputJsonValue[]
+    push?: InputJsonValue | InputJsonValue[]
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -64652,6 +65984,31 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumItemStatusFilter<$PrismaModel>
     _max?: NestedEnumItemStatusFilter<$PrismaModel>
+  }
+
+  export type NestedUuidFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidFilter<$PrismaModel> | string
+  }
+
+  export type NestedUuidWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
   }
 
   export type UserStoryAssigneesCreateWithoutUsersInput = {

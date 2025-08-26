@@ -30,10 +30,15 @@ const navItems: NavItem[] = [
   { label: "Services", href: "/services" },
   { label: "À propos", href: "/about" },
   { label: "Contact", href: "/contact" },
+
 ];
 
 const toolsDropdownItems: DropdownItem[] = [
   {
+    label: "Dev",
+    href: "/helpDev",
+    description: "Principes de développement",
+  },{
     label: "Projets",
     href: "/projects",
     description: "Gérez vos projets agiles",

@@ -1,42 +1,48 @@
 // 📄 /app/api/glossary/route.ts
-// 🎯 Rôle : API route principale pour la gestion des termes du glossaire
-// 📦 Responsabilités : CRUD des termes (GET, POST uniquement - pas de paramètres dynamiques)
-// 🔧 Composants utilisés : NextResponse, Prisma Client, Zod pour validation
-// 🌐 Base de données : PostgreSQL via Prisma
-
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/lib/generated/prisma";
+import prisma from "@/lib/prisma"; // ✅ Import corrigé
 import { z } from "zod";
 
-const prisma = new PrismaClient();
-
-// 🔧 Schémas de validation Zod
+// 🔧 Schémas de validation Zod mis à jour
 const glossarySchema = z.object({
   term: z
     .string()
     .min(1, "Le terme est requis")
-    .max(255, "Le terme ne peut pas dépasser 255 caractères"),
-  description: z.string().optional().nullable(),
+    .max(255, "Le terme ne peut pas dépasser 255 caractères")
+    .regex(/^[a-zA-ZÀ-ÿ0-9\s\-_\.]+$/, "Caractères non autorisés"),
+  description: z.string().nullable().optional(),
   type: z
-    .enum(["TERM", "ACRONYM", "ABBREVIATION", "CONCEPT", "TEAM", "PROJECT"])
+    .enum([
+      "TERM",
+      "ACRONYM", 
+      "CONCEPT",
+      "TOOL",
+      "PROCESS",
+      "ROLE", 
+      "METHODOLOGY",
+      "FRAMEWORK",
+      "TECHNOLOGY"
+    ])
     .default("TERM"),
-  order: z.number().int().min(0).default(1000),
+  category: z.string().max(100).nullable().optional(),
+  order: z.number().int().min(0).max(999999).default(1000),
   isActive: z.boolean().default(true),
+  metadata: z.any().optional(),
 });
 
 const querySchema = z.object({
   search: z.string().optional(),
-  type: z.string().optional(),
+  type: z.string().optional(), 
   isActive: z.boolean().optional(),
   page: z.number().int().min(1).default(1),
   limit: z.number().int().min(1).max(100).default(20),
   sortBy: z
-    .enum(["term", "order", "type", "createdAt", "updatedAt"])
+    .enum(["term", "order", "type", "createdAt", "updatedAt", "category"])
     .default("order"),
   sortOrder: z.enum(["asc", "desc"]).default("asc"),
 });
 
-// 📋 GET - Récupérer tous les termes du glossaire avec pagination et filtres
+// 📋 GET - Récupérer tous les termes
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const { searchParams } = request.nextUrl;
@@ -59,6 +65,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     if (!params.success) {
       return NextResponse.json(
         {
+          success: false,
           error: "Paramètres de requête invalides",
           details: params.error.issues,
         },
@@ -69,13 +76,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const { search, type, isActive, page, limit, sortBy, sortOrder } =
       params.data;
 
-    // Construction dynamique du filtre WHERE
+    // Construction du filtre WHERE
     const where: any = {};
 
     if (search) {
       where.OR = [
         { term: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
+        { category: { contains: search, mode: "insensitive" } },
       ];
     }
 
@@ -129,12 +137,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
-// ➕ POST - Créer un nouveau terme du glossaire
+// ➕ POST - Créer un nouveau terme
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body = await request.json();
@@ -153,11 +159,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const data = validation.data;
 
-    // Vérification de l'unicité du terme
+    // Vérification de l'unicité
     const existingTerm = await prisma.glossary.findFirst({
       where: {
         term: { equals: data.term, mode: "insensitive" },
-        isActive: true,
       },
     });
 
@@ -172,10 +177,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Création du nouveau terme
+    // Création du terme
     const newTerm = await prisma.glossary.create({
       data: {
-        ...data,
+        term: data.term.trim(),
+        description: data.description?.trim() || null,
+        type: data.type,
+        category: data.category?.trim() || null,
+        order: data.order,
+        isActive: data.isActive,
+        metadata: data.metadata || {},
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -199,7 +210,5 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

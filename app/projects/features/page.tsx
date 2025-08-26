@@ -394,18 +394,20 @@ export default function FeaturesPage(): React.JSX.Element {
               <AlertCircle className="h-5 w-5 text-red-600" />
               Supprimer la Feature
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
-              <div>
-                Êtes-vous sûr de vouloir supprimer la feature{" "}
-                <span className="font-medium text-gray-900">
-                  "{selectedFeature?.name}"
-                </span>
-                {" "} ?
-              </div>
-              <div className="text-sm text-red-600">
-                Cette action est irréversible et supprimera également toutes les données associées.
-              </div>
-            </AlertDialogDescription>
+            <AlertDialogDescription asChild>
+  <div className="space-y-2">
+    <p>
+      Êtes-vous sûr de vouloir supprimer la feature{" "}
+      <span className="font-medium text-gray-900">
+        "{selectedFeature?.name}"
+      </span>{" "}
+      ?
+    </p>
+    <p className="text-sm text-red-600">
+      Cette action est irréversible et supprimera également toutes les données associées.
+    </p>
+  </div>
+</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isSubmitting}>

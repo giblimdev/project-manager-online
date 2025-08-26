@@ -1,28 +1,33 @@
 // 📄 /app/api/glossary/[id]/route.ts
-// 🎯 Rôle : API route pour la gestion d'un terme spécifique du glossaire
-// 📦 Responsabilités : CRUD d'un terme individuel (GET, PUT, DELETE)
-// 🔧 Composants utilisés : NextResponse, Prisma Client, Zod pour validation
-// 🌐 Base de données : PostgreSQL via Prisma
-
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/lib/generated/prisma";
+import prisma from "@/lib/prisma"; // ✅ Import corrigé
 import { z } from "zod";
 
-const prisma = new PrismaClient();
-
-// 🔧 Schéma de validation pour la mise à jour
 const updateGlossarySchema = z.object({
   term: z
     .string()
-    .min(1, "Le terme est requis")
+    .min(1, "Le terme est requis") 
     .max(255, "Le terme ne peut pas dépasser 255 caractères")
+    .regex(/^[a-zA-ZÀ-ÿ0-9\s\-_\.]+$/, "Caractères non autorisés")
     .optional(),
-  description: z.string().optional().nullable(),
+  description: z.string().nullable().optional(),
   type: z
-    .enum(["TERM", "ACRONYM", "ABBREVIATION", "CONCEPT", "TEAM", "PROJECT"])
+    .enum([
+      "TERM",
+      "ACRONYM",
+      "CONCEPT", 
+      "TOOL",
+      "PROCESS",
+      "ROLE",
+      "METHODOLOGY",
+      "FRAMEWORK",
+      "TECHNOLOGY"
+    ])
     .optional(),
-  order: z.number().int().min(0).optional(),
+  category: z.string().max(100).nullable().optional(),
+  order: z.number().int().min(0).max(999999).optional(),
   isActive: z.boolean().optional(),
+  metadata: z.any().optional(),
 });
 
 // 📋 GET - Récupérer un terme spécifique
@@ -33,35 +38,19 @@ export async function GET(
   try {
     const { id } = await context.params;
 
-    if (!id) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "ID du terme requis",
-        },
-        { status: 400 }
-      );
-    }
-
     const term = await prisma.glossary.findUnique({
       where: { id },
     });
 
     if (!term) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Terme non trouvé",
-        },
+        { success: false, error: "Terme non trouvé" },
         { status: 404 }
       );
     }
 
     return NextResponse.json(
-      {
-        success: true,
-        data: term,
-      },
+      { success: true, data: term },
       { status: 200 }
     );
   } catch (error) {
@@ -74,29 +63,16 @@ export async function GET(
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
-// ✏️ PUT - Mettre à jour un terme spécifique
+// ✏️ PUT - Mettre à jour un terme
 export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     const { id } = await context.params;
-
-    if (!id) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "ID du terme requis",
-        },
-        { status: 400 }
-      );
-    }
-
     const body = await request.json();
     const validation = updateGlossarySchema.safeParse(body);
 
@@ -113,27 +89,23 @@ export async function PUT(
 
     const data = validation.data;
 
-    // Vérifier que le terme existe
+    // Vérifier existence
     const existingTerm = await prisma.glossary.findUnique({
       where: { id },
     });
 
     if (!existingTerm) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Terme non trouvé",
-        },
+        { success: false, error: "Terme non trouvé" },
         { status: 404 }
       );
     }
 
-    // Vérification de l'unicité si le terme est modifié
+    // Vérifier unicité si terme modifié
     if (data.term && data.term !== existingTerm.term) {
       const duplicateTerm = await prisma.glossary.findFirst({
         where: {
           term: { equals: data.term, mode: "insensitive" },
-          isActive: true,
           NOT: { id },
         },
       });
@@ -150,13 +122,20 @@ export async function PUT(
       }
     }
 
-    // Mise à jour du terme
+    // Mise à jour
+    const updateData: any = { updatedAt: new Date() };
+
+    if (data.term !== undefined) updateData.term = data.term.trim();
+    if (data.description !== undefined) updateData.description = data.description?.trim() || null;
+    if (data.type !== undefined) updateData.type = data.type;
+    if (data.category !== undefined) updateData.category = data.category?.trim() || null;
+    if (data.order !== undefined) updateData.order = data.order;
+    if (data.isActive !== undefined) updateData.isActive = data.isActive;
+    if (data.metadata !== undefined) updateData.metadata = data.metadata || {};
+
     const updatedTerm = await prisma.glossary.update({
       where: { id },
-      data: {
-        ...data,
-        updatedAt: new Date(),
-      },
+      data: updateData,
     });
 
     return NextResponse.json(
@@ -177,12 +156,10 @@ export async function PUT(
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
-// 🗑️ DELETE - Supprimer (désactiver) un terme spécifique
+// 🗑️ DELETE - Supprimer un terme
 export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -190,45 +167,28 @@ export async function DELETE(
   try {
     const { id } = await context.params;
 
-    if (!id) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "ID du terme requis",
-        },
-        { status: 400 }
-      );
-    }
-
-    // Vérifier que le terme existe
+    // Vérifier existence
     const existingTerm = await prisma.glossary.findUnique({
       where: { id },
     });
 
     if (!existingTerm) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Terme non trouvé",
-        },
+        { success: false, error: "Terme non trouvé" },
         { status: 404 }
       );
     }
 
-    // Suppression logique (désactivation)
-    const deletedTerm = await prisma.glossary.update({
+    // Suppression physique
+    const deletedTerm = await prisma.glossary.delete({
       where: { id },
-      data: {
-        isActive: false,
-        updatedAt: new Date(),
-      },
     });
 
     return NextResponse.json(
       {
         success: true,
         data: deletedTerm,
-        message: "Terme supprimé avec succès",
+        message: "Terme supprimé définitivement avec succès",
       },
       { status: 200 }
     );
@@ -242,7 +202,5 @@ export async function DELETE(
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

@@ -4,16 +4,19 @@
  * RÔLE : Composant principal du contenu du glossaire avec paramètres de recherche
  * RESPONSABILITÉS :
  * - Gestion des paramètres de recherche et filtres via useSearchParams
- * - CRUD complet des termes du glossaire
+ * - CRUD complet des termes du glossaire (individuel et en masse)
  * - Filtrage par type, statut actif/inactif, recherche textuelle
  * - Pagination et tri configurable
  * - Interface responsive avec modals de création/modification/suppression
+ * - Réorganisation des termes par glisser-déposer
+ * - Modification d'ordre par valeurs numériques
+ * - Intégration du tableau d'édition en masse
  *
  * COMPOSANTS UTILISÉS :
  * - useSearchParams, useRouter, usePathname (Next.js 15)
- * - shadcn/ui: Card, Input, Button, Select, Switch, Badge, Pagination
+ * - shadcn/ui: Card, Input, Button, Select, Switch, Badge, Pagination, Dialog
  * - lucide-react: Icons pour interface
- * - GlossaryForm, DeleteConfirmation pour modals
+ * - GlossaryForm, GlossaryTable, DeleteConfirmation pour modals
  * - Types basés sur schema Prisma: Glossary
  */
 
@@ -42,6 +45,14 @@ import {
   Copy,
   ExternalLink,
   FileText,
+  ArrowUp,
+  ArrowDown,
+  Move,
+  Hash,
+  Save,
+  X,
+  Check,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,11 +82,24 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { GlossaryForm } from "@/components/glossary/GlossaryForm";
+
+// Import des composants personnalisés
+import GlossaryForm from "@/components/glossary/GlossaryForm";
+import GlossaryTable from "@/components/glossary/GlossaryTable";
 import { DeleteConfirmation } from "@/components/glossary/DeleteConfirmation";
 
 // Types basés sur votre schéma Prisma
@@ -85,6 +109,7 @@ interface GlossaryTerm {
   order: number;
   description: string | null;
   type: string;
+  category?: string | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -106,6 +131,63 @@ interface FiltersState {
   sortBy: string;
   sortOrder: "asc" | "desc";
 }
+// 📄 /app/api/glossary/reorder/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { z } from "zod";
+
+const reorderSchema = z.object({
+  orderedIds: z.array(z.string()).min(1, "Au moins un ID requis"),
+});
+
+// 📋 POST - Réorganiser l'ordre des termes
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  try {
+    const body = await request.json();
+    const validation = reorderSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Données invalides",
+          details: validation.error.issues,
+        },
+        { status: 400 }
+      );
+    }
+
+    const { orderedIds } = validation.data;
+
+    // Mise à jour de l'ordre pour chaque terme
+    const updates = orderedIds.map((id, index) =>
+      prisma.glossary.update({
+        where: { id },
+        data: { order: index + 1 },
+      })
+    );
+
+    await Promise.all(updates);
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Ordre mis à jour avec succès",
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("POST /api/glossary/reorder error:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Erreur lors de la réorganisation",
+        details: error instanceof Error ? error.message : "Erreur inconnue",
+      },
+      { status: 500 }
+    );
+  }
+}
 
 // Configuration des types de termes
 const GLOSSARY_TERM_TYPES = [
@@ -115,6 +197,9 @@ const GLOSSARY_TERM_TYPES = [
   { value: "TOOL", label: "Outil", description: "Logiciel ou plateforme" },
   { value: "PROCESS", label: "Processus", description: "Méthode ou procédure" },
   { value: "ROLE", label: "Rôle", description: "Fonction ou responsabilité" },
+  { value: "METHODOLOGY", label: "Méthodologie", description: "Approche structurée" },
+  { value: "FRAMEWORK", label: "Framework", description: "Cadre de travail" },
+  { value: "TECHNOLOGY", label: "Technologie", description: "Stack technique" },
 ] as const;
 
 const TERM_TYPE_COLORS = {
@@ -124,6 +209,9 @@ const TERM_TYPE_COLORS = {
   TOOL: "bg-orange-100 text-orange-800 border-orange-300",
   PROCESS: "bg-teal-100 text-teal-800 border-teal-300",
   ROLE: "bg-pink-100 text-pink-800 border-pink-300",
+  METHODOLOGY: "bg-indigo-100 text-indigo-800 border-indigo-300",
+  FRAMEWORK: "bg-cyan-100 text-cyan-800 border-cyan-300",
+  TECHNOLOGY: "bg-yellow-100 text-yellow-800 border-yellow-300",
 } as const;
 
 const SORT_OPTIONS = [
@@ -134,13 +222,19 @@ const SORT_OPTIONS = [
   { value: "updatedAt", label: "Dernière modification", icon: Calendar },
 ] as const;
 
-export const GlossaryContent: React.FC = () => {
+interface GlossaryContentProps {
+  initialTerms?: GlossaryTerm[];
+}
+
+export const GlossaryContent: React.FC<GlossaryContentProps> = ({
+  initialTerms = [],
+}) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
   // États principaux
-  const [terms, setTerms] = useState<GlossaryTerm[]>([]);
+  const [terms, setTerms] = useState<GlossaryTerm[]>(initialTerms);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [pagination, setPagination] = useState<PaginationData>({
@@ -164,8 +258,19 @@ export const GlossaryContent: React.FC = () => {
   // États pour les modals
   const [openForm, setOpenForm] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [openBulkDelete, setOpenBulkDelete] = useState(false);
+  const [openOrderEdit, setOpenOrderEdit] = useState(false);
   const [selectedTerm, setSelectedTerm] = useState<GlossaryTerm | null>(null);
   const [viewingTerm, setViewingTerm] = useState<GlossaryTerm | null>(null);
+
+  // États pour l'édition en masse
+  const [openBulkEdit, setOpenBulkEdit] = useState(false);
+
+  // États pour la sélection multiple et l'ordre
+  const [selectedTerms, setSelectedTerms] = useState<Set<string>>(new Set());
+  const [editingOrder, setEditingOrder] = useState<string | null>(null);
+  const [tempOrder, setTempOrder] = useState<number>(0);
+  const [bulkOrderMode, setBulkOrderMode] = useState(false);
 
   // Initialisation des filtres depuis l'URL
   useEffect(() => {
@@ -323,7 +428,23 @@ export const GlossaryContent: React.FC = () => {
     });
   }, []);
 
-  // Gestion suppression
+  // Gestion de l'édition en masse - NOUVEAU
+  const handleBulkEditSuccess = useCallback((updatedTerms: GlossaryTerm[]) => {
+    setTerms((prevTerms) => {
+      // Fusionner les termes mis à jour avec l'état existant
+      const termMap = new Map(prevTerms.map(term => [term.id, term]));
+      updatedTerms.forEach(term => {
+        termMap.set(term.id, term);
+      });
+      return Array.from(termMap.values()).sort((a, b) => a.order - b.order);
+    });
+    setOpenBulkEdit(false);
+    toast.success("Édition en masse terminée", {
+      description: `${updatedTerms.length} terme(s) traité(s) avec succès`,
+    });
+  }, []);
+
+  // Gestion suppression unique
   const handleDelete = useCallback(async () => {
     if (!selectedTerm) return;
 
@@ -364,6 +485,150 @@ export const GlossaryContent: React.FC = () => {
       setSelectedTerm(null);
     }
   }, [selectedTerm]);
+
+  // Gestion suppression multiple
+  const handleBulkDelete = useCallback(async () => {
+    if (selectedTerms.size === 0) return;
+
+    try {
+      const termIds = Array.from(selectedTerms);
+      const response = await fetch("/api/glossary/bulk-delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ termIds }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Erreur lors de la suppression");
+      }
+
+      if (result.success) {
+        setTerms((prevTerms) =>
+          prevTerms.filter((term) => !selectedTerms.has(term.id))
+        );
+        toast.success("Termes supprimés", {
+          description: `${selectedTerms.size} terme(s) supprimé(s) avec succès`,
+        });
+        setSelectedTerms(new Set());
+      } else {
+        throw new Error("Échec de la suppression");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la suppression multiple:", error);
+      toast.error("Erreur de suppression", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "Impossible de supprimer les termes",
+      });
+    } finally {
+      setOpenBulkDelete(false);
+    }
+  }, [selectedTerms]);
+
+  // Modification de l'ordre d'un terme
+  const handleUpdateOrder = useCallback(async (termId: string, newOrder: number) => {
+    try {
+      const response = await fetch(`/api/glossary/${termId}/order`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ order: newOrder }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Erreur lors de la mise à jour");
+      }
+
+      if (result.success && result.data) {
+        setTerms((prevTerms) =>
+          prevTerms.map((term) =>
+            term.id === termId ? { ...term, order: newOrder } : term
+          )
+        );
+        toast.success("Ordre mis à jour", {
+          description: "L'ordre du terme a été modifié avec succès",
+        });
+      } else {
+        throw new Error("Échec de la mise à jour");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de l'ordre:", error);
+      toast.error("Erreur de mise à jour", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "Impossible de modifier l'ordre",
+      });
+    }
+  }, []);
+
+  // Déplacement rapide de l'ordre
+  const handleQuickOrderChange = useCallback(
+    async (termId: string, direction: "up" | "down") => {
+      const term = terms.find((t) => t.id === termId);
+      if (!term) return;
+
+      const newOrder = direction === "up" ? term.order - 1 : term.order + 1;
+      if (newOrder < 1) return;
+
+      await handleUpdateOrder(termId, newOrder);
+    },
+    [terms, handleUpdateOrder]
+  );
+
+  // Modification de l'ordre par saisie directe
+  const handleDirectOrderEdit = useCallback(
+    (termId: string) => {
+      const term = terms.find((t) => t.id === termId);
+      if (term) {
+        setEditingOrder(termId);
+        setTempOrder(term.order);
+      }
+    },
+    [terms]
+  );
+
+  const saveOrderEdit = useCallback(async () => {
+    if (editingOrder && tempOrder > 0) {
+      await handleUpdateOrder(editingOrder, tempOrder);
+      setEditingOrder(null);
+      setTempOrder(0);
+    }
+  }, [editingOrder, tempOrder, handleUpdateOrder]);
+
+  const cancelOrderEdit = useCallback(() => {
+    setEditingOrder(null);
+    setTempOrder(0);
+  }, []);
+
+  // Gestion sélection multiple
+  const handleSelectTerm = useCallback((termId: string) => {
+    setSelectedTerms((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(termId)) {
+        newSet.delete(termId);
+      } else {
+        newSet.add(termId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const handleSelectAll = useCallback(() => {
+    if (selectedTerms.size === terms.length) {
+      setSelectedTerms(new Set());
+    } else {
+      setSelectedTerms(new Set(terms.map((term) => term.id)));
+    }
+  }, [selectedTerms.size, terms]);
 
   // Reset filtres
   const resetFilters = useCallback(() => {
@@ -443,6 +708,29 @@ export const GlossaryContent: React.FC = () => {
               Recherche et filtres
             </div>
             <div className="flex items-center gap-2">
+              {selectedTerms.size > 0 && (
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">
+                    {selectedTerms.size} sélectionné(s)
+                  </Badge>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setOpenBulkDelete(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Supprimer
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedTerms(new Set())}
+                  >
+                    Désélectionner
+                  </Button>
+                </div>
+              )}
               <Button
                 variant="outline"
                 size="sm"
@@ -464,6 +752,15 @@ export const GlossaryContent: React.FC = () => {
               >
                 <Plus className="h-4 w-4" />
                 Ajouter un terme
+              </Button>
+              {/* NOUVEAU : Bouton édition en masse */}
+              <Button
+                onClick={() => setOpenBulkEdit(true)}
+                variant="secondary"
+                className="flex items-center gap-2"
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                Édition en masse
               </Button>
             </div>
           </CardTitle>
@@ -490,7 +787,7 @@ export const GlossaryContent: React.FC = () => {
           </div>
 
           {/* Options de filtrage */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
             {/* Type */}
             <Select
               value={filters.type}
@@ -570,6 +867,18 @@ export const GlossaryContent: React.FC = () => {
                   <SortDesc className="h-4 w-4" />
                 )}
               </Button>
+            </div>
+
+            {/* Mode gestion d'ordre */}
+            <div className="flex items-center space-x-2 px-3 py-2 border rounded-md">
+              <Switch
+                id="bulkOrderMode"
+                checked={bulkOrderMode}
+                onCheckedChange={setBulkOrderMode}
+              />
+              <Label htmlFor="bulkOrderMode" className="text-sm">
+                Gérer ordre
+              </Label>
             </div>
 
             {/* Actions */}
@@ -658,6 +967,35 @@ export const GlossaryContent: React.FC = () => {
         </Card>
       ) : (
         <>
+          {/* Actions de sélection multiple */}
+          {terms.length > 0 && (
+            <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={selectedTerms.size === terms.length}
+                    onCheckedChange={handleSelectAll}
+                    id="select-all"
+                  />
+                  <Label htmlFor="select-all" className="text-sm">
+                    Tout sélectionner
+                  </Label>
+                </div>
+                {selectedTerms.size > 0 && (
+                  <Badge variant="secondary">
+                    {selectedTerms.size} terme(s) sélectionné(s)
+                  </Badge>
+                )}
+              </div>
+              {bulkOrderMode && (
+                <div className="text-sm text-muted-foreground">
+                  Mode gestion d'ordre activé - Utilisez les contrôles d'ordre
+                  sur chaque terme
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Résultats */}
           <div className="flex justify-between items-center">
             <p className="text-gray-600">
@@ -679,31 +1017,90 @@ export const GlossaryContent: React.FC = () => {
             {terms.map((term) => (
               <Card
                 key={term.id}
-                className="group hover:shadow-lg transition-all duration-200 cursor-pointer"
+                className={`group hover:shadow-lg transition-all duration-200 ${
+                  selectedTerms.has(term.id) ? "ring-2 ring-blue-500" : ""
+                }`}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <CardTitle className="text-lg font-semibold truncate group-hover:text-blue-600 transition-colors">
-                        {term.term}
-                      </CardTitle>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge
-                          className={
-                            TERM_TYPE_COLORS[
-                              term.type as keyof typeof TERM_TYPE_COLORS
-                            ] || TERM_TYPE_COLORS.TERM
-                          }
-                        >
-                          {GLOSSARY_TERM_TYPES.find(
-                            (t) => t.value === term.type
-                          )?.label || term.type}
-                        </Badge>
-                        {!term.isActive && (
-                          <Badge variant="secondary" className="text-xs">
-                            Inactif
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      {/* Checkbox de sélection */}
+                      <Checkbox
+                        checked={selectedTerms.has(term.id)}
+                        onCheckedChange={() => handleSelectTerm(term.id)}
+                        className="mt-1"
+                      />
+
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-lg font-semibold truncate group-hover:text-blue-600 transition-colors">
+                          {term.term}
+                        </CardTitle>
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                          <Badge
+                            className={
+                              TERM_TYPE_COLORS[
+                                term.type as keyof typeof TERM_TYPE_COLORS
+                              ] || TERM_TYPE_COLORS.TERM
+                            }
+                          >
+                            {GLOSSARY_TERM_TYPES.find(
+                              (t) => t.value === term.type
+                            )?.label || term.type}
                           </Badge>
-                        )}
+                          {!term.isActive && (
+                            <Badge variant="secondary" className="text-xs">
+                              Inactif
+                            </Badge>
+                          )}
+                          {/* Affichage de l'ordre */}
+                          <div className="flex items-center gap-1">
+                            {editingOrder === term.id ? (
+                              <div className="flex items-center gap-1">
+                                <Hash className="h-3 w-3" />
+                                <Input
+                                  type="number"
+                                  value={tempOrder}
+                                  onChange={(e) =>
+                                    setTempOrder(parseInt(e.target.value) || 0)
+                                  }
+                                  className="h-6 w-16 text-xs px-1"
+                                  min="1"
+                                  onKeyPress={(e) => {
+                                    if (e.key === "Enter") saveOrderEdit();
+                                    if (e.key === "Escape") cancelOrderEdit();
+                                  }}
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0"
+                                  onClick={saveOrderEdit}
+                                >
+                                  <Check className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0"
+                                  onClick={cancelOrderEdit}
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <Badge
+                                variant="outline"
+                                className="text-xs cursor-pointer"
+                                onClick={() =>
+                                  bulkOrderMode && handleDirectOrderEdit(term.id)
+                                }
+                              >
+                                <Hash className="h-3 w-3 mr-1" />
+                                {term.order}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -729,6 +1126,33 @@ export const GlossaryContent: React.FC = () => {
                           Copier
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
+                        {bulkOrderMode && (
+                          <>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleQuickOrderChange(term.id, "up")
+                              }
+                            >
+                              <ArrowUp className="h-4 w-4 mr-2" />
+                              Monter
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleQuickOrderChange(term.id, "down")
+                              }
+                            >
+                              <ArrowDown className="h-4 w-4 mr-2" />
+                              Descendre
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDirectOrderEdit(term.id)}
+                            >
+                              <Hash className="h-4 w-4 mr-2" />
+                              Modifier ordre
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                          </>
+                        )}
                         <DropdownMenuItem
                           onClick={() => {
                             setSelectedTerm(term);
@@ -800,6 +1224,32 @@ export const GlossaryContent: React.FC = () => {
                       <Pencil className="h-4 w-4 mr-1" />
                       Modifier
                     </Button>
+                    {bulkOrderMode && (
+                      <div className="flex gap-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="px-2"
+                          onClick={() =>
+                            handleQuickOrderChange(term.id, "up")
+                          }
+                          title="Monter"
+                        >
+                          <ArrowUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="px-2"
+                          onClick={() =>
+                            handleQuickOrderChange(term.id, "down")
+                          }
+                          title="Descendre"
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -875,13 +1325,23 @@ export const GlossaryContent: React.FC = () => {
       {/* Modals */}
       <GlossaryForm
         open={openForm}
-        onOpenChange={(open) => {
+        onOpenChange={(open: boolean | ((prevState: boolean) => boolean)) => {
           setOpenForm(open);
           if (!open) setSelectedTerm(null);
         }}
         term={selectedTerm}
         onSuccess={selectedTerm ? handleTermUpdated : handleTermCreated}
       />
+
+      {/* NOUVEAU : Modal d'édition en masse */}
+      <GlossaryTable
+        open={openBulkEdit}
+        onOpenChange={setOpenBulkEdit}
+        onSuccess={handleBulkEditSuccess}
+        initialTerms={terms}
+      />
+
+
 
       <DeleteConfirmation
         open={openDelete}
@@ -898,36 +1358,39 @@ export const GlossaryContent: React.FC = () => {
         }
       />
 
+      <DeleteConfirmation
+        open={openBulkDelete}
+        onOpenChange={setOpenBulkDelete}
+        onConfirm={handleBulkDelete}
+        title="Supprimer les termes sélectionnés"
+        message={`Êtes-vous sûr de vouloir supprimer ${selectedTerms.size} terme(s) ? Cette action est irréversible.`}
+      />
+
       {/* Modal de visualisation */}
       {viewingTerm && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <Card className="max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-2xl">{viewingTerm.term}</CardTitle>
-                  <Badge
-                    className={
-                      TERM_TYPE_COLORS[
-                        viewingTerm.type as keyof typeof TERM_TYPE_COLORS
-                      ] || TERM_TYPE_COLORS.TERM
-                    }
-                  >
-                    {GLOSSARY_TERM_TYPES.find(
-                      (t) => t.value === viewingTerm.type
-                    )?.label || viewingTerm.type}
-                  </Badge>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setViewingTerm(null)}
+        <Dialog open={!!viewingTerm} onOpenChange={() => setViewingTerm(null)}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-2xl flex items-center gap-2">
+                {viewingTerm.term}
+                <Badge
+                  className={
+                    TERM_TYPE_COLORS[
+                      viewingTerm.type as keyof typeof TERM_TYPE_COLORS
+                    ] || TERM_TYPE_COLORS.TERM
+                  }
                 >
-                  ×
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
+                  {GLOSSARY_TERM_TYPES.find(
+                    (t) => t.value === viewingTerm.type
+                  )?.label || viewingTerm.type}
+                </Badge>
+              </DialogTitle>
+              <DialogDescription>
+                Détails du terme #{viewingTerm.order}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4">
               <div>
                 <Label className="text-sm font-medium">Description</Label>
                 <p className="mt-1 text-sm text-gray-600">
@@ -974,30 +1437,35 @@ export const GlossaryContent: React.FC = () => {
                   </p>
                 </div>
               </div>
+            </div>
 
-              <div className="flex gap-2 pt-4">
-                <Button
-                  onClick={() => {
-                    setSelectedTerm(viewingTerm);
-                    setViewingTerm(null);
-                    setOpenForm(true);
-                  }}
-                >
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Modifier
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => copyToClipboard(viewingTerm.term)}
-                >
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copier
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+
+
+
+            <DialogFooter className="gap-2">
+              <Button
+                onClick={() => {
+                  setSelectedTerm(viewingTerm);
+                  setViewingTerm(null);
+                  setOpenForm(true);
+                }}
+              >
+                <Pencil className="h-4 w-4 mr-2" />
+                Modifier
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => copyToClipboard(viewingTerm.term)}
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Copier
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );
 };
+
+export default GlossaryContent;

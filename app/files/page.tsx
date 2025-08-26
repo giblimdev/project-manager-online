@@ -3,23 +3,196 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { FileTable } from "@/components/files/FileTable";
 import { FileForm } from "@/components/files/FileForm";
 import { useProjectStore } from "@/stores/useSelectedProjectStore";
 import { useSession } from "@/lib/auth/auth-client";
 import { FileType } from "@/lib/generated/prisma/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, Folder, FileText, Plus, Edit, Trash2 } from "lucide-react";
 
-// Utilitaire pour extraire les dossiers existants d'une liste de fichiers
-function getAvailableFolders(files: any[]) {
-  // Uniquement les dossiers qui ne sont pas supprimés et qui appartiennent au projet courant
-  return files.filter(file => file.isFolder).map(f => ({
-    id: f.id,
-    name: f.name,
-    isFolder: true,
-    path: f.path ?? "",
-  }));
+// Utilitaire pour organiser les fichiers en structure arborescente
+function buildFileTree(files: any[]) {
+  const fileMap = new Map();
+  const tree: any[] = [];
+
+  // Créer un map pour chaque fichier
+  files.forEach((file) => {
+    fileMap.set(file.id, { ...file, children: [] });
+  });
+
+  // Parcourir à nouveau pour assigner les enfants
+  files.forEach((file) => {
+    if (file.parentId) {
+      const parent = fileMap.get(file.parentId);
+      if (parent) {
+        parent.children.push(fileMap.get(file.id));
+      }
+    } else {
+      tree.push(fileMap.get(file.id));
+    }
+  });
+
+  return tree;
 }
+
+// Composant pour afficher un élément de fichier/dossier
+const FileItem = ({ file, level = 0, onAction }: { file: any; level?: number; onAction: (action: string, file?: any) => void }) => {
+  const marginLeft = Math.min(level, 6) * 16; // Limiter l'indentation pour les petits écrans
+
+  return (
+    <div className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-md group" style={{ marginLeft: `${marginLeft}px` }}>
+      <div className="flex items-center gap-2 min-w-0 flex-1">
+        {file.isFolder ? (
+          <Folder className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 flex-shrink-0" />
+        ) : (
+          <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 flex-shrink-0" />
+        )}
+        <span className="truncate text-sm sm:text-base">{file.name}</span>
+      </div>
+      
+      <div className="flex items-center gap-1 flex-shrink-0">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => onAction("edit", file)}
+          className="h-7 w-7 p-0 hidden xs:inline-flex"
+          title="Edit"
+        >
+          <Edit className="h-3.5 w-3.5" />
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => onAction("delete", file)}
+          className="h-7 w-7 p-0 text-destructive hidden xs:inline-flex"
+          title="Delete"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+        
+        {/* Menu déroulant pour tous les écrans mais prioritaire sur mobile */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 xs:ml-1">
+              <MoreHorizontal className="h-3.5 w-3.5" />
+              <span className="sr-only">Actions</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem onClick={() => onAction("edit", file)} className="cursor-pointer">
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => onAction("delete", file)}
+              className="text-destructive cursor-pointer"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+};
+
+// Composant récursif pour afficher l'arborescence
+const FileTree = ({ files, level = 0, onAction }: { files: any[]; level?: number; onAction: (action: string, file?: any) => void }) => {
+  return (
+    <>
+      {files.map((file) => (
+        <div key={file.id}>
+          {file.isFolder ? (
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value={file.id} className="border-b-0">
+                <div className="flex items-center justify-between">
+                  <AccordionTrigger className="hover:no-underline py-2 flex-1 text-left">
+                    <div className="flex items-center gap-2">
+                      <Folder className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 flex-shrink-0" />
+                      <span className="text-sm sm:text-base truncate">{file.name}</span>
+                    </div>
+                  </AccordionTrigger>
+                  
+                  <div className="flex items-center gap-1 pr-2 flex-shrink-0">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onAction("edit", file);
+                      }}
+                      className="h-7 w-7 p-0 hidden xs:inline-flex"
+                      title="Edit"
+                    >
+                      <Edit className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onAction("delete", file);
+                      }}
+                      className="h-7 w-7 p-0 text-destructive hidden xs:inline-flex"
+                      title="Delete"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                    
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0 xs:ml-1">
+                          <MoreHorizontal className="h-3.5 w-3.5" />
+                          <span className="sr-only">Actions</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem onClick={() => onAction("edit", file)} className="cursor-pointer">
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => onAction("delete", file)}
+                          className="text-destructive cursor-pointer"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+                
+                <AccordionContent className="ml-2">
+                  <FileTree 
+                    files={file.children} 
+                    level={level + 1} 
+                    onAction={onAction} 
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          ) : (
+            <FileItem file={file} level={level} onAction={onAction} />
+          )}
+        </div>
+      ))}
+    </>
+  );
+};
 
 export default function FilesPage() {
   const { projectData, isLoading: isProjectLoading } = useProjectStore();
@@ -34,6 +207,9 @@ export default function FilesPage() {
 
   const projectId = projectData?.id;
   const userId = sessionData?.user?.id;
+
+  // Construire l'arborescence des fichiers
+  const fileTree = useMemo(() => buildFileTree(files), [files]);
 
   // Dossiers disponibles pour la hiérarchie (sauf si édition: pas le fichier actuel lui-même)
   const availableParents = useMemo(
@@ -113,7 +289,7 @@ export default function FilesPage() {
 
   if (isSessionLoading || isProjectLoading) {
     return (
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto py-6 px-4 sm:px-6">
         <Skeleton className="h-8 w-32 mb-6" />
         <div className="space-y-4">
           {[...Array(5)].map((_, i) => (
@@ -126,26 +302,45 @@ export default function FilesPage() {
 
   if (!projectId) {
     return (
-      <div className="container mx-auto py-8 text-center">
-        <p>Please select a project first</p>
+      <div className="container mx-auto py-8 px-4 sm:px-6 text-center">
+        <p className="text-muted-foreground">Please select a project first</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex justify-between items-center mb-6">
+    <div className="container mx-auto py-6 px-4 sm:px-6 max-w-5xl">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold">Project Files</h1>
-        <Button onClick={() => handleFileAction("create")}>
-          Create New File
+        <Button 
+          onClick={() => handleFileAction("create")} 
+          className="w-full sm:w-auto flex items-center gap-2"
+          size="sm"
+        >
+          <Plus className="h-4 w-4" />
+          Create New
         </Button>
       </div>
 
-      <FileTable
-        files={files}
-        loading={loading}
-        onAction={handleFileAction}
-      />
+      {loading ? (
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-12 w-full" />
+          ))}
+        </div>
+      ) : (
+        <div className="border rounded-lg p-4 bg-card">
+          {fileTree.length > 0 ? (
+            <FileTree files={fileTree} onAction={handleFileAction} />
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <Folder className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
+              <p>No files found.</p>
+              <p className="text-sm mt-1">Create your first file or folder to get started.</p>
+            </div>
+          )}
+        </div>
+      )}
 
       <FileForm
         open={openForm}
