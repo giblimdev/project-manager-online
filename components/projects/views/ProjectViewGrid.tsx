@@ -110,7 +110,7 @@ export const ProjectsGridViewItem: React.FC<ProjectsGridViewItemProps> = ({
       <CardContent className="p-3 sm:p-2 bg-gradient-to-br from-white/95 via-gray-50/90 to-blue-50/80">
         <div className="space-y-1">
           {/* Header avec badges colorés */}
-          <div className="bg-emerald-300 p-2 mflex items-start justify-between">
+          <div className="bg-gradient-to-br from-violet-600 via-purple-600 to-cyan-500 rounded-xl p-2 mflex items-start justify-between">
             <div className="flex items-center
              space-x-3 min-w-0 flex-1">
               <div className={`
@@ -228,7 +228,7 @@ export const ProjectsGridViewItem: React.FC<ProjectsGridViewItemProps> = ({
                 className="h-7 px-3 sm:h-8 sm:px-3 text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-100/90 hover:to-blue-200/90 hover:text-blue-800 hover:shadow-lg border border-blue-200/70 rounded-lg font-medium"
               >
                 <Edit className="h-3.5 w-3.5 mr-1.5" />
-                <span className="hidden sm:inline">Éditer</span>
+                <span className="hidden sm:inline">Édit</span>
               </Button>
               <Button
                 variant="ghost"
@@ -241,9 +241,9 @@ export const ProjectsGridViewItem: React.FC<ProjectsGridViewItemProps> = ({
                 className="h-7 px-3 sm:h-8 sm:px-3 text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-gradient-to-r hover:from-red-100/90 hover:to-red-200/90 hover:text-red-800 hover:shadow-lg border border-red-200/70 rounded-lg font-medium"
               >
                 <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                <span className="hidden sm:inline">Suppr.</span>
+                <span className="hidden lg:inline">Sup.</span>
               </Button>
-            </div>
+            </div> 
           </div>
         </div>
       </CardContent>

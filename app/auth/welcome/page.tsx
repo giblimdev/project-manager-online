@@ -37,14 +37,6 @@ export default function WelcomePage() {
     }
   }, [session, isPending, router]);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      router.push("/auth/signin");
-    } catch (error) {
-      console.error("Erreur lors de la déconnexion:", error);
-    }
-  };
 
   if (isPending) {
     return (
@@ -70,7 +62,7 @@ export default function WelcomePage() {
       title: "Nouveau Projet",
       description: "Créer un nouveau projet",
       icon: FolderPlus,
-      href: "/projects/new",
+      href: "/projects",
       color: "bg-blue-500 hover:bg-blue-600",
       variant: "default" as const,
     },
@@ -79,7 +71,7 @@ export default function WelcomePage() {
       title: "Créer une Initiative",
       description: "Lancer une nouvelle initiative",
       icon: Target,
-      href: "/initiatives/new",
+      href: "/projects",
       color: "bg-green-500 hover:bg-green-600",
       variant: "default" as const,
     },
@@ -88,7 +80,7 @@ export default function WelcomePage() {
       title: "Nouvelle Tâche",
       description: "Ajouter une tâche rapide",
       icon: CheckSquare,
-      href: "/tasks/new",
+      href: "/projects",
       color: "bg-purple-500 hover:bg-purple-600",
       variant: "default" as const,
     },
@@ -97,7 +89,7 @@ export default function WelcomePage() {
       title: "Sprint Planning",
       description: "Planifier un nouveau sprint",
       icon: Calendar,
-      href: "/sprints/new",
+      href: "/projects",
       color: "bg-orange-500 hover:bg-orange-600",
       variant: "default" as const,
     },
@@ -125,7 +117,7 @@ export default function WelcomePage() {
       title: "Tâches Assignées",
       description: "Vos tâches en attente",
       icon: CheckSquare,
-      href: "/tasks/assigned",
+      href: "/projects",
       count: "8 tâches",
     },
     {
@@ -133,7 +125,7 @@ export default function WelcomePage() {
       title: "Rapports",
       description: "Analytics et statistiques",
       icon: BarChart3,
-      href: "/services",
+      href: "/projects",
       count: "Vue d'ensemble",
     },
   ];
@@ -147,9 +139,6 @@ export default function WelcomePage() {
             <h1 className="text-xl font-semibold text-gray-900">
               Project Manager
             </h1>
-            <Button onClick={handleSignOut} variant="outline" size="sm">
-              Déconnexion
-            </Button>
           </div>
         </div>
       </div>

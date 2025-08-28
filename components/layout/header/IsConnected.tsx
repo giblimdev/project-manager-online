@@ -51,7 +51,7 @@ export default function IsConnected(): JSX.Element {
     try {
       await signOut();
       setIsDropdownOpen(false);
-      router.push("/");
+      router.push("/auth/goodbye");
       router.refresh();
     } catch (error) {
       console.error("Erreur lors de la déconnexion:", error);
