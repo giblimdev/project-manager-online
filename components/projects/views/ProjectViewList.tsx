@@ -1,547 +1,283 @@
-// components/projects/views/ProjectViewList.tsx
-"use client";
+/**
+ * RÔLE : Composant d'affichage d'une ligne projet en mode liste
+ * RESPONSABILITÉS :
+ * - Visuel moderne, responsive (flex, truncation, badges)
+ * - Affiche principal (nom, clé, description, statut, visibilité, dates)
+ * - Actions CRUD (Edit, Delete, Select, Reorder) déléguées via callbacks typés
+ * - Design cohérent shadcn/ui et gestion des états
+ * - Interface adaptative pour mobile, tablette et desktop
+ *
+ * COMPOSANTS UTILISÉS :
+ * - shadcn/ui: Button, Badge
+ * - lucide-react: Edit, Trash2, ChevronUp, ChevronDown, ExternalLink,...
+ * - React hooks: JSX
+ *
+ * PROPS :
+ * - project: ProjectSimple (schéma strict)
+ * - index: number
+ * - isSelected: boolean
+ * - isReordering: boolean
+ * - loading: boolean
+ * - total: number (total projets - pour désactiver boutons)
+ * - onEdit: (event, project) => Promise<void>
+ * - onDelete: (event, projectId) => Promise<void>
+ * - onSelect: (project) => void
+ * - onReorder: (event, projectId, direction) => Promise<void>
+ * - getStatusConfig: (status, isActive) => StatusConfig
+ * - getVisibilityConfig: (visibility) => VisibilityConfig
+ * - formatDate: (date) => string
+ */
 
-import React from "react";
-import Link from "next/link";
+import React, { JSX } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   ChevronUp,
   ChevronDown,
   Edit,
   Trash2,
-  Calendar,
-  Users,
-  Globe,
-  Lock,
-  Building,
-  TrendingUp,
-  Clock,
-  AlertCircle,
   ExternalLink,
+  Loader2,
+  MoreVertical,
 } from "lucide-react";
-import { moveItemUp, moveItemDown } from "@/utils/order";
-import { deleteItemUtil } from "@/utils/delete-item";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { ProjectSimple, StatusConfig, VisibilityConfig } from "@/components/projects/ProjectsList";
 
-// Interface basée exactement sur votre schéma Prisma complet
-interface ProjectWithRelations {
-  id: string;
-  name: string;
-  description: string | null;
-  slug: string;
-  key: string;
-  order: number;
-  startDate: Date | null;
-  endDate: Date | null;
-  status: string;
-  visibility: string;
-  settings: any;
-  metadata: any;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-
-  // Relations selon votre schéma Prisma User complet
-  user: Array<{
-    id: string;
-    name: string | null;
-    email: string;
-    emailVerified: boolean; // Champ obligatoire du schéma
-    image: string | null;
-    username?: string | null;
-    firstName?: string | null;
-    lastName?: string | null;
-    bio?: string | null;
-    timezone?: string | null;
-    preferences?: any;
-    isActive: boolean;
-    lastLoginAt?: Date | null;
-    twoFactorEnabled?: boolean;
-  }>;
-
-  // Relations ProjectMember selon le schéma
-  members: Array<{
-    id: string;
-    role:
-      | "ADMIN"
-      | "PRODUCT_OWNER"
-      | "SCRUM_MASTER"
-      | "DEVELOPER"
-      | "STAKEHOLDER"
-      | "VIEWER";
-    joinedAt: Date;
-    isActive: boolean;
-    user: {
-      id: string;
-      name: string | null;
-      email: string;
-      emailVerified: boolean; // Champ obligatoire du schéma
-      image: string | null;
-      username?: string | null;
-      firstName?: string | null;
-      lastName?: string | null;
-      bio?: string | null;
-      timezone?: string | null;
-      preferences?: any;
-      isActive: boolean;
-    };
-  }>;
-
-  // Compteurs des relations
-  _count?: {
-    user?: number;
-    members?: number;
-    initiatives?: number;
-    features?: number;
-    sprints?: number;
-    files?: number;
-    channels?: number;
-    templates?: number;
-  };
+interface ProjectsListViewItemProps {
+  project: ProjectSimple;
+  index: number;
+  isSelected: boolean;
+  isReordering: boolean;
+  loading: boolean;
+  total: number;
+  onEdit: (event: React.MouseEvent, project: ProjectSimple) => Promise<void>;
+  onDelete: (event: React.MouseEvent, projectId: string) => Promise<void>;
+  onSelect: (project: ProjectSimple) => void;
+  onReorder: (
+    event: React.MouseEvent,
+    projectId: string,
+    direction: "up" | "down"
+  ) => Promise<void>;
+  getStatusConfig: (status: string, isActive: boolean) => StatusConfig;
+  getVisibilityConfig: (visibility: string) => VisibilityConfig;
+  formatDate: (date: Date | null) => string;
 }
 
-export interface ProjectViewListProps {
-  projects: ProjectWithRelations[];
-  onEdit: (project: ProjectWithRelations) => void;
-  onRefresh: () => void;
-}
-
-export const ProjectViewList: React.FC<ProjectViewListProps> = ({
-  projects,
+export const ProjectsListViewItem: React.FC<ProjectsListViewItemProps> = ({
+  project,
+  index,
+  isSelected,
+  isReordering,
+  loading,
+  total,
   onEdit,
-  onRefresh,
-}) => {
-  const handleMoveUp = async (e: React.MouseEvent, projectId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      await moveItemUp("projects", projectId);
-      onRefresh();
-      toast.success("Projet déplacé vers le haut");
-    } catch (error) {
-      toast.error("Impossible de déplacer le projet");
-    }
-  };
-
-  const handleMoveDown = async (e: React.MouseEvent, projectId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      await moveItemDown("projects", projectId);
-      onRefresh();
-      toast.success("Projet déplacé vers le bas");
-    } catch (error) {
-      toast.error("Impossible de déplacer le projet");
-    }
-  };
-
-  const handleEdit = (e: React.MouseEvent, project: ProjectWithRelations) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onEdit(project);
-  };
-
-  const handleDelete = async (e: React.MouseEvent, projectId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (
-      !confirm(
-        "Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible."
-      )
-    )
-      return;
-
-    try {
-      await deleteItemUtil("projects", projectId);
-      onRefresh();
-      toast.success("Projet supprimé avec succès");
-    } catch (error) {
-      toast.error("Impossible de supprimer le projet");
-    }
-  };
-
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case "ACTIVE":
-        return {
-          color: "bg-green-100 text-green-800 border-green-200",
-          label: "Actif",
-          icon: <TrendingUp className="h-3 w-3" />,
-        };
-      case "COMPLETED":
-        return {
-          color: "bg-blue-100 text-blue-800 border-blue-200",
-          label: "Terminé",
-          icon: <Clock className="h-3 w-3" />,
-        };
-      case "CANCELLED":
-        return {
-          color: "bg-red-100 text-red-800 border-red-200",
-          label: "Annulé",
-          icon: <AlertCircle className="h-3 w-3" />,
-        };
-      case "ON_HOLD":
-        return {
-          color: "bg-yellow-100 text-yellow-800 border-yellow-200",
-          label: "En pause",
-          icon: <Clock className="h-3 w-3" />,
-        };
-      default:
-        return {
-          color: "bg-gray-100 text-gray-800 border-gray-200",
-          label: status,
-          icon: <AlertCircle className="h-3 w-3" />,
-        };
-    }
-  };
-
-  const getVisibilityConfig = (visibility: string) => {
-    switch (visibility) {
-      case "PUBLIC":
-        return {
-          icon: <Globe className="h-4 w-4" />,
-          label: "Public",
-          color: "text-blue-600",
-        };
-      case "PRIVATE":
-        return {
-          icon: <Lock className="h-4 w-4" />,
-          label: "Privé",
-          color: "text-gray-600",
-        };
-      case "INTERNAL":
-        return {
-          icon: <Building className="h-4 w-4" />,
-          label: "Interne",
-          color: "text-orange-600",
-        };
-      default:
-        return {
-          icon: <Lock className="h-4 w-4" />,
-          label: "Privé",
-          color: "text-gray-600",
-        };
-    }
-  };
-
-  const getRoleLabel = (
-    role:
-      | "ADMIN"
-      | "PRODUCT_OWNER"
-      | "SCRUM_MASTER"
-      | "DEVELOPER"
-      | "STAKEHOLDER"
-      | "VIEWER"
-  ) => {
-    switch (role) {
-      case "ADMIN":
-        return "Admin";
-      case "PRODUCT_OWNER":
-        return "Product Owner";
-      case "SCRUM_MASTER":
-        return "Scrum Master";
-      case "DEVELOPER":
-        return "Développeur";
-      case "STAKEHOLDER":
-        return "Partie prenante";
-      case "VIEWER":
-        return "Observateur";
-      default:
-        return role;
-    }
-  };
-
-  const getUserDisplayName = (user: {
-    name: string | null;
-    email: string;
-    firstName?: string | null;
-    lastName?: string | null;
-  }) => {
-    if (user.firstName && user.lastName) {
-      return `${user.firstName} ${user.lastName}`;
-    }
-    return user.name || user.email;
-  };
+  onDelete,
+  onSelect,
+  onReorder,
+  getStatusConfig,
+  getVisibilityConfig,
+  formatDate,
+}): JSX.Element => {
+  const statusConfig = getStatusConfig(project.status, project.isActive);
+  const visibilityConfig = getVisibilityConfig(project.visibility);
+  const StatusIcon = statusConfig.icon;
+  const VisibilityIcon = visibilityConfig.icon;
 
   return (
-    <TooltipProvider>
-      <div className="space-y-2 p-4">
-        {projects.map((project) => {
-          const visibilityConfig = getVisibilityConfig(project.visibility);
-          const statusConfig = getStatusConfig(project.status);
+    <div
+      className={`group relative border rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center cursor-pointer transition-all
+        ${isSelected ? "border-blue-300 bg-blue-50 shadow-blue-100" : "border-gray-200 bg-white"}
+        ${loading || isReordering ? "opacity-50 cursor-not-allowed" : "hover:shadow-md"}
+        ${isReordering ? "ring-2 ring-blue-300 shadow-lg" : ""}
+        `}
+      onClick={() => !loading && !isReordering && onSelect(project)}
+    >
+      {/* Ligne principale - Mobile et Desktop */}
+      <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
+        {/* Icône principale */}
+        <div className="flex-shrink-0">
+          <div
+            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center
+            ${isSelected ? "bg-blue-200" : "bg-gray-100"}
+            ${isReordering ? "bg-blue-300" : ""}
+          `}
+          >
+            {isReordering ? (
+              <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 text-blue-700 animate-spin" />
+            ) : (
+              <VisibilityIcon
+                className={`h-4 w-4 sm:h-5 sm:w-5 ${isSelected ? "text-blue-700" : visibilityConfig.className}`}
+              />
+            )}
+          </div>
+        </div>
 
-          const activeMembers = (project.members || []).filter(
-            (member) => member.isActive
-          );
-          const activeOwners = (project.user || []).filter(
-            (owner) => owner.isActive
-          );
-
-          return (
-            <div key={project.id} className="relative group">
-              <Link href={`/projects/${project.id}`} className="block">
-                <div
-                  className={cn(
-                    "flex items-center justify-between bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer relative",
-                    !project.isActive && "opacity-75 bg-gray-50"
-                  )}
-                >
-                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <div className="bg-blue-500 text-white p-1 rounded-full">
-                      <ExternalLink className="h-3 w-3" />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4 flex-1 min-w-0">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="font-medium text-gray-900 truncate group-hover:text-blue-700 transition-colors">
-                          {project.name}
-                        </h3>
-                        <Badge
-                          variant="outline"
-                          className="text-xs font-mono shrink-0 bg-slate-50 border-slate-200"
-                        >
-                          {project.key}
-                        </Badge>
-                        <Badge
-                          className={cn(
-                            statusConfig.color,
-                            "text-xs shrink-0 flex items-center gap-1"
-                          )}
-                        >
-                          {statusConfig.icon}
-                          {statusConfig.label}
-                        </Badge>
-                        {!project.isActive && (
-                          <Badge
-                            variant="outline"
-                            className="text-xs text-red-600 border-red-200"
-                          >
-                            Inactif
-                          </Badge>
-                        )}
-                      </div>
-
-                      <p className="text-sm text-gray-600 line-clamp-1 mb-2">
-                        {project.description || "Aucune description"}
-                      </p>
-
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <div className="flex items-center space-x-1">
-                          <Users className="h-4 w-4" />
-                          <span>{activeMembers.length} membres</span>
-                        </div>
-
-                        {activeOwners.length > 0 && (
-                          <div className="flex items-center space-x-1">
-                            <Building className="h-4 w-4" />
-                            <span>
-                              {activeOwners.length === 1
-                                ? getUserDisplayName(activeOwners[0])
-                                : `${activeOwners.length} propriétaires`}
-                            </span>
-                          </div>
-                        )}
-
-                        <div
-                          className={`flex items-center space-x-1 ${visibilityConfig.color}`}
-                        >
-                          {visibilityConfig.icon}
-                          <span>{visibilityConfig.label}</span>
-                        </div>
-
-                        {project.startDate && (
-                          <div className="flex items-center space-x-1">
-                            <Calendar className="h-4 w-4" />
-                            <span>
-                              {new Date(project.startDate).toLocaleDateString(
-                                "fr-FR"
-                              )}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {project._count && (
-                      <div className="hidden lg:flex items-center space-x-6 text-sm text-gray-500">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="text-center cursor-help">
-                              <div className="font-medium text-gray-900 flex items-center gap-1">
-                                <TrendingUp className="h-4 w-4 text-blue-600" />
-                                {project._count.initiatives || 0}
-                              </div>
-                              <div className="text-xs">Initiatives</div>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Nombre d'initiatives</p>
-                          </TooltipContent>
-                        </Tooltip>
-
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="text-center cursor-help">
-                              <div className="font-medium text-gray-900 flex items-center gap-1">
-                                <Building className="h-4 w-4 text-green-600" />
-                                {project._count.features || 0}
-                              </div>
-                              <div className="text-xs">Features</div>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Nombre de fonctionnalités</p>
-                          </TooltipContent>
-                        </Tooltip>
-
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="text-center cursor-help">
-                              <div className="font-medium text-gray-900 flex items-center gap-1">
-                                <Clock className="h-4 w-4 text-purple-600" />
-                                {project._count.sprints || 0}
-                              </div>
-                              <div className="text-xs">Sprints</div>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Nombre de sprints</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                    )}
-
-                    {activeMembers.length > 0 && (
-                      <div className="flex -space-x-2">
-                        {activeMembers.slice(0, 3).map((member) => (
-                          <Tooltip key={member.id}>
-                            <TooltipTrigger asChild>
-                              <Avatar className="h-8 w-8 border-2 border-white shadow-sm cursor-help">
-                                <AvatarImage
-                                  src={member.user.image || undefined}
-                                />
-                                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white text-xs">
-                                  {member.user.name?.charAt(0) ||
-                                    member.user.firstName?.charAt(0) ||
-                                    member.user.email?.charAt(0) ||
-                                    "U"}
-                                </AvatarFallback>
-                              </Avatar>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>
-                                {getUserDisplayName(member.user)}
-                                <br />
-                                <span className="text-xs opacity-80">
-                                  {getRoleLabel(member.role)}
-                                </span>
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        ))}
-                        {activeMembers.length > 3 && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="h-8 w-8 bg-gray-100 rounded-full border-2 border-white flex items-center justify-center shadow-sm cursor-help">
-                                <span className="text-xs font-medium text-gray-600">
-                                  +{activeMembers.length - 3}
-                                </span>
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>
-                                Et {activeMembers.length - 3} autres membres
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </Link>
-
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center space-x-2 bg-white rounded-lg shadow-sm border border-gray-200 p-1">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:bg-gray-100"
-                      onClick={(e) => handleEdit(e, project)}
-                    >
-                      <Edit className="h-4 w-4 text-gray-600" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Modifier le projet</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:bg-gray-100"
-                      onClick={(e) => handleMoveUp(e, project.id)}
-                    >
-                      <ChevronUp className="h-4 w-4 text-gray-600" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Déplacer vers le haut</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:bg-gray-100"
-                      onClick={(e) => handleMoveDown(e, project.id)}
-                    >
-                      <ChevronDown className="h-4 w-4 text-gray-600" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Déplacer vers le bas</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:bg-red-100 text-red-600 hover:text-red-700"
-                      onClick={(e) => handleDelete(e, project.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Supprimer le projet</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
+        {/* Contenu principal */}
+        <div className="flex-1 min-w-0 space-y-1">
+          {/* Nom et clé - responsive */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 space-y-1 sm:space-y-0">
+            <h3 className="font-semibold text-gray-900 truncate text-sm sm:text-base">
+              {project.name}
+            </h3>
+            <div className="flex items-center space-x-2 flex-wrap">
+              <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded flex-shrink-0">
+                {project.key}
+              </span>
+              <Badge
+                variant={statusConfig.variant}
+                className={`${statusConfig.className} flex items-center gap-1 text-xs flex-shrink-0`}
+              >
+                <StatusIcon className="h-3 w-3" />
+                <span className="hidden xs:inline">{statusConfig.label}</span>
+                <span className="xs:hidden">{statusConfig.label.substring(0, 3)}</span>
+              </Badge>
             </div>
-          );
-        })}
+          </div>
+
+          {/* Description */}
+          <p className="text-xs sm:text-sm text-gray-600 line-clamp-1 sm:line-clamp-2">
+            {project.description || "Aucune description fournie"}
+          </p>
+
+          {/* Métadonnées - responsive */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-gray-500">
+            <span className="flex-shrink-0">#{project.order}</span>
+            <span className="hidden sm:inline flex-shrink-0">
+              Créé: {formatDate(project.createdAt)}
+            </span>
+            <span className="sm:hidden flex-shrink-0">
+              {formatDate(project.createdAt)}
+            </span>
+            <span className="flex-shrink-0">{visibilityConfig.label}</span>
+          </div>
+        </div>
       </div>
-    </TooltipProvider>
+
+      {/* Actions - responsive layout */}
+      <div className="mt-3 sm:mt-0 sm:ml-4 flex items-center justify-between sm:justify-end space-x-2 flex-shrink-0">
+        {/* Actions principales - responsive */}
+        <div className="flex items-center space-x-1 sm:space-x-2">
+          {/* Actions mobile (boutons compacts) */}
+          <div className="flex sm:hidden space-x-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(e, project);
+              }}
+              disabled={loading || isReordering}
+              className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 px-2"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect(project);
+              }}
+              disabled={loading || isReordering}
+              className="hover:bg-green-50 hover:border-green-300 hover:text-green-700 px-2"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(e, project.id);
+              }}
+              disabled={loading || isReordering}
+              className="hover:bg-red-50 hover:border-red-300 hover:text-red-700 px-2"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Actions desktop (avec texte) */}
+          <div className="hidden sm:flex space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(e, project);
+              }}
+              disabled={loading || isReordering}
+              className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700"
+            >
+              <Edit className="h-4 w-4 mr-1" /> 
+              <span className="hidden lg:inline">Éditer</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect(project);
+              }}
+              disabled={loading || isReordering}
+              className="hover:bg-green-50 hover:border-green-300 hover:text-green-700"
+            >
+              <ExternalLink className="h-4 w-4 mr-1" /> 
+              <span className="hidden lg:inline">Détails</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(e, project.id);
+              }}
+              disabled={loading || isReordering}
+              className="hover:bg-red-50 hover:border-red-300 hover:text-red-700"
+            >
+              <Trash2 className="h-4 w-4 mr-1" /> 
+              <span className="hidden lg:inline">Supprimer</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Contrôles de réorganisation */}
+        <div className="flex flex-col space-y-0.5 ml-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onReorder(e, project.id, "up");
+            }}
+            disabled={loading || isReordering || index === 0}
+            className="h-4 w-5 sm:h-5 sm:w-6 p-0 hover:bg-blue-100"
+            title="Monter"
+          >
+            {isReordering ? (
+              <Loader2 className="h-3 w-3 animate-spin" />
+            ) : (
+              <ChevronUp className="h-3 w-3" />
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onReorder(e, project.id, "down");
+            }}
+            disabled={loading || isReordering || index === total - 1}
+            className="h-4 w-5 sm:h-5 sm:w-6 p-0 hover:bg-blue-100"
+            title="Descendre"
+          >
+            {isReordering ? (
+              <Loader2 className="h-3 w-3 animate-spin" />
+            ) : (
+              <ChevronDown className="h-3 w-3" />
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };

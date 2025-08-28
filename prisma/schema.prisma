@@ -434,7 +434,7 @@ model File {
   script      String? // script du fichier
   version     Int           @default(1) // Version actuelle
   isFolder    Boolean       @default(false)
-  metadata    Json?         @default("{}")
+  metadata    Json?          @default("{}")
   tags        String[]      @default([])
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt

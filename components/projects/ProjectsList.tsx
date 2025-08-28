@@ -9,7 +9,7 @@
  * - Callbacks remontants vers la page parente pour toutes les actions
  * - Optimisation des performances avec React.memo et useCallback
  * - États de chargement et animations fluides
- * - Navigation vers les détails avec indication visuelle
+ * - Navigation vers les détails avec indication visuelle 
  * - Intégration API route /api/projects/order pour sauvegarde ordre
  * - Notifications modernes avec Sonner
  *
@@ -18,6 +18,7 @@
  * - lucide-react: PlusCircle, Edit, Trash2, ChevronUp, ChevronDown, Eye, Globe, Lock, Activity, Archive
  * - sonner: toast notifications modernes
  * - Store: useSelectedProjectStore pour la cohérence d'état
+ * - ProjectsListViewItem: composant dédié pour l'affichage en mode liste
  * - React hooks: JSX, useCallback, useMemo, memo, useState
  *
  * LIBS UTILISÉS :
@@ -57,7 +58,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-// ✅ NOUVEAU: Import Sonner pour les notifications modernes
 import { toast } from "sonner";
 import {
   PlusCircle,
@@ -86,14 +86,16 @@ import {
   Loader2,
 } from "lucide-react";
 
-// ✅ CORRECTION: Import du store cohérent avec la page
 import {
   useSelectedProjectId,
   useProjectActions,
 } from "@/stores/useSelectedProjectStore";
 
+// ✅ NOUVEAU: Import du composant séparé pour le mode liste
+import { ProjectsListViewItem } from "@/components/projects/views/ProjectViewList";
+
 // Types basés sur le schéma Prisma Project cohérents avec app/projects/page.tsx
-interface ProjectSimple {
+export interface ProjectSimple {
   id: string;
   name: string;
   description: string | null;
@@ -112,7 +114,7 @@ interface ProjectSimple {
 }
 
 // Type pour le mode d'affichage cohérent avec la page
-type ViewMode = "grid" | "list";
+export type ViewMode = "grid" | "list";
 
 // Interface pour les données de l'API route /api/projects/order
 interface ProjectOrderItem {
@@ -145,7 +147,7 @@ interface ProjectsListProps {
 }
 
 // Configuration des badges de statut moderne
-interface StatusConfig {
+export interface StatusConfig {
   variant: "default" | "secondary" | "destructive" | "outline";
   className: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -153,7 +155,7 @@ interface StatusConfig {
 }
 
 // Configuration des icônes de visibilité
-interface VisibilityConfig {
+export interface VisibilityConfig {
   icon: React.ComponentType<{ className?: string }>;
   className: string;
   label: string;
@@ -549,7 +551,7 @@ export default React.memo(function ProjectsList({
         }
       } catch (error) {
         console.error("Erreur lors de la réorganisation:", error);
-
+ 
         // Annulation de la mise à jour optimiste
         setOptimisticOrder([]);
 
@@ -747,6 +749,29 @@ export default React.memo(function ProjectsList({
                 const isSelected = selectedProjectId === project.id;
                 const isReordering = reorderingProjectId === project.id;
 
+                // ✅ NOUVEAU: Utilisation du composant séparé pour le mode liste
+                if (viewMode === "list") {
+                  return (
+                    <ProjectsListViewItem
+                      key={project.id}
+                      project={project}
+                      index={index}
+                      isSelected={isSelected}
+                      isReordering={isReordering}
+                      loading={loading || !!reorderingProjectId}
+                      total={sortedProjects.length}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      onSelect={handleProjectSelect}
+                      onReorder={handleReorder}
+                      getStatusConfig={getStatusConfig}
+                      getVisibilityConfig={getVisibilityConfig}
+                      formatDate={formatDate}
+                    />
+                  );
+                }
+
+                // ✅ MODE GRILLE - DESIGN MODERNE (inchangé)
                 return (
                   <Card
                     key={project.id}
@@ -767,268 +792,125 @@ export default React.memo(function ProjectsList({
                     onClick={() => handleProjectSelect(project)}
                   >
                     <CardContent className="p-4 sm:p-6">
-                      {viewMode === "grid" ? (
-                        // ✅ MODE GRILLE - DESIGN MODERNE
-                        <div className="space-y-4">
-                          {/* Header avec badges */}
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-center space-x-2 min-w-0 flex-1">
-                              <VisibilityIcon
-                                className={`h-4 w-4 flex-shrink-0 ${visibilityConfig.className}`}
-                              />
-                              <h3 className="font-semibold text-gray-900 truncate">
-                                {project.name}
-                              </h3>
-                            </div>
-
-                            <Badge
-                              variant={statusConfig.variant}
-                              className={`${statusConfig.className} flex items-center gap-1 text-xs font-medium px-2 py-1`}
-                            >
-                              <StatusIcon className="h-3 w-3" />
-                              {statusConfig.label}
-                            </Badge>
+                      <div className="space-y-4">
+                        {/* Header avec badges */}
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-2 min-w-0 flex-1">
+                            <VisibilityIcon
+                              className={`h-4 w-4 flex-shrink-0 ${visibilityConfig.className}`}
+                            />
+                            <h3 className="font-semibold text-gray-900 truncate">
+                              {project.name}
+                            </h3>
                           </div>
 
-                          {/* Clé et description */}
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <BarChart3 className="h-4 w-4" />
-                              <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">
-                                {project.key}
-                              </span>
-                            </div>
+                          <Badge
+                            variant={statusConfig.variant}
+                            className={`${statusConfig.className} flex items-center gap-1 text-xs font-medium px-2 py-1`}
+                          >
+                            <StatusIcon className="h-3 w-3" />
+                            {statusConfig.label}
+                          </Badge>
+                        </div>
 
-                            <p className="text-sm text-gray-600 line-clamp-2 min-h-[2.5rem]">
-                              {project.description ||
-                                "Aucune description fournie"}
-                            </p>
+                        {/* Clé et description */}
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <BarChart3 className="h-4 w-4" />
+                            <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">
+                              {project.key}
+                            </span>
                           </div>
 
-                          {/* Métadonnées */}
-                          <div className="space-y-2 pt-2 border-t border-gray-100">
-                            <div className="flex items-center gap-4 text-xs text-gray-500">
-                              <div className="flex items-center gap-1">
-                                <Settings className="h-3 w-3" />
-                                <span>#{project.order}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
-                                <span>{formatDate(project.createdAt)}</span>
-                              </div>
-                            </div>
-                          </div>
+                          <p className="text-sm text-gray-600 line-clamp-2 min-h-[2.5rem]">
+                            {project.description ||
+                              "Aucune description fournie"}
+                          </p>
+                        </div>
 
-                          {/* Actions avec animations */}
-                          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                            <div className="flex items-center space-x-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) =>
-                                  handleReorder(e, project.id, "up")
-                                }
-                                disabled={
-                                  loading ||
-                                  !!reorderingProjectId ||
-                                  index === 0
-                                }
-                                className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100"
-                                title="Monter"
-                              >
-                                {isReordering ? (
-                                  <Loader2 className="h-3 w-3 animate-spin" />
-                                ) : (
-                                  <ChevronUp className="h-3 w-3" />
-                                )}
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) =>
-                                  handleReorder(e, project.id, "down")
-                                }
-                                disabled={
-                                  loading ||
-                                  !!reorderingProjectId ||
-                                  index === sortedProjects.length - 1
-                                }
-                                className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100"
-                                title="Descendre"
-                              >
-                                {isReordering ? (
-                                  <Loader2 className="h-3 w-3 animate-spin" />
-                                ) : (
-                                  <ChevronDown className="h-3 w-3" />
-                                )}
-                              </Button>
+                        {/* Métadonnées */}
+                        <div className="space-y-2 pt-2 border-t border-gray-100">
+                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                            <div className="flex items-center gap-1">
+                              <Settings className="h-3 w-3" />
+                              <span>#{project.order}</span>
                             </div>
-
-                            <div className="flex items-center space-x-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => handleEdit(e, project)}
-                                disabled={loading || !!reorderingProjectId}
-                                className="h-7 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100 hover:text-blue-700"
-                              >
-                                <Edit className="h-3 w-3 mr-1" />
-                                Éditer
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => handleDelete(e, project.id)}
-                                disabled={loading || !!reorderingProjectId}
-                                className="h-7 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 hover:text-red-700"
-                              >
-                                <Trash2 className="h-3 w-3 mr-1" />
-                                Suppr.
-                              </Button>
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              <span>{formatDate(project.createdAt)}</span>
                             </div>
                           </div>
                         </div>
-                      ) : (
-                        // ✅ MODE LISTE - LAYOUT ÉTENDU
-                        <div className="flex items-center space-x-4">
-                          {/* Icône et info principale */}
-                          <div className="flex items-center space-x-3 flex-1 min-w-0">
-                            <div className="flex-shrink-0">
-                              <div
-                                className={`
-                                w-10 h-10 rounded-lg flex items-center justify-center
-                                ${isSelected ? "bg-blue-200" : "bg-gray-100"}
-                                ${isReordering ? "bg-blue-300" : ""}
-                              `}
-                              >
-                                {isReordering ? (
-                                  <Loader2 className="h-5 w-5 text-blue-700 animate-spin" />
-                                ) : (
-                                  <VisibilityIcon
-                                    className={`h-5 w-5 ${
-                                      isSelected
-                                        ? "text-blue-700"
-                                        : visibilityConfig.className
-                                    }`}
-                                  />
-                                )}
-                              </div>
-                            </div>
 
-                            <div className="flex-1 min-w-0 space-y-1">
-                              <div className="flex items-center space-x-2">
-                                <h3 className="font-semibold text-gray-900 truncate">
-                                  {project.name}
-                                </h3>
-                                <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                                  {project.key}
-                                </span>
-                                <Badge
-                                  variant={statusConfig.variant}
-                                  className={`${statusConfig.className} flex items-center gap-1 text-xs`}
-                                >
-                                  <StatusIcon className="h-3 w-3" />
-                                  {statusConfig.label}
-                                </Badge>
-                              </div>
-
-                              <p className="text-sm text-gray-600 line-clamp-1">
-                                {project.description ||
-                                  "Aucune description fournie"}
-                              </p>
-
-                              <div className="flex items-center gap-4 text-xs text-gray-500">
-                                <span>Ordre: {project.order}</span>
-                                <span>
-                                  Créé: {formatDate(project.createdAt)}
-                                </span>
-                                <span>{visibilityConfig.label}</span>
-                              </div>
-                            </div>
+                        {/* Actions avec animations */}
+                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                          <div className="flex items-center space-x-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) =>
+                                handleReorder(e, project.id, "up")
+                              }
+                              disabled={
+                                loading ||
+                                !!reorderingProjectId ||
+                                index === 0
+                              }
+                              className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100"
+                              title="Monter"
+                            >
+                              {isReordering ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <ChevronUp className="h-3 w-3" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) =>
+                                handleReorder(e, project.id, "down")
+                              }
+                              disabled={
+                                loading ||
+                                !!reorderingProjectId ||
+                                index === sortedProjects.length - 1
+                              }
+                              className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100"
+                              title="Descendre"
+                            >
+                              {isReordering ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <ChevronDown className="h-3 w-3" />
+                              )}
+                            </Button>
                           </div>
 
-                          {/* Actions liste */}
-                          <div className="flex items-center space-x-2 flex-shrink-0">
-                            {/* Réorganisation */}
-                            <div className="flex flex-col space-y-0.5">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) =>
-                                  handleReorder(e, project.id, "up")
-                                }
-                                disabled={
-                                  loading ||
-                                  !!reorderingProjectId ||
-                                  index === 0
-                                }
-                                className="h-5 w-6 p-0 hover:bg-blue-100"
-                                title="Monter"
-                              >
-                                {isReordering ? (
-                                  <Loader2 className="h-3 w-3 animate-spin" />
-                                ) : (
-                                  <ChevronUp className="h-3 w-3" />
-                                )}
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) =>
-                                  handleReorder(e, project.id, "down")
-                                }
-                                disabled={
-                                  loading ||
-                                  !!reorderingProjectId ||
-                                  index === sortedProjects.length - 1
-                                }
-                                className="h-5 w-6 p-0 hover:bg-blue-100"
-                                title="Descendre"
-                              >
-                                {isReordering ? (
-                                  <Loader2 className="h-3 w-3 animate-spin" />
-                                ) : (
-                                  <ChevronDown className="h-3 w-3" />
-                                )}
-                              </Button>
-                            </div>
-
-                            {/* Actions principales */}
+                          <div className="flex items-center space-x-1">
                             <Button
-                              variant="outline"
+                              variant="ghost"
                               size="sm"
                               onClick={(e) => handleEdit(e, project)}
                               disabled={loading || !!reorderingProjectId}
-                              className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700"
+                              className="h-7 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100 hover:text-blue-700"
                             >
-                              <Edit className="h-4 w-4 mr-1" />
+                              <Edit className="h-3 w-3 mr-1" />
                               Éditer
                             </Button>
-
                             <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleProjectSelect(project)}
-                              disabled={loading || !!reorderingProjectId}
-                              className="hover:bg-green-50 hover:border-green-300 hover:text-green-700"
-                            >
-                              <ExternalLink className="h-4 w-4 mr-1" />
-                              Détails
-                            </Button>
-
-                            <Button
-                              variant="outline"
+                              variant="ghost"
                               size="sm"
                               onClick={(e) => handleDelete(e, project.id)}
                               disabled={loading || !!reorderingProjectId}
-                              className="hover:bg-red-50 hover:border-red-300 hover:text-red-700"
+                              className="h-7 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 hover:text-red-700"
                             >
-                              <Trash2 className="h-4 w-4 mr-1" />
-                              Supprimer
+                              <Trash2 className="h-3 w-3 mr-1" />
+                              Suppr.
                             </Button>
                           </div>
                         </div>
-                      )}
+                      </div>
                     </CardContent>
                   </Card>
                 );
@@ -1077,8 +959,6 @@ export default React.memo(function ProjectsList({
 // Export des types pour la réutilisabilité
 export type {
   ProjectsListProps,
-  ProjectSimple,
-  ViewMode,
   ProjectOrderItem,
   ProjectOrderRequest,
 };

@@ -77,7 +77,6 @@ import ProjectForm from "@/components/projects/ProjectForm";
 import ProjectsList from "@/components/projects/ProjectsList";
 import ProjectsFilter from "@/components/projects/ProjectsFilter";
 
-// ✅ CORRECTION: Import du store avec les hooks spécialisés
 import {
   useSelectedProjectStore,
   useProjectStoreHydration,
@@ -87,8 +86,8 @@ import {
   useProjectError,
   useProjectActions,
 } from "@/stores/useSelectedProjectStore";
-
-// Types basés sur le schéma Prisma Project (sans relations pour la liste)
+ 
+// Types basés sur le schéma Prisma Project 
 interface ProjectSimple {
   id: string;
   name: string;
