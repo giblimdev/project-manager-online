@@ -1,7 +1,6 @@
-// components/layout/header/Nav.tsx
 "use client";
 
-import React, { JSX, useState, useRef, useEffect } from "react";
+import React, { JSX, useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown } from "lucide-react";
@@ -30,7 +29,6 @@ const navItems: NavItem[] = [
   { label: "Services", href: "/services" },
   { label: "À propos", href: "/about" },
   { label: "Contact", href: "/contact" },
-
 ];
 
 const toolsDropdownItems: DropdownItem[] = [
@@ -85,16 +83,17 @@ export default function Nav({
     };
   }, []);
 
-  const handleItemClick = (): void => {
+  const handleItemClick = useCallback((): void => {
     if (onItemClick) {
       onItemClick();
     }
     setIsDropdownOpen(false);
-  };
+  }, [onItemClick]);
 
-  // Vérifier si une des pages tools est active
-  const isToolsActive = toolsDropdownItems.some((item) =>
-    pathname.startsWith(item.href)
+  // Vérifier si une des pages tools est active (mémoïsé)
+  const isToolsActive = useMemo(() => 
+    toolsDropdownItems.some((item) => pathname.startsWith(item.href)),
+    [pathname]
   );
 
   if (isMobile) {
@@ -154,7 +153,7 @@ export default function Nav({
   }
 
   return (
-    <nav className="flex items-center space-x-8">
+    <nav className="flex items-center space-x-6 lg:space-x-8">
       {navItems.map((item) => {
         const isActive = pathname === item.href;
         return (
@@ -233,6 +232,6 @@ export default function Nav({
           </div>
         )}
       </div>
-    </nav>
+    </nav> 
   );
 }

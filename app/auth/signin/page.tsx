@@ -13,7 +13,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <LoginForm />
+        <LoginForm /> 
 
         <div className="text-center">
           <p className="text-sm text-gray-600">
@@ -24,7 +24,7 @@ export default function LoginPage() {
             >
               Sign up
             </Link>
-          </p>
+          </p> 
         </div>
       </div>
     </div>

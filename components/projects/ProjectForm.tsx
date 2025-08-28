@@ -145,7 +145,7 @@ const projectFormSchema = z
       .trim(),
     description: z
       .string()
-      .max(1000, "La description ne peut pas dépasser 1000 caractères")
+      .max(100000, "La description ne peut pas dépasser 100000 caractères")
       .optional()
       .or(z.literal("")),
     slug: z
@@ -170,7 +170,7 @@ const projectFormSchema = z
       .number()
       .int("L'ordre doit être un nombre entier")
       .min(0, "L'ordre doit être positif")
-      .max(99999, "L'ordre ne peut pas dépasser 99999"),
+      .max(9999, "L'ordre ne peut pas dépasser 9999"),
     startDate: z.date().optional(),
     endDate: z.date().optional(),
     status: z.enum(["ACTIVE", "INACTIVE", "ARCHIVED"], {

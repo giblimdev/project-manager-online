@@ -12,13 +12,15 @@
  * - Navigation vers les détails avec indication visuelle 
  * - Intégration API route /api/projects/order pour sauvegarde ordre
  * - Notifications modernes avec Sonner
+ * - Délégation d'affichage aux composants ProjectViewList et ProjectViewGrid
  *
  * COMPOSANTS UTILISÉS :
  * - shadcn/ui: Button, Card, CardContent, CardHeader, CardTitle, Badge, Skeleton
- * - lucide-react: PlusCircle, Edit, Trash2, ChevronUp, ChevronDown, Eye, Globe, Lock, Activity, Archive
+ * - lucide-react: PlusCircle, Grid3X3, List, FolderOpen, Globe, Lock, Activity, Archive
  * - sonner: toast notifications modernes
  * - Store: useSelectedProjectStore pour la cohérence d'état
  * - ProjectsListViewItem: composant dédié pour l'affichage en mode liste
+ * - ProjectsGridViewItem: composant dédié pour l'affichage en mode grille
  * - React hooks: JSX, useCallback, useMemo, memo, useState
  *
  * LIBS UTILISÉS :
@@ -56,34 +58,21 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import {
   PlusCircle,
-  Edit,
-  Trash2,
-  ChevronUp,
-  ChevronDown,
-  ExternalLink,
-  Eye,
-  EyeOff,
-  Calendar,
-  Users,
-  BarChart3,
-  Settings,
+  Grid3X3,
+  List,
+  FolderOpen,
   Globe,
   Lock,
   Activity,
   Archive,
   Pause,
-  FolderOpen,
-  Grid3X3,
-  List,
-  Clock,
-  AlertTriangle,
-  CheckCircle2,
-  Loader2,
+  Settings,
+  Users,
+  Eye,
 } from "lucide-react";
 
 import {
@@ -91,8 +80,9 @@ import {
   useProjectActions,
 } from "@/stores/useSelectedProjectStore";
 
-// ✅ NOUVEAU: Import du composant séparé pour le mode liste
+// ✅ Import des composants séparés pour les vues
 import { ProjectsListViewItem } from "@/components/projects/views/ProjectViewList";
+import { ProjectsGridViewItem } from "@/components/projects/views/ProjectViewGrid";
 
 // Types basés sur le schéma Prisma Project cohérents avec app/projects/page.tsx
 export interface ProjectSimple {
@@ -173,7 +163,7 @@ export default React.memo(function ProjectsList({
   className = "",
   onOrderUpdate,
 }: ProjectsListProps): JSX.Element {
-  // ✅ CORRECTION: Store cohérent avec la page
+  // ✅ Store cohérent avec la page
   const selectedProjectId = useSelectedProjectId();
   const { setSelectedProjectId } = useProjectActions();
 
@@ -184,7 +174,7 @@ export default React.memo(function ProjectsList({
   const [optimisticOrder, setOptimisticOrder] = useState<ProjectSimple[]>([]);
 
   /**
-   * ✅ MISE À JOUR: Appel API avec notifications Sonner
+   * ✅ Appel API avec notifications Sonner
    */
   const saveProjectOrder = useCallback(
     async (projectOrder: ProjectOrderItem[]): Promise<boolean> => {
@@ -216,7 +206,7 @@ export default React.memo(function ProjectsList({
           `(${data.updatedCount} projets)`
         );
 
-        // ✅ NOUVEAU: Notification de succès avec Sonner
+        // ✅ Notification de succès avec Sonner
         toast.success("Ordre mis à jour", {
           description: `${data.updatedCount} projets réorganisés avec succès.`,
           duration: 3000,
@@ -230,7 +220,7 @@ export default React.memo(function ProjectsList({
       } catch (error) {
         console.error("❌ Erreur sauvegarde ordre:", error);
 
-        // ✅ NOUVEAU: Notification d'erreur avec Sonner
+        // ✅ Notification d'erreur avec Sonner
         toast.error("Erreur de sauvegarde", {
           description:
             error instanceof Error
@@ -397,7 +387,7 @@ export default React.memo(function ProjectsList({
       // Callback vers la page parente
       onSelect(project);
 
-      // ✅ NOUVEAU: Notification de sélection avec Sonner
+      // ✅ Notification de sélection avec Sonner
       toast.info(`Projet "${project.name}" sélectionné`, {
         duration: 2000,
       });
@@ -416,14 +406,14 @@ export default React.memo(function ProjectsList({
       console.log("✏️ ProjectsList - Édition projet:", project.name);
 
       try {
-        // ✅ NOUVEAU: Notification de début d'édition
+        // ✅ Notification de début d'édition
         toast.loading(`Édition de "${project.name}"...`, {
           id: `edit-${project.id}`,
         });
 
         await onEdit(project);
 
-        // ✅ NOUVEAU: Notification de succès
+        // ✅ Notification de succès
         toast.success(`Projet "${project.name}" ouvert pour édition`, {
           id: `edit-${project.id}`,
           duration: 2000,
@@ -431,7 +421,7 @@ export default React.memo(function ProjectsList({
       } catch (error) {
         console.error("Erreur lors de l'édition:", error);
 
-        // ✅ NOUVEAU: Notification d'erreur
+        // ✅ Notification d'erreur
         toast.error("Erreur lors de l'édition", {
           id: `edit-${project.id}`,
           description:
@@ -454,14 +444,14 @@ export default React.memo(function ProjectsList({
       console.log("🗑️ ProjectsList - Suppression projet:", projectId);
 
       try {
-        // ✅ NOUVEAU: Notification de confirmation
+        // ✅ Notification de confirmation
         toast.loading(`Suppression de "${projectName}"...`, {
           id: `delete-${projectId}`,
         });
 
         await onDelete(projectId);
 
-        // ✅ NOUVEAU: Notification de succès
+        // ✅ Notification de succès
         toast.success(`Projet "${projectName}" supprimé`, {
           id: `delete-${projectId}`,
           duration: 3000,
@@ -469,7 +459,7 @@ export default React.memo(function ProjectsList({
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);
 
-        // ✅ NOUVEAU: Notification d'erreur
+        // ✅ Notification d'erreur
         toast.error("Erreur lors de la suppression", {
           id: `delete-${projectId}`,
           description:
@@ -482,7 +472,7 @@ export default React.memo(function ProjectsList({
   );
 
   /**
-   * ✅ MISE À JOUR: Gestion du réordonnement avec notifications Sonner
+   * ✅ Gestion du réordonnement avec notifications Sonner
    */
   const handleReorder = useCallback(
     async (
@@ -504,7 +494,7 @@ export default React.memo(function ProjectsList({
 
       setReorderingProjectId(projectId);
 
-      // ✅ NOUVEAU: Notification de début de réorganisation
+      // ✅ Notification de début de réorganisation
       const toastId = `reorder-${projectId}`;
       toast.loading(`Réorganisation de "${projectName}"...`, {
         id: toastId,
@@ -542,7 +532,7 @@ export default React.memo(function ProjectsList({
             setOptimisticOrder([]);
           }, 500);
 
-          // ✅ NOUVEAU: Fermeture du toast de chargement (succès géré par saveProjectOrder)
+          // ✅ Fermeture du toast de chargement (succès géré par saveProjectOrder)
           toast.dismiss(toastId);
         } else {
           // 7. Annulation de la mise à jour optimiste en cas d'erreur
@@ -555,7 +545,7 @@ export default React.memo(function ProjectsList({
         // Annulation de la mise à jour optimiste
         setOptimisticOrder([]);
 
-        // ✅ NOUVEAU: Notification d'erreur spécifique
+        // ✅ Notification d'erreur spécifique
         toast.error("Erreur de réorganisation", {
           id: toastId,
           description: `Impossible de déplacer "${projectName}"`,
@@ -686,7 +676,7 @@ export default React.memo(function ProjectsList({
             <Button
               onClick={() => {
                 onCreate();
-                // ✅ NOUVEAU: Notification d'action
+                // ✅ Notification d'action
                 toast.info("Formulaire de création ouvert", {
                   duration: 2000,
                 });
@@ -737,19 +727,10 @@ export default React.memo(function ProjectsList({
           {sortedProjects.length > 0 && (
             <div className={containerClasses}>
               {sortedProjects.map((project, index) => {
-                const statusConfig = getStatusConfig(
-                  project.status,
-                  project.isActive
-                );
-                const visibilityConfig = getVisibilityConfig(
-                  project.visibility
-                );
-                const StatusIcon = statusConfig.icon;
-                const VisibilityIcon = visibilityConfig.icon;
                 const isSelected = selectedProjectId === project.id;
                 const isReordering = reorderingProjectId === project.id;
 
-                // ✅ NOUVEAU: Utilisation du composant séparé pour le mode liste
+                // ✅ Utilisation du composant séparé pour le mode liste
                 if (viewMode === "list") {
                   return (
                     <ProjectsListViewItem
@@ -771,148 +752,24 @@ export default React.memo(function ProjectsList({
                   );
                 }
 
-                // ✅ MODE GRILLE - DESIGN MODERNE (inchangé)
+                // ✅ Utilisation du composant séparé pour le mode grille
                 return (
-                  <Card
+                  <ProjectsGridViewItem
                     key={project.id}
-                    className={`
-                      group relative border transition-all duration-200 cursor-pointer hover:shadow-md
-                      ${
-                        isSelected
-                          ? "border-blue-300 shadow-blue-100 bg-blue-50"
-                          : "border-gray-200 hover:border-gray-300 bg-white"
-                      }
-                      ${
-                        loading || reorderingProjectId
-                          ? "opacity-50 cursor-not-allowed"
-                          : "hover:shadow-lg"
-                      }
-                      ${isReordering ? "ring-2 ring-blue-300 shadow-lg" : ""}
-                    `}
-                    onClick={() => handleProjectSelect(project)}
-                  >
-                    <CardContent className="p-4 sm:p-6">
-                      <div className="space-y-4">
-                        {/* Header avec badges */}
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center space-x-2 min-w-0 flex-1">
-                            <VisibilityIcon
-                              className={`h-4 w-4 flex-shrink-0 ${visibilityConfig.className}`}
-                            />
-                            <h3 className="font-semibold text-gray-900 truncate">
-                              {project.name}
-                            </h3>
-                          </div>
-
-                          <Badge
-                            variant={statusConfig.variant}
-                            className={`${statusConfig.className} flex items-center gap-1 text-xs font-medium px-2 py-1`}
-                          >
-                            <StatusIcon className="h-3 w-3" />
-                            {statusConfig.label}
-                          </Badge>
-                        </div>
-
-                        {/* Clé et description */}
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <BarChart3 className="h-4 w-4" />
-                            <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">
-                              {project.key}
-                            </span>
-                          </div>
-
-                          <p className="text-sm text-gray-600 line-clamp-2 min-h-[2.5rem]">
-                            {project.description ||
-                              "Aucune description fournie"}
-                          </p>
-                        </div>
-
-                        {/* Métadonnées */}
-                        <div className="space-y-2 pt-2 border-t border-gray-100">
-                          <div className="flex items-center gap-4 text-xs text-gray-500">
-                            <div className="flex items-center gap-1">
-                              <Settings className="h-3 w-3" />
-                              <span>#{project.order}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              <span>{formatDate(project.createdAt)}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Actions avec animations */}
-                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                          <div className="flex items-center space-x-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) =>
-                                handleReorder(e, project.id, "up")
-                              }
-                              disabled={
-                                loading ||
-                                !!reorderingProjectId ||
-                                index === 0
-                              }
-                              className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100"
-                              title="Monter"
-                            >
-                              {isReordering ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                              ) : (
-                                <ChevronUp className="h-3 w-3" />
-                              )}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) =>
-                                handleReorder(e, project.id, "down")
-                              }
-                              disabled={
-                                loading ||
-                                !!reorderingProjectId ||
-                                index === sortedProjects.length - 1
-                              }
-                              className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100"
-                              title="Descendre"
-                            >
-                              {isReordering ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                              ) : (
-                                <ChevronDown className="h-3 w-3" />
-                              )}
-                            </Button>
-                          </div>
-
-                          <div className="flex items-center space-x-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => handleEdit(e, project)}
-                              disabled={loading || !!reorderingProjectId}
-                              className="h-7 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100 hover:text-blue-700"
-                            >
-                              <Edit className="h-3 w-3 mr-1" />
-                              Éditer
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => handleDelete(e, project.id)}
-                              disabled={loading || !!reorderingProjectId}
-                              className="h-7 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 hover:text-red-700"
-                            >
-                              <Trash2 className="h-3 w-3 mr-1" />
-                              Suppr.
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    project={project}
+                    index={index}
+                    isSelected={isSelected}
+                    isReordering={isReordering}
+                    loading={loading || !!reorderingProjectId}
+                    total={sortedProjects.length}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onSelect={handleProjectSelect}
+                    onReorder={handleReorder}
+                    getStatusConfig={getStatusConfig}
+                    getVisibilityConfig={getVisibilityConfig}
+                    formatDate={formatDate}
+                  />
                 );
               })}
             </div>

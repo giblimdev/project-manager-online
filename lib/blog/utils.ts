@@ -15,7 +15,7 @@ export function generateSlug(text: string): string {
 // ✅ Génération de slug unique
 export async function generateUniqueSlug(
   text: string,
-  tableName: "categories" | "comments",
+  tableName: "categories" | "tag", // Removed "comments"
   excludeId?: string
 ): Promise<string> {
   let baseSlug = generateSlug(text);
@@ -24,13 +24,13 @@ export async function generateUniqueSlug(
 
   while (true) {
     const existing = await (tableName === "categories"
-      ? prisma.categories.findFirst({
+      ? prisma.category.findFirst({
           where: {
             slug,
             ...(excludeId && { id: { not: excludeId } }),
           },
         })
-      : prisma.comment.findFirst({
+      : prisma.tag.findFirst({
           where: {
             slug,
             ...(excludeId && { id: { not: excludeId } }),

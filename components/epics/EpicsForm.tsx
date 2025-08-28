@@ -1,5 +1,3 @@
-// @/components/epics/EpicsForm.tsx
-
 "use client";
 
 import React, { useEffect } from "react";
@@ -254,9 +252,9 @@ export function EpicsForm({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleCancel}>
-      <DialogContent className="w-[95vw] max-w-[800px] max-h-[95vh] flex flex-col p-0 gap-0">
+      <DialogContent className="w-[95vw] max-w-[800px] h-[95vh] flex flex-col p-0 gap-0">
         {/* Header fixe */}
-        <DialogHeader className="px-6 py-4 border-b bg-white">
+        <DialogHeader className="px-6 py-4 border-b bg-white shrink-0">
           <DialogTitle className="text-xl font-semibold">
             {epic ? "Modifier l'épic" : "Nouvel épic"}
           </DialogTitle>
@@ -267,7 +265,7 @@ export function EpicsForm({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Contenu avec scroll */}
+        {/* Contenu scrollable */}
         <div className="flex-1 overflow-y-auto px-6 py-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -507,12 +505,12 @@ export function EpicsForm({
         </div>
 
         {/* Footer fixe */}
-        <DialogFooter className="px-6 py-4 border-t bg-gray-50 flex flex-row justify-between gap-3">
+        <DialogFooter className="px-6 py-4 border-t bg-gray-50 shrink-0 flex flex-col sm:flex-row gap-3">
           <Button 
             type="button" 
             variant="outline" 
             onClick={handleCancel}
-            className="flex-1 sm:flex-none"
+            className="w-full sm:w-auto"
           >
             Annuler
           </Button>
@@ -520,7 +518,7 @@ export function EpicsForm({
             type="submit" 
             onClick={form.handleSubmit(onSubmit)}
             disabled={form.formState.isSubmitting}
-            className="flex-1 sm:flex-none"
+            className="w-full sm:w-auto"
           >
             {form.formState.isSubmitting ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
