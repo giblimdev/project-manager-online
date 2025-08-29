@@ -1,6 +1,4 @@
-//
-
-// app/goodbye/page.tsx
+// app/auth/goodbye/page.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -16,11 +14,20 @@ import {
   Shield,
   Clock
 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function GoodbyePage() {
   const router = useRouter();
   const [countdown, setCountdown] = useState(5);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+
+  // ✅ Gérer la redirection de manière sûre
+  useEffect(() => {
+    if (shouldRedirect) {
+      router.push('/');
+    }
+  }, [shouldRedirect, router]);
 
   useEffect(() => {
     // Animation d'entrée
@@ -29,21 +36,23 @@ export default function GoodbyePage() {
     // Compte à rebours automatique
     const timer = setInterval(() => {
       setCountdown((prev) => {
-        if (prev <= 1) {
+        const newValue = prev - 1;
+        
+        if (newValue <= 0) {
           clearInterval(timer);
-          router.push('/');
+          // ✅ Utiliser un état au lieu d'appeler router.push directement
+          setShouldRedirect(true);
           return 0;
         }
-        return prev - 1;
+        
+        return newValue;
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [router]);
-
-  const handleGoHome = () => {
-    router.push('/');
-  };
+    return () => {
+      clearInterval(timer);
+    };
+  }, []); // ✅ Supprimer router de la dépendance
 
   const handleGoBack = () => {
     router.back();
@@ -94,7 +103,7 @@ export default function GoodbyePage() {
             <div className="flex items-center justify-center gap-2 text-blue-600 bg-blue-50/80 rounded-lg py-3 px-4 border border-blue-200/50">
               <Clock className="h-4 w-4" />
               <span className="text-sm font-medium">
-                Redirection automatique dans {countdown}s
+                {countdown > 0 ? `Redirection automatique dans ${countdown}s` : "Redirection..."}
               </span>
             </div>
           </div>
@@ -109,14 +118,13 @@ export default function GoodbyePage() {
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button
-              onClick={handleGoHome}
-              className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            >
-              <Home className="h-4 w-4 mr-2" />
-              Accueil
-            </Button>
-            
+            <Link href="/" className="flex-1">
+              <Button className="w-full bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <Home className="h-4 w-4 mr-2" />
+                Accueil
+              </Button>
+            </Link>
+
             <Button
               onClick={handleGoBack}
               variant="outline"
@@ -143,7 +151,7 @@ export default function GoodbyePage() {
         {[...Array(8)].map((_, i) => (
           <div
             key={i}
-            className={`absolute w-2 h-2 bg-gradient-to-r from-indigo-300 to-blue-300 rounded-full opacity-30 animate-float`}
+            className="absolute w-2 h-2 bg-gradient-to-r from-indigo-300 to-blue-300 rounded-full opacity-30 animate-float"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
